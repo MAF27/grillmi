@@ -226,10 +226,10 @@ The **timer runtime** (`src/lib/runtime/ticker.ts`) is a single `requestAnimatio
 
 **Phase 12: Deploy**
 
-- [ ] `pnpm build` on `grillmi-dev`, producing `build/`.
-- [ ] `ansible-playbook playbooks/applications/grillmi-deploy.yml --limit grillmi_dev` — deploys to `grillmi-dev.krafted.me`.
+- [ ] Commit and push the current state from `grillmi-dev` to `origin main` on alcazar.
+- [ ] `ansible-playbook playbooks/applications/grillmi-deploy.yml --limit grillmi_dev` — pulls on `grillmi-dev`, installs deps, builds, reloads Caddy. Serves on `grillmi.krafted.cc`.
 - [ ] Manual verification against the dev URL end-to-end (full flow: plan 3 items, run session, hit alarms, plate).
-- [ ] `ansible-playbook playbooks/applications/grillmi-deploy.yml --limit grillmi_prod` — deploys to `grillmi.cloud`.
+- [ ] `ansible-playbook playbooks/applications/grillmi-deploy.yml --limit grillmi_prod` — same pipeline on `grillmi`, serves `grillmi.cloud`.
 - [ ] Install on Marco's iPhone, run a real BBQ, tag `v1.0.0`, push tag to alcazar.
 
 ---
@@ -294,7 +294,7 @@ The **timer runtime** (`src/lib/runtime/ticker.ts`) is a single `requestAnimatio
 
 ### Manual Verification (Marco)
 
-- [ ] Open `https://grillmi-dev.krafted.me` on your iPhone in Safari. Tap Share → "Zum Home-Bildschirm". Open the installed icon. The first-run notice explains the screen-on behavior and mute-switch caveat clearly.
+- [ ] Open `https://grillmi.krafted.cc` on your iPhone in Safari. Tap Share → "Zum Home-Bildschirm". Open the installed icon. The first-run notice explains the screen-on behavior and mute-switch caveat clearly.
 - [ ] Create a plan with four items of different cook times, set target for 30 min in the future, press Go. The Session screen shows four pending cards and a sticky master clock counting down.
 - [ ] As put-on alarms fire, each card transitions to cooking with an audible chime and a visible banner.
 - [ ] When a flip alarm fires, the main timer on that card keeps counting down without pausing — visually confirm the number keeps decrementing through the flip banner.
