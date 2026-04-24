@@ -154,7 +154,7 @@ Address allocation is plain DHCP — no Fixed IP reservations. Findability comes
 
 ### Manual Verification (Marco)
 
-- [ ] Open `https://grillmi.krafted.cc` in Safari on the Mac while on-LAN — the placeholder "Grillmi — coming soon" page loads, and clicking the URL-bar site-info icon shows "Connection is secure" with issuer Let's Encrypt.
+- [x] Open `https://grillmi.krafted.cc` in Safari on the Mac while on-LAN — the placeholder "Grillmi — coming soon" page loads, and clicking the URL-bar site-info icon shows "Connection is secure" with issuer Let's Encrypt.
 - [ ] Open `https://grillmi.cloud` in Safari from anywhere — same placeholder page, site-info icon shows "Connection is secure" with issuer Cloudflare Inc. ECC CA-3 (or equivalent Cloudflare intermediate).
 - [ ] Open VS Code, use the Remote-SSH extension to connect to `grillmi-dev`, and open the folder `/home/maf/dev/grillmi`. The file tree shows the scaffolded repo and the integrated terminal opens in that folder.
 - [ ] In the Cloudflare Zero Trust dashboard → Networks → Tunnels, the `grillmi` tunnel shows status **HEALTHY**, and its Public Hostnames tab shows `grillmi.cloud` → `http://localhost:80`.
