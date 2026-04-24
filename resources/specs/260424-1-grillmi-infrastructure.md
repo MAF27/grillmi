@@ -71,23 +71,23 @@ Secrets live in Doppler project `grillmi` with configs `dev` and `prd`. The app-
 
 **Phase 1: Doppler setup**
 
-- [ ] Create Doppler project `grillmi` with configs `dev` and `prd` via the Doppler CLI under Marco's account.
-- [ ] In `grillmi/dev`: add `BECOME_PASSWORD` as a generated secret (`openssl rand -hex 24`).
-- [ ] In `grillmi/prd`: add `BECOME_PASSWORD` (generated, same method).
-- [ ] In `grillmi/prd`: add `CLOUDFLARE_TUNNEL_TOKEN` with an empty-string placeholder; Phase 2 pastes the real value after the named tunnel is created in the Zero Trust dashboard. The Ansible role fails-fast (via `assert`) if the value is empty at playbook run time.
-- [ ] In Doppler → `grillmi/dev` Access → generate a service token named `grillmi-dev-token`. Store it in the existing `deploy-tokens/prd` project as `GRILLMI_DEV_DOPPLER_TOKEN` (matches the homelab's `<APP>_<ENV>_DOPPLER_TOKEN` convention).
-- [ ] In Doppler → `grillmi/prd` Access → generate a service token named `grillmi-prd-token`. Store it in `deploy-tokens/prd` as `GRILLMI_PRD_DOPPLER_TOKEN`.
+- [x] Create Doppler project `grillmi` with configs `dev` and `prd` via the Doppler CLI under Marco's account.
+- [x] In `grillmi/dev`: add `BECOME_PASSWORD` as a generated secret (`openssl rand -hex 24`).
+- [x] In `grillmi/prd`: add `BECOME_PASSWORD` (generated, same method).
+- [x] In `grillmi/prd`: add `CLOUDFLARE_TUNNEL_TOKEN` with an empty-string placeholder; Phase 2 pastes the real value after the named tunnel is created in the Zero Trust dashboard. The Ansible role fails-fast (via `assert`) if the value is empty at playbook run time.
+- [x] In Doppler → `grillmi/dev` Access → generate a service token named `grillmi-dev-token`. Store it in the existing `deploy-tokens/prd` project as `GRILLMI_DEV_DOPPLER_TOKEN` (matches the homelab's `<APP>_<ENV>_DOPPLER_TOKEN` convention).
+- [x] In Doppler → `grillmi/prd` Access → generate a service token named `grillmi-prd-token`. Store it in `deploy-tokens/prd` as `GRILLMI_PRD_DOPPLER_TOKEN`.
 
 **Phase 2: Domains, Cloudflare Tunnel, internal routing**
 
 - [x] `grillmi.cloud` registered (Marco, April 2026).
-- [ ] Ensure `grillmi.cloud` nameservers are on Cloudflare. Verify with `dig NS grillmi.cloud +short` returning `*.ns.cloudflare.com`. If not, add the zone in the Cloudflare dashboard and update nameservers at the registrar; wait for propagation before proceeding.
+- [x] Ensure `grillmi.cloud` nameservers are on Cloudflare. Verify with `dig NS grillmi.cloud +short` returning `*.ns.cloudflare.com`. If not, add the zone in the Cloudflare dashboard and update nameservers at the registrar; wait for propagation before proceeding.
 - [ ] In the Cloudflare Zero Trust dashboard → Networks → Tunnels, create a new named tunnel `grillmi`. Copy the generated tunnel token into Doppler `grillmi/prd` under `CLOUDFLARE_TUNNEL_TOKEN`.
 - [ ] In the same tunnel, configure a Public Hostname: `grillmi.cloud` → Service `http://localhost:80`. Cloudflare creates the DNS CNAME automatically (no A record pointing at home IPs).
-- [ ] Ensure `krafted.cc` nameservers are on Cloudflare (same as above — verify with `dig NS krafted.cc +short`). This enables the `*.krafted.cc` wildcard issuance via DNS-01 against the Cloudflare API.
+- [x] Ensure `krafted.cc` nameservers are on Cloudflare (same as above — verify with `dig NS krafted.cc +short`). This enables the `*.krafted.cc` wildcard issuance via DNS-01 against the Cloudflare API.
 - [ ] In NPM on argus (`npm.krafted.me`), issue a `*.krafted.cc` wildcard certificate via DNS-01 (Cloudflare API). Prereq: the Cloudflare API token configured in NPM's Let's Encrypt DNS challenge must have Zone.DNS Edit permission on the `krafted.cc` zone — if the existing token is `*.krafted.me` only, scope it to both zones in the Cloudflare dashboard first. Acceptance: NPM's "SSL Certificates" list shows a valid `*.krafted.cc` entry with a future expiry date.
 - [ ] In NPM, create proxy host `grillmi.krafted.cc → grillmi-dev:80` (NPM resolves the hostname via the LAN DNS; do not hard-code a DHCP-leased IP). Attach the `*.krafted.cc` wildcard. LAN-only; no public DNS entry for this hostname.
-- [ ] Update `~/dev/ops/resources/docs/260218-domain-inventory.md`: add `grillmi.cloud` (public, Cloudflare Tunnel → grillmi LXC) and `grillmi.krafted.cc` (internal, NPM → grillmi-dev); promote `krafted.cc` from "reserved for future use" to "active internal domain".
+- [x] Update `~/dev/ops/resources/docs/260218-domain-inventory.md`: add `grillmi.cloud` (public, Cloudflare Tunnel → grillmi LXC) and `grillmi.krafted.cc` (internal, NPM → grillmi-dev); promote `krafted.cc` from "reserved for future use" to "active internal domain".
 
 **Phase 3: Provision hosts**
 
@@ -105,10 +105,10 @@ Address allocation is plain DHCP — no Fixed IP reservations. Findability comes
 
 **Phase 4: Ansible inventory and role**
 
-- [ ] Add `grillmi-dev` and `grillmi` entries to `~/dev/ansible/inventory/hosts.yml` under `dev_servers` and `production_servers` respectively. Prod host is literally named `grillmi` (not `grillmi-prod`) — keep the dev/prod asymmetry because internal URLs use the bare name. `ansible_host` matches the hostname. `ansible_become_pass` uses `{{ lookup('ansible.builtin.pipe', '~/dev/scripts/get_secret grillmi BECOME_PASSWORD dev') | trim }}` for the dev host and `… get_secret grillmi BECOME_PASSWORD` (no third arg — defaults to prd) for the prod host. Set `use_tailscale: true` on both.
-- [ ] Add application groups to `hosts.yml`: `grillmi_apps` has children `grillmi_dev` (containing host `grillmi-dev`) and `grillmi_prod` (containing host `grillmi`). Also add `grillmi-dev` and `grillmi` as members of the `hardware_virtual` cross-cutting list.
-- [ ] Create Ansible role `app_grillmi` at `~/dev/ansible/roles/app_grillmi/` with `tasks/main.yml`, `templates/Caddyfile.j2`, `handlers/main.yml`, `defaults/main.yml`, and `README.md`.
-- [ ] Role tasks in order:
+- [x] Add `grillmi-dev` and `grillmi` entries to `~/dev/ansible/inventory/hosts.yml` under `dev_servers` and `production_servers` respectively. Prod host is literally named `grillmi` (not `grillmi-prod`) — keep the dev/prod asymmetry because internal URLs use the bare name. `ansible_host` matches the hostname. `ansible_become_pass` uses `{{ lookup('ansible.builtin.pipe', '~/dev/scripts/get_secret grillmi BECOME_PASSWORD dev') | trim }}` for the dev host and `… get_secret grillmi BECOME_PASSWORD` (no third arg — defaults to prd) for the prod host. Set `use_tailscale: true` on both.
+- [x] Add application groups to `hosts.yml`: `grillmi_apps` has children `grillmi_dev` (containing host `grillmi-dev`) and `grillmi_prod` (containing host `grillmi`). Also add `grillmi-dev` and `grillmi` as members of the `hardware_virtual` cross-cutting list.
+- [x] Create Ansible role `app_grillmi` at `~/dev/ansible/roles/app_grillmi/` with `tasks/main.yml`, `templates/Caddyfile.j2`, `handlers/main.yml`, `defaults/main.yml`, and `README.md`.
+- [x] Role tasks in order:
   (a) `ansible.builtin.assert` on required vars (`grillmi_domain`, `grillmi_environment`, `grillmi_repo_url`, `grillmi_git_ref`, and on `grillmi_prod`: `grillmi_cloudflare_tunnel_token | length > 0`).
   (b) install Node 22 LTS via the NodeSource APT repo and `corepack enable pnpm` (sets pnpm's shim on `PATH`).
   (c) install Caddy from the official APT repo (`deb.caddyserver.com`).
@@ -119,9 +119,9 @@ Address allocation is plain DHCP — no Fixed IP reservations. Findability comes
   (h) `pnpm build` to produce `/opt/grillmi/build`, `when: grillmi_git.before != grillmi_git.after or not build_exists.stat.exists` (stat check against `/opt/grillmi/build/index.html`).
   (i) deploy `Caddyfile` from template to `/etc/caddy/Caddyfile`; immediately afterwards run `caddy validate --config /etc/caddy/Caddyfile` as a `command` task — non-zero exit fails the playbook before the reload handler fires, so a broken template never replaces a working running config.
   (j) reload Caddy via handler (only when step (i) changed the file).
-- [ ] Caddyfile template: single site block whose address is `http://127.0.0.1:80` (the explicit `http://` scheme + `127.0.0.1` address forces loopback binding — a bare `:80` address binds to all interfaces, which is not what we want). Body: `root * /opt/grillmi/build`, `file_server`, `try_files {path} /index.html` for SvelteKit SPA routing. No Caddy TLS configuration — prod TLS is terminated by Cloudflare at the tunnel edge; dev TLS is terminated by NPM on argus. The role does not configure UFW directly; it runs a verification task that fails if `ufw status numbered` on either host shows an allow rule on anything other than `22/tcp` (SSH).
-- [ ] Create `~/dev/ansible/playbooks/applications/grillmi-deploy.yml` as a thin wrapper calling the `app_grillmi` role against `grillmi_apps`, tagged `grillmi`.
-- [ ] Per-host `host_vars` at `~/dev/ansible/inventory/host_vars/grillmi-dev/vars.yml` and `~/dev/ansible/inventory/host_vars/grillmi/vars.yml` (path matches the inventory host name; the prod host is `grillmi`, not `grillmi-prod`). Set `grillmi_domain` (`grillmi.krafted.cc` on dev, `grillmi.cloud` on prod), `grillmi_environment` (`dev` / `prod`), `grillmi_public_base_url` (full `https://...`), `grillmi_repo_url: alcazar:/git/grillmi.git`, `grillmi_git_ref: main`. On prod only, also set `grillmi_cloudflare_tunnel_token: "{{ lookup('ansible.builtin.pipe', '~/dev/scripts/get_secret grillmi CLOUDFLARE_TUNNEL_TOKEN') | trim }}"`.
+- [x] Caddyfile template: single site block whose address is `http://127.0.0.1:80` (the explicit `http://` scheme + `127.0.0.1` address forces loopback binding — a bare `:80` address binds to all interfaces, which is not what we want). Body: `root * /opt/grillmi/build`, `file_server`, `try_files {path} /index.html` for SvelteKit SPA routing. No Caddy TLS configuration — prod TLS is terminated by Cloudflare at the tunnel edge; dev TLS is terminated by NPM on argus. The role does not configure UFW directly; it runs a verification task that fails if `ufw status numbered` on either host shows an allow rule on anything other than `22/tcp` (SSH).
+- [x] Create `~/dev/ansible/playbooks/applications/grillmi-deploy.yml` as a thin wrapper calling the `app_grillmi` role against `grillmi_apps`, tagged `grillmi`.
+- [x] Per-host `host_vars` at `~/dev/ansible/inventory/host_vars/grillmi-dev/vars.yml` and `~/dev/ansible/inventory/host_vars/grillmi/vars.yml` (path matches the inventory host name; the prod host is `grillmi`, not `grillmi-prod`). Set `grillmi_domain` (`grillmi.krafted.cc` on dev, `grillmi.cloud` on prod), `grillmi_environment` (`dev` / `prod`), `grillmi_public_base_url` (full `https://...`), `grillmi_repo_url: alcazar:/git/grillmi.git`, `grillmi_git_ref: main`. On prod only, also set `grillmi_cloudflare_tunnel_token: "{{ lookup('ansible.builtin.pipe', '~/dev/scripts/get_secret grillmi CLOUDFLARE_TUNNEL_TOKEN') | trim }}"`.
 
 **Phase 5: Dev-side developer setup**
 
@@ -148,7 +148,7 @@ Address allocation is plain DHCP — no Fixed IP reservations. Findability comes
 - [ ] `test_grillmi_role_idempotent` — second consecutive role run against each host reports `changed=0`. Run the dev and prod limits separately.
 - [ ] `test_grillmi_caddyfile_valid` — on each host after deploy, `caddy validate --config /etc/caddy/Caddyfile` exits zero.
 - [ ] `test_grillmi_caddy_binds_loopback_only` — on each host, `ss -tlnp | awk '$4 ~ /:80$/'` prints exactly one row and the address column starts with `127.0.0.1:` (never `0.0.0.0:` or `*:`).
-- [ ] `test_grillmi_inventory_parses` — `ansible-inventory --graph` resolves `grillmi_apps`, `grillmi_dev`, and `grillmi_prod` and lists `grillmi-dev` and `grillmi` under the correct groups.
+- [x] `test_grillmi_inventory_parses` — `ansible-inventory --graph` resolves `grillmi_apps`, `grillmi_dev`, and `grillmi_prod` and lists `grillmi-dev` and `grillmi` under the correct groups.
 - [ ] `test_grillmi_cloudflared_healthy` — on the prod LXC, `systemctl is-active cloudflared` prints `active`; `journalctl -u cloudflared --since "2 minutes ago"` contains `Registered tunnel connection` (at least one).
 - [ ] `test_grillmi_prod_no_public_ports` — on the prod LXC, `sudo ufw status` shows a default-deny inbound policy and the only ALLOW rule is `22/tcp`.
 

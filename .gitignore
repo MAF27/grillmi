@@ -12,6 +12,7 @@ Thumbs.db
 node_modules/
 dist/
 build/
+.svelte-kit/
 .next/
 .vite/
 *.tsbuildinfo
