@@ -2,7 +2,7 @@
 
 ## Meta
 
-- Status: Draft
+- Status: Reviewed
 - Branch: feature/grillmi-infrastructure
 
 ---
@@ -15,7 +15,7 @@ Stand up the hosting, networking, secrets, and deployment pipeline that Grillmi 
 
 ### Proposal
 
-Provision one dev VM and one prod LXC, wire up internal NPM routing and a Cloudflare Tunnel for public access (no open inbound ports anywhere), install Node + pnpm + Caddy + cloudflared on both hosts, and add the Ansible inventory and role so a single `ansible-playbook grillmi-deploy.yml` command does a `git pull` on the target from the alcazar remote, installs dependencies, builds the SvelteKit `adapter-static` output on-host, and reloads Caddy — which binds to localhost only.
+Provision one Ubuntu 24.04 LTS dev VM and one Ubuntu 24.04 LTS prod LXC, wire up internal NPM routing (dev) and a Cloudflare Tunnel (prod) for external access — no open inbound ports anywhere. Install Node 22 LTS + pnpm + Caddy on both hosts; `cloudflared` only on the prod LXC. Add the Ansible inventory and role so a single `ansible-playbook grillmi-deploy.yml` command clones / pulls the alcazar remote into `/opt/grillmi`, installs dependencies, builds the SvelteKit `adapter-static` output on-host, and reloads Caddy (bound to `127.0.0.1:80` only).
 
 ### Behaviors
 
@@ -39,20 +39,20 @@ Provision one dev VM and one prod LXC, wire up internal NPM routing and a Cloudf
 
 ### Approach
 
-Follow the established convention from `azooco`, `carraway`, and `spamnesia`: a Doppler project named after the app, an Ansible role `app_grillmi`, a deploy playbook wrapping the role, inventory entries under the relevant host groups, and `host_vars` providing per-environment configuration. Diverge from the reference apps in two ways: (1) prod uses an LXC (not a VM) — smaller footprint, same capabilities for this workload, (2) the role builds a static `adapter-static` output and has Caddy serve it, instead of running a Node server under PM2. The deploy mechanism matches azooco's: SSH into the target, `git pull` from `alcazar:/git/grillmi.git`, `pnpm install --frozen-lockfile`, `pnpm build`, reload Caddy. Both dev and prod hosts have Node 22 LTS, pnpm, and Caddy installed.
+Both hosts run **Ubuntu 24.04 LTS** — VM on atticus from the `ubuntu-24.04-server-cloudimg-amd64` cloud image, LXC on atlas from the `ubuntu-24.04-standard` container template. Picking one distro on both hosts means a single APT source list, one GPG-key path per third-party repo, and one set of package names in the Ansible role (no Debian/Ubuntu conditional).
 
-Public access uses Cloudflare Tunnel — the mandatory pattern for any home-lab service that needs to be reachable from the public internet (see global CLAUDE.md, and the reference role at `~/dev/ansible/roles/app_azooco/tasks/cloudflared.yml`). `grillmi.cloud` has its nameservers on Cloudflare; a named tunnel on the `grillmi` prod LXC registers a public hostname mapping `grillmi.cloud → http://localhost:80`. Caddy on the LXC binds to localhost only. Cloudflare serves the public TLS cert; no DNS A record points at home infrastructure and no inbound ports are opened anywhere.
+Thin-playbook, thick-role: a Doppler project named `grillmi` with `dev` and `prd` configs, an Ansible role `app_grillmi`, a deploy playbook wrapping the role, inventory entries for both hosts, and per-host `host_vars`. The role does the full deploy in one pass: clone or fast-forward `/opt/grillmi` from the alcazar remote, `pnpm install --frozen-lockfile`, `pnpm build` to produce a static `adapter-static` output, deploy the Caddyfile, reload Caddy. Both hosts carry Node 22 LTS, pnpm (via `corepack enable pnpm`), and Caddy; only the prod LXC additionally carries `cloudflared`.
 
-Internal access for `grillmi.krafted.cc` is unchanged from the prior pattern: NPM on argus terminates TLS with a `*.krafted.cc` wildcard (DNS-01 against Cloudflare) and proxies to the dev VM's internal IP. LAN-only; Tailscale covers off-LAN access to internal URLs.
+Public access uses Cloudflare Tunnel — the mandatory pattern for any home-lab service reachable from the public internet (see global CLAUDE.md). `grillmi.cloud` has its nameservers on Cloudflare; a named tunnel on the prod LXC registers a public hostname mapping `grillmi.cloud → http://localhost:80`. The `cloudflared` Debian package is installed via the official Cloudflare APT repo; the role then writes `/etc/systemd/system/cloudflared.service` from a Jinja template whose `ExecStart=/usr/bin/cloudflared tunnel --no-autoupdate run --token {{ grillmi_cloudflare_tunnel_token }}` — the token is read from Doppler `grillmi/prd` at playbook runtime (never committed, never written to disk outside the unit file). Caddy on the LXC binds to `127.0.0.1:80` only. Cloudflare serves the public TLS cert; no DNS A record points at home infrastructure and no inbound ports are opened anywhere.
 
-Secrets live in Doppler project `grillmi` with configs `dev` and `prd`. The required secrets are become passwords, a deploy token, and the Cloudflare Tunnel token for the prod tunnel. Generated secrets use `openssl rand -hex 24`; Cloudflare-issued tokens are `PLACEHOLDER_NEEDS_REAL_VALUE` until Marco pastes them in from the Zero Trust dashboard.
+Internal access for `grillmi.krafted.cc` follows the homelab's internal-domain pattern: NPM on argus terminates TLS with a `*.krafted.cc` wildcard (DNS-01 against Cloudflare) and proxies to the dev VM on port 80. LAN-only; Tailscale covers off-LAN access to internal URLs. `krafted.cc` is currently unused — this spec activates it as a second internal wildcard zone alongside the existing `*.krafted.me`.
+
+Secrets live in Doppler project `grillmi` with configs `dev` and `prd`. The app-project secrets are the host become passwords (`BECOME_PASSWORD` in each config) and the Cloudflare Tunnel token for prod (`CLOUDFLARE_TUNNEL_TOKEN` in `grillmi/prd` only). Doppler service tokens used by Ansible to read these secrets at runtime live in the shared `deploy-tokens/prd` project as `GRILLMI_DEV_DOPPLER_TOKEN` and `GRILLMI_PRD_DOPPLER_TOKEN` — this follows the homelab's `<APP>_<ENV>_DOPPLER_TOKEN` convention and avoids the circular-credential anti-pattern of storing a project's own read-token inside that project. Generated become passwords use `openssl rand -hex 24`; the Cloudflare Tunnel token is created when the named tunnel is provisioned in the Zero Trust dashboard (Phase 2) and pasted into Doppler at that point.
 
 ### Approach Validation
 
-- **Reference implementations** — `~/dev/ansible/playbooks/applications/azooco-deploy.yml`, `~/dev/ansible/playbooks/applications/spamnesia-deploy.yml`, `~/dev/ansible/roles/app_spamnesia/tasks/main.yml`. Both follow the thin-playbook-thick-role pattern; Grillmi copies this. Spamnesia's Doppler/systemd/template approach is the closest match structurally, minus the Python service layer.
-- **Infrastructure inventory** — `~/dev/ops/resources/docs/260109-infrastructure-inventory.md` confirms atticus is the lab Proxmox host and atlas is always-on prod, with LXC and VM sizing precedents (`carraway`, `spamnesia`, `azooco-prod`) that we're sizing under.
-- **Domain conventions** — `~/dev/ops/resources/docs/260218-domain-inventory.md` documents the NPM-on-argus pattern for `*.krafted.me` (LAN-only internal) and the Cloudflare-Tunnel-on-`krafted.cloud` pattern (public, no open ports) as the two sanctioned paths.
-- **Public exposure** — `azooco.ch` is served via Cloudflare Tunnel from `azooco-prod`. Role pattern at `~/dev/ansible/roles/app_azooco/tasks/cloudflared.yml` handles `cloudflared` install; the tunnel itself is registered manually via `cloudflared tunnel login` and routed in the Cloudflare Zero Trust dashboard. `karakeep.krafted.cloud` and other services follow the same pattern on `dockerhost`. No home-lab host has inbound ports open to the internet.
+- **Homelab conventions codified** — inventory lives at `~/dev/ansible/inventory/hosts.yml`; app groups follow the `<app>_apps` / `<app>_dev` / `<app>_prod` naming. Become-password lookups use `~/dev/scripts/get_secret <app> BECOME_PASSWORD [dev]` against the app's own Doppler project. Doppler service tokens live in `deploy-tokens/prd` as `<APP>_<ENV>_DOPPLER_TOKEN`. Atlas production LXCs carry the Proxmox tag `33-production` (VLAN-33 convention per `~/dev/ops/resources/docs/260109-infrastructure-inventory.md`). Host facts (atticus = lab Proxmox, atlas = always-on prod, alcazar = git server, argus = NPM host) are authoritative in that inventory document.
+- **Domain conventions** — `~/dev/ops/resources/docs/260218-domain-inventory.md` documents the NPM-on-argus pattern for `*.krafted.me` (LAN-only internal) and the Cloudflare-Tunnel pattern for public access (no open ports). `krafted.cc` is currently listed "reserved for future use"; this spec activates it as the second internal wildcard zone.
 - **Adapter choice** — `resources/docs/stack-research-apr-2026.md` confirms `adapter-static` for SvelteKit is the smallest, simplest fit for an offline-first PWA with no server-side rendering requirement. Caddy serves the static build locally; Cloudflare fronts it for public access.
 - **Trade-off decided** — build-on-prod over artifact-transfer. Prod is sized at 1 CPU / 2 GB RAM: web research ([technetexperts.com, sveltejs/kit #7989](https://github.com/sveltejs/kit/discussions/7989)) shows small SvelteKit + Tailwind builds peak around 1 GB heap with default settings, so 2 GB gives a 2× margin; single-CPU is fine because Rollup is mostly serial and Caddy at runtime is idle. A git-pull-and-build deploy is simpler than an artifact pipeline, keeps the repo as single source of truth, and removes the need for a `dist` branch. If a specific build later OOMs, the first-line fix is `build.sourcemap: false` + `rollupOptions.maxParallelFileOps: 2` + `NODE_OPTIONS=--max-old-space-size=1536`, not a resize.
 
@@ -63,7 +63,7 @@ Secrets live in Doppler project `grillmi` with configs `dev` and `prd`. The requ
 | Prod LXC outgrows its sizing later (e.g. push-notification worker in v2) | 1 CPU / 2 GB / 16 GB covers the Vite build and Caddy today; if v2 needs a Node worker, resize or rebuild as a VM — a 15-minute operation. First OOM response is build-config tuning (sourcemap off, Rollup throttle, explicit `--max-old-space-size`), not a resize. |
 | Cloudflare Tunnel misconfigured (tunnel token wrong, route missing) on first deploy | Phase 2 verifies `cloudflared tunnel list` shows the grillmi tunnel as healthy and the Zero Trust dashboard shows the `grillmi.cloud → http://localhost:80` public hostname mapping before any deploy. If the tunnel is unhealthy, `systemctl status cloudflared` on the prod LXC surfaces the reason (usually: bad token, missing route). |
 | grillmi.cloud nameservers not on Cloudflare | Tunnel requires the zone on Cloudflare. Phase 2 includes moving nameservers to Cloudflare if not already there; verification step `dig NS grillmi.cloud` must show `*.ns.cloudflare.com` before tunnel config. |
-| Doppler secret rotation breaks Ansible runs | `~/dev/scripts/get_secret` retries via Touch ID on Mac; on Linux the Ansible controller uses a service token stored on disk. Document the rotation procedure in the role's README. |
+| Doppler secret rotation breaks Ansible runs | The Ansible controller is Marco's Mac (no Linux controller in this setup); `~/dev/scripts/get_secret` uses the doppler-touchid wrapper, which caches the Doppler CLI token in the macOS Keychain for 5 minutes. A rotation that invalidates the cached token triggers a Touch ID prompt on the next playbook run rather than a hard failure. Document the rotation procedure in the role's `README.md`. |
 | VS Code Remote-SSH on 4 GB dev VM runs out of memory under long builds | Vite builds on Svelte 5 + Tailwind 4 with <200 source files use <1 GB RAM in practice. Watch `grillmi-dev` memory during first real build; resize to 8 GB if needed. |
 | Wildcard cert on `*.krafted.cc` fails to issue or expire silently | This project first activates `krafted.cc` for internal use. Issue the wildcard in NPM via DNS-01 (registrar API) as part of Phase 2; NPM auto-renews thereafter. Include a manual verification step that `grillmi.krafted.cc` serves HTTPS green on first deploy. |
 
@@ -72,11 +72,11 @@ Secrets live in Doppler project `grillmi` with configs `dev` and `prd`. The requ
 **Phase 1: Doppler setup**
 
 - [ ] Create Doppler project `grillmi` with configs `dev` and `prd` via the Doppler CLI under Marco's account.
-- [ ] In `grillmi/dev`: add `BECOME_PASSWORD` as a generated secret via `openssl rand -hex 24`, add `DEPLOY_TOKEN` as a generated service token.
-- [ ] In `grillmi/prd`: add `BECOME_PASSWORD` (generated), `DEPLOY_TOKEN` (generated).
-- [ ] In existing `infra/prd` Doppler project: mirror `BECOME_GRILLMI_DEV` and `BECOME_GRILLMI_PROD` (both referencing the same values as above) per the infra-become-password convention.
-- [ ] In existing `deploy-tokens/prd` Doppler project: add `GRILLMI_DEPLOY_TOKEN` matching the service token from `grillmi/prd`.
-- [ ] Add `CLOUDFLARE_TUNNEL_TOKEN` as `PLACEHOLDER_NEEDS_REAL_VALUE` in `grillmi/prd` — generated in the Zero Trust dashboard when creating the grillmi tunnel in Phase 2; installed into `cloudflared`'s systemd unit by the Ansible role.
+- [ ] In `grillmi/dev`: add `BECOME_PASSWORD` as a generated secret (`openssl rand -hex 24`).
+- [ ] In `grillmi/prd`: add `BECOME_PASSWORD` (generated, same method).
+- [ ] In `grillmi/prd`: add `CLOUDFLARE_TUNNEL_TOKEN` with an empty-string placeholder; Phase 2 pastes the real value after the named tunnel is created in the Zero Trust dashboard. The Ansible role fails-fast (via `assert`) if the value is empty at playbook run time.
+- [ ] In Doppler → `grillmi/dev` Access → generate a service token named `grillmi-dev-token`. Store it in the existing `deploy-tokens/prd` project as `GRILLMI_DEV_DOPPLER_TOKEN` (matches the homelab's `<APP>_<ENV>_DOPPLER_TOKEN` convention).
+- [ ] In Doppler → `grillmi/prd` Access → generate a service token named `grillmi-prd-token`. Store it in `deploy-tokens/prd` as `GRILLMI_PRD_DOPPLER_TOKEN`.
 
 **Phase 2: Domains, Cloudflare Tunnel, internal routing**
 
@@ -85,38 +85,48 @@ Secrets live in Doppler project `grillmi` with configs `dev` and `prd`. The requ
 - [ ] In the Cloudflare Zero Trust dashboard → Networks → Tunnels, create a new named tunnel `grillmi`. Copy the generated tunnel token into Doppler `grillmi/prd` under `CLOUDFLARE_TUNNEL_TOKEN`.
 - [ ] In the same tunnel, configure a Public Hostname: `grillmi.cloud` → Service `http://localhost:80`. Cloudflare creates the DNS CNAME automatically (no A record pointing at home IPs).
 - [ ] Ensure `krafted.cc` nameservers are on Cloudflare (same as above — verify with `dig NS krafted.cc +short`). This enables the `*.krafted.cc` wildcard issuance via DNS-01 against the Cloudflare API.
-- [ ] In NPM on argus (`npm.krafted.me`), issue a `*.krafted.cc` wildcard certificate via DNS-01 (Cloudflare API), the first `.krafted.cc` service. Register the cert in NPM as a wildcard SSL cert entry.
-- [ ] In NPM, create proxy host `grillmi.krafted.cc → <grillmi-dev internal IP>:80` using the new `*.krafted.cc` wildcard. LAN-only; no public DNS entry for this hostname.
+- [ ] In NPM on argus (`npm.krafted.me`), issue a `*.krafted.cc` wildcard certificate via DNS-01 (Cloudflare API). Prereq: the Cloudflare API token configured in NPM's Let's Encrypt DNS challenge must have Zone.DNS Edit permission on the `krafted.cc` zone — if the existing token is `*.krafted.me` only, scope it to both zones in the Cloudflare dashboard first. Acceptance: NPM's "SSL Certificates" list shows a valid `*.krafted.cc` entry with a future expiry date.
+- [ ] In NPM, create proxy host `grillmi.krafted.cc → grillmi-dev:80` (NPM resolves the hostname via the LAN DNS; do not hard-code a DHCP-leased IP). Attach the `*.krafted.cc` wildcard. LAN-only; no public DNS entry for this hostname.
 - [ ] Update `~/dev/ops/resources/docs/260218-domain-inventory.md`: add `grillmi.cloud` (public, Cloudflare Tunnel → grillmi LXC) and `grillmi.krafted.cc` (internal, NPM → grillmi-dev); promote `krafted.cc` from "reserved for future use" to "active internal domain".
 
 **Phase 3: Provision hosts**
 
-Address allocation is plain DHCP — no Fixed IP reservations (matches Marco's convention for app hosts). Findability comes from setting the hostname correctly at creation so UniFi's DHCP service auto-registers it in DNS; the Ansible inventory uses hostnames, not IPs, so lease drift doesn't matter. If the hostname ever fails to resolve, verification is "ask Proxmox from the host": `pct exec` or `qm guest exec` reports the container's actual IP.
+Address allocation is plain DHCP — no Fixed IP reservations. Findability comes from setting the hostname correctly at creation so UniFi's DHCP service auto-registers it in the UDM Pro's internal resolver. Short, unqualified hostnames resolve from the Mac: on-LAN via the UDM Pro as DNS resolver, off-LAN via Tailscale MagicDNS. The Ansible inventory uses hostnames, not IPs, so lease drift doesn't matter. If a hostname ever fails to resolve, debug by asking Proxmox directly: `qm guest exec <vmid>` on atticus for the VM, `pct exec <ctid>` on atlas for the LXC — both print the guest's actual IP.
 
-- [ ] Create `grillmi-dev` VM on atticus via `qm create` (or the Proxmox UI) with: 2 vCPU, 4 GB RAM, 32 GB disk, Ubuntu 24.04 LTS cloud image, `--name grillmi-dev`, cloud-init `hostname: grillmi-dev` (critical — without this UniFi registers a generic name and the host is unfindable), `--net0 virtio,bridge=vmbr1,tag=400,ip=dhcp`, `--tags "400-development;grillmi"`, qemu-guest-agent enabled. Start the VM.
-- [ ] Create `grillmi` LXC on atlas via `pct create` with: CT ID in the 4xx range, template `debian-12-standard` (or equivalent Ubuntu 24.04 container), 1 vCPU, 2 GB RAM, 16 GB disk, `--hostname grillmi`, `--net0 name=eth0,bridge=vmbr1,tag=100,ip=dhcp`, `--tags "100-production;grillmi"`, `--unprivileged 1`, `--features nesting=1`, `--start 1`.
+- [ ] Create `grillmi-dev` VM on atticus via `qm create` (or the Proxmox UI) with: 2 vCPU, 4 GB RAM, 32 GB disk, Ubuntu 24.04 LTS cloud image, `--name grillmi-dev`, cloud-init `hostname: grillmi-dev` (critical — without this UniFi registers a generic name and the host is unfindable), bridge `vmbr1` (Internal, 10.10.1.0/24), `--tags "400-development;grillmi"`, qemu-guest-agent enabled. Before running, cross-check `qm config` on any existing atticus dev VM to see whether a `tag=<vlan>` is required inside `--net0`; if the sibling omits it, omit it here too. Start the VM.
+- [ ] Create `grillmi` LXC on atlas via `pct create` with: CT ID in the 4xx range, template `ubuntu-24.04-standard`, 1 vCPU, 2 GB RAM, 16 GB disk, `--hostname grillmi`, bridge `vmbr0`, `--tags "33-production;grillmi"` (atlas production LXCs use the `33-production` tag per `~/dev/ops/resources/docs/260109-infrastructure-inventory.md`), `--unprivileged 1`, `--features nesting=1`, `--start 1`. Before running, cross-check `pct config` on any existing atlas production LXC to see whether a `tag=<vlan>` is required inside `--net0`; if the sibling omits it, omit it here too.
 - [ ] Confirm each host booted and got a DHCP lease by asking Proxmox directly: `ssh atticus "sudo qm guest exec <vmid> -- hostname -I"` for the VM (requires qemu-guest-agent running) and `ssh atlas "sudo pct exec <ctid> -- hostname -I"` for the LXC. Each should print an IP in the expected VLAN range.
 - [ ] From the Mac, verify hostname → IP resolves: `dig +short grillmi-dev` and `dig +short grillmi` return the same IPs Proxmox just reported. If either is empty, the cloud-init / `--hostname` step was wrong — redo it (the DHCP client announces the hostname UniFi registers, and a generic default name won't resolve).
 - [ ] SSH from the Mac: `ssh grillmi-dev` and `ssh grillmi` both succeed on first try after accepting the new host key.
 - [ ] From the Ansible controller, run `ansible grillmi-dev -m ping` and `ansible grillmi -m ping` — both return `SUCCESS`. If either fails, stop and fix; do not proceed with ambiguous connectivity.
-- [ ] Verify Proxmox tags: `sudo qm config <vmid>` on atticus shows `tags: 400-development;grillmi`; `sudo pct config <ctid>` on atlas shows `tags: 100-production;grillmi`.
+- [ ] Verify Proxmox tags: `sudo qm config <vmid>` on atticus shows `tags: 400-development;grillmi`; `sudo pct config <ctid>` on atlas shows `tags: 33-production;grillmi`.
 - [ ] Record CT/VM IDs, MAC addresses, and tags in `~/dev/ops/resources/docs/260109-infrastructure-inventory.md`. IP addresses are not recorded — they're ephemeral under DHCP and resolution is via hostname.
+- [ ] Run the `base_setup` role against both hosts (must complete before Phase 4). It provisions the `maf` user and their SSH keys, configures git identity, writes `~/.ssh/config` with a `Host alcazar` entry (`User maf`) so that the remote URL `alcazar:/git/grillmi.git` resolves without an explicit user, and installs base packages. Acceptance: on each host, `ssh -o BatchMode=yes alcazar echo ok` prints `ok` without prompting — otherwise Phase 4's `ansible.builtin.git` step will fail with a host-key or auth error.
 
 **Phase 4: Ansible inventory and role**
 
-- [ ] Add `grillmi-dev` and `grillmi-prod` entries to `~/dev/ansible/inventory/hosts.yml` under `dev_servers` and `production_servers` respectively, following the `azooco` entry format (host IP, user, become_pass via `get_secret`, use_tailscale flags).
-- [ ] Add `grillmi_apps`, `grillmi_dev`, and `grillmi_prod` group definitions at the bottom of `hosts.yml` mirroring the `azooco_apps`/`azooco_dev`/`azooco_prod` structure.
+- [ ] Add `grillmi-dev` and `grillmi` entries to `~/dev/ansible/inventory/hosts.yml` under `dev_servers` and `production_servers` respectively. Prod host is literally named `grillmi` (not `grillmi-prod`) — keep the dev/prod asymmetry because internal URLs use the bare name. `ansible_host` matches the hostname. `ansible_become_pass` uses `{{ lookup('ansible.builtin.pipe', '~/dev/scripts/get_secret grillmi BECOME_PASSWORD dev') | trim }}` for the dev host and `… get_secret grillmi BECOME_PASSWORD` (no third arg — defaults to prd) for the prod host. Set `use_tailscale: true` on both.
+- [ ] Add application groups to `hosts.yml`: `grillmi_apps` has children `grillmi_dev` (containing host `grillmi-dev`) and `grillmi_prod` (containing host `grillmi`). Also add `grillmi-dev` and `grillmi` as members of the `hardware_virtual` cross-cutting list.
 - [ ] Create Ansible role `app_grillmi` at `~/dev/ansible/roles/app_grillmi/` with `tasks/main.yml`, `templates/Caddyfile.j2`, `handlers/main.yml`, `defaults/main.yml`, and `README.md`.
-- [ ] Role tasks in order: (a) install Node 22 LTS via `nodesource` APT repo and `corepack enable pnpm`, (b) install Caddy from the official APT repo, (c) on the prod host only: import `cloudflared.yml` (the shared install pattern from `app_azooco`) and drop a systemd override that sets `TUNNEL_TOKEN` from Doppler, (d) ensure `/opt/grillmi` exists with ownership `maf:maf`, (e) clone `alcazar:/git/grillmi.git` into `/opt/grillmi` on first run (idempotent — skip if already a git repo), (f) `git fetch origin && git reset --hard origin/main` to pull latest, (g) `pnpm install --frozen-lockfile`, (h) `pnpm build` to produce `/opt/grillmi/build`, (i) deploy the `Caddyfile` from template, (j) reload Caddy via handler, (k) ensure `cloudflared` systemd service is enabled and started on the prod host. Use `ansible.builtin.assert` to validate `grillmi_domain`, `grillmi_environment`, `grillmi_repo_url` before proceeding.
-- [ ] Caddyfile template: single site block for `:80` bound to `127.0.0.1` (loopback only — never `0.0.0.0`), `root * /opt/grillmi/build`, `file_server`, `try_files {path} /index.html` for SvelteKit SPA routing. No Caddy TLS configuration — the prod host's public TLS is terminated by Cloudflare at the tunnel edge, and the dev host's internal TLS is terminated by NPM on argus. UFW on both hosts keeps inbound closed except SSH.
+- [ ] Role tasks in order:
+  (a) `ansible.builtin.assert` on required vars (`grillmi_domain`, `grillmi_environment`, `grillmi_repo_url`, `grillmi_git_ref`, and on `grillmi_prod`: `grillmi_cloudflare_tunnel_token | length > 0`).
+  (b) install Node 22 LTS via the NodeSource APT repo and `corepack enable pnpm` (sets pnpm's shim on `PATH`).
+  (c) install Caddy from the official APT repo (`deb.caddyserver.com`).
+  (d) on the prod host only: install `cloudflared` from the official Cloudflare APT repo (add the repo's GPG key under `/usr/share/keyrings/cloudflare-main.gpg`, add `deb [signed-by=…] https://pkg.cloudflare.com/cloudflared any main` to `/etc/apt/sources.list.d/cloudflared.list`, `apt update`, `apt install cloudflared`); then write `/etc/systemd/system/cloudflared.service` from a Jinja template whose `ExecStart=/usr/bin/cloudflared tunnel --no-autoupdate run --token {{ grillmi_cloudflare_tunnel_token }}` runs under `User=cloudflared`. `daemon_reload` + enable + start via handlers.
+  (e) ensure `/opt/grillmi` exists with ownership `maf:maf`, mode `0755`.
+  (f) clone `{{ grillmi_repo_url }}` into `/opt/grillmi` via `ansible.builtin.git` with `force: true` (so local build artifacts don't block the reset); `register: grillmi_git` — the module returns `before` and `after` commit SHAs, which gate the build steps below.
+  (g) `pnpm install --frozen-lockfile` in `/opt/grillmi`, `when: grillmi_git.before != grillmi_git.after or not node_modules_exists.stat.exists` (the `stat` check is registered in a preceding task against `/opt/grillmi/node_modules`).
+  (h) `pnpm build` to produce `/opt/grillmi/build`, `when: grillmi_git.before != grillmi_git.after or not build_exists.stat.exists` (stat check against `/opt/grillmi/build/index.html`).
+  (i) deploy `Caddyfile` from template to `/etc/caddy/Caddyfile`; immediately afterwards run `caddy validate --config /etc/caddy/Caddyfile` as a `command` task — non-zero exit fails the playbook before the reload handler fires, so a broken template never replaces a working running config.
+  (j) reload Caddy via handler (only when step (i) changed the file).
+- [ ] Caddyfile template: single site block whose address is `http://127.0.0.1:80` (the explicit `http://` scheme + `127.0.0.1` address forces loopback binding — a bare `:80` address binds to all interfaces, which is not what we want). Body: `root * /opt/grillmi/build`, `file_server`, `try_files {path} /index.html` for SvelteKit SPA routing. No Caddy TLS configuration — prod TLS is terminated by Cloudflare at the tunnel edge; dev TLS is terminated by NPM on argus. The role does not configure UFW directly; it runs a verification task that fails if `ufw status numbered` on either host shows an allow rule on anything other than `22/tcp` (SSH).
 - [ ] Create `~/dev/ansible/playbooks/applications/grillmi-deploy.yml` as a thin wrapper calling the `app_grillmi` role against `grillmi_apps`, tagged `grillmi`.
-- [ ] Per-environment `host_vars` at `~/dev/ansible/inventory/host_vars/grillmi-dev/vars.yml` and `.../grillmi-prod/vars.yml`: set `grillmi_domain` (`grillmi.krafted.cc` vs `grillmi.cloud`), `grillmi_environment` (`dev` / `prod`), `grillmi_public_base_url` (full `https://...`), `grillmi_repo_url: alcazar:/git/grillmi.git`, `grillmi_git_ref: main`.
+- [ ] Per-host `host_vars` at `~/dev/ansible/inventory/host_vars/grillmi-dev/vars.yml` and `~/dev/ansible/inventory/host_vars/grillmi/vars.yml` (path matches the inventory host name; the prod host is `grillmi`, not `grillmi-prod`). Set `grillmi_domain` (`grillmi.krafted.cc` on dev, `grillmi.cloud` on prod), `grillmi_environment` (`dev` / `prod`), `grillmi_public_base_url` (full `https://...`), `grillmi_repo_url: alcazar:/git/grillmi.git`, `grillmi_git_ref: main`. On prod only, also set `grillmi_cloudflare_tunnel_token: "{{ lookup('ansible.builtin.pipe', '~/dev/scripts/get_secret grillmi CLOUDFLARE_TUNNEL_TOKEN') | trim }}"`.
 
 **Phase 5: Dev-side developer setup**
 
 - [ ] On `grillmi-dev`: confirm Node 22 LTS, pnpm, git, and build-essential are present (installed by the role in Phase 4). VS Code Remote-SSH server bootstraps on first connect.
-- [ ] Configure `~/.gitconfig` on the VM matching Marco's identity from `~/dev/ansible/roles/base_setup`.
-- [ ] On both hosts, the first `ansible-playbook ... grillmi-deploy.yml` run clones the repo and builds it end-to-end. Until Spec 2 ships real app code, `main` carries a minimal SvelteKit scaffold with an `app.html` that reads "Grillmi — coming soon" so the deploy path can be verified before the full app is written.
+- [ ] On both hosts, the first `ansible-playbook ... grillmi-deploy.yml` run clones the repo and builds it end-to-end. Until Spec 2 ships real app code, `main` carries a minimal SvelteKit scaffold whose root route renders "Grillmi — coming soon" so the deploy path can be verified before the full app is written.
 
 **Phase 6: Git remote on alcazar**
 
@@ -125,9 +135,9 @@ Address allocation is plain DHCP — no Fixed IP reservations (matches Marco's c
 
 **Phase 7: End-to-end deploy verification**
 
-- [ ] Run `ansible-playbook playbooks/applications/grillmi-deploy.yml --limit grillmi_dev` from Marco's Mac; verify `grillmi.krafted.cc` serves the placeholder page over HTTPS (NPM-issued wildcard).
-- [ ] Run the same with `--limit grillmi_prod`; verify `grillmi.cloud` serves the placeholder page over HTTPS via the Cloudflare-issued cert. Verify from the prod LXC: `ss -tlnp | grep -E ':80|:443'` shows Caddy bound to `127.0.0.1:80` only, never `0.0.0.0`, and `sudo ufw status` shows inbound still closed except SSH.
-- [ ] Re-run both to confirm idempotency (no unexpected "changed" tasks on a no-op run).
+- [ ] Run `ansible-playbook playbooks/applications/grillmi-deploy.yml --limit grillmi_dev` from Marco's Mac; verify `https://grillmi.krafted.cc` serves the placeholder page (NPM-issued `*.krafted.cc` wildcard, green lock in Safari).
+- [ ] Run the same with `--limit grillmi_prod`; verify `https://grillmi.cloud` serves the placeholder page via the Cloudflare-issued edge cert. On the prod LXC (`ssh grillmi`), verify: `ss -tlnp | grep -E ':80|:443'` shows Caddy on `127.0.0.1:80` only (never `0.0.0.0:80` and nothing on `:443`), `systemctl status cloudflared` is `active (running)`, `sudo ufw status` shows inbound closed except SSH.
+- [ ] Re-run both limits; both must report `changed=0` on a no-op run (strict idempotency — fail the spec if any task reports changed without a real upstream change).
 
 ---
 
@@ -135,14 +145,17 @@ Address allocation is plain DHCP — no Fixed IP reservations (matches Marco's c
 
 ### Integration Tests (`~/dev/ansible/tests/` or equivalent)
 
-- [ ] `test_grillmi_role_idempotent` — second consecutive role run reports zero `changed` tasks against a clean host.
-- [ ] `test_grillmi_caddyfile_valid` — `caddy validate /etc/caddy/Caddyfile` exits zero on the rendered template for both environments.
-- [ ] `test_grillmi_inventory_parses` — `ansible-inventory --graph` resolves both `grillmi_dev` and `grillmi_prod` groups and lists the correct hosts.
+- [ ] `test_grillmi_role_idempotent` — second consecutive role run against each host reports `changed=0`. Run the dev and prod limits separately.
+- [ ] `test_grillmi_caddyfile_valid` — on each host after deploy, `caddy validate --config /etc/caddy/Caddyfile` exits zero.
+- [ ] `test_grillmi_caddy_binds_loopback_only` — on each host, `ss -tlnp | awk '$4 ~ /:80$/'` prints exactly one row and the address column starts with `127.0.0.1:` (never `0.0.0.0:` or `*:`).
+- [ ] `test_grillmi_inventory_parses` — `ansible-inventory --graph` resolves `grillmi_apps`, `grillmi_dev`, and `grillmi_prod` and lists `grillmi-dev` and `grillmi` under the correct groups.
+- [ ] `test_grillmi_cloudflared_healthy` — on the prod LXC, `systemctl is-active cloudflared` prints `active`; `journalctl -u cloudflared --since "2 minutes ago"` contains `Registered tunnel connection` (at least one).
+- [ ] `test_grillmi_prod_no_public_ports` — on the prod LXC, `sudo ufw status` shows a default-deny inbound policy and the only ALLOW rule is `22/tcp`.
 
 ### Manual Verification (Marco)
 
-- [ ] Open `https://grillmi.krafted.cc` in Safari — see the placeholder "Grillmi — coming soon" page with a green lock icon in the URL bar.
-- [ ] Open `https://grillmi.cloud` in Safari — see the same placeholder page with a green lock icon.
-- [ ] On the Mac, run `ssh grillmi-dev` and confirm you land in a working shell with `/home/maf/dev/grillmi` present as a clone of the alcazar remote.
-- [ ] Open VS Code, connect via Remote-SSH to `grillmi-dev`, open the `grillmi` workspace — the editor opens files and the terminal works.
-- [ ] In Doppler's web UI, confirm the `grillmi` project exists with `dev` and `prd` configs populated, and that `infra/prd` has `BECOME_GRILLMI_DEV` / `BECOME_GRILLMI_PROD` entries, and that `deploy-tokens/prd` has `GRILLMI_DEPLOY_TOKEN`.
+- [ ] Open `https://grillmi.krafted.cc` in Safari on the Mac while on-LAN — the placeholder "Grillmi — coming soon" page loads, and clicking the URL-bar site-info icon shows "Connection is secure" with issuer Let's Encrypt.
+- [ ] Open `https://grillmi.cloud` in Safari from anywhere — same placeholder page, site-info icon shows "Connection is secure" with issuer Cloudflare Inc. ECC CA-3 (or equivalent Cloudflare intermediate).
+- [ ] Open VS Code, use the Remote-SSH extension to connect to `grillmi-dev`, and open the folder `/home/maf/dev/grillmi`. The file tree shows the scaffolded repo and the integrated terminal opens in that folder.
+- [ ] In the Cloudflare Zero Trust dashboard → Networks → Tunnels, the `grillmi` tunnel shows status **HEALTHY**, and its Public Hostnames tab shows `grillmi.cloud` → `http://localhost:80`.
+- [ ] In the Doppler web UI, the `grillmi` project shows configs `dev` and `prd`. `dev` contains `BECOME_PASSWORD`. `prd` contains `BECOME_PASSWORD` and a non-empty `CLOUDFLARE_TUNNEL_TOKEN`. The `deploy-tokens` project (config `prd`) contains `GRILLMI_DEV_DOPPLER_TOKEN` and `GRILLMI_PRD_DOPPLER_TOKEN`.

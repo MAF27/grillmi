@@ -2,7 +2,7 @@
 
 ## Meta
 
-- Status: Draft
+- Status: Reviewed
 - Branch: feature/grillmi-app
 
 ---
@@ -22,11 +22,11 @@ Ship a SvelteKit 2 + `adapter-static` PWA using Svelte 5 Runes for state, Tailwi
 **Planning a session**
 
 - User opens the app, taps "Neue Session". Plan screen appears.
-- User sets a target finish time via the native `<input type="time">`-backed picker. Default is "in 60 minutes" on first open of a session, preserved from the last-used time thereafter.
-- User taps "Gericht hinzufügen". A bottom sheet appears with five cascading steps: Category → Cut → Thickness (0.5–6 cm in 0.5 cm steps) → Doneness → optional Label. Tap auto-advances except on Thickness and Label which have explicit "Weiter".
+- User sets a target finish time via the native `<input type="time">`-backed picker (HH:MM only — the date is implicit). Default is "now + 60 minutes" on first open. If the entered HH:MM has already passed today, the scheduler treats it as tomorrow's occurrence; the Plan screen shows a "morgen HH:MM" sub-label so the user isn't surprised. A "Go" press with a target more than 12 hours away asks for confirmation.
+- User taps "Gericht hinzufügen". A bottom sheet appears with cascading steps: Category → Cut → Thickness (0.5–6 cm in 0.5 cm steps) → Doneness → optional Label. Tap auto-advances except on Thickness and Label, which have explicit "Weiter". Cuts that don't have a doneness axis (vegetables, bread, some sausages) skip the Doneness step entirely and go straight to Label. The compiled timings JSON declares per-cut whether the doneness axis applies.
 - Computed cook time appears at the bottom of the sheet and updates live as inputs change.
-- Added items show in the Plan list as rows. Drag-to-reorder, swipe-left to delete.
-- The "Go" button at the bottom is disabled until at least one item is added and a target time is set; label then reads "Los — Essen um HH:MM".
+- Added items show in the Plan list as rows. Drag-to-reorder (cosmetic only — the scheduler treats items as an unordered set, so reorder changes display only), swipe-left to delete, tap to re-open the editor sheet. An optional Label entered in the editor shows as a sub-line under the cut name on the Plan row and on the Session card.
+- The "Go" button at the bottom is disabled until at least one item is added (target time always has a default, so it is never unset). Enabled label: "Los — Essen um HH:MM". If any item is overdue relative to the target (its cook + rest would require starting in the past), the button stays enabled but its label is "Los — jetzt starten" and a red warning banner above the list names the overdue items; pressing Go schedules the overdue items to put-on immediately and still targets the requested finish time.
 - "Als Favorit speichern" button appears once at least one item is added; prompts for a preset name.
 
 **Running a session**
@@ -40,12 +40,16 @@ Ship a SvelteKit 2 + `adapter-static` PWA using Svelte 5 Runes for state, Tailwi
 - When rest completes, card transitions to `ready` with a subtle glow and a green done chime.
 - User swipes right on a Ready card to mark it `plated`. Card animates down into the Plated group (collapsed by default).
 - "Session beenden" requires a 500 ms hold to prevent accidental taps.
+- **Auto-end**: when every item in the session has reached `plated`, a 60-second countdown banner appears ("Session endet in 60 s — Rückgängig"). The countdown cancels if any item is un-plated or a new item added, or the user taps "Rückgängig". At zero, the session ends automatically and the user lands on Home.
+- **Mid-session item controls** (accessible via long-press on any card): "Jetzt fertig" (force-transition to `ready` immediately — user already pulled it), "Aus Session entfernen" (drop the item entirely; other items' schedule is unaffected because timing is per-item against the target). No "edit cut/thickness/doneness" mid-session — the user must remove and re-add.
+- **Overdue items** (scheduled put-on already in the past when the session started, because the user pressed Go with a too-close target): card starts in `cooking` immediately with progress reflecting elapsed wall-clock time, next-event label reads "Wenden in X:XX — spät gestartet". If more than 25% of cook time has already passed when the session starts, the card starts in `resting` or `ready` as appropriate.
 
 **Alarms and sounds**
 
-- Three alarm events: put-on, flip, done. Each has an independently-selectable chime from a curated library of 8–10 sounds shipped with the app.
-- All alarms trigger: a 3-second chime, a banner, and a haptic impact. User can tap the banner to dismiss; it auto-dismisses after 8 s.
-- Multiple simultaneous events queue; one banner at a time.
+- Three alarm events: put-on, flip, done. Each has an independently-selectable chime from a curated library of 8 sounds shipped with the app. Default assignment at first run: chime-1 for put-on, chime-2 for flip, chime-3 for done — user can reassign any of them.
+- All alarms trigger a 3-second chime and a full-width banner. On devices that support it (Android Chrome via `navigator.vibrate()`), alarms also fire a 200 ms vibration; **on iOS Safari PWAs the web platform does not expose vibration, so iOS users get the chime and banner only** — no haptic. This limitation is called out in the first-run notice.
+- The user can tap the banner to dismiss; otherwise it auto-dismisses after 8 s.
+- Multiple simultaneous events queue; one banner at a time, in the order events fired.
 
 **Favorites**
 
@@ -59,22 +63,27 @@ Ship a SvelteKit 2 + `adapter-static` PWA using Svelte 5 Runes for state, Tailwi
 - Sound picker per event (put-on / flip / done).
 - "Über Grillmi": version, GitHub/contact link, data-reference credits.
 
-**Persistence**
+**Persistence and resume**
 
 - Active session state (items, scheduled times, current states) persisted to IndexedDB every state change, so refreshing the page or recovering from a crash restores the live session.
 - Favorites persisted to IndexedDB.
 - User preferences (sounds, theme) persisted to IndexedDB.
+- On app open, if IndexedDB has an active (non-ended) session whose target time is within the last 4 hours or still in the future, the app routes directly to `/session` and the header shows a "Laufende Session" banner with a "Neue starten" secondary action that ends the old session before the new plan screen opens. A stale session whose target is more than 4 hours in the past is auto-ended on open (silently) so the user never lands on a dead timer.
 
 **Offline and installability**
 
 - After first load the app is fully offline: UI, data, sounds all cached.
 - Manifest + icons + `theme_color` enable home-screen install on iOS and Android.
-- First-run notice explains: the screen must stay on during a session. The app holds a Wake Lock while Session is active (iOS 18.4+, Android Chrome); a persistent banner in the Session header confirms the Wake Lock status — green "Bildschirm aktiv" when held, red "Bildschirm kann sperren" if the Wake Lock request was denied.
+- First-run notice explains: the screen must stay on during a session. The app holds a Wake Lock while Session is active (iOS 18.4+, Android Chrome); a persistent banner in the Session header confirms the Wake Lock status — green "Bildschirm aktiv" when held, red "Bildschirm kann sperren" if the Wake Lock request was denied (identical UI on dev and prod builds — the banner is diagnostic for the user, not a developer-only tool).
+- On Android Chrome, the `beforeinstallprompt` event is captured and exposed via a single "App installieren" button on the Home screen (shown only when `installPromptEvent` is present and the app is not already installed). On iOS Safari, the FirstRunNotice's coach-mark is the install prompt — iOS Safari does not expose a programmatic trigger.
+- Service-worker update behaviour: on each navigation, the SW checks for a new precached revision; when one is detected, a non-blocking "Neue Version verfügbar" toast offers a "Neu laden" action. During an active session the toast is suppressed (never interrupts cooking) and re-surfaces when the session ends.
 
 ### Out of scope
 
 - Pause & resume (pull an item, return it later). Deferred to v1.1.
 - Multi-flip per cut (reverse-sear cuts that need every-60s flipping). All cuts use a single flip at the configured percentage in v1; reverse-sear cuts fall back to a single flip at 50% and a Notes field on the card warns "ideal: flip every 60 s". Full multi-flip scheduling lands in v1.1.
+- "Duplicate item" quick-action on the Plan screen (e.g. 3× Cervelat in one tap). Users of competing apps ask for this; v1 requires re-running the five-step cascade per item. Deferred to v1.1.
+- Per-event alarm volume control. v1 ships a sound picker per event; absolute loudness is the OS/browser's responsibility. The first-run notice covers the mute-switch caveat.
 - Live timer drift auto-recalculation — if an item runs long, dinner is late; user handles it.
 - Meat-thermometer integration (MEATER etc).
 - Voice commands, Apple Watch companion.
@@ -92,13 +101,13 @@ Ship a SvelteKit 2 + `adapter-static` PWA using Svelte 5 Runes for state, Tailwi
 
 ### Approach
 
-SvelteKit 2 application configured with `@sveltejs/adapter-static` to emit a pure static SPA. Svelte 5 Runes (`$state`, `$derived`, `$effect`) handle reactivity; shared stores live under `src/lib/stores/`. TypeScript strict mode, Tailwind 4 via the Vite plugin with tokens in a single `src/app.css` `@theme` block, Prettier matching azooco conventions. Vitest + `@testing-library/svelte` for unit and component tests; Playwright for end-to-end. A thin SvelteKit `src/service-worker.ts` uses Workbox 7 primitives to precache the app shell and the compiled data JSON, and to cache sound files on first play.
+SvelteKit 2 application configured with `@sveltejs/adapter-static` to emit a pure static SPA. Svelte 5 Runes (`$state`, `$derived`, `$effect`) handle reactivity; shared stores live under `src/lib/stores/`. TypeScript strict mode, Tailwind 4 via the Vite plugin with tokens in a single `src/app.css` `@theme` block, Prettier + ESLint v9 + `eslint-plugin-svelte` with the default Svelte recommended configs. Vitest + `@testing-library/svelte` for unit and component tests; Playwright for end-to-end. A thin SvelteKit `src/service-worker.ts` uses Workbox 7 primitives to precache the app shell and the compiled data JSON, and to cache sound files on first play.
 
-The **grill-timings pipeline** lives at `scripts/build-timings.ts`. It parses `resources/docs/grill-timings-reference.md` at build time into a typed JSON file at `src/lib/data/timings.generated.json`, validated by a Zod schema at `src/lib/data/timings.schema.ts`. The schema captures category → cut → (thickness × doneness) → cook duration (seconds), flip fraction (default 0.5), rest duration (seconds), heat zone and notes. Vite's build fails if parsing fails or the schema does not validate — no silent fallbacks.
+The **grill-timings pipeline** lives at `scripts/build-timings.ts`. It parses `resources/docs/grill-timings-reference.md` at build time into a typed JSON file at `src/lib/data/timings.generated.json`, validated by a Zod schema at `src/lib/data/timings.schema.ts`. Schema per cut: category, cut slug + display name, a boolean `hasDoneness` (false for vegetables/bread/some sausages — drives the cascading picker to skip the Doneness step), and a matrix of rows keyed by `thicknessCm × doneness?`. Each row carries: `cookSecondsMin` + `cookSecondsMax` (the reference's "3–4 min" style ranges become two numbers; the app displays the midpoint and schedules against the midpoint in v1), `flipFraction` (0.0–1.0, default 0.5), `idealFlipPattern` (`"once" | "every-60s"` — used for the v1 cautionary note on reverse-sear cuts, not for scheduling), `restSeconds`, `heatZone` (free-text, displayed verbatim on the card), `notes` (optional, shown as a tip). Vite's build fails if parsing fails or the schema does not validate — no silent fallbacks.
 
 The **scheduler** (`src/lib/scheduler/schedule.ts`) takes a session (items + target time + rest policy) and returns, per item, an absolute put-on time and the event timeline (put-on, flip-at-t, done-at-t). The rest duration is subtracted from the target: a 10 min-rest steak aiming for 19:30 has its done-at = 19:20, put-on = 19:20 minus cook-time. Pure function, fully unit-testable, no side effects.
 
-The **timer runtime** (`src/lib/runtime/ticker.ts`) is a single `requestAnimationFrame` loop that, on every frame, compares `Date.now()` against each timer's event list and emits state transitions. We never accumulate deltas — on every frame we recompute "what state should each item be in?" from the absolute wall-clock. Tab suspend or backgrounding simply causes the next frame to catch up. A Wake Lock is acquired on session start and released on session end.
+The **timer runtime** (`src/lib/runtime/ticker.ts`) is a single `requestAnimationFrame` loop that, on every frame, compares `Date.now()` against each timer's event list and emits state transitions. We never accumulate deltas — on every frame we recompute "what state should each item be in?" from the absolute wall-clock. Tab suspend or backgrounding simply causes the next frame to catch up. A Wake Lock is acquired the moment a Session is created (from the Plan → Session transition, *not* when the Session route mounts — so in-session navigation to Settings and back does not release the lock) and is released only when the Session ends (user hold on "Session beenden", all items plated for ≥60 s, or app-open auto-end of a stale session).
 
 **State model**: a single Svelte store `sessionStore` with the current session (or null), plus derived stores for groupings (`cookingItems`, `restingItems`, etc.). Favorites are a separate IndexedDB-backed store. UI components read from stores and dispatch actions — no component mutates store state directly except via the store's own methods.
 
@@ -109,9 +118,9 @@ The **timer runtime** (`src/lib/runtime/ticker.ts`) is a single `requestAnimatio
 - **`resources/docs/stack-research-apr-2026.md`** informs every technology choice — Svelte 5 Runes, `adapter-static`, IndexedDB via `idb`, built-in service worker with Workbox 7, Wake Lock for keeping the screen on during a session, and the explicit acceptance that timed alarms will not fire under screen lock on iOS without a server-side push (which we've scoped out of v1).
 - **`resources/docs/ui-architecture.md`** locks the visual direction, design tokens, component inventory, interaction patterns, accessibility checklist, motion guidelines, responsive strategy, and iconography. Implementation follows this document literally where it is specific and uses its principles elsewhere.
 - **`resources/docs/grill-timings-reference.md`** is the single source of truth for timings; the build-time pipeline encodes a Svelte-app-friendly derivative. The reference already flags the simplifications we're accepting in v1 (single flip, pork/burger pull-temp defaults).
-- **Azooco at `/opt/azooco` on the `azooco-dev` host** is the reference project for Svelte 5 + SvelteKit 2 conventions: Prettier config, folder layout (`src/lib/{components,stores,util,models,schemas,config,constants}`, `src/routes/{…}`, `static/`, `tests/`), test script names, and eslint setup.
-- **iOS PWA reality check**: the stack research flagged that iOS PWA audio stops ~30 s into pause under lock and the mute switch silently kills PWA audio. We're accepting this as the v1 floor — Wake Lock keeps the screen on, the user is encouraged to keep the phone unmuted, and we surface the state of the Wake Lock to the user. Future push-notification delivery requires the backend scoped out of v1.
+- **iOS PWA reality check**: the stack research flagged that iOS PWA audio stops ~30 s into pause under lock, the mute switch silently kills PWA audio, and the platform does not expose `navigator.vibrate` to Safari PWAs. We accept these as the v1 floor — Wake Lock keeps the screen on, the user is encouraged to keep the phone unmuted, the app surfaces Wake Lock state in the Session header, and the AlarmBanner plus TimerCard pulse carry the signal when sound is muted. Future push-notification delivery requires the backend scoped out of v1.
 - **Trade-off decided**: single-flip at percentage over a multi-flip event array, per Marco's explicit decision. Reverse-sear thick cuts (≥4 cm Entrecôte, T-Bone, etc.) that ideally flip every 60 s will display a cautionary note but get only one flip alarm in v1. Multi-flip scheduling is a deliberate v1.1 feature.
+- **User-complaint audit (April 2026 web research)** — confirms v1 is aimed at the right pain. The #1 complaint across competing BBQ timer apps is the inability to stagger start times so all items finish together: users of GrillTime explicitly ask for "synchronized start time that starts the longest item first and notifies you when to start the next longest, so everything finishes at the same time." Grillmi's "finish-at-target" scheduler is exactly this; Weber BBQ Timer's "Cook Plan" is the only existing app that delivers it. Multi-flip is also a real user request (sausage-every-quarter etc.); v1's single-flip-with-cautionary-note is a defensible simplification because the same research shows users prefer some solution to none. A competitor's published bug — "app has literally lost timers in the middle of a cooking session" — is the exact failure mode Grillmi's every-change IndexedDB persistence and wall-clock-per-frame recomputation are designed to prevent.
 
 ### Risks
 
@@ -119,12 +128,12 @@ The **timer runtime** (`src/lib/runtime/ticker.ts`) is a single `requestAnimatio
 | --- | --- |
 | `requestAnimationFrame` stops firing when the tab is hidden or the device is low-power | We recompute from wall-clock on every frame rather than accumulating elapsed time. When the frame loop resumes, the next frame catches up to the correct state. For fully backgrounded tabs where no frames fire, Wake Lock keeps the session in the foreground; if Wake Lock fails, banner warns the user. |
 | Wake Lock API denied on some devices / iOS versions | Feature-detect at session start; if denied, the Session header shows the red banner and the first-run notice explicitly warns the user that alarms may be missed. Document the known iOS 18.4+ requirement in Settings → About. |
-| iPhone mute switch kills PWA audio — user misses an alarm | Haptics fire regardless of mute. Visual banner is always visible. The "sounds" section of the first-run notice explicitly says "Lautsprecher einschalten, Stummschalter aus". |
-| Build-time timings pipeline silently drops a cut | Zod schema enforcement + Vite-failing assertion. A unit test (`test_timings_schema_coverage`) asserts the generated JSON has the expected number of cuts per category — known counts from the reference doc. |
+| iPhone mute switch kills PWA audio — user misses an alarm | No haptic fallback on iOS (the web platform does not expose `navigator.vibrate` to Safari PWAs). The full-width AlarmBanner + the alarm-firing pulse on the TimerCard (border oscillation) are the sole visual channel — they must be unmissable. The first-run notice explicitly says "iPhone: Lautsprecher einschalten, Stummschalter aus — auf dem iPhone gibt es keine Vibration". On Android Chrome, `navigator.vibrate(200)` fires on each alarm as a secondary channel. |
+| Build-time timings pipeline silently drops a cut | Zod schema enforcement + Vite-failing assertion. A unit test (`test_timings_schema_category_count`) asserts the generated JSON has the expected number of cuts per category — known counts from the reference doc. |
 | IndexedDB quota exceeded (e.g. user has many favorites + long session history) | Grillmi's payload is tiny (session objects ~2 KB, favorites <1 KB each); 50 MB ceiling is unreachable with normal use. Still, catch `QuotaExceededError` and surface a Settings-screen "Daten zurücksetzen" option. |
 | Rest time pulled from reference doc is wrong for a specific cut | Reference doc was sourced from multiple authorities; treat as authoritative for v1. Settings exposes no per-cut override in v1; deferred to v1.1 if a recipe shows in practice. |
 | PWA install prompt misses on iOS Safari (no programmatic trigger) | First-run notice includes an illustrated "Tap Share → Zum Home-Bildschirm" coach-mark that detects iOS Safari and only shows there. |
-| Svelte 5 Runes idioms differ from azooco's earlier Svelte 5 patterns | Azooco is our reference; we follow its component patterns where they exist. Where Grillmi needs patterns azooco doesn't have (multi-step bottom sheet, for example), we document the new pattern in `resources/docs/`. |
+| Svelte 5 Runes patterns are still stabilising, especially for cross-component async flows | Follow the official Svelte 5 migration guide and the Runes docs for store / effect boundaries. When Grillmi introduces a pattern the docs don't cover (e.g. the multi-step bottom sheet's back-stack state machine), document the convention in `resources/docs/` so the second instance of the pattern stays consistent with the first. |
 
 ### Implementation Plan
 
@@ -132,16 +141,17 @@ The **timer runtime** (`src/lib/runtime/ticker.ts`) is a single `requestAnimatio
 
 - [ ] Create SvelteKit 2 app at the project root with TypeScript, Tailwind 4, Vitest, Playwright, ESLint, and Prettier using `pnpm create svelte@latest`. Target Svelte 5 (the default in April 2026).
 - [ ] Configure `@sveltejs/adapter-static` in `svelte.config.js` with `fallback: 'index.html'` for SPA routing.
-- [ ] Port Prettier config from `/opt/azooco/package.json` verbatim (tabs, tabWidth 2, singleQuote, `semi: false`, `arrowParens: 'avoid'`, `printWidth: 130`, `proseWrap: 'never'`, `bracketSameLine: true`) into the project's `package.json`.
-- [ ] Configure ESLint v9 + `eslint-plugin-svelte` matching azooco's `eslint.config.js`.
+- [ ] In `vite.config.ts`, set `server.host: true` and `server.strictPort: true` so the dev server binds to `0.0.0.0:5173` — required for the Mac to reach `pnpm dev` running on `grillmi-dev` over the LAN.
+- [ ] Add a Prettier block to `package.json` with: `useTabs: true`, `tabWidth: 2`, `singleQuote: true`, `semi: false`, `arrowParens: 'avoid'`, `printWidth: 130`, `proseWrap: 'never'`, `bracketSameLine: true`.
+- [ ] Configure ESLint v9 + `eslint-plugin-svelte` using the plugin's recommended flat config (`eslint.config.js`) plus TypeScript support.
 - [ ] Set up folder layout: `src/lib/{components,stores,util,models,schemas,data,runtime,scheduler,sounds,i18n}`, `src/routes/{+layout.svelte, +page.svelte, plan, session, favorites, settings}`, `static/{sounds,icons,screenshots}`, `scripts/`, `tests/{unit,components,e2e}`.
-- [ ] Install `idb`, `phosphor-svelte`, `zod`, `workbox-precaching`, `workbox-routing`, `workbox-strategies`.
+- [ ] Install runtime deps: `idb`, `phosphor-svelte`, `zod`, `workbox-precaching`, `workbox-routing`, `workbox-strategies`. Install dev deps: `tsx` (used by `scripts/build-timings.ts` in Phase 2 via the `prebuild` npm script), `@axe-core/playwright` (Phase 11 a11y E2E), `@types/node`.
 - [ ] Seed `src/app.css` with the `@theme` token blocks from `resources/docs/ui-architecture.md` verbatim (colors, typography, spacing, shape, motion, breakpoints, icons).
-- [ ] Add `pnpm` scripts: `dev`, `build`, `preview`, `lint`, `format`, `test`, `test:unit`, `test:components`, `test:e2e`, `test:coverage` — mirroring azooco's script names.
+- [ ] Add `pnpm` scripts: `dev`, `build` (which depends on `prebuild` → `tsx scripts/build-timings.ts`), `preview`, `lint`, `format`, `test`, `test:unit`, `test:components`, `test:e2e`, `test:coverage`.
 
 **Phase 2: Grill-timings pipeline**
 
-- [ ] Write Zod schema `src/lib/data/timings.schema.ts` covering Category, Cut, Thickness row, Doneness row, cook seconds, flip fraction, rest seconds, heat zone, notes.
+- [ ] Write Zod schema `src/lib/data/timings.schema.ts` matching the shape defined in the Approach section: category, cut (slug + name + `hasDoneness`), per-row `cookSecondsMin` / `cookSecondsMax` / `flipFraction` / `idealFlipPattern` / `restSeconds` / `heatZone` / `notes`.
 - [ ] Write `scripts/build-timings.ts` (TypeScript, executed via `tsx`) that parses `resources/docs/grill-timings-reference.md` section-by-section, maps to schema, emits `src/lib/data/timings.generated.json` + `src/lib/data/timings.generated.d.ts`.
 - [ ] Add a `prebuild` npm script that runs the pipeline; fail build if parsing or validation fails.
 - [ ] Commit the generated files so the repo is self-consistent; regenerate on every `pnpm build`.
@@ -151,7 +161,7 @@ The **timer runtime** (`src/lib/runtime/ticker.ts`) is a single `requestAnimatio
 
 - [ ] Define TypeScript types in `src/lib/models/`: `Category`, `Cut`, `Thickness`, `Doneness`, `PlannedItem`, `SessionItem`, `Session`, `Favorite`, `SoundAssignment`, `UserSettings`.
 - [ ] Zod schemas for each type in `src/lib/schemas/`, exported alongside the inferred TS types.
-- [ ] `src/lib/stores/db.ts` — `idb`-wrapped IndexedDB with object stores for `sessions` (key: 'current'), `favorites`, `settings`. Schema versioning + migration stub.
+- [ ] `src/lib/stores/db.ts` — `idb`-wrapped IndexedDB with object stores `sessions` (keyed by `'current'`), `favorites` (keyed by generated UUID), and `settings` (keyed by `'user'`). The `openDB` call sets `version: 1` and registers an `upgrade` callback that creates the three object stores; future versions append to this callback without breaking v1 consumers. No data-migration logic is needed for v1 — there is no prior schema to migrate from.
 - [ ] `src/lib/stores/sessionStore.ts` — Svelte 5 Runes-based store exposing the current Session, derived groups (pending/cooking/resting/ready/plated), and actions (addItem, removeItem, reorderItem, setTargetTime, startSession, plateItem, endSession). Every action persists to IndexedDB.
 - [ ] `src/lib/stores/favoritesStore.ts` — list of Favorite objects, actions save / rename / delete / load-as-plan.
 - [ ] `src/lib/stores/settingsStore.ts` — theme, sound assignments, first-run-seen flag.
@@ -171,7 +181,7 @@ The **timer runtime** (`src/lib/runtime/ticker.ts`) is a single `requestAnimatio
 - [ ] `src/routes/plan/+page.svelte` — Plan screen.
 - [ ] `src/lib/components/TargetTimePicker.svelte` — wraps `<input type="time">` with a styled trigger button and a relative-time label.
 - [ ] `src/lib/components/PlanItemRow.svelte` — card with drag handle, swipe-to-delete, tap-to-edit.
-- [ ] `src/lib/components/AddItemSheet.svelte` — bottom-sheet coordinator for the five cascading steps. Cross-fades content inside a fixed-height sheet.
+- [ ] `src/lib/components/AddItemSheet.svelte` — bottom-sheet coordinator for the cascading steps (five for cuts with doneness, four for cuts without — the Doneness step is skipped when `hasDoneness === false` in the timings JSON). Cross-fades content inside a fixed-height sheet. Back-chevron returns to the previous step; a back-press from the first step closes the sheet without committing.
 - [ ] Step components: `CategoryPicker`, `CutPicker`, `ThicknessPicker`, `DonenessSelector`, `ItemLabelInput`.
 - [ ] "Als Favorit speichern" button on Plan, opens a modal to name the preset; dispatches to favoritesStore.
 - [ ] "Go" button, full-width, fixed bottom, disabled state + label as specified.
@@ -190,7 +200,7 @@ The **timer runtime** (`src/lib/runtime/ticker.ts`) is a single `requestAnimatio
 
 **Phase 7: Alarms, sounds, haptics**
 
-- [ ] Source or generate 8 chime sounds (licensed or CC0). Place MP3s under `static/sounds/`. Document sources in `resources/docs/sound-credits.md`.
+- [ ] Source 8 chime sounds from a CC0 library (Freesound.org filtered to Creative Commons 0; Mixkit's free-license kitchen-alarm set is a secondary option). Each file: MP3, 44.1 kHz mono, 40–60 KB, 2.5–3.0 s duration, normalised to -3 dBFS peak. Place under `static/sounds/chime-1.mp3` through `chime-8.mp3`. Record the source URL, licence, and author for each in `resources/docs/sound-credits.md` (new file). No placeholders shipped — if a file is missing, Vite build fails.
 - [ ] `src/lib/sounds/player.ts` — Web Audio API-based playback with lazy loading + preload of currently-assigned sounds at session start.
 - [ ] Hook into ticker events: each `put-on`, `flip`, `done` emits → play assigned sound, trigger AlarmBanner, fire haptic via `navigator.vibrate()` on Android + `Taptic Engine` shim on iOS PWA.
 - [ ] Per-event sound assignment UI in Settings.
@@ -205,24 +215,24 @@ The **timer runtime** (`src/lib/runtime/ticker.ts`) is a single `requestAnimatio
 **Phase 9: Settings screen and first-run**
 
 - [ ] `src/routes/settings/+page.svelte` — Töne, Darstellung, Über Grillmi sections.
-- [ ] Theme segmented control bound to `settingsStore.theme`.
+- [ ] Theme segmented control bound to `settingsStore.theme` with values `system | light | dark`. When `system`, the app reads `matchMedia('(prefers-color-scheme: dark)')` at mount and subscribes to its `change` event — transitions live without reload. The chosen value is written to `document.documentElement.dataset.theme` so Tailwind's CSS-variable tokens swap through the `[data-theme="dark"]` selector declared in `src/app.css`.
 - [ ] SoundPicker bottom sheet.
-- [ ] `src/lib/components/FirstRunNotice.svelte` — modal shown when `settingsStore.firstRunSeen === false`. Explains: screen stays on via Wake Lock, iPhone mute off for sounds, Share → Add to Home Screen on iOS Safari. Single "Verstanden" button sets the flag.
+- [ ] `src/lib/components/FirstRunNotice.svelte` — modal shown when `settingsStore.firstRunSeen === false`. Explains (in this order): (1) screen stays on via Wake Lock during a session; (2) iPhone mute switch silences chimes — keep it off, volume up; (3) **on iPhone there is no vibration** — watch the banner and card pulse; (4) install to Home Screen via Share → "Zum Home-Bildschirm" (shown only on iOS Safari, detected via `navigator.standalone === false && isIOSSafari()`). Single "Verstanden" button sets `firstRunSeen = true`.
 
 **Phase 10: PWA manifest and service worker**
 
 - [ ] `static/manifest.webmanifest` with name, short_name, theme_color (ember accent), background_color (bg-base), icons at 192 and 512, `display: standalone`, `start_url: "/"`.
-- [ ] App icons: generate 192 and 512 PNGs + maskable variant from a single SVG source (flame + chronometer motif — briefed and delivered via `frontend-design` skill, or commissioned separately; v1 ships placeholder icons if not ready).
+- [ ] App icons: a single SVG source (flame + chronometer motif) authored via the `frontend-design` skill, then exported to `static/icons/icon-192.png`, `icon-512.png`, and `icon-512-maskable.png` (maskable variant adds a safe-zone margin per the W3C maskable-icon spec). v1 does not ship with placeholders — the manifest won't validate without the final icons, so this task blocks Phase 12 Deploy.
 - [ ] `src/service-worker.ts` — Workbox 7 precaching for the SvelteKit build manifest, runtime caching for `/sounds/*` (cache-first, 30-day expiration), `/icons/*` (cache-first, immutable).
 - [ ] iOS install coach-mark inside the FirstRunNotice when `navigator.standalone !== true && isIOSSafari()`.
-- [ ] Verify installability with Lighthouse PWA audit — green score.
+- [ ] Verify installability with Lighthouse's PWA audit via `@unlighthouse/core` run from a Playwright E2E test against `pnpm preview`. Acceptance: the `installable-manifest` and `service-worker` audits both pass; overall Performance category ≥ 90 on the built production bundle.
 
 **Phase 11: Accessibility, motion, responsiveness polish**
 
-- [ ] Go through every checklist item in `resources/docs/ui-architecture.md` §5 and check off in that document (or copy to `resources/specs/260424-2-grillmi-app.md` as an appendix).
-- [ ] Apply motion guidelines from ui-architecture §6 to each transition.
-- [ ] Test on iPhone Safari (primary), Android Chrome, iPad Safari, desktop Chrome/Safari/Firefox at the three breakpoints.
-- [ ] Run axe-core in CI via a Playwright test.
+- [ ] Work through every checkbox in `resources/docs/ui-architecture.md` §5 "Accessibility Checklist" (Sunlight Legibility, Touch & Motor, Keyboard and Switch Access, Screen Readers, Reduced Motion, Haptics) and mark each as done in that file as the implementation lands. On iOS Safari PWAs the Haptics subsection is a no-op beyond the audio-plus-visual combo — explicitly note that in the checkbox comments rather than leaving them unticked.
+- [ ] Implement each transition listed in `resources/docs/ui-architecture.md` §6 "What to animate" table — every row in that table has a corresponding Svelte transition, duration token, and easing binding in the component code. Respect `prefers-reduced-motion` by gating long/looping animations (card pulse, sheet overshoot, plan→session crossfade) behind the media query.
+- [ ] Cross-device smoke: open the dev URL on iPhone Safari, Android Chrome, iPad Safari, desktop Chrome + Safari + Firefox. At each of the three breakpoints (mobile ≤767 px, tablet 768–1023 px, desktop ≥1024 px), the Plan and Session screens render without horizontal scroll, all touch targets are ≥44 px on coarse pointers, and Safari's device toolbar shows no JS console errors.
+- [ ] Wire axe-core into the Playwright E2E run (`@axe-core/playwright`); the `a11y.spec.ts` file listed below is the execution surface.
 
 **Phase 12: Deploy**
 
@@ -240,8 +250,10 @@ The **timer runtime** (`src/lib/runtime/ticker.ts`) is a single `requestAnimatio
 
 - [ ] `timings.schema.test.ts`:
   - `test_timings_schema_validates_generated_json` — the generated JSON validates against the Zod schema.
-  - `test_timings_schema_rejects_missing_required_field` — schema errors on missing `cookSeconds`.
-  - `test_timings_schema_category_count` — expected 7 categories present.
+  - `test_timings_schema_rejects_missing_required_field` — schema errors on missing `cookSecondsMin` or `cookSecondsMax`.
+  - `test_timings_schema_cook_seconds_ordering` — `cookSecondsMax >= cookSecondsMin` for every row.
+  - `test_timings_schema_category_count` — expected 11 categories present (Beef, Veal, Pork, Lamb, Horse, Poultry, Sausage, Various, Fish, Vegetables, Fruit — matches `resources/docs/grill-timings-reference.md`).
+  - `test_timings_schema_has_doneness_flag_respected` — every cut with `hasDoneness: false` has no `doneness` key on any row; every cut with `hasDoneness: true` has at least one doneness level.
 - [ ] `scheduler.test.ts`:
   - `test_schedule_single_item_aligns_put_on_to_target_minus_cook_minus_rest` — simple target-align math.
   - `test_schedule_multi_item_all_finish_at_target` — three items with different cook times all land at the same target epoch.
@@ -256,7 +268,7 @@ The **timer runtime** (`src/lib/runtime/ticker.ts`) is a single `requestAnimatio
   - `test_ticker_transitions_cooking_to_ready_when_no_rest` — when rest = 0.
   - `test_ticker_transitions_resting_to_ready` — at resting-until epoch.
 - [ ] `sessionStore.test.ts`:
-  - `test_add_item_persists_to_idb`, `test_remove_item_persists_to_idb`, `test_reorder_item_persists_to_idb`, `test_start_session_computes_schedule`, `test_plate_item_moves_to_plated_group`, `test_end_session_clears_current`.
+  - `test_add_item_persists_to_idb`, `test_remove_item_persists_to_idb`, `test_reorder_item_persists_to_idb`, `test_start_session_computes_schedule`, `test_plate_item_moves_to_plated_group`, `test_end_session_clears_current`, `test_all_plated_triggers_auto_end_countdown`, `test_auto_end_cancelled_by_unplate`, `test_mid_session_remove_item_does_not_reschedule_others`.
 - [ ] `favoritesStore.test.ts`:
   - `test_save_favorite`, `test_rename_favorite`, `test_delete_favorite`, `test_load_favorite_as_plan`.
 - [ ] `settingsStore.test.ts`:
@@ -278,15 +290,20 @@ The **timer runtime** (`src/lib/runtime/ticker.ts`) is a single `requestAnimatio
 ### E2E Tests (`tests/e2e/*.spec.ts`)
 
 - [ ] `plan-to-session.spec.ts`:
-  - `test_full_plan_flow_single_item` — open app → new session → add Entrecôte 3 cm medium → set target → Go → see Session screen with one pending card.
-  - `test_full_plan_flow_multi_item` — three items with varied cook times → Go → all put-on epochs are correct relative to target.
+  - `test_full_plan_flow_single_item` — open app → new session → add Entrecôte 3 cm medium → set target 60 min in the future (so the item starts in `pending`) → Go → Session screen shows one card in the `pending` state with the scheduled put-on time visible.
+  - `test_full_plan_flow_multi_item` — three items with varied cook times → Go → each card's put-on epoch (read from `data-*` attribute on the card for test inspection) matches scheduler output within ±1 second, and `max(done-at)` equals the target epoch.
+  - `test_overdue_plan_shows_warning` — add an item whose cook time + rest > time-until-target. The warning banner appears, the Go button's label changes to "Los — jetzt starten", and after Go the card starts in `cooking`.
 - [ ] `alarms.spec.ts`:
-  - `test_put_on_alarm_fires_at_scheduled_time` — with a sped-up mocked clock, verify the banner + sound + haptic.
+  - `test_put_on_alarm_fires_at_scheduled_time` — with a sped-up mocked clock, verify the banner appears and the assigned sound plays. Vibration is not asserted (Playwright's WebKit / Chromium engines do not fire real device haptics); the vibration call itself is covered by a unit test that spies on `navigator.vibrate`.
   - `test_flip_alarm_does_not_pause_main_timer` — main countdown keeps decrementing across the flip event.
+  - `test_navigator_vibrate_called_when_available` — unit-level: ticker's alarm emission calls `navigator.vibrate(200)` when the API is present and is a no-op when `vibrate` is undefined.
 - [ ] `favorites.spec.ts`:
   - `test_save_and_reload_favorite` — save a session as favorite, navigate to Favorites, tap it, see the Plan pre-populated.
 - [ ] `offline.spec.ts`:
   - `test_app_loads_offline_after_first_visit` — install / cache, disable network, reload, app works.
+- [ ] `resume.spec.ts`:
+  - `test_active_session_resumes_on_reload` — start a session with target 30 min out; hard-reload the page; app lands on `/session` with the same items and schedule.
+  - `test_stale_session_auto_ends` — seed IndexedDB with a session whose target is 5 hours in the past; open the app; app lands on Home and the stale session is gone from IDB.
 - [ ] `pwa-install.spec.ts`:
   - `test_manifest_present`, `test_service_worker_registers`, `test_lighthouse_pwa_passes`.
 - [ ] `a11y.spec.ts`:
@@ -303,4 +320,7 @@ The **timer runtime** (`src/lib/runtime/ticker.ts`) is a single `requestAnimatio
 - [ ] Run the app in direct midday sun on the balcony. State colors (pending / cooking / resting / ready) are distinguishable without squinting.
 - [ ] Operate the app one-handed on an iPhone while holding a beer. Thickness stepper buttons are reachable with the thumb; cards respond to swipes without needing a second hand.
 - [ ] Put the iPhone down on the grill table screen-up with the app open in Session. The screen stays on for the full session duration — Wake Lock banner stays green.
-- [ ] Toggle the iPhone mute switch on during a session. Chimes stop but haptics + visual banner still fire (confirm this).
+- [ ] Mid-session, navigate from Session to Settings and back. The Wake-Lock banner stays green throughout — the lock is owned by the session, not the Session route.
+- [ ] Start a session, then force-quit the app (close from the app switcher) and reopen it within an hour. The app reopens directly on the Session screen with the same items and schedule — nothing was lost.
+- [ ] Plate every item in a session. A "Session endet in 60 s — Rückgängig" banner appears; wait it out. The app lands on Home with no active session.
+- [ ] Toggle the iPhone mute switch on during a session. Chimes stop, and the AlarmBanner + TimerCard pulse are still visible. No haptic is expected on iPhone (the web platform does not expose vibration to Safari PWAs); if you want the haptic channel, repeat this test on an Android Chrome device and confirm the 200 ms vibration on each alarm.
