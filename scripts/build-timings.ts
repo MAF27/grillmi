@@ -45,10 +45,10 @@ interface UiCategory {
 }
 
 // Slugs include the parenthetical English from the markdown headings.
-const HAMBURGER = 'hamburger-ground-beef-patties'
-const BBQ_SPECK = 'bbq-speck-bacon-strips-on-the-grill'
-const MIXED_GRILL = 'mixed-grill-spiessli-mixed-skewers'
-const KANINCHEN = 'kaninchenfilets-rabbit-fillets'
+const HAMBURGER = 'hamburger-hackfleisch-patties'
+const BBQ_SPECK = 'bbq-speck-speckscheiben-vom-grill'
+const MIXED_GRILL = 'mixed-grill-spiessli-gemischte-spiessli'
+const KANINCHEN = 'kaninchenfilets-kaninchen-filets'
 const POULETSPIESSLI = 'pouletspiessli-chicken-skewers'
 const PFERDESTEAK = 'pferdesteak-horse-steak'
 const HALLOUMI = 'halloumi'
