@@ -105,8 +105,8 @@
 	.scrim {
 		position: fixed;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.5);
-		z-index: var(--z-modal-backdrop, 1000);
+		background: var(--color-bg-overlay);
+		z-index: var(--z-modal);
 	}
 	.confirm {
 		position: fixed;
@@ -120,7 +120,7 @@
 		border-radius: var(--radius-lg);
 		background: var(--color-bg-surface);
 		color: var(--color-fg-base);
-		z-index: var(--z-modal, 1001);
+		z-index: calc(var(--z-modal) + 1);
 	}
 	.confirm h2 {
 		margin: 0 0 var(--space-3);
