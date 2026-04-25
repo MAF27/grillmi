@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="de">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Grillmi – Reset</title>
+		<style>
+			html,
+			body {
+				margin: 0;
+				height: 100%;
+				background: #d35a1d;
+				color: #fff;
+				font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+			}
+			main {
+				min-height: 100%;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				padding: 2rem;
+				text-align: center;
+			}
+			h1 {
+				margin: 0 0 1rem;
+				font-size: 2rem;
+			}
+			p {
+				margin: 0.25rem 0;
+				max-width: 28rem;
+				line-height: 1.4;
+			}
+			.status {
+				margin-top: 1.5rem;
+				font-size: 0.95rem;
+				opacity: 0.85;
+				min-height: 1.4em;
+			}
+			a {
+				display: inline-block;
+				margin-top: 1.5rem;
+				padding: 0.75rem 1.25rem;
+				background: #fff;
+				color: #d35a1d;
+				border-radius: 0.5rem;
+				font-weight: 600;
+				text-decoration: none;
+			}
+		</style>
+	</head>
+	<body>
+		<main>
+			<h1>Grillmi Reset</h1>
+			<p>Service Worker, Caches und lokaler Speicher werden geleert. Danach lädt die App frisch.</p>
+			<p class="status" id="status">Räume auf …</p>
+			<a id="continue" href="/" hidden>Zur App</a>
+		</main>
+		<script>
+			;(async () => {
+				const status = document.getElementById('status')
+				const cont = document.getElementById('continue')
+				const log = msg => {
+					status.textContent = msg
+				}
+				try {
+					if ('serviceWorker' in navigator) {
+						const regs = await navigator.serviceWorker.getRegistrations()
+						for (const r of regs) await r.unregister()
+						log(`Service Worker entfernt (${regs.length}).`)
+					}
+					if (typeof caches !== 'undefined') {
+						const keys = await caches.keys()
+						for (const k of keys) await caches.delete(k)
+						log(`Caches gelöscht (${keys.length}).`)
+					}
+					try {
+						localStorage.clear()
+					} catch {}
+					try {
+						sessionStorage.clear()
+					} catch {}
+					if (window.indexedDB && indexedDB.databases) {
+						try {
+							const dbs = await indexedDB.databases()
+							for (const db of dbs) if (db.name) indexedDB.deleteDatabase(db.name)
+						} catch {}
+					}
+					log('Aktualisiere HTTP-Cache …')
+					try {
+						await fetch('/?__cb=' + Date.now(), { cache: 'reload', credentials: 'same-origin' })
+					} catch {}
+					log('Fertig. Lade in Kürze neu …')
+					cont.hidden = false
+					setTimeout(() => {
+						location.replace('/?__cb=' + Date.now())
+					}, 800)
+				} catch (e) {
+					log('Reset fehlgeschlagen: ' + (e && e.message ? e.message : e))
+					cont.hidden = false
+				}
+			})()
+		</script>
+	</body>
+</html>

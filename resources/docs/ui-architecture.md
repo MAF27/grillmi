@@ -14,49 +14,49 @@ All tokens are defined as Tailwind 4 CSS-first `@theme` blocks. Components refer
 
 ```css
 @theme {
-  /* Foreground */
-  --color-fg-base: oklch(96% 0 0); /* primary text */
-  --color-fg-muted: oklch(65% 0 0); /* secondary/meta text */
-  --color-fg-subtle: oklch(40% 0 0); /* placeholder, disabled text */
-  --color-fg-on-accent: oklch(10% 0 0); /* text on ember accent */
-  --color-fg-on-status: oklch(10% 0 0); /* text on status color chips */
-  --color-fg-inverse: oklch(10% 0 0); /* text on light surfaces (light mode) */
+	/* Foreground */
+	--color-fg-base: oklch(96% 0 0); /* primary text */
+	--color-fg-muted: oklch(65% 0 0); /* secondary/meta text */
+	--color-fg-subtle: oklch(40% 0 0); /* placeholder, disabled text */
+	--color-fg-on-accent: oklch(10% 0 0); /* text on ember accent */
+	--color-fg-on-status: oklch(10% 0 0); /* text on status color chips */
+	--color-fg-inverse: oklch(10% 0 0); /* text on light surfaces (light mode) */
 
-  /* Background */
-  --color-bg-base: oklch(8% 0 0); /* page/app base */
-  --color-bg-surface: oklch(12% 0 0); /* card, sheet */
-  --color-bg-elevated: oklch(16% 0 0); /* modal, popover */
-  --color-bg-input: oklch(14% 0.005 270); /* form input fill */
-  --color-bg-overlay: oklch(0% 0 0 / 60%); /* modal scrim */
+	/* Background */
+	--color-bg-base: oklch(8% 0 0); /* page/app base */
+	--color-bg-surface: oklch(12% 0 0); /* card, sheet */
+	--color-bg-elevated: oklch(16% 0 0); /* modal, popover */
+	--color-bg-input: oklch(14% 0.005 270); /* form input fill */
+	--color-bg-overlay: oklch(0% 0 0 / 60%); /* modal scrim */
 
-  /* Accent — ember orange */
-  --color-accent-default: oklch(68% 0.19 45); /* primary action, highlights */
-  --color-accent-hover: oklch(72% 0.2 45);
-  --color-accent-muted: oklch(68% 0.19 45 / 20%); /* soft accent fill */
+	/* Accent — ember orange */
+	--color-accent-default: oklch(68% 0.19 45); /* primary action, highlights */
+	--color-accent-hover: oklch(72% 0.2 45);
+	--color-accent-muted: oklch(68% 0.19 45 / 20%); /* soft accent fill */
 
-  /* Timer-state colors */
-  --color-state-pending: oklch(55% 0.08 270); /* muted blue-grey — waiting */
-  --color-state-pending-bg: oklch(55% 0.08 270 / 15%);
-  --color-state-cooking: oklch(68% 0.19 45); /* ember orange — active */
-  --color-state-cooking-bg: oklch(68% 0.19 45 / 15%);
-  --color-state-resting: oklch(72% 0.15 80); /* warm amber — resting */
-  --color-state-resting-bg: oklch(72% 0.15 80 / 15%);
-  --color-state-ready: oklch(65% 0.18 145); /* green — ready to plate */
-  --color-state-ready-bg: oklch(65% 0.18 145 / 15%);
-  --color-state-plated: oklch(45% 0 0); /* grey — dismissed */
-  --color-state-plated-bg: oklch(45% 0 0 / 10%);
+	/* Timer-state colors */
+	--color-state-pending: oklch(55% 0.08 270); /* muted blue-grey — waiting */
+	--color-state-pending-bg: oklch(55% 0.08 270 / 15%);
+	--color-state-cooking: oklch(68% 0.19 45); /* ember orange — active */
+	--color-state-cooking-bg: oklch(68% 0.19 45 / 15%);
+	--color-state-resting: oklch(72% 0.15 80); /* warm amber — resting */
+	--color-state-resting-bg: oklch(72% 0.15 80 / 15%);
+	--color-state-ready: oklch(65% 0.18 145); /* green — ready to plate */
+	--color-state-ready-bg: oklch(65% 0.18 145 / 15%);
+	--color-state-plated: oklch(45% 0 0); /* grey — dismissed */
+	--color-state-plated-bg: oklch(45% 0 0 / 10%);
 
-  /* Semantic */
-  --color-error-default: oklch(60% 0.22 25);
-  --color-error-bg: oklch(60% 0.22 25 / 15%);
-  --color-success-default: oklch(65% 0.18 145);
-  --color-warning-default: oklch(75% 0.18 85);
+	/* Semantic */
+	--color-error-default: oklch(60% 0.22 25);
+	--color-error-bg: oklch(60% 0.22 25 / 15%);
+	--color-success-default: oklch(65% 0.18 145);
+	--color-warning-default: oklch(75% 0.18 85);
 
-  /* Border */
-  --color-border-subtle: oklch(22% 0 0);
-  --color-border-default: oklch(30% 0 0);
-  --color-border-strong: oklch(45% 0 0);
-  --color-border-accent: var(--color-accent-default);
+	/* Border */
+	--color-border-subtle: oklch(22% 0 0);
+	--color-border-default: oklch(30% 0 0);
+	--color-border-strong: oklch(45% 0 0);
+	--color-border-accent: var(--color-accent-default);
 }
 ```
 
@@ -64,19 +64,19 @@ All tokens are defined as Tailwind 4 CSS-first `@theme` blocks. Components refer
 
 ```css
 @theme {
-  .light {
-    --color-fg-base: oklch(12% 0 0);
-    --color-fg-muted: oklch(40% 0 0);
-    --color-fg-subtle: oklch(60% 0 0);
-    --color-bg-base: oklch(97% 0 0);
-    --color-bg-surface: oklch(100% 0 0);
-    --color-bg-elevated: oklch(95% 0 0);
-    --color-bg-input: oklch(93% 0 0);
-    --color-border-subtle: oklch(88% 0 0);
-    --color-border-default: oklch(78% 0 0);
-    --color-border-strong: oklch(60% 0 0);
-    /* Accent and state colors remain identical — no change needed */
-  }
+	.light {
+		--color-fg-base: oklch(12% 0 0);
+		--color-fg-muted: oklch(40% 0 0);
+		--color-fg-subtle: oklch(60% 0 0);
+		--color-bg-base: oklch(97% 0 0);
+		--color-bg-surface: oklch(100% 0 0);
+		--color-bg-elevated: oklch(95% 0 0);
+		--color-bg-input: oklch(93% 0 0);
+		--color-border-subtle: oklch(88% 0 0);
+		--color-border-default: oklch(78% 0 0);
+		--color-border-strong: oklch(60% 0 0);
+		/* Accent and state colors remain identical — no change needed */
+	}
 }
 ```
 
@@ -84,38 +84,38 @@ All tokens are defined as Tailwind 4 CSS-first `@theme` blocks. Components refer
 
 ```css
 @theme {
-  /* Families */
-  --font-display: "DIN Condensed", "Barlow Condensed", ui-sans-serif, system-ui, sans-serif;
-  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+	/* Families */
+	--font-display: 'DIN Condensed', 'Barlow Condensed', ui-sans-serif, system-ui, sans-serif;
+	--font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+	--font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
 
-  /* Scale (rem, base 16px) */
-  --font-size-xs: 0.75rem; /* 12px — meta labels */
-  --font-size-sm: 0.875rem; /* 14px — secondary content */
-  --font-size-md: 1rem; /* 16px — body default */
-  --font-size-lg: 1.125rem; /* 18px — card headings */
-  --font-size-xl: 1.375rem; /* 22px — section headings */
-  --font-size-2xl: 1.75rem; /* 28px — timer countdown */
-  --font-size-3xl: 2.5rem; /* 40px — master clock */
-  --font-size-4xl: 3.5rem; /* 56px — hero countdown */
+	/* Scale (rem, base 16px) */
+	--font-size-xs: 0.75rem; /* 12px — meta labels */
+	--font-size-sm: 0.875rem; /* 14px — secondary content */
+	--font-size-md: 1rem; /* 16px — body default */
+	--font-size-lg: 1.125rem; /* 18px — card headings */
+	--font-size-xl: 1.375rem; /* 22px — section headings */
+	--font-size-2xl: 1.75rem; /* 28px — timer countdown */
+	--font-size-3xl: 2.5rem; /* 40px — master clock */
+	--font-size-4xl: 3.5rem; /* 56px — hero countdown */
 
-  /* Weight */
-  --font-weight-regular: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
+	/* Weight */
+	--font-weight-regular: 400;
+	--font-weight-medium: 500;
+	--font-weight-semibold: 600;
+	--font-weight-bold: 700;
 
-  /* Leading */
-  --leading-tight: 1.1;
-  --leading-snug: 1.25;
-  --leading-normal: 1.5;
-  --leading-relaxed: 1.625;
+	/* Leading */
+	--leading-tight: 1.1;
+	--leading-snug: 1.25;
+	--leading-normal: 1.5;
+	--leading-relaxed: 1.625;
 
-  /* Tracking */
-  --tracking-tight: -0.02em;
-  --tracking-normal: 0em;
-  --tracking-wide: 0.05em;
-  --tracking-widest: 0.12em; /* state labels, caps */
+	/* Tracking */
+	--tracking-tight: -0.02em;
+	--tracking-normal: 0em;
+	--tracking-wide: 0.05em;
+	--tracking-widest: 0.12em; /* state labels, caps */
 }
 ```
 
@@ -123,19 +123,19 @@ All tokens are defined as Tailwind 4 CSS-first `@theme` blocks. Components refer
 
 ```css
 @theme {
-  --space-0: 0;
-  --space-1: 0.25rem; /* 4px */
-  --space-2: 0.5rem; /* 8px */
-  --space-3: 0.75rem; /* 12px */
-  --space-4: 1rem; /* 16px */
-  --space-5: 1.25rem; /* 20px */
-  --space-6: 1.5rem; /* 24px */
-  --space-8: 2rem; /* 32px */
-  --space-10: 2.5rem; /* 40px */
-  --space-12: 3rem; /* 48px */
-  --space-16: 4rem; /* 64px */
-  --space-20: 5rem; /* 80px */
-  --space-24: 6rem; /* 96px */
+	--space-0: 0;
+	--space-1: 0.25rem; /* 4px */
+	--space-2: 0.5rem; /* 8px */
+	--space-3: 0.75rem; /* 12px */
+	--space-4: 1rem; /* 16px */
+	--space-5: 1.25rem; /* 20px */
+	--space-6: 1.5rem; /* 24px */
+	--space-8: 2rem; /* 32px */
+	--space-10: 2.5rem; /* 40px */
+	--space-12: 3rem; /* 48px */
+	--space-16: 4rem; /* 64px */
+	--space-20: 5rem; /* 80px */
+	--space-24: 6rem; /* 96px */
 }
 ```
 
@@ -143,27 +143,27 @@ All tokens are defined as Tailwind 4 CSS-first `@theme` blocks. Components refer
 
 ```css
 @theme {
-  /* Radii */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --radius-full: 9999px;
+	/* Radii */
+	--radius-sm: 6px;
+	--radius-md: 10px;
+	--radius-lg: 16px;
+	--radius-xl: 24px;
+	--radius-full: 9999px;
 
-  /* Shadows — subtle on dark; more visible on light */
-  --shadow-sm: 0 1px 2px oklch(0% 0 0 / 30%);
-  --shadow-md: 0 4px 12px oklch(0% 0 0 / 40%);
-  --shadow-lg: 0 8px 32px oklch(0% 0 0 / 50%);
-  --shadow-glow-accent: 0 0 16px oklch(68% 0.19 45 / 35%);
-  --shadow-glow-ready: 0 0 16px oklch(65% 0.18 145 / 35%);
+	/* Shadows — subtle on dark; more visible on light */
+	--shadow-sm: 0 1px 2px oklch(0% 0 0 / 30%);
+	--shadow-md: 0 4px 12px oklch(0% 0 0 / 40%);
+	--shadow-lg: 0 8px 32px oklch(0% 0 0 / 50%);
+	--shadow-glow-accent: 0 0 16px oklch(68% 0.19 45 / 35%);
+	--shadow-glow-ready: 0 0 16px oklch(65% 0.18 145 / 35%);
 
-  /* Z-index */
-  --z-base: 0;
-  --z-card: 10;
-  --z-sticky: 50;
-  --z-overlay: 100;
-  --z-modal: 200;
-  --z-toast: 300;
+	/* Z-index */
+	--z-base: 0;
+	--z-card: 10;
+	--z-sticky: 50;
+	--z-overlay: 100;
+	--z-modal: 200;
+	--z-toast: 300;
 }
 ```
 
@@ -171,19 +171,19 @@ All tokens are defined as Tailwind 4 CSS-first `@theme` blocks. Components refer
 
 ```css
 @theme {
-  /* Durations */
-  --duration-instant: 80ms;
-  --duration-fast: 150ms;
-  --duration-normal: 250ms;
-  --duration-slow: 400ms;
-  --duration-deliberate: 600ms;
+	/* Durations */
+	--duration-instant: 80ms;
+	--duration-fast: 150ms;
+	--duration-normal: 250ms;
+	--duration-slow: 400ms;
+	--duration-deliberate: 600ms;
 
-  /* Easings */
-  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-out: cubic-bezier(0, 0, 0.2, 1);
-  --ease-in: cubic-bezier(0.4, 0, 1, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-linear: linear;
+	/* Easings */
+	--ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+	--ease-out: cubic-bezier(0, 0, 0.2, 1);
+	--ease-in: cubic-bezier(0.4, 0, 1, 1);
+	--ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+	--ease-linear: linear;
 }
 ```
 
@@ -360,9 +360,9 @@ The principle is: **motion serves information, not delight**. The user is outsid
 
 ```css
 @theme {
-  --breakpoint-mobile: 0px; /* 0–767px — iPhone portrait, primary */
-  --breakpoint-tablet: 768px; /* 768–1023px — iPad portrait / small landscape */
-  --breakpoint-desktop: 1024px; /* 1024px+ — laptop/desktop planning */
+	--breakpoint-mobile: 0px; /* 0–767px — iPhone portrait, primary */
+	--breakpoint-tablet: 768px; /* 768–1023px — iPad portrait / small landscape */
+	--breakpoint-desktop: 1024px; /* 1024px+ — laptop/desktop planning */
 }
 ```
 
@@ -429,10 +429,10 @@ Phosphor does not have sausage, corn, or steak cuts. Strategy:
 
 ```css
 @theme {
-  --icon-sm: 16px;
-  --icon-md: 20px;
-  --icon-lg: 24px;
-  --icon-xl: 32px;
+	--icon-sm: 16px;
+	--icon-md: 20px;
+	--icon-lg: 24px;
+	--icon-xl: 32px;
 }
 ```
 

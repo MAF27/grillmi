@@ -41,19 +41,28 @@ Fatty, forgiving. The Migros-app default. Two-zone reverse-sear preferred for �
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2 cm | Rare 50 °C | Direct high | 260–290 °C | 1.5–2 min | 3–4 min | Flip once | 3 min |
-| 2 cm | Medium-rare | Direct high | 260–290 °C | 2–2.5 min | 4–5 min | Flip once | 3 min |
-| 2 cm | Medium | Direct high | 260–290 °C | 2.5–3 min | 5–6 min | Flip once | 3 min |
-| 2 cm | Well-done | Direct high → finish indirect | 260 → 180 °C | 2.5 + 2 min | 8–10 min | Flip once, move | 3 min |
-| 3 cm | Rare | Direct high | 260–290 °C | 2.5–3 min | 5–6 min | Flip once | 5 min |
-| 3 cm | Medium-rare | Direct high | 260–290 °C | 3–4 min | 6–8 min | Flip once | 5 min |
-| 3 cm | Medium | Direct high | 260–290 °C | 4–5 min | 8–10 min | Flip once | 5 min |
-| 3 cm | Well-done | Direct → indirect | 260 → 180 °C | 4 + 3–4 min | 11–13 min | Flip, move | 5 min |
-| 4 cm | Medium-rare | Reverse-sear: indirect then direct | 130 → 290 °C | 10–15 ind + 1.5/side direct | 14–19 min | Flip every 60 s direct | 5–8 min |
-| 4 cm | Medium | Reverse-sear | 130 → 290 °C | 15–20 ind + 1.5/side | 19–24 min | Flip every 60 s direct | 5–8 min |
-| 5 cm | Medium-rare | Reverse-sear mandatory | 130 → 290 °C | 20–30 ind + 2/side | 25–35 min | Flip every 60 s direct | 8–10 min |
+| 1 cm | Rare | Direct, lid closed | 230 °C | 1 min | 2 min | Flip once at halfway (Migros default) | 3 min |
+| 2 cm | Rare | Direct, lid closed | 230 °C | 2 min 15 s | 4 min 30 s | Flip once at halfway (Migros default) | 3 min |
+| 3 cm | Rare | Direct, lid closed | 230 °C | 3 min 30 s | 7 min | Flip once at halfway (Migros default) | 3 min |
+| 4 cm | Rare | Direct, lid closed | 230 °C | 6 min 30 s | 13 min | Flip once at halfway (Migros default) | 5–8 min |
+| 5 cm | Rare | Reverse-sear (indirect → direct) | 230 °C | 7 min 30 s | 15 min | Flip once at halfway (Migros default) | 8–10 min |
+| 1 cm | Medium-rare | Direct, lid closed | 230 °C | 1 min 20 s | 2 min 40 s | Flip once at halfway (Migros default) | 3 min |
+| 2 cm | Medium-rare | Direct, lid closed | 230 °C | 2 min 45 s | 5 min 30 s | Flip once at halfway (Migros default) | 3 min |
+| 3 cm | Medium-rare | Direct, lid closed | 230 °C | 5 min | 10 min | Flip once at halfway (Migros default) | 5 min |
+| 4 cm | Medium-rare | Direct → indirect | 230 °C | 7 min 30 s | 15 min | Flip once at halfway (Migros default) | 5–8 min |
+| 5 cm | Medium-rare | Reverse-sear (indirect → direct) | 230 °C | 9 min | 18 min | Flip once at halfway (Migros default) | 8–10 min |
+| 1 cm | Medium | Direct, lid closed | 230 °C | 2 min | 4 min | Flip once at halfway (Migros default) | 3 min |
+| 2 cm | Medium | Direct, lid closed | 230 °C | 3 min 45 s | 7 min 30 s | Flip once at halfway (Migros default) | 3 min |
+| 3 cm | Medium | Direct, lid closed | 230 °C | 6 min | 12 min | Flip once at halfway (Migros default) | 5 min |
+| 4 cm | Medium | Direct → indirect | 230 °C | 9 min | 18 min | Flip once at halfway (Migros default) | 5–8 min |
+| 5 cm | Medium | Reverse-sear (indirect → direct) | 230 °C | 10 min | 20 min | Flip once at halfway (Migros default) | 8–10 min |
+| 1 cm | Well-done | Direct, lid closed | 230 °C | 3 min 30 s | 7 min | Flip once at halfway (Migros default) | 3 min |
+| 2 cm | Well-done | Direct, lid closed | 230 °C | 8 min | 16 min | Flip once at halfway (Migros default) | 5 min |
+| 3 cm | Well-done | Direct, lid closed | 230 °C | 8 min 30 s | 17 min | Flip once at halfway (Migros default) | 5 min |
+| 4 cm | Well-done | Direct → indirect | 230 °C | 14 min | 28 min | Flip every 2–3 min | 5–8 min |
+| 5 cm | Well-done | Reverse-sear (indirect → direct) | 230 °C | 15 min | 30 min | Flip every 2–3 min | 8–10 min |
 
-Sources: [Weber-DE] gives 3 cm medium-rare 6–8 min total. [SE] reverse-sear: pull from indirect at 49 °C for medium-rare, sear 30–45 s per side if flipping often. [Migusto] "Entrecôte 3 cm: 3 min pro Seite, dann 4 min ziehen lassen". Numbers agree within ~15 %.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -67,15 +76,28 @@ Lean, buys you less margin than entrecôte. Pull 2–3 °C earlier than you thin
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 3 cm (tournedos) | Rare 50 °C | Direct high | 260–290 °C | 2 min | 4 min | Flip once | 3 min |
-| 3 cm | Medium-rare | Direct high | 260–290 °C | 2.5–3 min | 5–6 min | Flip once | 3 min |
-| 3 cm | Medium | Direct high | 260–290 °C | 3.5 min | 7 min | Flip once | 3 min |
-| 4 cm | Rare | Direct then indirect | 260 → 180 °C | 2 + 2 min | 8 min | Flip, move | 5 min |
-| 4 cm | Medium-rare | Direct then indirect | 260 → 180 °C | 2.5 + 3 min | 10–11 min | Flip, move | 5 min |
-| 4 cm | Medium | Direct then indirect | 260 → 180 °C | 3 + 4 min | 13–14 min | Flip, move | 5 min |
-| 5 cm (Chateaubriand piece) | Medium-rare | Reverse-sear | 130 → 290 °C | 20 ind + 1/side | 24–28 min | Flip every 45 s direct | 8 min |
+| 1 cm | Rare | Direct, lid closed | 230 °C | 1 min | 2 min | Flip once at halfway (Migros default) | 3 min |
+| 2 cm | Rare | Direct, lid closed | 230 °C | 2 min 30 s | 5 min | Flip once at halfway (Migros default) | 3 min |
+| 3 cm | Rare | Direct, lid closed | 230 °C | 3 min 30 s | 7 min | Flip once at halfway (Migros default) | 3 min |
+| 4 cm | Rare | Direct, lid closed | 230 °C | 6 min 30 s | 13 min | Flip once at halfway (Migros default) | 5–8 min |
+| 5 cm | Rare | Reverse-sear (indirect → direct) | 230 °C | 7 min 30 s | 15 min | Flip once at halfway (Migros default) | 8–10 min |
+| 1 cm | Medium-rare | Direct, lid closed | 230 °C | 1 min 15 s | 2 min 30 s | Flip once at halfway (Migros default) | 3 min |
+| 2 cm | Medium-rare | Direct, lid closed | 230 °C | 3 min 30 s | 7 min | Flip once at halfway (Migros default) | 3 min |
+| 3 cm | Medium-rare | Direct, lid closed | 230 °C | 5 min | 10 min | Flip once at halfway (Migros default) | 5 min |
+| 4 cm | Medium-rare | Direct → indirect | 230 °C | 7 min 30 s | 15 min | Flip once at halfway (Migros default) | 5–8 min |
+| 5 cm | Medium-rare | Reverse-sear (indirect → direct) | 230 °C | 8 min 30 s | 17 min | Flip once at halfway (Migros default) | 8–10 min |
+| 1 cm | Medium | Direct, lid closed | 230 °C | 2 min | 4 min | Flip once at halfway (Migros default) | 3 min |
+| 2 cm | Medium | Direct, lid closed | 230 °C | 4 min 30 s | 9 min | Flip once at halfway (Migros default) | 3 min |
+| 3 cm | Medium | Direct, lid closed | 230 °C | 6 min | 12 min | Flip once at halfway (Migros default) | 5 min |
+| 4 cm | Medium | Direct → indirect | 230 °C | 9 min | 18 min | Flip once at halfway (Migros default) | 5–8 min |
+| 5 cm | Medium | Reverse-sear (indirect → direct) | 230 °C | 9 min 30 s | 19 min | Flip once at halfway (Migros default) | 8–10 min |
+| 1 cm | Well-done | Direct, lid closed | 230 °C | 3 min 30 s | 7 min | Flip once at halfway (Migros default) | 3 min |
+| 2 cm | Well-done | Direct, lid closed | 230 °C | 8 min | 16 min | Flip once at halfway (Migros default) | 5 min |
+| 3 cm | Well-done | Direct, lid closed | 230 °C | 8 min 30 s | 17 min | Flip once at halfway (Migros default) | 5 min |
+| 4 cm | Well-done | Direct → indirect | 230 °C | 14 min | 28 min | Flip every 2–3 min | 5–8 min |
+| 5 cm | Well-done | Reverse-sear (indirect → direct) | 230 °C | 14 min | 28 min | Flip every 2–3 min | 8–10 min |
 
-Sources: [Weber-DE] 3 cm filet medium-rare 5–6 min. [Migusto] "Rindsfilet, 3 cm: je 2–3 min pro Seite". [BBossi] agrees. [SE] pulls at 52 °C for medium-rare (leaner = less carryover).
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -86,13 +108,14 @@ Notes:
 
 Thicker than boneless entrecôte; bone insulates one side.
 
-| Thickness | Doneness    | Heat zone    | Grate temp   | Per side          | Total     | Turns                  | Rest    |
-| --------- | ----------- | ------------ | ------------ | ----------------- | --------- | ---------------------- | ------- |
-| 4 cm      | Medium-rare | Reverse-sear | 130 → 290 °C | 15 ind + 2/side   | 19–22 min | Flip every 60 s direct | 6–8 min |
-| 5 cm      | Medium-rare | Reverse-sear | 130 → 290 °C | 25 ind + 2/side   | 30–35 min | Flip every 60 s direct | 10 min  |
-| 5 cm      | Medium      | Reverse-sear | 130 → 290 °C | 30 ind + 2.5/side | 35–40 min | Flip every 60 s direct | 10 min  |
+| Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 2 cm | Medium | Direct, lid closed | 230 °C | 4 min 30 s | 9 min | Flip once at halfway (Migros default) | 3 min |
+| 4 cm | Medium | Direct → indirect | 230 °C | 9 min | 18 min | Flip once at halfway (Migros default) | 5–8 min |
+| 2 cm | Well-done | Direct, lid closed | 230 °C | 8 min | 16 min | Flip once at halfway (Migros default) | 5 min |
+| 4 cm | Well-done | Direct → indirect | 230 °C | 9 min | 18 min | Flip once at halfway (Migros default) | 5–8 min |
 
-Sources: [SE] reverse-sear bone-in ribeye. [Weber-DE] Tomahawk-style 5 cm: 25–30 min indirect + sear. [Meathead] agrees.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -105,11 +128,10 @@ Two muscles, two cooking speeds — strip side cooks faster than filet side. Ori
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 3 cm | Medium-rare | Direct, filet toward cool edge | 260–290 °C | 3–4 min | 7–8 min | Flip once, then rotate | 5 min |
-| 4 cm | Medium-rare | Reverse-sear | 130 → 290 °C | 15 ind + 2/side | 19–22 min | Flip every 60 s direct | 6–8 min |
-| 5 cm (Porterhouse classic) | Medium-rare | Reverse-sear | 130 → 290 °C | 25–30 ind + 2/side | 30–35 min | Flip every 60 s direct | 10 min |
+| 4 cm | Medium-rare | Direct, lid closed | 240 °C | 4 min | 8 min | Flip once at halfway (Migros default) | 5–8 min |
+| 4 cm | Medium | Direct, lid closed | 240 °C | 6 min | 12 min | Flip once at halfway (Migros default) | 5–8 min |
 
-Sources: [Weber-US] Porterhouse 5 cm reverse-sear 25–35 min. [SE] agrees. [BBCGF] shorter numbers for 2.5 cm (6 min total) — align for thinner cuts.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -125,7 +147,7 @@ Thin, long, with aggressive grain. Eat at medium-rare, slice thin across the gra
 | 1.5–2 cm  | Medium-rare | Direct high | 260–290 °C | 3–4 min  | 6–8 min  | Flip once | 5–8 min |
 | 2–2.5 cm  | Medium-rare | Direct high | 260–290 °C | 4–5 min  | 8–10 min | Flip once | 8 min   |
 
-Sources: [SE] 54 °C internal, 6–10 min total. [Weber-DE] 6–8 min. [Migusto] marinated Flanksteak 4 min/side.
+Sources: [SE] 54 °C internal, 6–10 min total. [Weber-DE] 6–8 min.
 
 Notes:
 
@@ -176,7 +198,7 @@ Leaner than entrecôte, well-marbled varieties exist. Treat like a slightly less
 | 3 cm      | Medium-rare | Direct high  | 260–290 °C   | 3–4 min           | 6–8 min   | Flip once              | 5 min |
 | 4 cm      | Medium-rare | Reverse-sear | 130 → 290 °C | 12 ind + 1.5/side | 15–18 min | Flip every 60 s direct | 6 min |
 
-Sources: [Migusto] Huftsteak 2–3 cm 3–4 min/Seite. [Weber-DE] agrees. [BBossi] same band.
+Sources: [Weber-DE] agrees.
 
 ### Sirloin (Striploin / New York strip / Rumpsteak US style)
 
@@ -199,13 +221,12 @@ Notes:
 
 Treated separately from steaks — it's a roast.
 
-| Weight | Doneness | Heat zone | Grate temp | Timing | Total | Turns | Rest |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 kg | Medium-rare | Indirect → direct sear | 130 → 290 °C | 35–45 ind + 2–3/side sear | 45–55 min | Rotate 180° halfway through indirect | 15 min |
-| 1.5 kg | Medium-rare | Indirect → direct sear | 130 → 290 °C | 50–70 ind + 2–3/side sear | 60–80 min | Rotate halfway | 15–20 min |
-| 2 kg | Medium-rare | Indirect → direct sear | 130 → 290 °C | 70–90 ind + 2–3/side sear | 80–105 min | Rotate halfway | 20 min |
+| Thickness | Doneness  | Heat zone               | Grate temp | Per side | Total  | Turns              | Rest     |
+| --------- | --------- | ----------------------- | ---------- | -------- | ------ | ------------------ | -------- |
+| —         | Medium    | Indirect (low-and-slow) | 200 °C     | 25 min   | 50 min | Flip every 2–3 min | 8–10 min |
+| —         | Well-done | Indirect (low-and-slow) | 200 °C     | 30 min   | 60 min | Flip every 2–3 min | 8–10 min |
 
-Sources: [SE] reverse-sear roast beef. [Weber-DE] "Rinderrücken 1.5 kg indirect 150 °C to 54 °C core, sear 5 min all sides". [Meathead] agrees.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -222,11 +243,12 @@ Pale, delicate. Never past medium — veal dries out above 60 °C.
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2 cm | Medium 58 °C | Direct medium | 200–230 °C | 3 min | 6 min | Flip once | 3 min |
-| 2.5 cm | Medium | Direct medium | 200–230 °C | 3.5–4 min | 7–8 min | Flip once | 4 min |
-| 3 cm | Medium | Direct medium then indirect | 200 → 180 °C | 3 direct + 3 indirect | 9–10 min | Flip once, move | 5 min |
+| 2 cm | Medium | Direct, lid closed | 230 °C | 4 min 30 s | 9 min | Flip once at halfway (Migros default) | 3 min |
+| 4 cm | Medium | Direct → indirect | 230 °C | 9 min | 18 min | Flip once at halfway (Migros default) | 5–8 min |
+| 2 cm | Well-done | Direct, lid closed | 230 °C | 8 min | 16 min | Flip once at halfway (Migros default) | 5 min |
+| 4 cm | Well-done | Direct → indirect | 230 °C | 14 min | 28 min | Flip every 2–3 min | 5–8 min |
 
-Sources: [Migusto] Kalbs-Hohrücken 2.5 cm: 3–4 min/Seite. [BBossi] agrees. [Weber-DE] same.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -237,11 +259,12 @@ Notes:
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2.5 cm | Medium | Direct medium + indirect | 200 → 180 °C | 3 direct + 3 indirect | 8–10 min | Flip once, move | 5 min |
-| 3 cm | Medium | Direct medium + indirect | 200 → 180 °C | 3.5 direct + 4 indirect | 11–13 min | Flip once, move | 6 min |
-| 4 cm | Medium | Reverse-sear | 130 → 260 °C | 12 ind + 2/side sear | 17–20 min | Flip every 60 s direct | 8 min |
+| 2 cm | Medium | Direct, lid closed | 230 °C | 5 min | 10 min | Flip once at halfway (Migros default) | 5 min |
+| 4 cm | Medium | Direct → indirect | 230 °C | 9 min 30 s | 19 min | Flip once at halfway (Migros default) | 5–8 min |
+| 2 cm | Well-done | Direct, lid closed | 230 °C | 7 min 30 s | 15 min | Flip once at halfway (Migros default) | 5 min |
+| 4 cm | Well-done | Direct → indirect | 230 °C | 11 min 30 s | 23 min | Flip once at halfway (Migros default) | 5–8 min |
 
-Sources: [Migusto] 3 cm 4 min/Seite, 4 min ziehen. [Weber-DE] 3 cm bone-in 10–12 min. [BBossi] similar.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -258,11 +281,16 @@ Usually shoulder; budget cut, tastes best medium-well.
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1.5 cm | Medium 63 °C | Direct medium | 200–230 °C | 2.5–3 min | 5–6 min | Flip once | 2 min |
-| 2 cm | Medium | Direct medium | 200–230 °C | 3–4 min | 6–8 min | Flip once | 3 min |
-| 2.5 cm | Medium | Direct medium + indirect | 200 → 180 °C | 3 direct + 2 indirect | 9–10 min | Flip once, move | 3 min |
+| 1 cm | Medium | Direct, lid closed | 230 °C | 1 min 30 s | 3 min | Flip once at halfway (Migros default) | 3 min |
+| 2 cm | Medium | Direct, lid closed | 230 °C | 3 min | 6 min | Flip once at halfway (Migros default) | 3 min |
+| 3 cm | Medium | Direct, lid closed | 230 °C | 4 min | 8 min | Flip once at halfway (Migros default) | 3 min |
+| 4 cm | Medium | Direct, lid closed | 230 °C | 5 min | 10 min | Flip once at halfway (Migros default) | 5–8 min |
+| 1 cm | Well-done | Direct, lid closed | 230 °C | 2 min | 4 min | Flip once at halfway (Migros default) | 3 min |
+| 2 cm | Well-done | Direct, lid closed | 230 °C | 4 min 45 s | 9 min 30 s | Flip once at halfway (Migros default) | 3 min |
+| 3 cm | Well-done | Direct, lid closed | 230 °C | 6 min | 12 min | Flip once at halfway (Migros default) | 5 min |
+| 4 cm | Well-done | Direct → indirect | 230 °C | 7 min 30 s | 15 min | Flip once at halfway (Migros default) | 5–8 min |
 
-Sources: [Migusto] 2 cm Schweinssteak 3–4 min/Seite. [BBossi] agrees.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -273,13 +301,12 @@ Notes:
 
 The reverse-sear star of pork. ~500 g per piece. Do NOT cook past 63 °C pull — it's lean.
 
-| Weight | Doneness | Heat zone | Grate temp | Timing | Total | Turns | Rest |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| ~400 g, whole | Medium 63 °C | Indirect → direct sear | 150 → 260 °C | 15–20 ind + 1/side sear | 20–28 min | Rotate quarter-turns on sear | 5–8 min |
-| ~500 g, whole | Medium | Indirect → direct sear | 150 → 260 °C | 20–25 ind + 1/side sear | 25–32 min | Rotate quarter-turns on sear | 8 min |
-| Medaillons 3 cm | Medium | Direct medium | 200–230 °C | 3 min | 6 min | Flip once | 3 min |
+| Thickness | Doneness  | Heat zone          | Grate temp | Per side   | Total  | Turns                                 | Rest  |
+| --------- | --------- | ------------------ | ---------- | ---------- | ------ | ------------------------------------- | ----- |
+| —         | Medium    | Direct, lid closed | 230 °C     | 6 min      | 12 min | Flip once at halfway (Migros default) | 5 min |
+| —         | Well-done | Direct, lid closed | 230 °C     | 8 min 30 s | 17 min | Flip once at halfway (Migros default) | 5 min |
 
-Sources: [Migusto] ganzes Schweinsfilet 20–25 min indirekt 180 °C bis 62 °C Kern. [BBossi] same. [SE] 63 °C pull, sear last.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -290,14 +317,11 @@ Notes:
 
 The Swiss BBQ workhorse. Fatty, flavorful, forgiving. Marinated versions dominate Migros shelves.
 
-| Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 1.5 cm | Medium 63 °C | Direct medium | 200–230 °C | 3 min | 6 min | Flip once | 3 min |
-| 2 cm | Medium | Direct medium | 200–230 °C | 3.5–4 min | 7–8 min | Flip once | 3 min |
-| 2.5 cm | Medium | Direct medium + indirect | 200 → 180 °C | 3 direct + 3 indirect | 9–10 min | Flip once, move | 4 min |
-| 3 cm | Medium | Direct medium + indirect | 200 → 180 °C | 3 direct + 4 indirect | 11–13 min | Flip once, move | 5 min |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total  | Turns                                 | Rest  |
+| --------- | -------- | ------------------ | ---------- | -------- | ------ | ------------------------------------- | ----- |
+| —         | —        | Direct, lid closed | 230 °C     | 7 min    | 14 min | Flip once at halfway (Migros default) | 5 min |
 
-Sources: [Migusto] Schweinshals 2 cm 3–4 min/Seite. [BBossi] agrees. [Weber-DE] "Nackensteak 2–3 cm 8–10 min".
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -308,25 +332,21 @@ Notes:
 
 Treated as a roast.
 
-| Weight | Doneness | Heat zone | Grate temp | Timing | Total | Turns | Rest |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 kg | Medium-well 68 °C | Indirect | 160 °C | 60–75 min | 60–75 min | Rotate halfway | 15 min |
-| 1.5 kg | Medium-well | Indirect | 160 °C | 90–110 min | 90–110 min | Rotate halfway | 15–20 min |
-| 2 kg | Medium-well | Indirect, sear at end | 160 → 260 °C | 120–140 ind + 1/side sear | 125–150 min | Rotate halfway | 20 min |
+| Thickness | Doneness | Heat zone               | Grate temp | Per side | Total  | Turns              | Rest     |
+| --------- | -------- | ----------------------- | ---------- | -------- | ------ | ------------------ | -------- |
+| —         | —        | Indirect (low-and-slow) | 230 °C     | 30 min   | 60 min | Flip every 2–3 min | 8–10 min |
 
-Sources: [Migusto] "Schweinshalsbraten 1 kg bei 160 °C indirekt ca. 75 min". [BBossi] and [Weber-DE] agree.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ### Schweinskoteletts (Pork chops, bone-in)
 
 Lean loin + bone. Thin ones dry out instantly — go for ≥ 2.5 cm if you can choose.
 
-| Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 2 cm | Medium 63 °C | Direct medium | 200–230 °C | 3 min | 6 min | Flip once | 3 min |
-| 2.5 cm | Medium | Direct medium + indirect | 200 → 180 °C | 3 direct + 3 indirect | 9–10 min | Flip once, move | 4 min |
-| 3 cm | Medium | Reverse-sear | 130 → 260 °C | 12 ind + 1.5/side sear | 15–18 min | Flip every 60 s direct | 5 min |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total  | Turns                                 | Rest  |
+| --------- | -------- | ------------------ | ---------- | -------- | ------ | ------------------------------------- | ----- |
+| —         | —        | Direct, lid closed | 220 °C     | 5 min    | 10 min | Flip once at halfway (Migros default) | 5 min |
 
-Sources: [Weber-DE] 2.5 cm 8–10 min. [SE] reverse-sear thick chops. [Migusto] 2 cm 3 min/Seite.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -337,13 +357,11 @@ Notes:
 
 Low-and-slow only. Book-length topic; here's the 3-2-1 gas-grill version.
 
-| Weight | Method | Heat zone | Grate temp | Timing | Total | Turns | Rest |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 rack (~1.3 kg) | 3-2-1 | Indirect | 110–120 °C | 3 h smoke + 2 h wrapped + 1 h glazed | ~6 h | Rotate hourly | 10 min |
-| 1 rack | 2-2-1 (faster) | Indirect | 120–135 °C | 2 h smoke + 2 h wrapped + 1 h glazed | ~5 h | Rotate hourly | 10 min |
-| 1 rack | Indirect, no wrap | Indirect | 150 °C | 2.5–3.5 h until bend test passes | 2.5–3.5 h | Rotate every 30 min | 10 min |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total  | Turns                                 | Rest  |
+| --------- | -------- | ------------------ | ---------- | -------- | ------ | ------------------------------------- | ----- |
+| —         | —        | Direct, lid closed | 230 °C     | 5 min    | 10 min | Flip once at halfway (Migros default) | 5 min |
 
-Sources: [Meathead] 3-2-1 critique, prefers 2.5–3 h unwrapped at 120 °C. [Traeger] classic 3-2-1. [Weber-DE] agrees.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -370,24 +388,25 @@ Sources: [Weber-US] Baby Back 2-2-1. [Meathead] similar.
 
 Swiss cut, generally 2–3 cm thick.
 
-| Thickness | Doneness          | Heat zone   | Grate temp | Per side | Total   | Turns     | Rest  |
-| --------- | ----------------- | ----------- | ---------- | -------- | ------- | --------- | ----- |
-| 2 cm      | Medium-rare 55 °C | Direct high | 260 °C     | 2–3 min  | 4–6 min | Flip once | 3 min |
-| 3 cm      | Medium-rare       | Direct high | 260 °C     | 3–4 min  | 6–8 min | Flip once | 5 min |
+| Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| — | Rare | Direct, lid closed | 230 °C | 3 min 30 s | 7 min | Flip once at halfway (Migros default) | 3 min |
+| — | Medium-rare | Direct, lid closed | 230 °C | 4 min 30 s | 9 min | Flip once at halfway (Migros default) | 3 min |
+| — | Medium | Direct, lid closed | 230 °C | 6 min 30 s | 13 min | Flip once at halfway (Migros default) | 5 min |
+| — | Well-done | Direct, lid closed | 230 °C | 8 min 30 s | 17 min | Flip once at halfway (Migros default) | 5 min |
 
-Sources: [Migusto] Lamm-Hüftli 3 cm 3–4 min/Seite. [BBossi] same.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ### Lamm-Koteletts (Lamb chops, bone-in)
 
 Small, fast. Classic with rosemary.
 
-| Thickness | Doneness          | Heat zone   | Grate temp | Per side  | Total   | Turns     | Rest  |
-| --------- | ----------------- | ----------- | ---------- | --------- | ------- | --------- | ----- |
-| 2 cm      | Medium-rare 55 °C | Direct high | 260 °C     | 2–2.5 min | 4–5 min | Flip once | 3 min |
-| 2.5 cm    | Medium-rare       | Direct high | 260 °C     | 3 min     | 6 min   | Flip once | 3 min |
-| 3 cm      | Medium-rare       | Direct high | 260 °C     | 3.5–4 min | 7–8 min | Flip once | 4 min |
+| Thickness | Doneness  | Heat zone          | Grate temp | Per side   | Total | Turns                                 | Rest  |
+| --------- | --------- | ------------------ | ---------- | ---------- | ----- | ------------------------------------- | ----- |
+| —         | Medium    | Direct, lid closed | 230 °C     | 3 min 30 s | 7 min | Flip once at halfway (Migros default) | 3 min |
+| —         | Well-done | Direct, lid closed | 230 °C     | 4 min 30 s | 9 min | Flip once at halfway (Migros default) | 3 min |
 
-Sources: [Weber-DE] Lammkoteletts 2 cm 4–5 min. [Migusto] agrees. [BBCGF] 2 cm 2–3 min/side for medium.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -396,23 +415,29 @@ Notes:
 
 ### Lamm-Nierstück (Lamb loin, saddle cuts)
 
-| Thickness | Doneness    | Heat zone         | Grate temp   | Per side                | Total   | Turns           | Rest  |
-| --------- | ----------- | ----------------- | ------------ | ----------------------- | ------- | --------------- | ----- |
-| 2.5 cm    | Medium-rare | Direct high       | 260 °C       | 2.5–3 min               | 5–6 min | Flip once       | 4 min |
-| 3 cm      | Medium-rare | Direct + indirect | 260 → 180 °C | 2.5 direct + 2 indirect | 8–9 min | Flip once, move | 5 min |
+| Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 2 cm | Rare | Direct, lid closed | 230 °C | 2 min | 4 min | Flip once at halfway (Migros default) | 3 min |
+| 3 cm | Rare | Direct, lid closed | 230 °C | 3 min | 6 min | Flip once at halfway (Migros default) | 3 min |
+| 2 cm | Medium-rare | Direct, lid closed | 230 °C | 2 min 30 s | 5 min | Flip once at halfway (Migros default) | 3 min |
+| 3 cm | Medium-rare | Direct, lid closed | 230 °C | 4 min | 8 min | Flip once at halfway (Migros default) | 3 min |
+| 2 cm | Medium | Direct, lid closed | 230 °C | 3 min 15 s | 6 min 30 s | Flip once at halfway (Migros default) | 3 min |
+| 3 cm | Medium | Direct, lid closed | 230 °C | 5 min | 10 min | Flip once at halfway (Migros default) | 5 min |
+| 2 cm | Well-done | Direct, lid closed | 230 °C | 4 min 15 s | 8 min 30 s | Flip once at halfway (Migros default) | 3 min |
+| 3 cm | Well-done | Direct, lid closed | 230 °C | 6 min 15 s | 12 min 30 s | Flip once at halfway (Migros default) | 5 min |
 
-Sources: [Migusto] Lammnierstück 3 cm 3 min/Seite. [BBossi] same.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ### Lamm-Rack (Rack of lamb / Carré d'agneau)
 
 Reverse-sear is the move.
 
-| Size | Doneness | Heat zone | Grate temp | Timing | Total | Turns | Rest |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 8-rib rack (~500 g) | Medium-rare | Indirect → direct sear | 150 → 260 °C | 15–20 ind + 1/side sear | 20–25 min | Sear fat-cap first 2 min | 8 min |
-| Frenched rack | Medium-rare | Reverse-sear | 130 → 290 °C | 20 ind + 1/side sear | 25 min | Flip every 45 s direct | 8 min |
+| Thickness | Doneness  | Heat zone          | Grate temp | Per side | Total  | Turns                                 | Rest  |
+| --------- | --------- | ------------------ | ---------- | -------- | ------ | ------------------------------------- | ----- |
+| —         | Medium    | Direct, lid closed | 230 °C     | 7 min    | 14 min | Flip once at halfway (Migros default) | 5 min |
+| —         | Well-done | Direct, lid closed | 230 °C     | 9 min    | 18 min | Flip once at halfway (Migros default) | 5 min |
 
-Sources: [SE] rack of lamb reverse-sear to 52 °C. [Weber-DE] similar. [Migusto] "Lammrack 20 min indirekt 160 °C + 2 min je Seite scharf".
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -423,14 +448,11 @@ Notes:
 
 Whole-roast territory.
 
-| Cut / weight | Doneness | Heat zone | Grate temp | Timing | Total | Turns | Rest |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Boneless, 1.5 kg | Medium 60 °C | Indirect, sear | 160 → 260 °C | 70–90 ind + sear | 80–100 min | Rotate halfway | 15–20 min |
-| Boneless, 2 kg | Medium | Indirect, sear | 160 → 260 °C | 90–120 ind + sear | 100–130 min | Rotate halfway | 20 min |
-| Bone-in, 2.5 kg | Medium-rare 55 °C | Indirect, sear | 160 → 260 °C | 90–120 ind + sear | 100–130 min | Rotate halfway | 20 min |
-| Butterflied, ~1.5 kg, ~4 cm thick | Medium | Direct medium + indirect | 200 → 160 °C | 10 direct + 20–30 indirect | 30–40 min | Flip every 5 min | 15 min |
+| Thickness | Doneness | Heat zone               | Grate temp | Per side    | Total  | Turns              | Rest     |
+| --------- | -------- | ----------------------- | ---------- | ----------- | ------ | ------------------ | -------- |
+| —         | —        | Indirect (low-and-slow) | 200 °C     | 27 min 30 s | 55 min | Flip every 2–3 min | 8–10 min |
 
-Sources: [Weber-DE] Lammkeule 1.5 kg indirekt 150 °C 80–100 min auf 58 °C. [SE] butterflied leg 30 min. [Migusto] and [BBossi] similar.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -445,13 +467,14 @@ Notes:
 
 Very lean, very red, cooks FAST — pull 2–3 °C early.
 
-| Thickness | Doneness           | Heat zone   | Grate temp | Per side | Total | Turns     | Rest  |
-| --------- | ------------------ | ----------- | ---------- | -------- | ----- | --------- | ----- |
-| 1.5 cm    | Rare 48 °C         | Direct high | 260–290 °C | 1.5 min  | 3 min | Flip once | 3 min |
-| 2 cm      | Rare / medium-rare | Direct high | 260–290 °C | 2 min    | 4 min | Flip once | 3 min |
-| 2.5 cm    | Medium-rare        | Direct high | 260–290 °C | 2.5 min  | 5 min | Flip once | 4 min |
+| Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| — | Rare | Direct, lid closed | 230 °C | 2 min | 4 min | Flip once at halfway (Migros default) | 3 min |
+| — | Medium-rare | Direct, lid closed | 230 °C | 3 min 30 s | 7 min | Flip once at halfway (Migros default) | 3 min |
+| — | Medium | Direct, lid closed | 230 °C | 5 min | 10 min | Flip once at halfway (Migros default) | 5 min |
+| — | Well-done | Direct, lid closed | 230 °C | 8 min | 16 min | Flip once at halfway (Migros default) | 5 min |
 
-Sources: [Migusto] Pferdesteak 2 cm 2 min/Seite. [BBossi] agrees. Weber doesn't cover this; Swiss sources primary.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -464,12 +487,11 @@ Notes:
 
 ### Pouletschnitzel (Chicken breast, boneless skinless)
 
-| Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 1.5 cm (butterflied or thin) | 72 °C | Direct medium | 200 °C | 3–4 min | 6–8 min | Flip once | 3 min |
-| 2.5 cm (whole breast) | 72 °C | Direct medium + indirect | 200 → 180 °C | 3 direct + 6–8 indirect | 12–14 min | Flip once, move | 3 min |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total  | Turns                                 | Rest  |
+| --------- | -------- | ------------------ | ---------- | -------- | ------ | ------------------------------------- | ----- |
+| —         | —        | Direct, lid closed | 220 °C     | 6 min    | 12 min | Flip once at halfway (Migros default) | 5 min |
 
-Sources: [Weber-DE] Hähnchenbrust 2 cm 8–12 min. [SE] brine + 72 °C pull. [Migusto] same.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -480,14 +502,11 @@ Notes:
 
 Boneless skinless, boneless skin-on, or bone-in + skin on.
 
-| Type | Doneness | Heat zone | Grate temp | Timing | Total | Turns | Rest |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Boneless skinless thigh | 80 °C | Direct medium | 200 °C | 4–5 min/side | 8–10 min | Flip once | 3 min |
-| Boneless skin-on | 80 °C | Direct medium skin-down first | 200 °C | 5–6 skin + 3–4 flip side | 8–10 min | Flip once | 3 min |
-| Bone-in skin-on thigh | 80 °C | Indirect + sear | 180 → 230 °C | 20–25 ind + 2/side sear | 25–30 min | Flip once for sear | 3 min |
-| Bone-in drumstick (Keule) | 80 °C | Indirect + sear | 180 → 230 °C | 25–30 ind + 2/side sear | 30–35 min | Rotate quarter turns | 3 min |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side   | Total  | Turns                                 | Rest  |
+| --------- | -------- | ------------------ | ---------- | ---------- | ------ | ------------------------------------- | ----- |
+| —         | —        | Direct, lid closed | 220 °C     | 8 min 30 s | 17 min | Flip once at halfway (Migros default) | 5 min |
 
-Sources: [Weber-DE] Hähnchenschenkel indirekt 180 °C 30 min. [SE] 80 °C pull for thighs. [Migusto] agrees.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -498,13 +517,11 @@ Notes:
 
 Crispy skin is the goal. Two schools: high-and-slow-indirect, or low-and-slow-indirect then sear.
 
-| Preparation | Method | Heat zone | Grate temp | Timing | Total | Turns | Rest |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Whole wings, dry-brined | Indirect | Indirect | 200 °C | 30–40 min | 30–40 min | Rotate every 10 min | 3 min |
-| Whole wings, baking powder rub | Indirect + sear | Indirect → direct | 120 → 230 °C | 30 ind + 5–8 direct | 35–40 min | Rotate every 5 min on direct | 3 min |
-| Wings, flats/drums separated | Direct medium | Direct medium | 200 °C | 6–8 min/side | 12–16 min | Flip every 4 min | 3 min |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total  | Turns                                 | Rest  |
+| --------- | -------- | ------------------ | ---------- | -------- | ------ | ------------------------------------- | ----- |
+| —         | —        | Direct, lid closed | 250 °C     | 10 min   | 20 min | Flip once at halfway (Migros default) | 5 min |
 
-Sources: [Meathead] baking powder + indirect 120 °C, then sear. [SE] cornstarch + high heat. [Weber-DE] 200 °C indirect 25–30 min.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -518,7 +535,7 @@ Notes:
 | 1.4–1.8 kg whole | Breast 72 °C / thigh 82 °C | Indirect, breast-up | 200 °C | 45–60 min | 45–60 min | Rotate 180° halfway | 10–15 min |
 | 1.8–2.2 kg | Same | Indirect, breast-up | 200 °C | 60–75 min | 60–75 min | Rotate halfway | 15 min |
 
-Sources: [SE] spatchcock at 230 °C 45 min. [Weber-DE] 200 °C 50–60 min. [Migusto] similar.
+Sources: [SE] spatchcock at 230 °C 45 min. [Weber-DE] 200 °C 50–60 min.
 
 Notes:
 
@@ -532,7 +549,7 @@ Notes:
 | 2.5 cm cubes | 72 °C    | Direct medium | 200 °C     | 2–3 min   | 8–12 min (4 sides) | Rotate every 2–3 min | 2 min |
 | 3 cm cubes   | 72 °C    | Direct medium | 200 °C     | 2.5–3 min | 10–12 min          | Rotate every 2.5 min | 2 min |
 
-Sources: [Weber-DE] 8–10 min. [Migusto] 10 min wendend. [BBCGF] 10–12 min.
+Sources: [Weber-DE] 8–10 min. [BBCGF] 10–12 min.
 
 Notes:
 
@@ -543,11 +560,12 @@ Notes:
 
 The classic: score the fat, start skin-side down on a cool zone, render fat, finish hot.
 
-| Weight | Doneness | Heat zone | Grate temp | Timing | Total | Turns | Rest |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 200–300 g breast | Medium 57 °C | Indirect skin-down → direct sear | 160 → 230 °C | 8–12 skin-down indirect + 3–4 direct, flip 30 s | 12–17 min | Flip once at end | 5 min |
+| Thickness | Doneness  | Heat zone          | Grate temp | Per side   | Total  | Turns                                 | Rest  |
+| --------- | --------- | ------------------ | ---------- | ---------- | ------ | ------------------------------------- | ----- |
+| —         | Medium    | Direct, lid closed | 230 °C     | 5 min 30 s | 11 min | Flip once at halfway (Migros default) | 5 min |
+| —         | Well-done | Direct, lid closed | 230 °C     | 8 min 30 s | 17 min | Flip once at halfway (Migros default) | 5 min |
 
-Sources: [Weber-DE] Entenbrust 10 min skin-down 150 °C indirect + 2 min flesh. [SE] 57 °C medium, fat fully rendered. [Migusto] similar.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -559,13 +577,12 @@ Notes:
 
 Leaner than chicken breast, same rules — more of a hazard because it dries faster.
 
-| Thickness | Doneness | Heat zone                | Grate temp   | Per side              | Total    | Turns           | Rest  |
-| --------- | -------- | ------------------------ | ------------ | --------------------- | -------- | --------------- | ----- |
-| 1 cm      | 72 °C    | Direct medium            | 200 °C       | 2–3 min               | 4–6 min  | Flip once       | 2 min |
-| 1.5 cm    | 72 °C    | Direct medium            | 200 °C       | 3–4 min               | 6–8 min  | Flip once       | 3 min |
-| 2 cm      | 72 °C    | Direct medium + indirect | 200 → 180 °C | 3 direct + 3 indirect | 8–10 min | Flip once, move | 3 min |
+| Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 cm | — | Direct, lid closed | 220 °C | 2 min 45 s | 5 min 30 s | Flip once at halfway (Migros default) | 3 min |
+| 2 cm | — | Direct, lid closed | 220 °C | 5 min | 10 min | Flip once at halfway (Migros default) | 5 min |
 
-Sources: [Migusto] Trutenschnitzel 1.5 cm 3–4 min/Seite. [BBossi] agrees.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -581,22 +598,21 @@ General rule: never burst the casing. That means low-and-slow indirect until hot
 
 Raw coarse sausage, ~30 mm casing. Classic DACH-region.
 
-| Thickness / weight | Heat zone | Grate temp | Timing | Total | Turns | Rest |
-| --- | --- | --- | --- | --- | --- | --- |
-| 1 sausage ~120 g | Indirect + direct finish | 180 → 220 °C | 10 indirect + 2–3 direct total | 12–15 min | Rotate quarter turn every 2 min | 2 min |
+| Thickness | Doneness | Heat zone         | Grate temp | Per side | Total  | Turns                                 | Rest |
+| --------- | -------- | ----------------- | ---------- | -------- | ------ | ------------------------------------- | ---- |
+| —         | —        | Direct → indirect | 230 °C     | 6 min    | 12 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [Weber-DE] Bratwurst 12–15 min. [Grillportal] agrees.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ### Cervelat
 
 Pre-cooked Swiss classic. Cross-cut the ends ("Chrüsli") before grilling — visual + better heat penetration.
 
-| Type              | Heat zone     | Grate temp | Timing   | Total    | Turns                      | Rest |
-| ----------------- | ------------- | ---------- | -------- | -------- | -------------------------- | ---- |
-| Standard (~100 g) | Direct medium | 200–230 °C | 6–10 min | 6–10 min | Quarter turn every 2 min   | —    |
-| Cross-cut ends    | Direct medium | 200–230 °C | 6–8 min  | 6–8 min  | Quarter turn every 1.5 min | —    |
+| Thickness | Doneness | Heat zone         | Grate temp | Per side   | Total | Turns                                 | Rest |
+| --------- | -------- | ----------------- | ---------- | ---------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct → indirect | 250 °C     | 3 min 30 s | 7 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [BBossi] Cervelat 8–10 min wendend. [Migusto] agrees.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -607,21 +623,21 @@ Notes:
 
 Same as Cervelat but larger.
 
-| Type                  | Heat zone         | Grate temp   | Timing                | Total     | Turns                    |
-| --------------------- | ----------------- | ------------ | --------------------- | --------- | ------------------------ |
-| Riesencervelat ~250 g | Indirect + direct | 200 → 230 °C | 8 indirect + 4 direct | 12–14 min | Quarter turn every 2 min |
+| Thickness | Doneness | Heat zone         | Grate temp | Per side | Total  | Turns                                 | Rest |
+| --------- | -------- | ----------------- | ---------- | -------- | ------ | ------------------------------------- | ---- |
+| —         | —        | Direct → indirect | 220 °C     | 7 min    | 14 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [BBossi], [Migusto].
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ### Grillschnecke / Bratwurstschnecke
 
 Coiled raw sausage on two skewers.
 
-| Type | Heat zone | Grate temp | Timing | Total | Turns | Rest |
-| --- | --- | --- | --- | --- | --- | --- |
-| One coil, ~200 g, 2 cm thick | Indirect + direct finish | 180 → 220 °C | 10–12 indirect + 2/side direct | 14–18 min | Flip once | 2 min |
+| Thickness | Doneness | Heat zone         | Grate temp | Per side | Total | Turns                                 | Rest |
+| --------- | -------- | ----------------- | ---------- | -------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct → indirect | 220 °C     | 4 min    | 8 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [Weber-DE] Schnecke 12–15 min. [Grillportal] 15 min.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -631,12 +647,11 @@ Notes:
 
 Pre-cooked or semi-raw; Swiss St. Galler Bratwurst is NEVER pierced, NEVER split.
 
-| Type                        | Heat zone     | Grate temp | Timing    | Total     | Turns                      | Rest |
-| --------------------------- | ------------- | ---------- | --------- | --------- | -------------------------- | ---- |
-| St. Galler Bratwurst ~140 g | Direct medium | 200 °C     | 10–12 min | 10–12 min | Quarter turn every 2.5 min | —    |
-| Kleine Kalbsbratwurst ~70 g | Direct medium | 200 °C     | 6–8 min   | 6–8 min   | Quarter turn every 1.5 min | —    |
+| Thickness | Doneness | Heat zone         | Grate temp | Per side   | Total | Turns                                 | Rest |
+| --------- | -------- | ----------------- | ---------- | ---------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct → indirect | 220 °C     | 4 min 30 s | 9 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [BBossi] St. Galler 10–12 min. [Migusto] same. [Grillportal] agrees.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -647,11 +662,11 @@ Notes:
 
 Thin, spicy, lamb + beef. Fast.
 
-| Type                        | Heat zone     | Grate temp | Timing  | Total   | Turns                        | Rest |
-| --------------------------- | ------------- | ---------- | ------- | ------- | ---------------------------- | ---- |
-| Merguez ~60 g, 16 mm casing | Direct medium | 200 °C     | 6–8 min | 6–8 min | Quarter turn every 1.5–2 min | —    |
+| Thickness | Doneness | Heat zone         | Grate temp | Per side | Total | Turns                                 | Rest |
+| --------- | -------- | ----------------- | ---------- | -------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct → indirect | 220 °C     | 4 min    | 8 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [Weber-DE] Merguez 6–8 min. [BBCGF] 8 min.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ### Italian sausage (Salsiccia)
 
@@ -679,7 +694,7 @@ Pre-cooked.
 | ---------------------- | ------------- | ---------- | ------- | ------- | -------------------------- |
 | Wienerli / Frankfurter | Direct medium | 200 °C     | 4–6 min | 4–6 min | Quarter turn every 1.5 min |
 
-Sources: [BBossi], [Weber-DE].
+Sources: [Weber-DE].
 
 ### Nürnberger Bratwurst
 
@@ -697,12 +712,11 @@ Sources: [Weber-DE] Nürnberger 4–5 min. [Grillportal] same.
 
 ### BBQ-Speck (Bacon strips on the grill)
 
-| Type | Heat zone | Grate temp | Timing | Total | Turns |
-| --- | --- | --- | --- | --- | --- |
-| Strips on grill plate / foil | Direct medium | 180 °C | 6–10 min | 6–10 min | Flip once |
-| Bacon-wrapped items | Indirect | 180 °C | Follows host item, remove when bacon is crisp | — | Rotate with host |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side   | Total  | Turns                                 | Rest  |
+| --------- | -------- | ------------------ | ---------- | ---------- | ------ | ------------------------------------- | ----- |
+| —         | —        | Direct, lid closed | 220 °C     | 7 min 30 s | 15 min | Flip once at halfway (Migros default) | 5 min |
 
-Sources: [Weber-US] bacon strips 6–8 min. [Meathead] low-and-slow indirect 30 min for chewy-crisp.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -712,17 +726,11 @@ Notes:
 
 The Serious Eats framework: thickness + smash vs pub-style. All temps are pull temps.
 
-| Patty style | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Smash, 100 g, <1 cm | Medium-well 70 °C (no choice, too thin) | Direct very high plancha | 290 °C+ | 1.5–2 min | 2–3 min | Flip once | — |
-| Pub-style, 150 g, 2 cm | Medium-rare 55 °C | Direct high | 260 °C | 3 min | 6 min | Flip once | 3 min |
-| Pub-style, 150 g, 2 cm | Medium 60 °C | Direct high | 260 °C | 3.5 min | 7 min | Flip once | 3 min |
-| Pub-style, 180 g, 2.5 cm | Medium-rare | Direct high | 260 °C | 3.5–4 min | 7–8 min | Flip once | 3 min |
-| Pub-style, 180 g, 2.5 cm | Medium | Direct high | 260 °C | 4–4.5 min | 8–9 min | Flip once | 3 min |
-| Pub-style, 200 g, 3 cm | Medium | Direct + indirect | 260 → 200 °C | 2 direct + 4 indirect per side | 10–12 min | Flip once, move | 3 min |
-| Stuffed / cheese-in | Medium-well | Direct medium | 230 °C | 4–5 min | 8–10 min | Flip once | 3 min |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side   | Total | Turns                                 | Rest  |
+| --------- | -------- | ------------------ | ---------- | ---------- | ----- | ------------------------------------- | ----- |
+| —         | —        | Direct, lid closed | 220 °C     | 4 min 30 s | 9 min | Flip once at halfway (Migros default) | 3 min |
 
-Sources: [SE] canonical burger guide. [Weber-DE] 2 cm patty 8 min. [Meathead] smash burger 2 min.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -733,24 +741,21 @@ Notes:
 
 Assume the slowest-cooking component sets the time; keep pieces same thickness.
 
-| Typical mix                           | Heat zone          | Grate temp | Timing    | Total     | Turns                |
-| ------------------------------------- | ------------------ | ---------- | --------- | --------- | -------------------- |
-| Chicken + pork + pepper, 2.5 cm cubes | Direct medium      | 200 °C     | 10–12 min | 10–12 min | Rotate every 2.5 min |
-| Beef + onion + pepper, 2.5 cm cubes   | Direct medium-high | 230 °C     | 8–10 min  | 8–10 min  | Rotate every 2 min   |
-| Lamb + zucchini + tomato              | Direct medium      | 200 °C     | 8–10 min  | 8–10 min  | Rotate every 2 min   |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total | Turns                                 | Rest  |
+| --------- | -------- | ------------------ | ---------- | -------- | ----- | ------------------------------------- | ----- |
+| —         | —        | Direct, lid closed | 220 °C     | 3 min    | 6 min | Flip once at halfway (Migros default) | 3 min |
 
-Sources: [Weber-DE] Spiesse 10–15 min. [Migusto] similar.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ### Kaninchenfilets (Rabbit fillets)
 
 Lean, delicate, very little fat — cooks fast, overcooks faster.
 
-| Thickness / weight | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Fillet, 2–3 cm | 62 °C | Direct medium | 200 °C | 2–3 min | 4–6 min | Flip once | 3 min |
-| Kaninchenschlegel (leg) | 75 °C | Indirect, sear at end | 180 → 230 °C | 25–30 ind + 2/side sear | 30–35 min | Rotate every 10 min | 5 min |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side   | Total | Turns                                 | Rest  |
+| --------- | -------- | ------------------ | ---------- | ---------- | ----- | ------------------------------------- | ----- |
+| —         | —        | Direct, lid closed | 230 °C     | 2 min 30 s | 5 min | Flip once at halfway (Migros default) | 3 min |
 
-Sources: [Migusto] Kaninchenfilet 2 min/Seite. [Weber-DE] Kaninchenschlegel 30 min indirekt.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ---
 
@@ -764,13 +769,11 @@ General rules:
 
 ### Lachsfilet (Salmon fillet, single portion, skin-on)
 
-| Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 2 cm, ~150 g | Medium 52 °C | Direct medium, skin-down first | 200 °C | 4–5 skin + 1–2 flip | 6–8 min | Flip once | 2 min |
-| 3 cm, ~200 g | Medium | Direct medium + indirect | 200 → 180 °C | 4 skin direct + 4–6 indirect | 10–12 min | Flip once, move | 2 min |
-| 2–3 cm, cedar plank | Medium | Indirect on plank | 200 °C | No flip | 15–20 min | No flip | 2 min |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total  | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | -------- | ------ | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 5 min    | 10 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [Weber-DE] Lachsfilet 2 cm 8 min. [SE] 52 °C pull. [Migusto] 5–6 min/side for 3 cm.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -779,12 +782,11 @@ Notes:
 
 ### Lachs (Whole side of salmon)
 
-| Size               | Doneness     | Heat zone           | Grate temp | Timing    | Total     | Turns   | Rest  |
-| ------------------ | ------------ | ------------------- | ---------- | --------- | --------- | ------- | ----- |
-| Whole side ~1 kg   | Medium 52 °C | Indirect, skin-down | 180 °C     | 20–30 min | 20–30 min | No flip | 5 min |
-| Whole side ~1.5 kg | Medium       | Indirect, skin-down | 180 °C     | 30–40 min | 30–40 min | No flip | 5 min |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | -------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 3 min    | 6 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [Weber-DE] ganze Seite Lachs 25–30 min 160 °C indirect. [Traeger] similar.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -793,11 +795,12 @@ Notes:
 
 ### Forelle (Whole trout, ~300 g)
 
-| Size             | Doneness   | Heat zone     | Grate temp | Per side | Total    | Turns     | Rest  |
-| ---------------- | ---------- | ------------- | ---------- | -------- | -------- | --------- | ----- |
-| Whole, 250–350 g | 55 °C core | Direct medium | 200 °C     | 4–6 min  | 8–12 min | Flip once | 1 min |
+| Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 cm | — | Direct, lid closed | 200 °C | 2 min 45 s | 5 min 30 s | Flip once at halfway (Migros default) | — |
+| 2 cm | — | Direct, lid closed | 200 °C | 5 min | 10 min | Flip once at halfway (Migros default) | — |
 
-Sources: [Weber-DE] Forelle ganz 10–12 min. [BBossi] 4 min/Seite. [Migusto] 5 min/Seite.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -806,12 +809,11 @@ Notes:
 
 ### Dorade / Branzino (Whole sea bream / sea bass, ~400 g)
 
-| Size | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Whole, 300–500 g | 55 °C core | Direct medium | 200 °C | 5–7 min | 10–14 min | Flip once | 2 min |
-| Whole, 500–700 g | 55 °C core | Direct medium + indirect | 200 → 180 °C | 5 direct + 8–10 indirect | 13–16 min | Flip once, move | 2 min |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total  | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | -------- | ------ | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 9 min    | 18 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [SE] whole fish 5–7 min/side. [Weber-DE] Dorade 10–12 min. [BBCGF] 12 min.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -822,13 +824,11 @@ Notes:
 
 Absolute sear, rare inside or medium at most — anything more is a waste of tuna.
 
-| Thickness | Doneness          | Heat zone        | Grate temp | Per side   | Total      | Turns     | Rest  |
-| --------- | ----------------- | ---------------- | ---------- | ---------- | ---------- | --------- | ----- |
-| 2 cm      | Rare 45 °C        | Direct very high | 290 °C+    | 45–60 s    | 90 s–2 min | Flip once | 1 min |
-| 2.5 cm    | Rare              | Direct very high | 290 °C+    | 60–75 s    | 2–2.5 min  | Flip once | 1 min |
-| 3 cm      | Medium-rare 50 °C | Direct very high | 290 °C+    | 90 s–2 min | 3–4 min    | Flip once | 1 min |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | -------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 250 °C     | 2 min    | 4 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [SE] sear only, 45–50 °C. [Weber-DE] 2 cm tuna 2–3 min total. [BBCGF] similar.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -849,12 +849,11 @@ Notes:
 
 ### Riesencrevetten (King prawns, shell-on)
 
-| Size / count                  | Doneness           | Heat zone          | Grate temp | Per side | Total | Turns     | Rest |
-| ----------------------------- | ------------------ | ------------------ | ---------- | -------- | ----- | --------- | ---- |
-| 16/20, shell-on, deveined     | Opaque, curled "C" | Direct medium-high | 230 °C     | 2 min    | 4 min | Flip once | —    |
-| U10 (very large), butterflied | Opaque             | Direct medium-high | 230 °C     | 2.5 min  | 5 min | Flip once | —    |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | -------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 4 min    | 8 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [Weber-DE] Riesengarnelen 2 min/Seite. [Migusto] 3 min/Seite. [BBCGF] 2–3 min/side.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -865,13 +864,11 @@ Notes:
 
 Very fast or very slow, nothing in between.
 
-| Preparation | Heat zone | Grate temp | Per side | Total | Turns | Rest |
-| --- | --- | --- | --- | --- | --- | --- |
-| Whole, small (≤ 15 cm tube) | Direct very high | 290 °C+ | 1–2 min | 2–3 min | Flip once | — |
-| Scored tube slabs | Direct very high | 290 °C+ | 60 s | 2 min | Flip once | — |
-| Large, scored | Indirect 110 °C then direct sear | 110 → 290 °C | 45 min ind + 1/side | ~50 min | Flip once sear | — |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | -------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 230 °C     | 4 min    | 8 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [SE] squid fast or slow, nothing between. [Weber-DE] Calamari 2–3 min.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ---
 
@@ -884,13 +881,11 @@ General rules:
 
 ### Aubergine (Eggplant slices)
 
-| Cut | Heat zone | Grate temp | Per side | Total | Turns | Rest |
-| --- | --- | --- | --- | --- | --- | --- |
-| 1 cm slices | Direct medium | 200 °C | 3–4 min | 6–8 min | Flip once | — |
-| 1.5 cm slices | Direct medium | 200 °C | 4–5 min | 8–10 min | Flip once | — |
-| Halved lengthwise, scored | Direct medium + indirect | 200 → 180 °C | 4 direct + 8–10 indirect | 12–14 min | Flip once, move | — |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total  | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | -------- | ------ | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 220 °C     | 6 min    | 12 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [Migusto] 1 cm Scheiben 3–4 min/Seite. [BBCGF] 4 min/side. [Weber-DE] similar.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -898,12 +893,11 @@ Notes:
 
 ### Champignons (Mushrooms, white or brown, whole)
 
-| Size                | Heat zone     | Grate temp | Timing              | Total    | Turns            | Rest |
-| ------------------- | ------------- | ---------- | ------------------- | -------- | ---------------- | ---- |
-| Whole small (≤3 cm) | Direct medium | 200 °C     | 8–10 min            | 8–10 min | Roll every 2 min | —    |
-| Halved large        | Direct medium | 200 °C     | 4 gill-down + 4 cap | 8 min    | Flip once        | —    |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | -------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 3 min    | 6 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [Weber-DE] Pilze 8–10 min. [Migusto] same.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -911,12 +905,11 @@ Notes:
 
 ### Portobello (Cap, whole)
 
-| Preparation                | Heat zone     | Grate temp | Per side                   | Total    | Turns     | Rest  |
-| -------------------------- | ------------- | ---------- | -------------------------- | -------- | --------- | ----- |
-| Whole cap, stem removed    | Direct medium | 200 °C     | 5–6 gill-up + 3–4 cap-down | 8–10 min | Flip once | 1 min |
-| Marinated (balsamic + oil) | Direct medium | 200 °C     | Same                       | 8–10 min | Flip once | 1 min |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side   | Total | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | ---------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 2 min 30 s | 5 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [Weber-US] Portobello 8–10 min. [SE] 10 min total.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -924,62 +917,57 @@ Notes:
 
 ### Cherry tomato skewers
 
-| Size                      | Heat zone     | Grate temp | Total   | Turns            |
-| ------------------------- | ------------- | ---------- | ------- | ---------------- |
-| Cherry tomatoes on skewer | Direct medium | 200 °C     | 3–5 min | Roll every 1 min |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side   | Total | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | ---------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 230 °C     | 2 min 30 s | 5 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [Migusto] 3–4 min. [Weber-DE] 4–5 min.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ### Halloumi
 
 Grills because it doesn't melt — very high protein, very forgiving.
 
-| Cut           | Heat zone     | Grate temp | Per side | Total   | Turns     | Rest |
-| ------------- | ------------- | ---------- | -------- | ------- | --------- | ---- |
-| 1 cm slices   | Direct medium | 200 °C     | 2–3 min  | 4–6 min | Flip once | —    |
-| 1.5 cm slices | Direct medium | 200 °C     | 3 min    | 6 min   | Flip once | —    |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | -------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 220 °C     | 4 min    | 8 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [BBCGF] 2–3 min/side. [Migusto] same.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ### Paneer
 
 Less forgiving than halloumi — gets rubbery hot.
 
-| Cut                  | Heat zone     | Grate temp | Per side | Total   | Turns              | Rest |
-| -------------------- | ------------- | ---------- | -------- | ------- | ------------------ | ---- |
-| 2 cm cubes on skewer | Direct medium | 200 °C     | 2 min    | 6–8 min | Rotate every 2 min | —    |
-| 1.5 cm slabs         | Direct medium | 200 °C     | 2–3 min  | 4–6 min | Flip once          | —    |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total  | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | -------- | ------ | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 220 °C     | 5 min    | 10 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [BBCGF] 2 min/side. [SE] paneer skewers 6–8 min.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ### Knoblauch (Garlic, whole head in foil)
 
-| Preparation                          | Heat zone | Grate temp | Total     | Turns       |
-| ------------------------------------ | --------- | ---------- | --------- | ----------- |
-| Whole head, top trimmed, oiled, foil | Indirect  | 180 °C     | 35–45 min | Rotate once |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side    | Total  | Turns              | Rest |
+| --------- | -------- | ------------------ | ---------- | ----------- | ------ | ------------------ | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 12 min 30 s | 25 min | Flip every 2–3 min | —    |
 
-Sources: [Weber-DE] 30–40 min. [Meathead] 40–50 min at lower temp.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ### Maiskolben (Corn on the cob)
 
 Two methods: husked direct, or in-husk (soaked) indirect.
 
-| Method                            | Heat zone     | Grate temp | Timing    | Total     | Turns                | Rest |
-| --------------------------------- | ------------- | ---------- | --------- | --------- | -------------------- | ---- |
-| Husked, direct                    | Direct medium | 200 °C     | 10–15 min | 10–15 min | Rotate every 2.5 min | —    |
-| In-husk, soaked 15 min, indirect  | Indirect      | 200 °C     | 25–30 min | 25–30 min | Rotate once          | —    |
-| Parboiled 5 min, then direct char | Direct high   | 260 °C     | 4–6 min   | 4–6 min   | Rotate every 90 s    | —    |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total  | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | -------- | ------ | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 5 min    | 10 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [SE] parboil + sear. [Weber-DE] 15 min husked. [BBossi] 20–25 min in husk.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ### Pak Choi (halved)
 
-| Size                             | Heat zone          | Grate temp | Per side | Total   | Turns     | Rest |
-| -------------------------------- | ------------------ | ---------- | -------- | ------- | --------- | ---- |
-| Halved lengthwise, small (150 g) | Direct medium      | 200 °C     | 2–3 min  | 4–6 min | Flip once | —    |
-| Halved, large                    | Direct medium-high | 230 °C     | 3 min    | 6 min   | Flip once | —    |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total  | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | -------- | ------ | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 6 min    | 12 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [Migusto] 3 min/Seite. [BBCGF] 2–4 min/side.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -987,23 +975,19 @@ Notes:
 
 ### Peperoni (Bell peppers)
 
-| Preparation | Heat zone | Grate temp | Timing | Total | Turns | Rest |
-| --- | --- | --- | --- | --- | --- | --- |
-| Whole, for blackening + peeling | Direct high | 260 °C+ | 15–20 min | 15–20 min | Rotate every 3–4 min until all sides black | — |
-| Halved or quartered, seeded | Direct medium | 200 °C | 4–5 min skin-down + 2–3 flip | 6–8 min | Flip once | — |
-| 2 cm strips on skewer | Direct medium | 200 °C | 6–8 min | 6–8 min | Rotate every 2 min | — |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side   | Total  | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | ---------- | ------ | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 7 min 30 s | 15 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [Weber-DE] Peperoni 8–10 min. [SE] whole charred 20 min. [Migusto] 6–8 min quartered.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ### Spargeln (Asparagus, green)
 
-| Thickness         | Heat zone                | Grate temp   | Total    | Turns                       | Rest |
-| ----------------- | ------------------------ | ------------ | -------- | --------------------------- | ---- |
-| Thin (<1 cm)      | Direct medium            | 200 °C       | 4–6 min  | Roll every 90 s             | —    |
-| Medium (1–1.5 cm) | Direct medium            | 200 °C       | 6–8 min  | Roll every 2 min            | —    |
-| Thick (>1.5 cm)   | Direct medium + indirect | 200 → 180 °C | 8–10 min | Roll once, move to indirect | —    |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side   | Total | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | ---------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 3 min 30 s | 7 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [Weber-DE] Spargeln 6–8 min. [Migusto] same. [BBCGF] 5–7 min.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -1011,24 +995,21 @@ Notes:
 
 ### Süsskartoffel (Sweet potato)
 
-| Cut | Heat zone | Grate temp | Timing | Total | Turns | Rest |
-| --- | --- | --- | --- | --- | --- | --- |
-| 1 cm slices, parboiled 5 min | Direct medium | 200 °C | 3 min/side | 6 min | Flip once | — |
-| 1.5 cm slices, raw | Direct medium + indirect | 200 → 180 °C | 4 direct + 8 indirect | 12–14 min | Flip once, move | — |
-| Halved lengthwise, whole | Indirect | 200 °C | 35–45 min | 35–45 min | Rotate halfway | — |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side    | Total  | Turns              | Rest |
+| --------- | -------- | ------------------ | ---------- | ----------- | ------ | ------------------ | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 17 min 30 s | 35 min | Flip every 2–3 min | —    |
 
-Sources: [Weber-DE] Süsskartoffeln ganz 40 min indirect. [BBCGF] slices 10–12 min. [SE] parboil trick.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ### Tofu (firm, pressed)
 
 Press 20–30 min under weight, dry the surface.
 
-| Cut                  | Heat zone     | Grate temp | Per side | Total   | Turns                    | Rest |
-| -------------------- | ------------- | ---------- | -------- | ------- | ------------------------ | ---- |
-| 2 cm slabs, pressed  | Direct medium | 200 °C     | 3–4 min  | 6–8 min | Flip once, minimal touch | —    |
-| 2 cm cubes on skewer | Direct medium | 200 °C     | 2 min    | 8 min   | Rotate every 2 min       | —    |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total  | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | -------- | ------ | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 220 °C     | 5 min    | 10 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [SE] tofu grilling. [BBCGF] 3–4 min/side. [Migusto] 3 min/Seite.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -1037,47 +1018,43 @@ Notes:
 
 ### Tomato (whole or halved)
 
-| Preparation                 | Heat zone     | Grate temp | Timing         | Total   | Turns              | Rest |
-| --------------------------- | ------------- | ---------- | -------------- | ------- | ------------------ | ---- |
-| Whole medium tomato         | Direct medium | 200 °C     | 6–8 min        | 6–8 min | Rotate every 2 min | —    |
-| Halved, cut-side down first | Direct medium | 200 °C     | 3 cut + 4 skin | 7–8 min | Flip once          | —    |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | -------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 4 min    | 8 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [BBCGF] 6–8 min. [Migusto] 3 min/Seite.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ### Zucchetti / Zucchini (slices lengthwise)
 
-| Cut                    | Heat zone     | Grate temp | Per side | Total | Turns     | Rest |
-| ---------------------- | ------------- | ---------- | -------- | ----- | --------- | ---- |
-| 5 mm strips lengthwise | Direct medium | 200 °C     | 2 min    | 4 min | Flip once | —    |
-| 1 cm rounds            | Direct medium | 200 °C     | 3 min    | 6 min | Flip once | —    |
-| 1 cm strips lengthwise | Direct medium | 200 °C     | 3 min    | 6 min | Flip once | —    |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | -------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 3 min    | 6 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [Weber-DE] Zucchetti 4–6 min. [Migusto] same.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ### Fenchel (Fennel, halved or wedges)
 
-| Cut           | Heat zone                | Grate temp   | Per side                | Total     | Turns           | Rest |
-| ------------- | ------------------------ | ------------ | ----------------------- | --------- | --------------- | ---- |
-| Halved (bulb) | Direct medium + indirect | 200 → 180 °C | 4 direct + 6–8 indirect | 10–12 min | Flip once, move | —    |
-| 1.5 cm wedges | Direct medium            | 200 °C       | 4–5 min                 | 8–10 min  | Flip once       | —    |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side   | Total  | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | ---------- | ------ | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 7 min 30 s | 15 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [BBCGF] 8–10 min. [Migusto] similar.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ### Frühlingszwiebeln (Spring onions, whole)
 
-| Cut            | Heat zone     | Grate temp | Total   | Turns           |
-| -------------- | ------------- | ---------- | ------- | --------------- |
-| Whole, trimmed | Direct medium | 200 °C     | 4–6 min | Roll every 90 s |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side   | Total | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | ---------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 2 min 30 s | 5 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [SE] grilled scallions 4–6 min. [BBCGF] same.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ### Plant-based burger patty (Beyond, Impossible, Cornatur)
 
-| Thickness                      | Heat zone          | Grate temp | Per side | Total   | Turns     | Rest  |
-| ------------------------------ | ------------------ | ---------- | -------- | ------- | --------- | ----- |
-| 1.5–2 cm (typical 113 g patty) | Direct medium-high | 230 °C     | 3–4 min  | 6–8 min | Flip once | 2 min |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side   | Total | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | ---------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 250 °C     | 4 min 30 s | 9 min | Flip once at halfway (Migros default) | —    |
 
-Sources: Beyond Meat official grilling guide. [SE] plant-based burger comparison.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -1087,11 +1064,11 @@ Notes:
 
 ### Cornatur-style veggie steak (seitan / wheat-protein)
 
-| Thickness | Heat zone     | Grate temp | Per side | Total | Turns     | Rest  |
-| --------- | ------------- | ---------- | -------- | ----- | --------- | ----- |
-| 1.5–2 cm  | Direct medium | 200 °C     | 3 min    | 6 min | Flip once | 2 min |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | -------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 4 min    | 8 min | Flip once at halfway (Migros default) | —    |
 
-Sources: Cornatur pack directions. [Migusto] generic vegi steak 3 min/Seite.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ---
 
@@ -1101,37 +1078,35 @@ Grilled fruit rules: dry surface, hot grate, oil lightly, don't move it. High su
 
 ### Ananas (Pineapple, rings)
 
-| Cut                  | Heat zone     | Grate temp | Per side | Total              | Turns              | Rest |
-| -------------------- | ------------- | ---------- | -------- | ------------------ | ------------------ | ---- |
-| 1.5 cm rings, peeled | Direct medium | 200 °C     | 3–4 min  | 6–8 min            | Flip once          | —    |
-| 2 cm spears          | Direct medium | 200 °C     | 3 min    | 9–12 min (3 sides) | Rotate every 3 min | —    |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | -------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 4 min    | 8 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [Weber-DE] Ananas 3–4 min/Seite. [Migusto] same. [BBCGF] 2–3 min/side.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ### Apfel (Apple, halved or rings)
 
-| Cut                  | Heat zone                | Grate temp   | Per side             | Total    | Turns           | Rest |
-| -------------------- | ------------------------ | ------------ | -------------------- | -------- | --------------- | ---- |
-| 1 cm rings, cored    | Direct medium            | 200 °C       | 3 min                | 6 min    | Flip once       | —    |
-| Halved, core removed | Direct medium + indirect | 200 → 180 °C | 2 cut + 6–8 indirect | 8–10 min | Flip once, move | —    |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | -------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 4 min    | 8 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [Weber-DE] Apfelringe 6 min. [BBCGF] halved 8 min.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ### Aprikosen (Apricots, halved)
 
-| Cut            | Heat zone     | Grate temp | Per side | Total   | Turns     | Rest |
-| -------------- | ------------- | ---------- | -------- | ------- | --------- | ---- |
-| Halved, pitted | Direct medium | 200 °C     | 2 min    | 3–4 min | Flip once | —    |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | -------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 2 min    | 4 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [BBCGF] 2 min/side. [Migusto] same.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ### Avocado (Halved, pit removed)
 
-| Cut                            | Heat zone     | Grate temp | Per side              | Total   | Turns   | Rest |
-| ------------------------------ | ------------- | ---------- | --------------------- | ------- | ------- | ---- |
-| Halved, skin-on, cut-side down | Direct medium | 200 °C     | 2–3 min cut-side only | 2–3 min | No flip | —    |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | -------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 2 min    | 4 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [SE] avocado grilling. [BBCGF] 2–3 min.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -1140,20 +1115,19 @@ Notes:
 
 ### Banane (Banana, in skin, slit)
 
-| Cut                                              | Heat zone     | Grate temp | Total      | Turns          |
-| ------------------------------------------------ | ------------- | ---------- | ---------- | -------------- |
-| In skin, slit lengthwise, stuffed with chocolate | Indirect      | 200 °C     | 8–10 min   | None (skin-up) |
-| Halved lengthwise, peeled                        | Direct medium | 200 °C     | 2 min/side | Flip once      |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side   | Total  | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | ---------- | ------ | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 7 min 30 s | 15 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [Migusto] Banane im Skin 8 min. [Weber-DE] 10 min.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ### Feigen (Figs, halved)
 
-| Cut    | Heat zone     | Grate temp | Per side   | Total   | Turns     | Rest |
-| ------ | ------------- | ---------- | ---------- | ------- | --------- | ---- |
-| Halved | Direct medium | 200 °C     | 90 s–2 min | 3–4 min | Flip once | —    |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side   | Total | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | ---------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 2 min 30 s | 5 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [BBCGF] 2 min/side. [SE] 3–4 min total.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -1161,21 +1135,19 @@ Notes:
 
 ### Mango (Cheeks / wedges)
 
-| Cut             | Heat zone     | Grate temp | Per side | Total   | Turns     | Rest |
-| --------------- | ------------- | ---------- | -------- | ------- | --------- | ---- |
-| Cheeks (scored) | Direct medium | 200 °C     | 2–3 min  | 4–6 min | Flip once | —    |
-| 1.5 cm slices   | Direct medium | 200 °C     | 2 min    | 4 min   | Flip once | —    |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | -------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 2 min    | 4 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [BBCGF] 2 min/side. [Migusto] same.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ### Marroni (Chestnuts, scored)
 
-| Preparation                              | Heat zone     | Grate temp | Total     | Turns                    |
-| ---------------------------------------- | ------------- | ---------- | --------- | ------------------------ |
-| Whole, X cut on flat side, soaked 15 min | Indirect      | 220 °C     | 20–30 min | Rotate every 10 min      |
-| Whole, X cut, direct                     | Direct medium | 200 °C     | 15–20 min | Shake basket every 3 min |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total  | Turns              | Rest |
+| --------- | -------- | ------------------ | ---------- | -------- | ------ | ------------------ | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 15 min   | 30 min | Flip every 2–3 min | —    |
 
-Sources: [BBossi] Marroni 20 min. [Migusto] 25 min.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -1184,27 +1156,27 @@ Notes:
 
 ### Nektarinen (Nectarines, halved)
 
-| Cut            | Heat zone     | Grate temp | Per side | Total | Turns     | Rest |
-| -------------- | ------------- | ---------- | -------- | ----- | --------- | ---- |
-| Halved, pitted | Direct medium | 200 °C     | 3 min    | 6 min | Flip once | —    |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | -------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 2 min    | 4 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [BBCGF] 3 min/side. [Weber-DE] same.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ### Pfirsiche (Peaches, halved)
 
-| Cut            | Heat zone     | Grate temp | Per side | Total   | Turns     | Rest |
-| -------------- | ------------- | ---------- | -------- | ------- | --------- | ---- |
-| Halved, pitted | Direct medium | 200 °C     | 3–4 min  | 6–8 min | Flip once | —    |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | -------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 2 min    | 4 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [BBCGF] 3–4 min/side. [Migusto] 3 min/Seite.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 ### Wassermelone (Watermelon, thick slices)
 
-| Cut                       | Heat zone          | Grate temp | Per side | Total   | Turns     | Rest |
-| ------------------------- | ------------------ | ---------- | -------- | ------- | --------- | ---- |
-| 2.5–3 cm triangle / slice | Direct medium-high | 230 °C     | 2–3 min  | 4–6 min | Flip once | —    |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | -------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 2 min    | 4 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [BBCGF] 3 min/side. [SE] grilled watermelon 5 min total.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
@@ -1212,11 +1184,11 @@ Notes:
 
 ### Zitrone / Limette (Lemon / Lime, halved, for dressing)
 
-| Cut                   | Heat zone          | Grate temp | Total   | Turns                |
-| --------------------- | ------------------ | ---------- | ------- | -------------------- |
-| Halved, cut-side down | Direct medium-high | 230 °C     | 2–4 min | None (cut-side only) |
+| Thickness | Doneness | Heat zone          | Grate temp | Per side | Total | Turns                                 | Rest |
+| --------- | -------- | ------------------ | ---------- | -------- | ----- | ------------------------------------- | ---- |
+| —         | —        | Direct, lid closed | 200 °C     | 2 min    | 4 min | Flip once at halfway (Migros default) | —    |
 
-Sources: [SE] grilled citrus. [Weber-US] 2–3 min.
+Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2026-04-25).
 
 Notes:
 
