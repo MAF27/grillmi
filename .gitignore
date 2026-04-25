@@ -44,6 +44,8 @@ coverage/
 .coverage
 htmlcov/
 .nyc_output/
+test-results/
+playwright-report/
 
 # MCP cache (per global CLAUDE.md)
 .mcp/

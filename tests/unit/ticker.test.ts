@@ -1,0 +1,111 @@
+import { describe, expect, it } from 'vitest'
+import { createTicker, type TickerEvent } from '$lib/runtime/ticker'
+import type { SessionItem } from '$lib/models'
+
+function makeItem(over: Partial<SessionItem> = {}): SessionItem {
+	const NOW = 1_000_000
+	return {
+		id: 'a',
+		categorySlug: 'beef',
+		cutSlug: 'entrecote',
+		thicknessCm: 3,
+		prepLabel: null,
+		doneness: 'Medium-rare',
+		label: 'Steak',
+		cookSeconds: 360,
+		restSeconds: 300,
+		flipFraction: 0.5,
+		idealFlipPattern: 'once',
+		heatZone: 'Direct high',
+		putOnEpoch: NOW + 1000,
+		flipEpoch: NOW + 1000 + 180_000,
+		doneEpoch: NOW + 1000 + 360_000,
+		restingUntilEpoch: NOW + 1000 + 360_000 + 300_000,
+		status: 'pending',
+		overdue: false,
+		flipFired: false,
+		platedEpoch: null,
+		...over,
+	}
+}
+
+describe('ticker', () => {
+	it('test_ticker_transitions_pending_to_cooking_at_put_on', () => {
+		const item = makeItem()
+		const events: TickerEvent[] = []
+		let now = item.putOnEpoch - 100
+		const t = createTicker({
+			getItems: () => [item],
+			updateItem: (_, patch) => Object.assign(item, patch),
+			emit: e => events.push(e),
+			now: () => now,
+		})
+		t.tickOnce()
+		expect(item.status).toBe('pending')
+		now = item.putOnEpoch + 1
+		t.tickOnce()
+		expect(item.status).toBe('cooking')
+		expect(events.find(e => e.type === 'put-on')).toBeTruthy()
+	})
+
+	it('test_ticker_emits_flip_event_once', () => {
+		const item = makeItem({ status: 'cooking', putOnEpoch: 0, doneEpoch: 360_000, flipEpoch: 100 })
+		const events: TickerEvent[] = []
+		let now = 200
+		const t = createTicker({
+			getItems: () => [item],
+			updateItem: (_, patch) => Object.assign(item, patch),
+			emit: e => events.push(e),
+			now: () => now,
+		})
+		t.tickOnce()
+		t.tickOnce()
+		now = 300
+		t.tickOnce()
+		expect(events.filter(e => e.type === 'flip').length).toBe(1)
+	})
+
+	it('test_ticker_transitions_cooking_to_resting_at_done', () => {
+		const item = makeItem({ status: 'cooking' })
+		const events: TickerEvent[] = []
+		const now = item.doneEpoch + 1
+		const t = createTicker({
+			getItems: () => [item],
+			updateItem: (_, patch) => Object.assign(item, patch),
+			emit: e => events.push(e),
+			now: () => now,
+		})
+		t.tickOnce()
+		expect(item.status).toBe('resting')
+	})
+
+	it('test_ticker_transitions_cooking_to_ready_when_no_rest', () => {
+		const item = makeItem({ status: 'cooking', restingUntilEpoch: 0, restSeconds: 0 })
+		item.restingUntilEpoch = item.doneEpoch
+		const events: TickerEvent[] = []
+		const now = item.doneEpoch + 1
+		const t = createTicker({
+			getItems: () => [item],
+			updateItem: (_, patch) => Object.assign(item, patch),
+			emit: e => events.push(e),
+			now: () => now,
+		})
+		t.tickOnce()
+		expect(item.status).toBe('ready')
+	})
+
+	it('test_ticker_transitions_resting_to_ready', () => {
+		const item = makeItem({ status: 'resting' })
+		const events: TickerEvent[] = []
+		const now = item.restingUntilEpoch + 1
+		const t = createTicker({
+			getItems: () => [item],
+			updateItem: (_, patch) => Object.assign(item, patch),
+			emit: e => events.push(e),
+			now: () => now,
+		})
+		t.tickOnce()
+		expect(item.status).toBe('ready')
+		expect(events.find(e => e.type === 'resting-complete')).toBeTruthy()
+	})
+})
