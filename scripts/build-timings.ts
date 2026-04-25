@@ -332,88 +332,12 @@ function parse(): { timings: Awaited<ReturnType<typeof timingsSchema.parseAsync>
 		stats.categories += 1
 	}
 
-	fillDonenesses(categories, stats)
-
 	const timings = timingsSchema.parse({
 		version: '1.0.0',
 		generatedAt: new Date().toISOString(),
 		categories,
 	})
 	return { timings, stats }
-}
-
-// Categories where the user expects every steak doneness (Rare/Medium-rare/Medium/Well-done)
-// to be selectable, even if the reference markdown only documents one or two.
-const STEAK_DONENESS_CATEGORIES = new Set(['beef', 'veal', 'pork', 'lamb', 'horse'])
-const REQUIRED_STEAK_DONENESSES = ['Rare', 'Medium-rare', 'Medium', 'Well-done'] as const
-// Cook-time scaling factors against documented Medium-rare. Derived from the
-// Rinds-Entrecôte reference rows (Rare 0.78x, Medium 1.28x, Well-done 1.71x).
-const DONENESS_SCALE: Record<string, number> = {
-	Rare: 0.78,
-	'Medium-rare': 1.0,
-	Medium: 1.28,
-	'Well-done': 1.71,
-}
-
-function scaleRow(base: TimingRow, fromDoneness: string, toDoneness: string): TimingRow {
-	const fromScale = DONENESS_SCALE[fromDoneness] ?? 1
-	const toScale = DONENESS_SCALE[toDoneness] ?? 1
-	const factor = toScale / fromScale
-	return {
-		...base,
-		doneness: toDoneness,
-		cookSecondsMin: Math.round(base.cookSecondsMin * factor),
-		cookSecondsMax: Math.round(base.cookSecondsMax * factor),
-	}
-}
-
-function fillDonenesses(categories: Category[], stats: ParseStats): void {
-	void stats
-	for (const cat of categories) {
-		if (!STEAK_DONENESS_CATEGORIES.has(cat.slug)) continue
-		for (const cut of cat.cuts) {
-			if (!cut.hasDoneness) continue
-
-			// Group documented rows by thickness (or 'all' when there is no thickness axis)
-			const buckets = new Map<string, TimingRow[]>()
-			for (const r of cut.rows) {
-				const key = r.thicknessCm === null ? 'all' : r.thicknessCm.toString()
-				if (!buckets.has(key)) buckets.set(key, [])
-				buckets.get(key)!.push(r)
-			}
-
-			const synthesized: TimingRow[] = []
-			for (const [, rows] of buckets) {
-				const have = new Set(rows.map(r => r.doneness).filter((d): d is string => d !== null))
-				if (have.size === 0) continue
-
-				// Anchor = Medium-rare if present, else the row whose scale we can use most reliably
-				const anchor =
-					rows.find(r => r.doneness === 'Medium-rare') ??
-					rows.find(r => r.doneness && DONENESS_SCALE[r.doneness] !== undefined) ??
-					rows[0]
-				if (!anchor.doneness) continue
-
-				for (const target of REQUIRED_STEAK_DONENESSES) {
-					if (have.has(target)) continue
-					if (!(target in DONENESS_SCALE) || !(anchor.doneness in DONENESS_SCALE)) continue
-					synthesized.push(scaleRow(anchor, anchor.doneness, target))
-				}
-			}
-
-			if (synthesized.length > 0) {
-				cut.rows.push(...synthesized)
-				cut.rows.sort((a, b) => {
-					const ta = a.thicknessCm ?? 0
-					const tb = b.thicknessCm ?? 0
-					if (ta !== tb) return ta - tb
-					const da = REQUIRED_STEAK_DONENESSES.indexOf(a.doneness as never)
-					const db = REQUIRED_STEAK_DONENESSES.indexOf(b.doneness as never)
-					return (da === -1 ? 99 : da) - (db === -1 ? 99 : db)
-				})
-			}
-		}
-	}
 }
 
 function emit(): void {

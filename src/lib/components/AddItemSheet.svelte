@@ -195,9 +195,7 @@
 	})
 
 	const prepOptions = $derived(
-		!cut?.hasThickness && cut
-			? [...new Set(cut.rows.map(r => r.prepLabel).filter((v): v is string => v !== null))]
-			: [],
+		!cut?.hasThickness && cut ? [...new Set(cut.rows.map(r => r.prepLabel).filter((v): v is string => v !== null))] : [],
 	)
 
 	const specsComplete = $derived.by(() => {
