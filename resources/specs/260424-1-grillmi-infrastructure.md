@@ -11,16 +11,16 @@
 
 ### Goal
 
-Stand up the hosting, networking, secrets, and deployment pipeline that Grillmi v1 needs before any app code runs. Dev work happens on a VM on `atticus`; prod serves a static SvelteKit build on an LXC on `atlas`. This spec ends when Marco can push a scaffold commit to the Git remote on `alcazar`, trigger an Ansible run, and see a placeholder page at both the dev and prod URLs.
+Stand up the hosting, networking, secrets, and deployment pipeline that Grillmi v1 needs before any app code runs. Dev work happens on a VM on `atticus`; prod serves a static SvelteKit build on an LXC on `atlas`. This spec ends when Marco can push a scaffold commit to GitHub, trigger an Ansible run, and see a placeholder page at both the dev and prod URLs.
 
 ### Proposal
 
-Provision one Ubuntu 24.04 LTS dev VM and one Ubuntu 24.04 LTS prod LXC, wire up internal NPM routing (dev) and a Cloudflare Tunnel (prod) for external access — no open inbound ports anywhere. Install Node 22 LTS + pnpm + Caddy on both hosts; `cloudflared` only on the prod LXC. Add the Ansible inventory and role so a single `ansible-playbook grillmi-deploy.yml` command clones / pulls the alcazar remote into `/opt/grillmi`, installs dependencies, builds the SvelteKit `adapter-static` output on-host, and reloads Caddy (bound to `127.0.0.1:80` only).
+Provision one Ubuntu 24.04 LTS dev VM and one Ubuntu 24.04 LTS prod LXC, wire up internal NPM routing (dev) and a Cloudflare Tunnel (prod) for external access — no open inbound ports anywhere. Install Node 22 LTS + pnpm + Caddy on both hosts; `cloudflared` only on the prod LXC. Add the Ansible inventory and role so a single `ansible-playbook grillmi-deploy.yml` command clones / pulls the GitHub remote into `/opt/grillmi`, installs dependencies, builds the SvelteKit `adapter-static` output on-host, and reloads Caddy (bound to `127.0.0.1:80` only).
 
 ### Behaviors
 
-- Marco SSHs to `grillmi-dev` (via VS Code Remote-SSH) and develops against a fully provisioned Linux environment: Node, pnpm, git, and the grillmi repo cloned from alcazar.
-- Running `ansible-playbook playbooks/applications/grillmi-deploy.yml --limit grillmi_dev` pulls the latest commit from alcazar on `grillmi-dev`, builds it, and reloads Caddy to serve `grillmi.krafted.cc` (internal).
+- Marco SSHs to `grillmi-dev` (via VS Code Remote-SSH) and develops against a fully provisioned Linux environment: Node, pnpm, git, and the grillmi repo cloned from GitHub.
+- Running `ansible-playbook playbooks/applications/grillmi-deploy.yml --limit grillmi_dev` pulls the latest commit from GitHub on `grillmi-dev`, builds it, and reloads Caddy to serve `grillmi.krafted.cc` (internal).
 - Running the same playbook with `--limit grillmi_prod` does the same on `grillmi` and serves `grillmi.cloud` (public).
 - Both URLs serve HTTPS with valid certificates. The internal URL is routed through NPM on argus with a `*.krafted.cc` wildcard issued via DNS-01. The public URL is served through a Cloudflare Tunnel on the prod LXC — Cloudflare terminates TLS with its own cert; no inbound ports are open on atlas or any home-lab host.
 - `doppler run -p grillmi -c prd -- <command>` (and `-c dev`) resolves all secrets. No `.env` files, no hardcoded credentials anywhere in the repo.
@@ -28,7 +28,7 @@ Provision one Ubuntu 24.04 LTS dev VM and one Ubuntu 24.04 LTS prod LXC, wire up
 ### Out of scope
 
 - SvelteKit scaffold, component code, PWA manifest, service worker, grill-data pipeline — all handled in Spec 2.
-- CI/CD runners and GitHub Actions — both deploys are still triggered by `ansible-playbook` from Marco's Mac. GitHub *is* used as the prod git remote (atlas LXCs have no route to the atticus-internal alcazar repo); dev uses alcazar. No automation on push.
+- CI/CD runners and GitHub Actions — both deploys are triggered by `ansible-playbook` from Marco's Mac. GitHub is the single git remote for both dev and prod; no automation on push.
 - Monitoring, log shipping, uptime alerting — Grillmi is personal-only; add later if desired.
 - Push-notification worker or any backend service — v1 is static PWA.
 - Backups beyond what Proxmox Backup Server already captures at the host level.
@@ -41,7 +41,7 @@ Provision one Ubuntu 24.04 LTS dev VM and one Ubuntu 24.04 LTS prod LXC, wire up
 
 Both hosts run **Ubuntu 24.04 LTS** — VM on atticus from the `ubuntu-24.04-server-cloudimg-amd64` cloud image, LXC on atlas from the `ubuntu-24.04-standard` container template. Picking one distro on both hosts means a single APT source list, one GPG-key path per third-party repo, and one set of package names in the Ansible role (no Debian/Ubuntu conditional).
 
-Thin-playbook, thick-role: a Doppler project named `grillmi` with `dev` and `prd` configs, an Ansible role `app_grillmi`, a deploy playbook wrapping the role, inventory entries for both hosts, and per-host `host_vars`. The role does the full deploy in one pass: clone or fast-forward `/opt/grillmi` from the per-host git remote, `pnpm install --frozen-lockfile`, `pnpm build` to produce a static `adapter-static` output, deploy the Caddyfile, reload Caddy. Git remote differs by host: `grillmi-dev` (on the atticus-internal VLAN) pulls from `alcazar:/git/grillmi.git`; `grillmi` (atlas, separate VLAN with no route into atticus-internal) pulls from `https://github.com/MAF27/grillmi.git`. Both hosts carry Node 22 LTS, pnpm (via `corepack enable pnpm`), and Caddy; only the prod LXC additionally carries `cloudflared`.
+Thin-playbook, thick-role: a Doppler project named `grillmi` with `dev` and `prd` configs, an Ansible role `app_grillmi`, a deploy playbook wrapping the role, inventory entries for both hosts, and per-host `host_vars`. The role does the full deploy in one pass: clone or fast-forward `/opt/grillmi` from `https://github.com/MAF27/grillmi.git` (the single git remote for both hosts), `pnpm install --frozen-lockfile`, `pnpm build` to produce a static `adapter-static` output, deploy the Caddyfile, reload Caddy. Both hosts carry Node 22 LTS, pnpm (via `corepack enable pnpm`), and Caddy; only the prod LXC additionally carries `cloudflared`.
 
 Public access uses Cloudflare Tunnel — the mandatory pattern for any home-lab service reachable from the public internet (see global CLAUDE.md). `grillmi.cloud` has its nameservers on Cloudflare; a named tunnel on the prod LXC registers a public hostname mapping `grillmi.cloud → http://localhost:80`. The `cloudflared` Debian package is installed via the official Cloudflare APT repo; the role then writes `/etc/systemd/system/cloudflared.service` from a Jinja template whose `ExecStart=/usr/bin/cloudflared tunnel --no-autoupdate run --token {{ grillmi_cloudflare_tunnel_token }}` — the token is read from Doppler `grillmi/prd` at playbook runtime (never committed, never written to disk outside the unit file). Caddy on the LXC binds to `127.0.0.1:80` only. Cloudflare serves the public TLS cert; no DNS A record points at home infrastructure and no inbound ports are opened anywhere.
 
@@ -51,7 +51,7 @@ Secrets live in Doppler project `grillmi` with configs `dev` and `prd`. The app-
 
 ### Approach Validation
 
-- **Homelab conventions codified** — inventory lives at `~/dev/ansible/inventory/hosts.yml`; app groups follow the `<app>_apps` / `<app>_dev` / `<app>_prod` naming. Become-password lookups use `~/dev/scripts/get_secret <app> BECOME_PASSWORD [dev]` against the app's own Doppler project. Doppler service tokens live in `deploy-tokens/prd` as `<APP>_<ENV>_DOPPLER_TOKEN`. Atlas production LXCs carry the Proxmox tag `33-production` (VLAN-33 convention per `~/dev/reference/infrastructure-inventory.md`). Host facts (atticus = lab Proxmox, atlas = always-on prod, alcazar = git server, argus = NPM host) are authoritative in that inventory document.
+- **Homelab conventions codified** — inventory lives at `~/dev/ansible/inventory/hosts.yml`; app groups follow the `<app>_apps` / `<app>_dev` / `<app>_prod` naming. Become-password lookups use `~/dev/scripts/get_secret <app> BECOME_PASSWORD [dev]` against the app's own Doppler project. Doppler service tokens live in `deploy-tokens/prd` as `<APP>_<ENV>_DOPPLER_TOKEN`. Atlas production LXCs carry the Proxmox tag `33-production` (VLAN-33 convention per `~/dev/reference/infrastructure-inventory.md`). Host facts (atticus = lab Proxmox, atlas = always-on prod, argus = NPM host) are authoritative in that inventory document.
 - **Domain conventions** — `~/dev/reference/domain-inventory.md` documents the NPM-on-argus pattern for `*.krafted.me` (LAN-only internal) and the Cloudflare-Tunnel pattern for public access (no open ports). `krafted.cc` is currently listed "reserved for future use"; this spec activates it as the second internal wildcard zone.
 - **Adapter choice** — `resources/docs/stack-research-apr-2026.md` confirms `adapter-static` for SvelteKit is the smallest, simplest fit for an offline-first PWA with no server-side rendering requirement. Caddy serves the static build locally; Cloudflare fronts it for public access.
 - **Trade-off decided** — build-on-prod over artifact-transfer. Prod is sized at 1 CPU / 2 GB RAM: web research ([technetexperts.com, sveltejs/kit #7989](https://github.com/sveltejs/kit/discussions/7989)) shows small SvelteKit + Tailwind builds peak around 1 GB heap with default settings, so 2 GB gives a 2× margin; single-CPU is fine because Rollup is mostly serial and Caddy at runtime is idle. A git-pull-and-build deploy is simpler than an artifact pipeline, keeps the repo as single source of truth, and removes the need for a `dist` branch. If a specific build later OOMs, the first-line fix is `build.sourcemap: false` + `rollupOptions.maxParallelFileOps: 2` + `NODE_OPTIONS=--max-old-space-size=1536`, not a resize.
@@ -101,7 +101,7 @@ Address allocation is plain DHCP — no Fixed IP reservations. Findability comes
 - [x] From the Ansible controller, run `ansible grillmi-dev -m ping` and `ansible grillmi -m ping` — both return `SUCCESS`. If either fails, stop and fix; do not proceed with ambiguous connectivity.
 - [x] Verify Proxmox tags: `sudo qm config <vmid>` on atticus shows `tags: 400-development`; `sudo pct config <ctid>` on atlas shows `tags: 33-production`.
 - [x] Record CT/VM IDs, MAC addresses, and tags in `~/dev/reference/infrastructure-inventory.md`. IP addresses are not recorded — they're ephemeral under DHCP and resolution is via hostname. (`grillmi-dev` = VMID 480 on atticus, vmbr1, tag `400-development`; `grillmi` = CTID 114 on atlas, vmbr0, tag `33-production`.)
-- [x] Run the `base_setup` role against both hosts (must complete before Phase 4). It provisions the `maf` user and their SSH keys, configures git identity, writes `~/.ssh/config` with a `Host alcazar` entry (`User maf`), and installs base packages. **Acceptance differs by host:** on `grillmi-dev` (atticus, vmbr1), `ssh -o BatchMode=yes alcazar echo ok` must print `ok` because dev pulls from `alcazar:/git/grillmi.git`. On `grillmi` (atlas, vmbr0), atlas has no route into the atticus internal VLAN, so alcazar is unreachable by design — prod pulls from GitHub (`https://github.com/MAF27/grillmi.git`) instead, which is why the prod `host_vars` carries that URL.
+- [x] Run the `base_setup` role against both hosts (must complete before Phase 4). It provisions the `maf` user and their SSH keys, configures git identity, and installs base packages. Acceptance: `ansible grillmi_apps -m ping` succeeds and `git --version` runs as `maf` on both hosts.
 
 **Phase 4: Ansible inventory and role**
 
@@ -121,17 +121,17 @@ Address allocation is plain DHCP — no Fixed IP reservations. Findability comes
   (j) reload Caddy via handler (only when step (i) changed the file).
 - [x] Caddyfile template: single site block at `:80` with a conditional `bind 127.0.0.1` line emitted only when `grillmi_environment == "prod"` — prod must be loopback-only because `cloudflared` runs on the same LXC and Cloudflare fronts public TLS, while dev intentionally binds all interfaces so NPM on argus can reach it over the LAN to terminate `*.krafted.cc` TLS. Body: `root * /opt/grillmi/build`, `file_server`, `try_files {path} /index.html` for SvelteKit SPA routing. No Caddy TLS configuration on either host — prod TLS at the Cloudflare edge, dev TLS at NPM. The role does not configure UFW directly; it runs a verification task that fails if `ufw status numbered` on either host shows an allow rule on anything other than `22/tcp` (SSH).
 - [x] Create `~/dev/ansible/playbooks/applications/grillmi-deploy.yml` as a thin wrapper calling the `app_grillmi` role against `grillmi_apps`, tagged `grillmi`.
-- [x] Per-host `host_vars` at `~/dev/ansible/inventory/host_vars/grillmi-dev/vars.yml` and `~/dev/ansible/inventory/host_vars/grillmi/vars.yml` (path matches the inventory host name; the prod host is `grillmi`, not `grillmi-prod`). Set `grillmi_domain` (`grillmi.krafted.cc` on dev, `grillmi.cloud` on prod), `grillmi_environment` (`dev` / `prod`), `grillmi_public_base_url` (full `https://...`), `grillmi_repo_url: alcazar:/git/grillmi.git`, `grillmi_git_ref: main`. On prod only, also set `grillmi_cloudflare_tunnel_token: "{{ lookup('ansible.builtin.pipe', '~/dev/scripts/get_secret grillmi CLOUDFLARE_TUNNEL_TOKEN') | trim }}"`.
+- [x] Per-host `host_vars` at `~/dev/ansible/inventory/host_vars/grillmi-dev/vars.yml` and `~/dev/ansible/inventory/host_vars/grillmi/vars.yml` (path matches the inventory host name; the prod host is `grillmi`, not `grillmi-prod`). Set `grillmi_domain` (`grillmi.krafted.cc` on dev, `grillmi.cloud` on prod), `grillmi_environment` (`dev` / `prod`), `grillmi_public_base_url` (full `https://...`), `grillmi_repo_url: https://github.com/MAF27/grillmi.git`, `grillmi_git_ref: main`. On prod only, also set `grillmi_cloudflare_tunnel_token: "{{ lookup('ansible.builtin.pipe', '~/dev/scripts/get_secret grillmi CLOUDFLARE_TUNNEL_TOKEN') | trim }}"`.
 
 **Phase 5: Dev-side developer setup**
 
 - [x] On `grillmi-dev`: confirm Node 22 LTS, pnpm, git, and build-essential are present (installed by the role in Phase 4). VS Code Remote-SSH server bootstraps on first connect. (Verified: Node v24.5.0 — newer than 22 — pnpm 10.33.2, git, build artifacts present.)
 - [x] On both hosts, the first `ansible-playbook ... grillmi-deploy.yml` run clones the repo and builds it end-to-end. Until Spec 2 ships real app code, `main` carries a minimal SvelteKit scaffold whose root route renders "Grillmi — coming soon" so the deploy path can be verified before the full app is written.
 
-**Phase 6: Git remote on alcazar**
+**Phase 6: Git remote (GitHub)**
 
-- [x] Bare repo `alcazar:/git/grillmi.git` created and scaffold commit pushed from Marco's Mac (April 2026).
-- [x] On `grillmi-dev`, clone from `alcazar:/git/grillmi.git` into `/home/maf/dev/grillmi` for interactive development. Working-copy checkouts at `/opt/grillmi` on both hosts are managed by the Ansible role, not by hand.
+- [x] GitHub repo `https://github.com/MAF27/grillmi.git` created and scaffold commit pushed (April 2026). GitHub is the single git remote for both hosts; alcazar is not used for grillmi.
+- [x] On `grillmi-dev`, clone from `https://github.com/MAF27/grillmi.git` into `/home/maf/dev/grillmi` for interactive development. Working-copy checkouts at `/opt/grillmi` on both hosts are managed by the Ansible role, not by hand.
 
 **Phase 7: End-to-end deploy verification**
 
