@@ -3,17 +3,20 @@
 /// <reference lib="esnext" />
 /// <reference lib="webworker" />
 
-import { build, files, version } from '$service-worker'
-import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching'
-import { registerRoute } from 'workbox-routing'
+import { build, files, prerendered, version } from '$service-worker'
+import { precacheAndRoute, cleanupOutdatedCaches, createHandlerBoundToURL } from 'workbox-precaching'
+import { registerRoute, NavigationRoute } from 'workbox-routing'
 import { CacheFirst, StaleWhileRevalidate } from 'workbox-strategies'
 
 declare const self: ServiceWorkerGlobalScope
 
-const PRECACHE = [...build, ...files].map(url => ({ url, revision: version }))
+const PRECACHE = [...build, ...files, ...prerendered].map(url => ({ url, revision: version }))
 
 precacheAndRoute(PRECACHE)
 cleanupOutdatedCaches()
+
+// SPA navigation fallback: any client-side route the precache doesn't have lands on the precached `/`.
+registerRoute(new NavigationRoute(createHandlerBoundToURL('/')))
 
 registerRoute(({ url }) => url.pathname.startsWith('/sounds/'), new CacheFirst({ cacheName: `grillmi-sounds-${version}` }))
 registerRoute(({ url }) => url.pathname.startsWith('/icons/'), new CacheFirst({ cacheName: `grillmi-icons-${version}` }))
