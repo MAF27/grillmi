@@ -12,7 +12,20 @@ function defaultTarget(now = Date.now()): number {
 }
 
 function defaultPlan(): Plan {
-	return { targetEpoch: defaultTarget(), items: [] }
+	return { targetEpoch: defaultTarget(), items: [], mode: 'now' }
+}
+
+/**
+ * Time everything must finish so each item is ready at the same moment.
+ * In 'now' mode: now + max(cookSeconds + restSeconds) so the slowest dish
+ * finishes when started immediately and faster dishes are staggered later.
+ * In 'time' mode: the user's pinned eating time.
+ */
+function effectiveTargetEpoch(p: Plan, now: number): number {
+	if (p.mode === 'time') return p.targetEpoch
+	if (p.items.length === 0) return now
+	const longestMs = Math.max(...p.items.map(i => (i.cookSeconds + i.restSeconds) * 1000))
+	return now + longestMs
 }
 
 function createSessionStore() {
@@ -99,7 +112,16 @@ function createSessionStore() {
 		},
 
 		setTargetTime(epoch: number) {
-			plan = { ...plan, targetEpoch: epoch }
+			// Setting an explicit time switches the plan into 'time' mode.
+			plan = { ...plan, targetEpoch: epoch, mode: 'time' }
+		},
+
+		setPlanMode(mode: 'now' | 'time') {
+			plan = { ...plan, mode }
+		},
+
+		effectiveTargetEpoch(now: number = Date.now()) {
+			return effectiveTargetEpoch(plan, now)
 		},
 
 		addItem(item: Omit<PlannedItem, 'id'>): PlannedItem {
@@ -123,18 +145,19 @@ function createSessionStore() {
 		},
 
 		loadFromFavorite(items: PlannedItem[]) {
-			plan = { targetEpoch: defaultTarget(), items: items.map(i => ({ ...i, id: uuid() })) }
+			plan = { targetEpoch: defaultTarget(), items: items.map(i => ({ ...i, id: uuid() })), mode: 'now' }
 		},
 
 		async startSession(): Promise<Session> {
 			if (plan.items.length === 0) throw new Error('cannot start: no items in plan')
 			const now = Date.now()
-			const result = schedule({ targetEpoch: plan.targetEpoch, items: plan.items, now })
+			const targetEpoch = effectiveTargetEpoch(plan, now)
+			const result = schedule({ targetEpoch, items: plan.items, now })
 			const sessionItems: SessionItem[] = plan.items.map((p, i) => buildSessionItem(p, result.items[i], now))
 			const newSession = sessionSchema.parse({
 				id: uuid(),
 				createdAtEpoch: now,
-				targetEpoch: plan.targetEpoch,
+				targetEpoch,
 				endedAtEpoch: null,
 				items: sessionItems,
 			})

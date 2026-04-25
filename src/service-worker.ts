@@ -26,6 +26,23 @@ self.addEventListener('install', () => {
 	void self.skipWaiting()
 })
 
+// Aggressive cache eviction: on every activation, delete any cache whose name
+// is not one this build produced. This handles the case where a previous
+// deploy poisoned the precache (e.g. with HTML returned for a missing chunk
+// URL) — we cannot trust the prior precache contents at all, so we wipe.
+const VALID_CACHE_NAMES = new Set([`grillmi-sounds-${version}`, `grillmi-icons-${version}`, `grillmi-manifest-${version}`])
+
 self.addEventListener('activate', event => {
-	event.waitUntil(self.clients.claim())
+	event.waitUntil(
+		(async () => {
+			const keys = await caches.keys()
+			await Promise.all(
+				keys.map(key => {
+					if (key.startsWith('workbox-precache') || VALID_CACHE_NAMES.has(key)) return undefined
+					return caches.delete(key)
+				}),
+			)
+			await self.clients.claim()
+		})(),
+	)
 })

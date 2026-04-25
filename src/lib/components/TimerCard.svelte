@@ -116,6 +116,8 @@
 		<ProgressRing
 			progress={cookProgress}
 			state={item.status}
+			flipFraction={item.flipEpoch !== null && cookTotalMs > 0 ? (item.flipEpoch - item.putOnEpoch) / cookTotalMs : null}
+			flipFired={item.flipFired}
 			ariaLabel={`${item.label}: ${Math.round(cookProgress * 100)}% gegart`} />
 	</div>
 	<div class="body">

@@ -17,27 +17,32 @@
 	let favoriteName = $state('')
 
 	const plan = $derived(sessionStore.plan)
+	let now = $state(Date.now())
+	const effectiveTarget = $derived(sessionStore.effectiveTargetEpoch(now))
 
 	const scheduleResult = $derived.by(() => {
 		if (plan.items.length === 0) return null
-		return schedule({ targetEpoch: plan.targetEpoch, items: plan.items, now: Date.now() })
+		return schedule({ targetEpoch: effectiveTarget, items: plan.items, now })
 	})
 
 	const overdueItems = $derived(scheduleResult?.items.filter(s => s.overdue).map(s => s.item) ?? [])
 	const overdue = $derived(scheduleResult?.overdue ?? false)
 
-	const goLabel = $derived(
-		plan.items.length === 0
-			? 'Mindestens ein Eintrag nötig'
-			: overdue
-				? 'Los — jetzt starten'
-				: `Los — Essen um ${formatHHMM(plan.targetEpoch)}`,
-	)
+	const goLabel = $derived.by(() => {
+		if (plan.items.length === 0) return 'Mindestens ein Eintrag nötig'
+		if (plan.mode === 'now') return `Los — fertig um ${formatHHMM(effectiveTarget)}`
+		if (overdue) return 'Los — jetzt starten'
+		return `Los — Essen um ${formatHHMM(plan.targetEpoch)}`
+	})
 
-	onMount(async () => {
-		await sessionStore.init()
-		await favoritesStore.init()
-		if (sessionStore.session) goto('/session')
+	onMount(() => {
+		const tickId = setInterval(() => (now = Date.now()), 30_000)
+		;(async () => {
+			await sessionStore.init()
+			await favoritesStore.init()
+			if (sessionStore.session) goto('/session')
+		})()
+		return () => clearInterval(tickId)
 	})
 
 	function openAddSheet() {
@@ -94,7 +99,38 @@
 		<h1>Session planen</h1>
 	</header>
 
-	<TargetTimePicker value={plan.targetEpoch} onchange={epoch => sessionStore.setTargetTime(epoch)} />
+	<section class="schedule">
+		<div class="mode-toggle" role="tablist" aria-label="Planungsmodus">
+			<button
+				type="button"
+				role="tab"
+				aria-selected={plan.mode === 'now'}
+				class:active={plan.mode === 'now'}
+				onclick={() => sessionStore.setPlanMode('now')}>Jetzt starten</button>
+			<button
+				type="button"
+				role="tab"
+				aria-selected={plan.mode === 'time'}
+				class:active={plan.mode === 'time'}
+				onclick={() => sessionStore.setPlanMode('time')}>Auf Uhrzeit</button>
+		</div>
+
+		{#if plan.mode === 'now'}
+			<div class="now-card">
+				<span class="label">Fertig um</span>
+				<span class="time">{plan.items.length > 0 ? formatHHMM(effectiveTarget) : '—'}</span>
+				<span class="hint">
+					{#if plan.items.length === 0}
+						Plane Gerichte, dann starten wir sofort.
+					{:else}
+						Längstes Gericht zählt — kürzere starten gestaffelt.
+					{/if}
+				</span>
+			</div>
+		{:else}
+			<TargetTimePicker value={plan.targetEpoch} onchange={epoch => sessionStore.setTargetTime(epoch)} />
+		{/if}
+	</section>
 
 	<section>
 		<div class="section-header">
@@ -141,14 +177,14 @@
 
 {#if saveAsFavoriteOpen}
 	<div class="scrim" role="presentation" onclick={() => (saveAsFavoriteOpen = false)}></div>
-	<dialog open class="favorite-modal" aria-label="Favorit speichern">
+	<div class="favorite-modal" role="dialog" aria-modal="true" aria-label="Favorit speichern">
 		<h3>Favorit speichern</h3>
 		<input type="text" bind:value={favoriteName} maxlength="40" placeholder="Name (z.B. Mörgeli-Plausch)" />
 		<div class="row-buttons">
 			<Button variant="ghost" onclick={() => (saveAsFavoriteOpen = false)}>Abbrechen</Button>
 			<Button variant="primary" onclick={saveFavorite}>Speichern</Button>
 		</div>
-	</dialog>
+	</div>
 {/if}
 
 <style>
@@ -202,6 +238,57 @@
 		background: var(--color-bg-surface);
 		border-radius: var(--radius-lg);
 		border: 1px dashed var(--color-border-default);
+	}
+	.schedule {
+		gap: var(--space-3);
+	}
+	.mode-toggle {
+		display: flex;
+		gap: 2px;
+		background: var(--color-bg-surface);
+		border: 1px solid var(--color-border-subtle);
+		border-radius: var(--radius-md);
+		padding: 2px;
+	}
+	.mode-toggle button {
+		flex: 1;
+		min-height: 40px;
+		background: transparent;
+		border: none;
+		color: var(--color-fg-base);
+		font: inherit;
+		border-radius: calc(var(--radius-md) - 2px);
+		cursor: pointer;
+	}
+	.mode-toggle button.active {
+		background: var(--color-accent-default);
+		color: var(--color-fg-on-accent);
+	}
+	.now-card {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: var(--space-1);
+		background: var(--color-bg-surface);
+		padding: var(--space-4);
+		border-radius: var(--radius-lg);
+		border: 1px solid var(--color-border-subtle);
+	}
+	.now-card .label {
+		font-size: var(--font-size-xs);
+		text-transform: uppercase;
+		letter-spacing: var(--tracking-widest);
+		color: var(--color-fg-muted);
+	}
+	.now-card .time {
+		font-family: var(--font-mono);
+		font-size: var(--font-size-3xl);
+		font-variant-numeric: tabular-nums;
+		line-height: 1.1;
+	}
+	.now-card .hint {
+		color: var(--color-fg-muted);
+		font-size: var(--font-size-sm);
 	}
 	.warning {
 		background: var(--color-error-bg);

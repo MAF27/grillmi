@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
-		"prebuild": "tsx scripts/build-timings.ts",
+		"prebuild": "tsx scripts/build-timings.ts && rm -rf build/_app",
 		"build": "vite build",
 		"preview": "vite preview --host 0.0.0.0",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",

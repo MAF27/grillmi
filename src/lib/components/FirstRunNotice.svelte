@@ -16,7 +16,7 @@
 </script>
 
 <div class="scrim" role="presentation"></div>
-<dialog open class="notice" aria-labelledby="frn-title">
+<div class="notice" role="dialog" aria-modal="true" aria-labelledby="frn-title">
 	<h2 id="frn-title">Willkommen bei Grillmi</h2>
 	<ol>
 		<li>
@@ -30,7 +30,7 @@
 		{/if}
 	</ol>
 	<Button variant="primary" fullWidth onclick={onclose}>Verstanden</Button>
-</dialog>
+</div>
 
 <style>
 	.scrim {

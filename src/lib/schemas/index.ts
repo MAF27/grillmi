@@ -20,6 +20,10 @@ export const plannedItemSchema = z.object({
 export const planSchema = z.object({
 	targetEpoch: z.number().int(),
 	items: z.array(plannedItemSchema),
+	// 'now' = start grilling immediately, eating time is computed from the
+	// longest cook+rest path. 'time' = user pinned an eating time and items
+	// are staggered backward from it.
+	mode: z.enum(['now', 'time']).default('now'),
 })
 
 export const scheduleEventSchema = z.object({

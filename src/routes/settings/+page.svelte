@@ -134,7 +134,7 @@
 		background: transparent;
 		border: none;
 		color: var(--color-fg-base);
-		border-radius: var(--radius-sm);
+		border-radius: var(--radius-md);
 	}
 	.seg button.active {
 		background: var(--color-accent-default);

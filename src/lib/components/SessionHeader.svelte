@@ -42,14 +42,14 @@
 
 {#if confirmOpen}
 	<div class="scrim" role="presentation" onclick={() => (confirmOpen = false)}></div>
-	<dialog open class="confirm" aria-labelledby="end-title">
+	<div class="confirm" role="dialog" aria-modal="true" aria-labelledby="end-title">
 		<h2 id="end-title">Session wirklich beenden?</h2>
 		<p>Alle laufenden Timer werden gestoppt. Geplante Einträge bleiben erhalten und du kannst die Session neu starten.</p>
 		<div class="actions">
 			<button type="button" class="cancel" onclick={() => (confirmOpen = false)}>Abbrechen</button>
 			<button type="button" class="confirm-end" onclick={confirmEnd}>Beenden</button>
 		</div>
-	</dialog>
+	</div>
 {/if}
 
 <style>
