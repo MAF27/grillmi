@@ -26,8 +26,8 @@ describe('timings schema', () => {
 	})
 
 	it('test_timings_schema_category_count', () => {
-		const expected = ['beef', 'veal', 'pork', 'lamb', 'horse', 'poultry', 'sausage', 'various', 'fish', 'vegetables', 'fruit']
-		expect(parsed.categories.map(c => c.slug).sort()).toEqual([...expected].sort())
+		const expected = ['beef', 'veal', 'pork', 'lamb', 'poultry', 'sausage', 'skewers', 'fish', 'vegetables', 'fruit', 'special']
+		expect(parsed.categories.map(c => c.slug)).toEqual(expected)
 	})
 
 	it('test_timings_schema_has_doneness_flag_respected', () => {

@@ -17,9 +17,9 @@ const SOURCE_MD = resolve(ROOT, 'resources/docs/grill-timings-reference.md')
 const OUT_JSON = resolve(ROOT, 'src/lib/data/timings.generated.json')
 const OUT_DTS = resolve(ROOT, 'src/lib/data/timings.generated.d.ts')
 
-// === Category map ===
-// Maps the H2 heading text from the reference markdown to a slug + display name.
-// The order here is the canonical order (= test_timings_schema_category_count expects 11).
+// === Source category map ===
+// Maps the H2 heading text from the reference markdown to a parse-time slug.
+// These are the *parse* categories — the UI categories below regroup them.
 const CATEGORY_MAP: ReadonlyArray<{ pattern: RegExp; slug: string; name: string }> = [
 	{ pattern: /^Beef\s*\(Rind\)/i, slug: 'beef', name: 'Rind' },
 	{ pattern: /^Veal\s*\(Kalb\)/i, slug: 'veal', name: 'Kalb' },
@@ -33,6 +33,111 @@ const CATEGORY_MAP: ReadonlyArray<{ pattern: RegExp; slug: string; name: string 
 	{ pattern: /^Vegetables/i, slug: 'vegetables', name: 'Gemüse' },
 	{ pattern: /^Fruit\s*\(Früchte\)/i, slug: 'fruit', name: 'Früchte' },
 ]
+
+// === UI category map ===
+// What the user sees and picks from. Cuts are pulled from one or more parse
+// categories by slug. Order is intentional — common first, plants mid,
+// rare meats at the end.
+interface UiCategory {
+	slug: string
+	name: string
+	pull: ReadonlyArray<{ from: string; cuts: 'all' | string[] }>
+}
+
+// Slugs include the parenthetical English from the markdown headings.
+const HAMBURGER = 'hamburger-ground-beef-patties'
+const BBQ_SPECK = 'bbq-speck-bacon-strips-on-the-grill'
+const MIXED_GRILL = 'mixed-grill-spiessli-mixed-skewers'
+const KANINCHEN = 'kaninchenfilets-rabbit-fillets'
+const POULETSPIESSLI = 'pouletspiessli-chicken-skewers'
+const PFERDESTEAK = 'pferdesteak-horse-steak'
+
+const UI_CATEGORIES: ReadonlyArray<UiCategory> = [
+	{
+		slug: 'beef',
+		name: 'Rind',
+		pull: [
+			{ from: 'beef', cuts: 'all' },
+			{ from: 'various', cuts: [HAMBURGER] },
+		],
+	},
+	{ slug: 'veal', name: 'Kalb', pull: [{ from: 'veal', cuts: 'all' }] },
+	{
+		slug: 'pork',
+		name: 'Schwein',
+		pull: [
+			{ from: 'pork', cuts: 'all' },
+			{ from: 'various', cuts: [BBQ_SPECK] },
+		],
+	},
+	{ slug: 'lamb', name: 'Lamm', pull: [{ from: 'lamb', cuts: 'all' }] },
+	{ slug: 'poultry', name: 'Geflügel', pull: [{ from: 'poultry', cuts: 'all' }] },
+	{ slug: 'sausage', name: 'Wurst', pull: [{ from: 'sausage', cuts: 'all' }] },
+	{
+		slug: 'skewers',
+		name: 'Spiessli',
+		pull: [
+			{ from: 'poultry', cuts: [POULETSPIESSLI] },
+			{ from: 'various', cuts: [MIXED_GRILL] },
+		],
+	},
+	{ slug: 'fish', name: 'Fisch', pull: [{ from: 'fish', cuts: 'all' }] },
+	{ slug: 'vegetables', name: 'Gemüse', pull: [{ from: 'vegetables', cuts: 'all' }] },
+	{ slug: 'fruit', name: 'Früchte', pull: [{ from: 'fruit', cuts: 'all' }] },
+	{
+		slug: 'special',
+		name: 'Spezial',
+		pull: [
+			{ from: 'horse', cuts: [PFERDESTEAK] },
+			{ from: 'various', cuts: [KANINCHEN] },
+		],
+	},
+]
+
+const POULTRY_TO_SKEWERS = new Set([POULETSPIESSLI])
+
+function regroupCategories(parsed: Category[]): Category[] {
+	const bySlug = new Map(parsed.map(c => [c.slug, c]))
+	const out: Category[] = []
+	const usedCuts = new Map<string, Set<string>>()
+
+	for (const ui of UI_CATEGORIES) {
+		const cuts: Cut[] = []
+		for (const ref of ui.pull) {
+			const src = bySlug.get(ref.from)
+			if (!src) throw new Error(`build-timings: UI category "${ui.slug}" pulls unknown parse category "${ref.from}"`)
+			const used = usedCuts.get(ref.from) ?? new Set<string>()
+			usedCuts.set(ref.from, used)
+			if (ref.cuts === 'all') {
+				for (const c of src.cuts) {
+					if (used.has(c.slug)) continue
+					if (ref.from === 'poultry' && POULTRY_TO_SKEWERS.has(c.slug)) continue
+					cuts.push(c)
+					used.add(c.slug)
+				}
+			} else {
+				for (const slug of ref.cuts) {
+					const c = src.cuts.find(x => x.slug === slug)
+					if (!c) throw new Error(`build-timings: UI category "${ui.slug}" pulls unknown cut "${slug}" from "${ref.from}"`)
+					if (used.has(slug)) throw new Error(`build-timings: cut "${slug}" pulled twice from "${ref.from}"`)
+					cuts.push(c)
+					used.add(slug)
+				}
+			}
+		}
+		if (cuts.length === 0) throw new Error(`build-timings: UI category "${ui.slug}" produced zero cuts`)
+		out.push({ slug: ui.slug, name: ui.name, cuts })
+	}
+
+	for (const src of parsed) {
+		const used = usedCuts.get(src.slug) ?? new Set<string>()
+		const orphans = src.cuts.filter(c => !used.has(c.slug))
+		if (orphans.length > 0) {
+			throw new Error(`build-timings: parsed cuts orphaned from "${src.slug}": ${orphans.map(c => c.slug).join(', ')}`)
+		}
+	}
+	return out
+}
 
 interface Section {
 	heading: string
@@ -267,7 +372,11 @@ function parseCut(name: string, body: string[], stats: ParseStats): Cut | null {
 			'Thickness / weight',
 		)
 		const thicknessCm = hasThicknessCol ? parseThicknessCm(thicknessRaw) : null
-		const doneness = hasDonenessCol ? (pickColumn(row, 'Doneness') || '').replace(/\s*\d+\s*°C.*$/, '').trim() || null : null
+		// Treat em-dash / dash placeholders as "no doneness" — these are data
+		// holes the source markdown carries to keep the table shape, not real
+		// doneness levels.
+		const donenessRaw = hasDonenessCol ? (pickColumn(row, 'Doneness') || '').replace(/\s*\d+\s*°C.*$/, '').trim() : ''
+		const doneness = donenessRaw && donenessRaw !== '—' && donenessRaw !== '-' ? donenessRaw : null
 
 		const firstCol = (cells[0] ?? '').replace(/\s+/g, ' ').trim()
 		const prepLabel = thicknessCm === null ? thicknessRaw.replace(/\s+/g, ' ').trim() || firstCol || null : null
@@ -332,10 +441,11 @@ function parse(): { timings: Awaited<ReturnType<typeof timingsSchema.parseAsync>
 		stats.categories += 1
 	}
 
+	const regrouped = regroupCategories(categories)
 	const timings = timingsSchema.parse({
 		version: '1.0.0',
 		generatedAt: new Date().toISOString(),
-		categories,
+		categories: regrouped,
 	})
 	return { timings, stats }
 }

@@ -148,6 +148,11 @@ function createSessionStore() {
 			plan = { targetEpoch: defaultTarget(), items: items.map(i => ({ ...i, id: uuid() })), mode: 'now' }
 		},
 
+		appendFromFavorite(items: PlannedItem[]) {
+			const fresh = items.map(i => ({ ...i, id: uuid() }))
+			plan = { ...plan, items: [...plan.items, ...fresh] }
+		},
+
 		async startSession(): Promise<Session> {
 			if (plan.items.length === 0) throw new Error('cannot start: no items in plan')
 			const now = Date.now()

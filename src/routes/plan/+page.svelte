@@ -15,6 +15,7 @@
 	let editing = $state<PlannedItem | null>(null)
 	let saveAsFavoriteOpen = $state(false)
 	let favoriteName = $state('')
+	let favoritesSheetOpen = $state(false)
 
 	const plan = $derived(sessionStore.plan)
 	let now = $state(Date.now())
@@ -71,6 +72,16 @@
 		sessionStore.removeItem(id)
 	}
 
+	function renameItem(id: string, label: string) {
+		sessionStore.updateItem(id, { label })
+	}
+
+	function adjustCook(id: string, deltaSeconds: number) {
+		const current = plan.items.find(i => i.id === id)
+		if (!current) return
+		sessionStore.updateItem(id, { cookSeconds: current.cookSeconds + deltaSeconds })
+	}
+
 	async function start() {
 		await sessionStore.startSession()
 		await goto('/session')
@@ -86,6 +97,18 @@
 		if (!name) return
 		await favoritesStore.save(name, plan.items)
 		saveAsFavoriteOpen = false
+	}
+
+	function openFavoritesSheet() {
+		favoritesSheetOpen = true
+	}
+
+	function appendFavorite(id: string) {
+		const fav = favoritesStore.all.find(f => f.id === id)
+		if (!fav) return
+		void favoritesStore.touch(id)
+		sessionStore.appendFromFavorite(fav.items)
+		favoritesSheetOpen = false
 	}
 </script>
 
@@ -135,7 +158,12 @@
 	<section>
 		<div class="section-header">
 			<h2>Auf den Grill</h2>
-			<Button variant="ghost" size="sm" onclick={openAddSheet}>+ Gericht</Button>
+			<div class="section-actions">
+				{#if favoritesStore.all.length > 0}
+					<Button variant="ghost" size="sm" onclick={openFavoritesSheet}>★ Favorit</Button>
+				{/if}
+				<Button variant="ghost" size="sm" onclick={openAddSheet}>+ Gericht</Button>
+			</div>
 		</div>
 
 		{#if overdue}
@@ -149,7 +177,7 @@
 		{:else}
 			<div class="list" role="list">
 				{#each plan.items as item (item.id)}
-					<PlanItemRow {item} onedit={editItem} ondelete={deleteItem} />
+					<PlanItemRow {item} onedit={editItem} ondelete={deleteItem} onrename={renameItem} onadjustcook={adjustCook} />
 				{/each}
 			</div>
 		{/if}
@@ -175,6 +203,27 @@
 			editing = null
 		}}
 		oncommit={commit} />
+{/if}
+
+{#if favoritesSheetOpen}
+	<div class="scrim" role="presentation" onclick={() => (favoritesSheetOpen = false)}></div>
+	<div class="fav-sheet" role="dialog" aria-modal="true" aria-label="Favorit hinzufügen">
+		<header class="fav-sheet-header">
+			<h2>Favorit hinzufügen</h2>
+			<button class="dismiss" onclick={() => (favoritesSheetOpen = false)} aria-label="Schliessen">×</button>
+		</header>
+		<p class="fav-sheet-hint">Tippe auf einen Favoriten — die Einträge werden an deinen Plan angehängt.</p>
+		<ul class="fav-list">
+			{#each favoritesStore.all as fav (fav.id)}
+				<li>
+					<button class="fav-row" onclick={() => appendFavorite(fav.id)}>
+						<span class="fav-name">{fav.name}</span>
+						<span class="fav-count">{fav.items.length} Einträge</span>
+					</button>
+				</li>
+			{/each}
+		</ul>
+	</div>
 {/if}
 
 {#if saveAsFavoriteOpen}
@@ -232,6 +281,10 @@
 		font-family: var(--font-display);
 		font-size: var(--font-size-lg);
 		margin: 0;
+	}
+	.section-actions {
+		display: flex;
+		gap: var(--space-2);
 	}
 	.empty {
 		color: var(--color-fg-muted);
@@ -356,5 +409,80 @@
 		display: flex;
 		gap: var(--space-2);
 		justify-content: flex-end;
+	}
+	.fav-sheet {
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		max-height: 75dvh;
+		background: var(--color-bg-elevated);
+		color: var(--color-fg-base);
+		border-top-left-radius: var(--radius-xl);
+		border-top-right-radius: var(--radius-xl);
+		padding: var(--space-4);
+		padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+		z-index: calc(var(--z-modal) + 1);
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-3);
+		width: 100%;
+		max-width: 600px;
+		margin: 0 auto;
+		overflow: auto;
+	}
+	.fav-sheet-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+	.fav-sheet-header h2 {
+		margin: 0;
+		font-family: var(--font-display);
+		font-size: var(--font-size-lg);
+	}
+	.dismiss {
+		background: transparent;
+		border: none;
+		color: var(--color-fg-base);
+		min-width: 44px;
+		min-height: 44px;
+		font-size: var(--font-size-2xl);
+		cursor: pointer;
+	}
+	.fav-sheet-hint {
+		font-size: var(--font-size-sm);
+		color: var(--color-fg-muted);
+		margin: 0;
+	}
+	.fav-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2);
+	}
+	.fav-row {
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: var(--space-3) var(--space-4);
+		min-height: 56px;
+		background: var(--color-bg-surface);
+		border: 1px solid var(--color-border-subtle);
+		border-radius: var(--radius-md);
+		color: var(--color-fg-base);
+		font: inherit;
+		text-align: left;
+		cursor: pointer;
+	}
+	.fav-name {
+		font-weight: var(--font-weight-semibold);
+	}
+	.fav-count {
+		font-size: var(--font-size-sm);
+		color: var(--color-fg-muted);
 	}
 </style>

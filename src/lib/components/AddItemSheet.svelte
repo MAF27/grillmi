@@ -4,7 +4,7 @@
 	import { formatDuration } from '$lib/util/format'
 	import Button from './Button.svelte'
 
-	type Step = 'category' | 'cut' | 'specs' | 'label'
+	type Step = 'category' | 'cut' | 'specs'
 
 	interface Props {
 		open: boolean
@@ -21,12 +21,32 @@
 	let thicknessCm = $state<number | null>(null)
 	let prepLabel = $state<string | null>(null)
 	let doneness = $state<string | null>(null)
-	let label = $state('')
 
 	const category = $derived(categorySlug ? (TIMINGS.categories.find(c => c.slug === categorySlug) ?? null) : null)
 	const cut = $derived(category && cutSlug ? (category.cuts.find(c => c.slug === cutSlug) ?? null) : null)
 	const matchedRow = $derived(cut ? findRow(cut, thicknessCm, doneness) : undefined)
 	const computedSeconds = $derived(matchedRow ? Math.round((matchedRow.cookSecondsMin + matchedRow.cookSecondsMax) / 2) : 0)
+
+	const donenessOrder = ['Bleu', 'Rare', 'Medium-rare', 'Medium', 'Medium-well', 'Well-done']
+	const donenessOptions = $derived.by<string[]>(() => {
+		if (!cut?.hasDoneness) return []
+		const set = new Set(cut.rows.map(r => r.doneness).filter((v): v is string => v !== null))
+		return donenessOrder.filter(d => set.has(d)).concat([...set].filter(d => !donenessOrder.includes(d)))
+	})
+
+	// Em-dash prepLabels are data holes — filter them so the user never picks "—".
+	const prepOptions = $derived(
+		!cut?.hasThickness && cut
+			? [...new Set(cut.rows.map(r => r.prepLabel).filter((v): v is string => v !== null && v !== '—' && v !== '-'))]
+			: [],
+	)
+
+	// What the specs step actually needs to ask. Single-option choices are
+	// auto-applied in pickCut() and not rendered.
+	const needsThickness = $derived(!!cut?.hasThickness)
+	const needsPrep = $derived(prepOptions.length > 1)
+	const needsDoneness = $derived(donenessOptions.length > 1)
+	const specsHasAnything = $derived(needsThickness || needsPrep || needsDoneness)
 
 	function titleFor(s: Step): string {
 		switch (s) {
@@ -35,12 +55,11 @@
 			case 'cut':
 				return 'Stück'
 			case 'specs':
-				if (cut?.hasThickness && cut?.hasDoneness) return 'Dicke & Garstufe'
-				if (cut?.hasThickness) return 'Dicke'
-				if (cut?.hasDoneness) return 'Garstufe'
-				return 'Variante'
-			case 'label':
-				return 'Bezeichnung'
+				if (needsThickness && needsDoneness) return 'Dicke & Garstufe'
+				if (needsThickness) return 'Dicke'
+				if (needsDoneness) return 'Garstufe'
+				if (needsPrep) return 'Variante'
+				return 'Anpassen'
 		}
 	}
 
@@ -52,8 +71,7 @@
 			thicknessCm = initial.thicknessCm
 			prepLabel = initial.prepLabel
 			doneness = initial.doneness
-			label = initial.label ?? ''
-			step = 'label'
+			step = specsHasAnything ? 'specs' : 'cut'
 		} else {
 			reset()
 		}
@@ -66,7 +84,6 @@
 		thicknessCm = null
 		prepLabel = null
 		doneness = null
-		label = ''
 	}
 
 	function pickCategory(slug: string) {
@@ -81,14 +98,15 @@
 		if (!c) return
 		cutSlug = slug
 
-		// Pre-select sensible defaults for the combined specs step
+		// Pre-select defaults based on the cut's row shape.
 		if (c.hasThickness) {
 			const ts = c.rows.map(r => r.thicknessCm).filter((v): v is number => v !== null)
 			thicknessCm = ts.length > 0 ? Math.min(...ts) : null
 			prepLabel = null
 		} else {
 			thicknessCm = null
-			prepLabel = c.rows[0]?.prepLabel ?? null
+			const preps = [...new Set(c.rows.map(r => r.prepLabel).filter((v): v is string => v !== null && v !== '—' && v !== '-'))]
+			prepLabel = preps[0] ?? null
 		}
 		if (c.hasDoneness) {
 			const dones = c.rows.map(r => r.doneness).filter((v): v is string => v !== null)
@@ -97,9 +115,14 @@
 			doneness = null
 		}
 
-		// Skip specs entirely when there is nothing to choose
-		if (!c.hasThickness && !c.hasDoneness && !c.rows.some(r => r.prepLabel)) {
-			step = 'label'
+		// If nothing remains for the user to choose, commit immediately.
+		// Em-dash placeholders don't count as choices.
+		const remainingPrep = !c.hasThickness
+			? new Set(c.rows.map(r => r.prepLabel).filter(p => p && p !== '—' && p !== '-')).size
+			: 0
+		const remainingDone = c.hasDoneness ? new Set(c.rows.map(r => r.doneness).filter(Boolean)).size : 0
+		if (!c.hasThickness && remainingPrep <= 1 && remainingDone <= 1) {
+			commit()
 		} else {
 			step = 'specs'
 		}
@@ -110,30 +133,32 @@
 			onclose()
 			return
 		}
-		if (step === 'cut') step = 'category'
-		else if (step === 'specs') step = 'cut'
-		else if (step === 'label') {
-			step = cut?.hasThickness || cut?.hasDoneness || cut?.rows.some(r => r.prepLabel) ? 'specs' : 'cut'
+		if (step === 'cut') {
+			step = initial ? 'specs' : 'category'
+		} else if (step === 'specs') {
+			step = 'cut'
 		}
 	}
 
-	function next() {
-		if (!cut) return
-		if (step === 'specs') step = 'label'
+	function autoLabel(): string {
+		if (!cut) return ''
+		const parts: string[] = [cut.name]
+		if (thicknessCm !== null) parts[0] += ` ${formatThickness(thicknessCm)} cm`
+		if (doneness) parts.push(doneness)
+		if (prepLabel && !cut.hasThickness && prepOptions.length > 1) parts.push(prepLabel)
+		return parts.join(', ')
 	}
 
 	function commit() {
 		if (!cut || !category || !matchedRow) return
-		const inferredLabel =
-			label.trim() ||
-			`${cut.name}${thicknessCm !== null ? ` ${formatThickness(thicknessCm)} cm` : ''}${doneness ? `, ${doneness}` : ''}${prepLabel && !cut.hasThickness ? ` (${prepLabel})` : ''}`
+		const baseLabel = initial?.label ?? autoLabel()
 		oncommit({
 			categorySlug: category.slug,
 			cutSlug: cut.slug,
 			thicknessCm,
 			prepLabel,
 			doneness,
-			label: inferredLabel,
+			label: baseLabel,
 			cookSeconds: computedSeconds,
 			restSeconds: matchedRow.restSeconds,
 			flipFraction: matchedRow.flipFraction,
@@ -149,8 +174,7 @@
 
 	// Thickness range: snap to 0.5 cm steps, extend 1 cm below documented min
 	// (with a hard floor of 1.5 cm for thin slices), keep documented max as
-	// upper bound. Rinds-Filet's documented 3 cm minimum becomes 2 cm here so
-	// the user can plan tournedos cuts thinner than the Migusto reference.
+	// upper bound.
 	const THICKNESS_FLOOR = 1.5
 	const thicknessOptions = $derived.by<number[]>(() => {
 		if (!cut?.hasThickness) return []
@@ -187,17 +211,6 @@
 			(thicknessCm !== null && Math.abs(thicknessCm - thicknessOptions[thicknessOptions.length - 1]) < 1e-6),
 	)
 
-	const donenessOrder = ['Bleu', 'Rare', 'Medium-rare', 'Medium', 'Medium-well', 'Well-done']
-	const donenessOptions = $derived.by<string[]>(() => {
-		if (!cut?.hasDoneness) return []
-		const set = new Set(cut.rows.map(r => r.doneness).filter((v): v is string => v !== null))
-		return donenessOrder.filter(d => set.has(d)).concat([...set].filter(d => !donenessOrder.includes(d)))
-	})
-
-	const prepOptions = $derived(
-		!cut?.hasThickness && cut ? [...new Set(cut.rows.map(r => r.prepLabel).filter((v): v is string => v !== null))] : [],
-	)
-
 	const specsComplete = $derived.by(() => {
 		if (!cut) return false
 		if (cut.hasThickness && thicknessCm === null) return false
@@ -213,7 +226,7 @@
 		<header>
 			<button class="back" onclick={back} aria-label="Zurück">‹</button>
 			<div class="title-stack">
-				{#if cut && (step === 'specs' || step === 'label')}
+				{#if cut && step === 'specs'}
 					<span class="subtitle">{cut.name}</span>
 				{/if}
 				<h2>{titleFor(step)}</h2>
@@ -237,7 +250,7 @@
 					{/each}
 				</ul>
 			{:else if step === 'specs' && cut}
-				{#if cut.hasThickness}
+				{#if needsThickness}
 					<section class="section">
 						<h3>Dicke</h3>
 						<div class="stepper">
@@ -251,7 +264,7 @@
 								>+</button>
 						</div>
 					</section>
-				{:else if prepOptions.length > 0}
+				{:else if needsPrep}
 					<section class="section">
 						<h3>Variante</h3>
 						<ul class="list">
@@ -264,7 +277,7 @@
 						</ul>
 					</section>
 				{/if}
-				{#if cut.hasDoneness}
+				{#if needsDoneness}
 					<section class="section">
 						<h3>Garstufe</h3>
 						<div class="chips">
@@ -274,29 +287,18 @@
 						</div>
 					</section>
 				{/if}
-			{:else if step === 'label' && cut}
-				<label class="label-input">
-					<span>Eigene Bezeichnung (optional)</span>
-					<input
-						type="text"
-						bind:value={label}
-						maxlength="40"
-						placeholder={`${cut.name}${thicknessCm !== null ? ` ${formatThickness(thicknessCm)} cm` : ''}${doneness ? `, ${doneness}` : ''}`} />
-				</label>
 			{/if}
 		</div>
 
 		<footer>
 			<div class="cook-summary">
-				{#if matchedRow && (step === 'specs' || step === 'label')}
+				{#if matchedRow && step === 'specs'}
 					Geschätzte Garzeit: <strong>{formatDuration(computedSeconds)}</strong>
 					{#if matchedRow.restSeconds > 0}, Ruhezeit: <strong>{formatDuration(matchedRow.restSeconds)}</strong>{/if}
 				{/if}
 			</div>
 			{#if step === 'specs'}
-				<Button variant="primary" fullWidth disabled={!specsComplete} onclick={next}>Weiter</Button>
-			{:else if step === 'label'}
-				<Button variant="primary" fullWidth onclick={commit}>Übernehmen</Button>
+				<Button variant="primary" fullWidth disabled={!specsComplete} onclick={commit}>Übernehmen</Button>
 			{/if}
 		</footer>
 	</div>
@@ -496,24 +498,6 @@
 		background: var(--color-accent-default);
 		color: var(--color-fg-on-accent);
 		border-color: var(--color-accent-default);
-	}
-	.label-input {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-2);
-	}
-	.label-input span {
-		font-size: var(--font-size-sm);
-		color: var(--color-fg-muted);
-	}
-	.label-input input {
-		min-height: 44px;
-		padding: var(--space-3);
-		background: var(--color-bg-input);
-		border: 1px solid var(--color-border-default);
-		border-radius: var(--radius-md);
-		color: var(--color-fg-base);
-		font-size: var(--font-size-md);
 	}
 	footer {
 		padding: var(--space-3) var(--space-4) calc(var(--space-4) + env(safe-area-inset-bottom));

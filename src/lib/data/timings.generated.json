@@ -1,6 +1,6 @@
 {
 	"version": "1.0.0",
-	"generatedAt": "2026-04-25T12:14:10.181Z",
+	"generatedAt": "2026-04-25T13:41:38.666Z",
 	"categories": [
 		{
 			"slug": "beef",
@@ -845,6 +845,30 @@
 						"Pull from indirect at 48–50 °C internal. Rest 10 min while grill rips to max. Sear all sides. Rest again 15+ min.",
 						"Cut across the grain, 3–5 mm slices."
 					]
+				},
+				{
+					"slug": "hamburger-ground-beef-patties",
+					"name": "Hamburger",
+					"hasThickness": false,
+					"hasDoneness": false,
+					"rows": [
+						{
+							"thicknessCm": null,
+							"prepLabel": "—",
+							"doneness": null,
+							"cookSecondsMin": 540,
+							"cookSecondsMax": 540,
+							"flipFraction": 0.5,
+							"idealFlipPattern": "once",
+							"restSeconds": 180,
+							"heatZone": "Direct, lid closed",
+							"notes": null
+						}
+					],
+					"notes": [
+						"Cheese on 30 s before pulling, close lid to melt.",
+						"USDA and Swiss food safety advise 70 °C for ground beef because grinding redistributes surface bacteria throughout. Medium-rare on whole-muscle-ground-at-home is a different risk profile. Grillmi should default to 70 °C pull for any ground meat UI and offer a \"home-ground only\" override."
+					]
 				}
 			]
 		},
@@ -1123,12 +1147,12 @@
 					"slug": "schweinshals-pork-neck-collar-schopfbraten-steak",
 					"name": "Schweinshals",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 840,
 							"cookSecondsMax": 840,
 							"flipFraction": 0.5,
@@ -1147,12 +1171,12 @@
 					"slug": "gerollter-schweinshals-rolled-pork-collar-roast",
 					"name": "Gerollter Schweinshals",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 3600,
 							"cookSecondsMax": 3600,
 							"flipFraction": 0.5,
@@ -1168,12 +1192,12 @@
 					"slug": "schweinskoteletts-pork-chops-bone-in",
 					"name": "Schweinskoteletts",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 600,
 							"cookSecondsMax": 600,
 							"flipFraction": 0.5,
@@ -1189,12 +1213,12 @@
 					"slug": "spareribs-st-louis-kotelettrippli",
 					"name": "Spareribs",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 600,
 							"cookSecondsMax": 600,
 							"flipFraction": 0.5,
@@ -1242,6 +1266,27 @@
 						}
 					],
 					"notes": []
+				},
+				{
+					"slug": "bbq-speck-bacon-strips-on-the-grill",
+					"name": "BBQ-Speck",
+					"hasThickness": false,
+					"hasDoneness": false,
+					"rows": [
+						{
+							"thicknessCm": null,
+							"prepLabel": "—",
+							"doneness": null,
+							"cookSecondsMin": 900,
+							"cookSecondsMax": 900,
+							"flipFraction": 0.5,
+							"idealFlipPattern": "once",
+							"restSeconds": 300,
+							"heatZone": "Direct, lid closed",
+							"notes": null
+						}
+					],
+					"notes": ["Bacon on direct flame = grease fire. Always perforated foil or a grill plate."]
 				}
 			]
 		},
@@ -1481,12 +1526,12 @@
 					"slug": "lamm-gigot-leg-of-lamb-boneless-or-bone-in",
 					"name": "Lamm-Gigot",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 3300,
 							"cookSecondsMax": 3300,
 							"flipFraction": 0.5,
@@ -1501,72 +1546,6 @@
 			]
 		},
 		{
-			"slug": "horse",
-			"name": "Pferd",
-			"cuts": [
-				{
-					"slug": "pferdesteak-horse-steak",
-					"name": "Pferdesteak",
-					"hasThickness": false,
-					"hasDoneness": true,
-					"rows": [
-						{
-							"thicknessCm": null,
-							"prepLabel": "—",
-							"doneness": "Rare",
-							"cookSecondsMin": 240,
-							"cookSecondsMax": 240,
-							"flipFraction": 0.5,
-							"idealFlipPattern": "once",
-							"restSeconds": 180,
-							"heatZone": "Direct, lid closed",
-							"notes": null
-						},
-						{
-							"thicknessCm": null,
-							"prepLabel": "—",
-							"doneness": "Medium-rare",
-							"cookSecondsMin": 420,
-							"cookSecondsMax": 420,
-							"flipFraction": 0.5,
-							"idealFlipPattern": "once",
-							"restSeconds": 180,
-							"heatZone": "Direct, lid closed",
-							"notes": null
-						},
-						{
-							"thicknessCm": null,
-							"prepLabel": "—",
-							"doneness": "Medium",
-							"cookSecondsMin": 600,
-							"cookSecondsMax": 600,
-							"flipFraction": 0.5,
-							"idealFlipPattern": "once",
-							"restSeconds": 300,
-							"heatZone": "Direct, lid closed",
-							"notes": null
-						},
-						{
-							"thicknessCm": null,
-							"prepLabel": "—",
-							"doneness": "Well-done",
-							"cookSecondsMin": 960,
-							"cookSecondsMax": 960,
-							"flipFraction": 0.5,
-							"idealFlipPattern": "once",
-							"restSeconds": 300,
-							"heatZone": "Direct, lid closed",
-							"notes": null
-						}
-					],
-					"notes": [
-						"Do NOT cook past medium-rare — horse is ~ 3 % fat and will brick.",
-						"Marinate in red wine + juniper + bay leaf for flavor depth."
-					]
-				}
-			]
-		},
-		{
 			"slug": "poultry",
 			"name": "Geflügel",
 			"cuts": [
@@ -1574,12 +1553,12 @@
 					"slug": "pouletschnitzel-chicken-breast-boneless-skinless",
 					"name": "Pouletschnitzel",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 720,
 							"cookSecondsMax": 720,
 							"flipFraction": 0.5,
@@ -1598,12 +1577,12 @@
 					"slug": "pouletschenkel-pouletoberschenkel-chicken-thighs",
 					"name": "Pouletschenkel / Pouletoberschenkel",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 1020,
 							"cookSecondsMax": 1020,
 							"flipFraction": 0.5,
@@ -1622,12 +1601,12 @@
 					"slug": "poulet-flugeli-chicken-wings",
 					"name": "Poulet-Flügeli",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 1200,
 							"cookSecondsMax": 1200,
 							"flipFraction": 0.5,
@@ -1679,39 +1658,6 @@
 					]
 				},
 				{
-					"slug": "pouletspiessli-chicken-skewers",
-					"name": "Pouletspiessli",
-					"hasThickness": false,
-					"hasDoneness": false,
-					"rows": [
-						{
-							"thicknessCm": null,
-							"prepLabel": "2.5 cm cubes",
-							"doneness": null,
-							"cookSecondsMin": 480,
-							"cookSecondsMax": 720,
-							"flipFraction": 0.5,
-							"idealFlipPattern": "rotate",
-							"restSeconds": 120,
-							"heatZone": "Direct medium",
-							"notes": null
-						},
-						{
-							"thicknessCm": null,
-							"prepLabel": "3 cm cubes",
-							"doneness": null,
-							"cookSecondsMin": 600,
-							"cookSecondsMax": 720,
-							"flipFraction": 0.5,
-							"idealFlipPattern": "rotate",
-							"restSeconds": 120,
-							"heatZone": "Direct medium",
-							"notes": null
-						}
-					],
-					"notes": ["Soak bamboo skewers 30 min.", "Leave small gap between pieces for even cooking."]
-				},
-				{
 					"slug": "entenbrust-duck-breast",
 					"name": "Entenbrust",
 					"hasThickness": false,
@@ -1752,12 +1698,12 @@
 					"slug": "trutenschnitzel-turkey-cutlet",
 					"name": "Trutenschnitzel",
 					"hasThickness": true,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": 1,
 							"prepLabel": null,
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 300,
 							"cookSecondsMax": 300,
 							"flipFraction": 0.5,
@@ -1769,7 +1715,7 @@
 						{
 							"thicknessCm": 2,
 							"prepLabel": null,
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 600,
 							"cookSecondsMax": 600,
 							"flipFraction": 0.5,
@@ -1791,12 +1737,12 @@
 					"slug": "bauernbratwurst",
 					"name": "Bauernbratwurst",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 720,
 							"cookSecondsMax": 720,
 							"flipFraction": 0.5,
@@ -1812,12 +1758,12 @@
 					"slug": "cervelat",
 					"name": "Cervelat",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 420,
 							"cookSecondsMax": 420,
 							"flipFraction": 0.5,
@@ -1836,12 +1782,12 @@
 					"slug": "riesencervelat",
 					"name": "Riesencervelat",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 840,
 							"cookSecondsMax": 840,
 							"flipFraction": 0.5,
@@ -1857,12 +1803,12 @@
 					"slug": "grillschnecke-bratwurstschnecke",
 					"name": "Grillschnecke / Bratwurstschnecke",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 480,
 							"cookSecondsMax": 480,
 							"flipFraction": 0.5,
@@ -1878,12 +1824,12 @@
 					"slug": "kalbsbratwurst-st-galler",
 					"name": "Kalbsbratwurst",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 540,
 							"cookSecondsMax": 540,
 							"flipFraction": 0.5,
@@ -1902,12 +1848,12 @@
 					"slug": "merguez",
 					"name": "Merguez",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 480,
 							"cookSecondsMax": 480,
 							"flipFraction": 0.5,
@@ -2006,87 +1952,54 @@
 			]
 		},
 		{
-			"slug": "various",
-			"name": "Diverse",
+			"slug": "skewers",
+			"name": "Spiessli",
 			"cuts": [
 				{
-					"slug": "bbq-speck-bacon-strips-on-the-grill",
-					"name": "BBQ-Speck",
+					"slug": "pouletspiessli-chicken-skewers",
+					"name": "Pouletspiessli",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
-							"prepLabel": "—",
-							"doneness": "—",
-							"cookSecondsMin": 900,
-							"cookSecondsMax": 900,
+							"prepLabel": "2.5 cm cubes",
+							"doneness": null,
+							"cookSecondsMin": 480,
+							"cookSecondsMax": 720,
 							"flipFraction": 0.5,
-							"idealFlipPattern": "once",
-							"restSeconds": 300,
-							"heatZone": "Direct, lid closed",
+							"idealFlipPattern": "rotate",
+							"restSeconds": 120,
+							"heatZone": "Direct medium",
 							"notes": null
-						}
-					],
-					"notes": ["Bacon on direct flame = grease fire. Always perforated foil or a grill plate."]
-				},
-				{
-					"slug": "hamburger-ground-beef-patties",
-					"name": "Hamburger",
-					"hasThickness": false,
-					"hasDoneness": true,
-					"rows": [
+						},
 						{
 							"thicknessCm": null,
-							"prepLabel": "—",
-							"doneness": "—",
-							"cookSecondsMin": 540,
-							"cookSecondsMax": 540,
+							"prepLabel": "3 cm cubes",
+							"doneness": null,
+							"cookSecondsMin": 600,
+							"cookSecondsMax": 720,
 							"flipFraction": 0.5,
-							"idealFlipPattern": "once",
-							"restSeconds": 180,
-							"heatZone": "Direct, lid closed",
+							"idealFlipPattern": "rotate",
+							"restSeconds": 120,
+							"heatZone": "Direct medium",
 							"notes": null
 						}
 					],
-					"notes": [
-						"Cheese on 30 s before pulling, close lid to melt.",
-						"USDA and Swiss food safety advise 70 °C for ground beef because grinding redistributes surface bacteria throughout. Medium-rare on whole-muscle-ground-at-home is a different risk profile. Grillmi should default to 70 °C pull for any ground meat UI and offer a \"home-ground only\" override."
-					]
+					"notes": ["Soak bamboo skewers 30 min.", "Leave small gap between pieces for even cooking."]
 				},
 				{
 					"slug": "mixed-grill-spiessli-mixed-skewers",
 					"name": "Mixed-Grill Spiessli",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 360,
 							"cookSecondsMax": 360,
-							"flipFraction": 0.5,
-							"idealFlipPattern": "once",
-							"restSeconds": 180,
-							"heatZone": "Direct, lid closed",
-							"notes": null
-						}
-					],
-					"notes": []
-				},
-				{
-					"slug": "kaninchenfilets-rabbit-fillets",
-					"name": "Kaninchenfilets",
-					"hasThickness": false,
-					"hasDoneness": true,
-					"rows": [
-						{
-							"thicknessCm": null,
-							"prepLabel": "—",
-							"doneness": "—",
-							"cookSecondsMin": 300,
-							"cookSecondsMax": 300,
 							"flipFraction": 0.5,
 							"idealFlipPattern": "once",
 							"restSeconds": 180,
@@ -2106,12 +2019,12 @@
 					"slug": "lachsfilet-salmon-fillet-single-portion-skin-on",
 					"name": "Lachsfilet",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 600,
 							"cookSecondsMax": 600,
 							"flipFraction": 0.5,
@@ -2130,12 +2043,12 @@
 					"slug": "lachs-whole-side-of-salmon",
 					"name": "Lachs",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 360,
 							"cookSecondsMax": 360,
 							"flipFraction": 0.5,
@@ -2151,12 +2064,12 @@
 					"slug": "forelle-whole-trout-300-g",
 					"name": "Forelle",
 					"hasThickness": true,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": 1,
 							"prepLabel": null,
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 300,
 							"cookSecondsMax": 300,
 							"flipFraction": 0.5,
@@ -2168,7 +2081,7 @@
 						{
 							"thicknessCm": 2,
 							"prepLabel": null,
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 600,
 							"cookSecondsMax": 600,
 							"flipFraction": 0.5,
@@ -2184,12 +2097,12 @@
 					"slug": "dorade-branzino-whole-sea-bream-sea-bass-400-g",
 					"name": "Dorade / Branzino",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 1080,
 							"cookSecondsMax": 1080,
 							"flipFraction": 0.5,
@@ -2208,12 +2121,12 @@
 					"slug": "gelbflossenthunfisch-yellowfin-tuna-steak",
 					"name": "Gelbflossenthunfisch",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 240,
 							"cookSecondsMax": 240,
 							"flipFraction": 0.5,
@@ -2262,12 +2175,12 @@
 					"slug": "riesencrevetten-king-prawns-shell-on",
 					"name": "Riesencrevetten",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 480,
 							"cookSecondsMax": 480,
 							"flipFraction": 0.5,
@@ -2286,12 +2199,12 @@
 					"slug": "kalmar-squid-calamari",
 					"name": "Kalmar",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 480,
 							"cookSecondsMax": 480,
 							"flipFraction": 0.5,
@@ -2313,12 +2226,12 @@
 					"slug": "aubergine-eggplant-slices",
 					"name": "Aubergine",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 720,
 							"cookSecondsMax": 720,
 							"flipFraction": 0.5,
@@ -2334,12 +2247,12 @@
 					"slug": "champignons-mushrooms-white-or-brown-whole",
 					"name": "Champignons",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 360,
 							"cookSecondsMax": 360,
 							"flipFraction": 0.5,
@@ -2355,12 +2268,12 @@
 					"slug": "portobello-cap-whole",
 					"name": "Portobello",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 300,
 							"cookSecondsMax": 300,
 							"flipFraction": 0.5,
@@ -2376,12 +2289,12 @@
 					"slug": "cherry-tomato-skewers",
 					"name": "Cherry tomato skewers",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 300,
 							"cookSecondsMax": 300,
 							"flipFraction": 0.5,
@@ -2397,12 +2310,12 @@
 					"slug": "halloumi",
 					"name": "Halloumi",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 480,
 							"cookSecondsMax": 480,
 							"flipFraction": 0.5,
@@ -2418,12 +2331,12 @@
 					"slug": "paneer",
 					"name": "Paneer",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 600,
 							"cookSecondsMax": 600,
 							"flipFraction": 0.5,
@@ -2439,12 +2352,12 @@
 					"slug": "knoblauch-garlic-whole-head-in-foil",
 					"name": "Knoblauch",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 1500,
 							"cookSecondsMax": 1500,
 							"flipFraction": 0.5,
@@ -2460,12 +2373,12 @@
 					"slug": "maiskolben-corn-on-the-cob",
 					"name": "Maiskolben",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 600,
 							"cookSecondsMax": 600,
 							"flipFraction": 0.5,
@@ -2481,12 +2394,12 @@
 					"slug": "pak-choi-halved",
 					"name": "Pak Choi",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 720,
 							"cookSecondsMax": 720,
 							"flipFraction": 0.5,
@@ -2502,12 +2415,12 @@
 					"slug": "peperoni-bell-peppers",
 					"name": "Peperoni",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 900,
 							"cookSecondsMax": 900,
 							"flipFraction": 0.5,
@@ -2523,12 +2436,12 @@
 					"slug": "spargeln-asparagus-green",
 					"name": "Spargeln",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 420,
 							"cookSecondsMax": 420,
 							"flipFraction": 0.5,
@@ -2544,12 +2457,12 @@
 					"slug": "susskartoffel-sweet-potato",
 					"name": "Süsskartoffel",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 2100,
 							"cookSecondsMax": 2100,
 							"flipFraction": 0.5,
@@ -2565,12 +2478,12 @@
 					"slug": "tofu-firm-pressed",
 					"name": "Tofu",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 600,
 							"cookSecondsMax": 600,
 							"flipFraction": 0.5,
@@ -2586,12 +2499,12 @@
 					"slug": "tomato-whole-or-halved",
 					"name": "Tomato",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 480,
 							"cookSecondsMax": 480,
 							"flipFraction": 0.5,
@@ -2607,12 +2520,12 @@
 					"slug": "zucchetti-zucchini-slices-lengthwise",
 					"name": "Zucchetti / Zucchini",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 360,
 							"cookSecondsMax": 360,
 							"flipFraction": 0.5,
@@ -2628,12 +2541,12 @@
 					"slug": "fenchel-fennel-halved-or-wedges",
 					"name": "Fenchel",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 900,
 							"cookSecondsMax": 900,
 							"flipFraction": 0.5,
@@ -2649,12 +2562,12 @@
 					"slug": "fruhlingszwiebeln-spring-onions-whole",
 					"name": "Frühlingszwiebeln",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 300,
 							"cookSecondsMax": 300,
 							"flipFraction": 0.5,
@@ -2670,12 +2583,12 @@
 					"slug": "plant-based-burger-patty-beyond-impossible-cornatur",
 					"name": "Plant-based burger patty",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 540,
 							"cookSecondsMax": 540,
 							"flipFraction": 0.5,
@@ -2695,12 +2608,12 @@
 					"slug": "cornatur-style-veggie-steak-seitan-wheat-protein",
 					"name": "Cornatur-style veggie steak",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 480,
 							"cookSecondsMax": 480,
 							"flipFraction": 0.5,
@@ -2722,12 +2635,12 @@
 					"slug": "ananas-pineapple-rings",
 					"name": "Ananas",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 480,
 							"cookSecondsMax": 480,
 							"flipFraction": 0.5,
@@ -2743,12 +2656,12 @@
 					"slug": "apfel-apple-halved-or-rings",
 					"name": "Apfel",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 480,
 							"cookSecondsMax": 480,
 							"flipFraction": 0.5,
@@ -2764,12 +2677,12 @@
 					"slug": "aprikosen-apricots-halved",
 					"name": "Aprikosen",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 240,
 							"cookSecondsMax": 240,
 							"flipFraction": 0.5,
@@ -2785,12 +2698,12 @@
 					"slug": "avocado-halved-pit-removed",
 					"name": "Avocado",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 240,
 							"cookSecondsMax": 240,
 							"flipFraction": 0.5,
@@ -2809,12 +2722,12 @@
 					"slug": "banane-banana-in-skin-slit",
 					"name": "Banane",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 900,
 							"cookSecondsMax": 900,
 							"flipFraction": 0.5,
@@ -2830,12 +2743,12 @@
 					"slug": "feigen-figs-halved",
 					"name": "Feigen",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 300,
 							"cookSecondsMax": 300,
 							"flipFraction": 0.5,
@@ -2851,12 +2764,12 @@
 					"slug": "mango-cheeks-wedges",
 					"name": "Mango",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 240,
 							"cookSecondsMax": 240,
 							"flipFraction": 0.5,
@@ -2872,12 +2785,12 @@
 					"slug": "marroni-chestnuts-scored",
 					"name": "Marroni",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 1800,
 							"cookSecondsMax": 1800,
 							"flipFraction": 0.5,
@@ -2893,12 +2806,12 @@
 					"slug": "nektarinen-nectarines-halved",
 					"name": "Nektarinen",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 240,
 							"cookSecondsMax": 240,
 							"flipFraction": 0.5,
@@ -2914,12 +2827,12 @@
 					"slug": "pfirsiche-peaches-halved",
 					"name": "Pfirsiche",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 240,
 							"cookSecondsMax": 240,
 							"flipFraction": 0.5,
@@ -2935,12 +2848,12 @@
 					"slug": "wassermelone-watermelon-thick-slices",
 					"name": "Wassermelone",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 240,
 							"cookSecondsMax": 240,
 							"flipFraction": 0.5,
@@ -2956,12 +2869,12 @@
 					"slug": "zitrone-limette-lemon-lime-halved-for-dressing",
 					"name": "Zitrone / Limette",
 					"hasThickness": false,
-					"hasDoneness": true,
+					"hasDoneness": false,
 					"rows": [
 						{
 							"thicknessCm": null,
 							"prepLabel": "—",
-							"doneness": "—",
+							"doneness": null,
 							"cookSecondsMin": 240,
 							"cookSecondsMax": 240,
 							"flipFraction": 0.5,
@@ -2972,6 +2885,93 @@
 						}
 					],
 					"notes": ["Squeezes ~50 % more juice once grilled; citrus sugars caramelize for a completely different flavor."]
+				}
+			]
+		},
+		{
+			"slug": "special",
+			"name": "Spezial",
+			"cuts": [
+				{
+					"slug": "pferdesteak-horse-steak",
+					"name": "Pferdesteak",
+					"hasThickness": false,
+					"hasDoneness": true,
+					"rows": [
+						{
+							"thicknessCm": null,
+							"prepLabel": "—",
+							"doneness": "Rare",
+							"cookSecondsMin": 240,
+							"cookSecondsMax": 240,
+							"flipFraction": 0.5,
+							"idealFlipPattern": "once",
+							"restSeconds": 180,
+							"heatZone": "Direct, lid closed",
+							"notes": null
+						},
+						{
+							"thicknessCm": null,
+							"prepLabel": "—",
+							"doneness": "Medium-rare",
+							"cookSecondsMin": 420,
+							"cookSecondsMax": 420,
+							"flipFraction": 0.5,
+							"idealFlipPattern": "once",
+							"restSeconds": 180,
+							"heatZone": "Direct, lid closed",
+							"notes": null
+						},
+						{
+							"thicknessCm": null,
+							"prepLabel": "—",
+							"doneness": "Medium",
+							"cookSecondsMin": 600,
+							"cookSecondsMax": 600,
+							"flipFraction": 0.5,
+							"idealFlipPattern": "once",
+							"restSeconds": 300,
+							"heatZone": "Direct, lid closed",
+							"notes": null
+						},
+						{
+							"thicknessCm": null,
+							"prepLabel": "—",
+							"doneness": "Well-done",
+							"cookSecondsMin": 960,
+							"cookSecondsMax": 960,
+							"flipFraction": 0.5,
+							"idealFlipPattern": "once",
+							"restSeconds": 300,
+							"heatZone": "Direct, lid closed",
+							"notes": null
+						}
+					],
+					"notes": [
+						"Do NOT cook past medium-rare — horse is ~ 3 % fat and will brick.",
+						"Marinate in red wine + juniper + bay leaf for flavor depth."
+					]
+				},
+				{
+					"slug": "kaninchenfilets-rabbit-fillets",
+					"name": "Kaninchenfilets",
+					"hasThickness": false,
+					"hasDoneness": false,
+					"rows": [
+						{
+							"thicknessCm": null,
+							"prepLabel": "—",
+							"doneness": null,
+							"cookSecondsMin": 300,
+							"cookSecondsMax": 300,
+							"flipFraction": 0.5,
+							"idealFlipPattern": "once",
+							"restSeconds": 180,
+							"heatZone": "Direct, lid closed",
+							"notes": null
+						}
+					],
+					"notes": []
 				}
 			]
 		}
