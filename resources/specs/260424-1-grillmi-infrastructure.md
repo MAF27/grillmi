@@ -121,7 +121,7 @@ Address allocation is plain DHCP — no Fixed IP reservations. Findability comes
 **Phase 6: Git remote (GitHub)**
 
 - [x] GitHub repo `https://github.com/MAF27/grillmi.git` created and scaffold commit pushed (April 2026). GitHub is the single git remote for both hosts; alcazar is not used for grillmi.
-- [x] On `grillmi-dev`, clone from `https://github.com/MAF27/grillmi.git` into `/home/maf/dev/grillmi` for interactive development. Working-copy checkouts at `/opt/grillmi` on both hosts are managed by the Ansible role, not by hand.
+- [x] On `grillmi-dev`, the working tree at `/opt/grillmi` is the interactive development tree AND the Ansible deploy target — the role clones / fast-forwards it on every deploy. **Always push feature-branch commits before running `ansible-playbook playbooks/applications/grillmi-deploy.yml`**, or unstaged edits and unpushed commits in `/opt/grillmi` will be wiped by the role's `git ... force: true, version: main`. Treat any "deploy to dev" as a destructive event for the local working tree.
 
 **Phase 7: End-to-end deploy verification**
 
@@ -146,6 +146,6 @@ Address allocation is plain DHCP — no Fixed IP reservations. Findability comes
 
 - [x] Open `https://grillmi.krafted.cc` in Safari on the Mac while on-LAN — the placeholder "Grillmi — coming soon" page loads, and clicking the URL-bar site-info icon shows "Connection is secure" with issuer Let's Encrypt.
 - [x] Open `https://grillmi.cloud` in Safari from anywhere — same placeholder page, site-info icon shows "Connection is secure" with issuer Cloudflare Inc. ECC CA-3 (or equivalent Cloudflare intermediate).
-- [x] Open VS Code, use the Remote-SSH extension to connect to `grillmi-dev`, and open the folder `/home/maf/dev/grillmi`. The file tree shows the scaffolded repo and the integrated terminal opens in that folder.
+- [x] Open VS Code, use the Remote-SSH extension to connect to `grillmi-dev`, and open the folder `/opt/grillmi`. The file tree shows the working repo and the integrated terminal opens in that folder. (Reminder: this folder is also the Ansible deploy target — push feature-branch work before any deploy.)
 - [x] In the Cloudflare Zero Trust dashboard → Networks → Tunnels, the `grillmi` tunnel shows status **HEALTHY**, and its Public Hostnames tab shows `grillmi.cloud` → `http://localhost:80`.
 - [x] In the Doppler web UI, the `grillmi` project shows configs `dev` and `prd`. `dev` contains `BECOME_PASSWORD`. `prd` contains `BECOME_PASSWORD` and a non-empty `CLOUDFLARE_TUNNEL_TOKEN`. The `deploy-tokens` project (config `prd`) contains `GRILLMI_DEV_DOPPLER_TOKEN` and `GRILLMI_PRD_DOPPLER_TOKEN`. (Verified via `doppler-touchid secrets`.)
