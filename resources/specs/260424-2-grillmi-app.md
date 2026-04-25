@@ -1,9 +1,9 @@
-# Grillmi v1 — Application
+# Grillmi v1: Application
 
 ## Meta
 
-- Status: Implemented (Phase 12 deploy + manual verification remain user-driven). Sound MP3s + PWA icons + Testing checkboxes have all landed.
-- Branch: feature/grillmi-app
+- Status: Implemented and deployed. Post-launch corrections (260425) are tracked in the "Post-launch corrections" section at the bottom; outstanding work there is the live edge of v1.
+- Branch: main (post-launch corrections land directly per user direction).
 
 ---
 
@@ -39,8 +39,8 @@ Ship a SvelteKit 2 + `adapter-static` PWA using Svelte 5 Runes for state, Tailwi
 - When cook completes, card transitions to `resting` (if rest time > 0) or directly to `ready`. Rest time is pulled from the reference data per cut.
 - When rest completes, card transitions to `ready` with a subtle glow and a green done chime.
 - User swipes right on a Ready card to mark it `plated`. Card animates down into the Plated group (collapsed by default).
-- "Session beenden" requires a 500 ms hold to prevent accidental taps.
-- **Auto-end**: when every item in the session has reached `plated`, a 60-second countdown banner appears ("Session endet in 60 s — Rückgängig"). The countdown cancels if any item is un-plated or a new item added, or the user taps "Rückgängig". At zero, the session ends automatically and the user lands on Home.
+- "Session beenden" requires a 500 ms hold to prevent accidental taps. Ending a session stops all running timers and clears the active session from IndexedDB, **but it does not throw away the plan**: the items the user just cooked are written back into the editable Plan (with fresh ids and a fresh default target time) so the same setup can be re-run with one Go press. Saved Plans and Favoriten are unaffected.
+- **Auto-end**: when every item in the session has reached `plated`, a 60-second countdown banner appears ("Session endet in 60 s, Rückgängig"). The countdown cancels if any item is un-plated or a new item added, or the user taps "Rückgängig". At zero, the session ends automatically (same plan-preserving semantics as the manual end) and the user lands on Home.
 - **Mid-session item controls** (accessible via long-press on any card): "Jetzt fertig" (force-transition to `ready` immediately — user already pulled it), "Aus Session entfernen" (drop the item entirely; other items' schedule is unaffected because timing is per-item against the target). No "edit cut/thickness/doneness" mid-session — the user must remove and re-add.
 - **Overdue items** (scheduled put-on already in the past when the session started, because the user pressed Go with a too-close target): card starts in `cooking` immediately with progress reflecting elapsed wall-clock time, next-event label reads "Wenden in X:XX — spät gestartet". If more than 25% of cook time has already passed when the session starts, the card starts in `resting` or `ready` as appropriate.
 
@@ -51,11 +51,12 @@ Ship a SvelteKit 2 + `adapter-static` PWA using Svelte 5 Runes for state, Tailwi
 - The user can tap the banner to dismiss; otherwise it auto-dismisses after 8 s.
 - Multiple simultaneous events queue; one banner at a time, in the order events fired.
 
-**Favorites**
+**Favorites and Saved Plans (two separate features)**
 
-- Favorites screen shows saved presets from IndexedDB. Each card: name, item summary ("3 Cervelat, 2 Peperoni, 1 Maiskolben"), last-used date.
-- Tap a favorite → Plan screen pre-populated with the saved items (user still adjusts target time, then presses Go).
-- Long-press on a favorite → Umbenennen / Löschen action sheet.
+- A **Favorit** is one fully-configured grillable: cut + thickness (or prep label) + Garstufe + side count. Example: "Mein Lieblings-Entrecôte, 3 cm, medium-rare". A favorite is added to a plan in one tap from the AddItemSheet's first step (a "Favoriten" tab next to "Kategorie"). Long-press a favorite to umbenennen / löschen.
+- A **Plan-Vorlage** (Saved Plan) is a saved list of items: a whole grill setup. Example: "Familienbrunch: 4 Cervelat, 2 Peperoni, 1 Maiskolben". Saved Plans live on the Home screen (or a dedicated route) and tapping one pre-populates the Plan with those items. Long-press for umbenennen / löschen.
+- Each is backed by its own IndexedDB store (`favorites` for single grillables, `plans` for saved plans).
+- "Als Favorit speichern" in the AddItemSheet captures a Favorite from the in-progress configuration. "Plan speichern" on the Plan screen captures a Saved Plan from the current item list.
 
 **Settings**
 
@@ -339,3 +340,28 @@ The implementation followed the spec end-to-end with the following adjustments. 
 - **Service worker now precaches prerendered HTML routes.** The original `precacheAndRoute([...build, ...files])` shipped only JS/CSS chunks and static files — the HTML for `/`, `/plan`, `/session`, etc. was missing, breaking offline. Adding `prerendered` from `$service-worker` to the precache list, plus a `NavigationRoute` fallback bound to `/`, makes the offline E2E pass and matches the spec's "fully offline after first load" guarantee.
 - **Light-mode contrast.** The ember accent against the near-white light-mode background fails 3:1 contrast for the H1. axe-core flags this as `serious`, not `critical`. The E2E threshold was set to fail on `critical` only and the issue is tracked in the UI architecture a11y checklist for v1 polish. Dark mode (the primary form factor) is unaffected.
 - **Ansible deploy playbook does not exist yet** at `~/dev/ansible/playbooks/applications/grillmi-deploy.yml`. The Phase 12 commands cannot run until the ops repo grows that playbook; the work is bounded — copy the established `app_azooco`-style role pattern and add `grillmi_dev`/`grillmi_prod` to the inventory.
+
+---
+
+## Post-launch corrections (260425)
+
+Defects surfaced by the user after first real-world use. Each gets a status. Fixes land on `main`.
+
+### Done
+
+- **Pouletspiessli had two near-identical timing rows** (2.5 cm Würfel and 3 cm Würfel both topped at 12 min). Migros Grilltimer does not separate them; the two-row picker was just noise. Collapsed to a single row, `3 cm Würfel`, 10 to 12 min, `Direkt mittel`, rotate-flip. Source: `resources/docs/grill-timings-reference.md` §Pouletspiessli.
+- **Käse category added.** Halloumi and Paneer were misclassified under Gemüse. The build pipeline (`scripts/build-timings.ts`) gained a `cheese` UI category that pulls Halloumi and Paneer from the `vegetables` parse category; Gemüse no longer contains them. Category count is now 12. The existing `test_timings_schema_category_count` test was updated to reflect the new ordering. Future grill cheeses (e.g. dedicated Grillkäse SKUs) go into the same Käse category.
+- **Migusto credit removed from Settings.** The Über-Grillmi panel now reads "Garzeiten basieren auf Migros Grilltimer, Weber, Serious Eats und Meathead." The single Migusto-tagged tip in the generated JSON (Cervelat note) was rewritten in German without the brand attribution. Source-citation tags inside `resources/docs/grill-timings-reference.md` are dev-only and not user-facing; cleanup of those tags is deferred until the German translation pass touches each section.
+- **Session Beenden preserves the plan.** `sessionStore.endSession()` now reads the live session items, strips the session-only fields, generates fresh ids, and writes them back into `plan` with a fresh default target. The active session is still cleared from IndexedDB, but the user lands on Home with a re-runnable plan instead of an empty one. Auto-end inherits the same behaviour. The existing `test_end_session_clears_current` still passes.
+- **Flip-pattern inference now reads German.** The build script's `inferFlip()` regex was English-only. Added German alternatives so phrases like "alle 2.5 min drehen" map to `rotate`, "alle 60 s drehen" maps to `every-60s`, and "nicht wenden" maps to `once`. This unblocks the German-translation pass below without losing semantics.
+- **Em-dash ban.** All new prose in this spec, in source files, and in user-facing strings avoids em-dashes. Existing em-dashes in the data pipeline's placeholders (the `—` fallback in the build script) and in the unfixed sections of the reference markdown are tracked under "English to German pass" below.
+
+### In progress
+
+- **English to German pass on the data.** The generated timings JSON still ships English values for `heatZone` ("Direct medium", "Indirect", etc.), `doneness` ("Medium-rare", "Well-done"), several `prepLabel` values (e.g. "2.5 cm cubes", "Wienerli / Frankfurter"), a handful of cut display names (Tri-tip, Skirt steak, Whole butterflied chicken, Cherry tomato skewers, Tofu, Tomato), and most per-cut `notes`. The fix is a translation pass on `resources/docs/grill-timings-reference.md` (the single source of truth) plus a build-script update that tolerates the German placeholders. Pouletspiessli and Cervelat are done as the working pattern; the rest follows the same rules: heat-zone column rewritten to "Direkt hoch / Direkt mittel / Indirekt / Reverse-Sear", doneness rewritten to "blutig / medium-rare / medium / durchgebraten", notes prose rewritten in German, English-first cut headings rewritten German-first.
+- **Chime sound library cleanup.** Of the 8 chimes shipped with v1, only chime-6 and chime-7 are usable in practice; the other six sound the same / are too soft / blend into ambient noise. Replacement plan: source 6 distinct CC0 chimes (Freesound CC0 + Mixkit free-license), normalise to the same dBFS envelope (peak -3, 2.5 to 3.0 s), drop them in as `chime-1.mp3` through `chime-5.mp3` and `chime-8.mp3`, refresh `resources/docs/sound-credits.md`. Default sound assignment in `userSettingsSchema` shifts to chime-6 for put-on, chime-7 for flip, and a re-evaluated chime for done so first-run users hear the known-good sounds. Replacement candidates need user audition before commit.
+
+### Deferred to v1.1 (tracked as separate work)
+
+- **Favorit and Plan-Vorlage split.** The current `favorites` IDB store and `Favorite` model represent saved-plan constellations (a list of items). Per the corrected v1 model, a `Favorit` is a single configured grillable (cut + thickness/prep + Garstufe + side count, ready for one-tap insert into a plan) and a `Plan-Vorlage` is a saved list of items. The split requires: a new `Favorite` model and IDB store keyed by configured-grillable, renaming the existing `favorites` store and `Favorite` type to `plans` and `SavedPlan` (IDB version bump from 1 to 2 with a migration that renames the store), a new "Favoriten" tab in the AddItemSheet's first step, an "Als Favorit speichern" action inside the AddItemSheet (one-item capture) versus "Plan speichern" on the Plan screen (whole-list capture), and updates to `favoritesStore.ts` plus a new `plansStore.ts`. Current `favoritesStore.test.ts` is renamed to `plansStore.test.ts`; new tests cover single-grillable favorites. Marco confirmed the data-model recommendation in the AskUserQuestion exchange on 260425.
+- **Migusto / Betty Bossi cleanup in the source markdown.** The methodology preamble of `resources/docs/grill-timings-reference.md` (lines around "Swiss/DACH cut naming follows Migusto and Betty Bossi") and the inline `[Migusto]` / `[BBossi]` source tags are dev-only docs but should be reconciled with the BBQ-native sourcing rule (Migros Grilltimer + Weber + Serious Eats + Meathead). Bundled with the German translation pass above.

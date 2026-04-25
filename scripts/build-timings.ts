@@ -51,6 +51,8 @@ const MIXED_GRILL = 'mixed-grill-spiessli-mixed-skewers'
 const KANINCHEN = 'kaninchenfilets-rabbit-fillets'
 const POULETSPIESSLI = 'pouletspiessli-chicken-skewers'
 const PFERDESTEAK = 'pferdesteak-horse-steak'
+const HALLOUMI = 'halloumi'
+const PANEER = 'paneer'
 
 const UI_CATEGORIES: ReadonlyArray<UiCategory> = [
 	{
@@ -82,6 +84,11 @@ const UI_CATEGORIES: ReadonlyArray<UiCategory> = [
 		],
 	},
 	{ slug: 'fish', name: 'Fisch', pull: [{ from: 'fish', cuts: 'all' }] },
+	{
+		slug: 'cheese',
+		name: 'Käse',
+		pull: [{ from: 'vegetables', cuts: [HALLOUMI, PANEER] }],
+	},
 	{ slug: 'vegetables', name: 'Gemüse', pull: [{ from: 'vegetables', cuts: 'all' }] },
 	{ slug: 'fruit', name: 'Früchte', pull: [{ from: 'fruit', cuts: 'all' }] },
 	{
@@ -218,14 +225,16 @@ function extractTable(lines: string[]): { headers: string[]; rows: string[][] } 
 	return { headers, rows }
 }
 
-const FLIP_KEYWORDS_60S = /every\s*(60\s*s|45\s*s|2\s*min)/i
-const ROTATE_KEYWORDS = /rotate|quarter\s*turn|roll\s*every|every\s*\d+\s*min/i
+const FLIP_KEYWORDS_60S = /every\s*(60\s*s|45\s*s|2\s*min)|alle\s*(60\s*s|45\s*s|2\s*min)/i
+const ROTATE_KEYWORDS =
+	/rotate|quarter\s*turn|roll\s*every|every\s*\d+\s*min|alle\s*\d+(\.\d+)?\s*min\s*(drehen|rollen|wenden)|viertel(-|\s)?drehen/i
+const NO_FLIP_KEYWORDS = /no\s*flip|none|cut-side\s*only|nicht\s*wenden|nur\s*einseitig|schnittseite\s*nur/i
 
 function inferFlip(turnsText: string): { fraction: number; pattern: FlipPattern } {
 	const t = turnsText.toLowerCase()
 	if (FLIP_KEYWORDS_60S.test(t)) return { fraction: 0.5, pattern: 'every-60s' }
 	if (ROTATE_KEYWORDS.test(t)) return { fraction: 0.5, pattern: 'rotate' }
-	if (/no\s*flip|none|cut-side\s*only/.test(t)) return { fraction: 1, pattern: 'once' }
+	if (NO_FLIP_KEYWORDS.test(t)) return { fraction: 1, pattern: 'once' }
 	return { fraction: 0.5, pattern: 'once' }
 }
 

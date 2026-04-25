@@ -74,9 +74,9 @@
 
 	<section>
 		<h2>Über Grillmi</h2>
-		<p>Version 1.0.0 — gebaut für den Garten.</p>
+		<p>Version 1.0.0, gebaut für den Garten.</p>
 		<p><a href="https://github.com/MAF27" rel="noopener noreferrer" target="_blank">Quelltext</a></p>
-		<p class="muted">Garzeiten basieren auf Migusto, Betty Bossi, Weber, Serious Eats, Meathead.</p>
+		<p class="muted">Garzeiten basieren auf Migros Grilltimer, Weber, Serious Eats und Meathead.</p>
 		<Button variant="ghost" onclick={() => settingsStore.markFirstRunSeen()}>Willkommens-Hinweis ausblenden</Button>
 	</section>
 </main>

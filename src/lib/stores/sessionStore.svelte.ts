@@ -63,9 +63,25 @@ function createSessionStore() {
 
 	async function endSession() {
 		clearAutoEnd()
+		const replayItems: PlannedItem[] = session
+			? session.items.map(s => ({
+					id: uuid(),
+					categorySlug: s.categorySlug,
+					cutSlug: s.cutSlug,
+					thicknessCm: s.thicknessCm,
+					prepLabel: s.prepLabel,
+					doneness: s.doneness,
+					label: s.label,
+					cookSeconds: s.cookSeconds,
+					restSeconds: s.restSeconds,
+					flipFraction: s.flipFraction,
+					idealFlipPattern: s.idealFlipPattern,
+					heatZone: s.heatZone,
+				}))
+			: []
 		await clearCurrentSession()
 		session = null
-		plan = defaultPlan()
+		plan = replayItems.length > 0 ? { targetEpoch: defaultTarget(), items: replayItems, mode: 'now' } : defaultPlan()
 	}
 
 	return {

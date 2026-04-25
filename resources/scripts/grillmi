@@ -1,0 +1,419 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# grillmi: management script for the grillmi SvelteKit static site.
+# Stack: SvelteKit (adapter-static) → Caddy → cloudflared (prod only).
+# Per ~/dev/reference/service-management-scripts.md.
+
+# === Configuration ===
+APP_DIR="/opt/grillmi"
+BUILD_DIR="$APP_DIR/build"
+PORT=80
+SERVICE_TIMEOUT=30
+HTTP_TIMEOUT=20
+
+# === Mode detection ===
+# Prod has cloudflared installed; dev does not.
+detect_env() {
+    if systemctl list-unit-files cloudflared.service --no-legend 2>/dev/null \
+            | grep -q cloudflared.service; then
+        echo "prod"
+    else
+        echo "dev"
+    fi
+}
+APP_ENV="$(detect_env)"
+
+# Services we manage. Caddy serves the build; cloudflared exposes it on prod.
+SERVICES=(caddy)
+[[ "$APP_ENV" == "prod" ]] && SERVICES+=(cloudflared)
+
+# === Colors and Symbols ===
+GREEN='\033[0;32m'
+RED='\033[1;31m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+BOLD='\033[1m'
+DIM='\033[2m'
+NC='\033[0m'
+
+SYM_OK="●"
+SYM_FAIL="✗"
+SYM_ARROW="→"
+
+# === Logging ===
+log_info()  { echo -e "${DIM}INFO${NC}  $1" >&2; }
+log_ok()    { echo -e "${GREEN}OK${NC}    $1" >&2; }
+log_warn()  { echo -e "${YELLOW}WARN${NC}  $1" >&2; }
+log_error() { echo -e "${RED}ERROR${NC} $1" >&2; }
+fail()      { log_error "$1"; exit 1; }
+
+# === Doppler wrapper ===
+# Every secret-aware operation goes through doppler run, scoped to APP_DIR.
+# No runtime secrets today, but build-time PUBLIC_* and any future user-account
+# secrets (auth tokens, DB URLs) flow through this same path.
+doppler_run() {
+    (cd "$APP_DIR" && doppler run -- "$@")
+}
+
+# === Status helpers ===
+get_version() {
+    python3 -c "import json; print(json.load(open('$APP_DIR/package.json'))['version'])" 2>/dev/null \
+        || echo "unknown"
+}
+
+get_ip() {
+    hostname -I 2>/dev/null | awk '{print $1}' || echo "localhost"
+}
+
+# Uptime of the primary service (caddy). Uses systemd's ActiveEnterTimestamp
+# rather than `ps -o etime` because LXC containers report bogus process
+# start-times (Linux kernel reports ~441M days under unprivileged LXC).
+get_uptime() {
+    local started_iso started_epoch now_epoch elapsed_s
+    started_iso=$(systemctl show -p ActiveEnterTimestamp --value caddy 2>/dev/null || echo "")
+    [[ -z "$started_iso" || "$started_iso" == "n/a" ]] && return
+    started_epoch=$(date -d "$started_iso" +%s 2>/dev/null) || return
+    now_epoch=$(date +%s)
+    elapsed_s=$((now_epoch - started_epoch))
+    [[ $elapsed_s -lt 0 ]] && return
+    printf '%dd%02dh%02dm' \
+        $((elapsed_s / 86400)) \
+        $(((elapsed_s % 86400) / 3600)) \
+        $(((elapsed_s % 3600) / 60))
+}
+
+_BASE_URL_CACHE=""
+get_base_url() {
+    if [[ -z "$_BASE_URL_CACHE" ]]; then
+        # PUBLIC_BASE_URL from Doppler if set; otherwise infer from environment.
+        _BASE_URL_CACHE=$(doppler_run printenv PUBLIC_BASE_URL 2>/dev/null || true)
+        if [[ -z "$_BASE_URL_CACHE" ]]; then
+            if [[ "$APP_ENV" == "prod" ]]; then
+                _BASE_URL_CACHE="https://grillmi.cloud"
+            else
+                _BASE_URL_CACHE="http://$(get_ip)"
+            fi
+        fi
+    fi
+    echo "$_BASE_URL_CACHE"
+}
+
+# === Health checks ===
+check_http() {
+    local code
+    code=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:$PORT/" 2>/dev/null || echo "000")
+    [[ "$code" =~ ^(200|301|302)$ ]]
+}
+
+check_build() {
+    [[ -f "$BUILD_DIR/index.html" ]]
+}
+
+# Cloudflared "healthy" = at least one registered tunnel connection in recent log.
+check_cloudflared() {
+    journalctl -u cloudflared -n 50 --no-pager 2>/dev/null \
+        | grep -q "Registered tunnel connection"
+}
+
+# === Wait helpers ===
+wait_for_start() {
+    local svc="$1" elapsed=0
+    while ! systemctl is-active --quiet "$svc"; do
+        [[ $elapsed -ge $SERVICE_TIMEOUT ]] && return 1
+        sleep 0.5; elapsed=$((elapsed + 1))
+    done
+}
+
+wait_for_stop() {
+    local svc="$1" elapsed=0
+    while systemctl is-active --quiet "$svc"; do
+        [[ $elapsed -ge $SERVICE_TIMEOUT ]] && return 1
+        sleep 0.5; elapsed=$((elapsed + 1))
+    done
+}
+
+wait_for_http() {
+    local elapsed=0
+    while ! check_http; do
+        [[ $elapsed -ge $HTTP_TIMEOUT ]] && return 1
+        sleep 0.5; elapsed=$((elapsed + 1))
+    done
+}
+
+# === Status command ===
+overall_status() {
+    local up=0 total=${#SERVICES[@]} svc
+    for svc in "${SERVICES[@]}"; do
+        systemctl is-active --quiet "$svc" && up=$((up + 1))
+    done
+    if ! check_build; then
+        echo "down"; return
+    fi
+    if [[ $up -eq 0 ]]; then echo "down"
+    elif [[ $up -eq $total ]] && check_http; then echo "ok"
+    else echo "degraded"
+    fi
+}
+
+cmd_status() {
+    local format="human"
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --check) format="check" ;;
+            --json)  format="json"  ;;
+            *)       fail "Unknown status flag: $1" ;;
+        esac
+        shift
+    done
+
+    local state version url uptime
+    state="$(overall_status)"
+    version="$(get_version)"
+    url="$(get_base_url)"
+    uptime="$(get_uptime)"
+
+    case "$format" in
+        check)
+            echo "$state"
+            ;;
+        json)
+            local services_json="" first=1 svc active
+            for svc in "${SERVICES[@]}"; do
+                active=$(systemctl is-active "$svc" 2>/dev/null || echo "unknown")
+                [[ $first -eq 0 ]] && services_json+=","
+                services_json+="\"$svc\":\"$active\""
+                first=0
+            done
+            printf '{"status":"%s","env":"%s","version":"%s","url":"%s","uptime":"%s","build":%s,"http":%s,"services":{%s}}\n' \
+                "$state" "$APP_ENV" "$version" "$url" "$uptime" \
+                "$(check_build && echo true || echo false)" \
+                "$(check_http && echo true || echo false)" \
+                "$services_json"
+            ;;
+        human)
+            local env_color
+            case "$APP_ENV" in
+                dev)  env_color="${GREEN}" ;;
+                prod) env_color="${RED}"   ;;
+                *)    env_color="${NC}"    ;;
+            esac
+            local uptime_part=""
+            [[ -n "$uptime" ]] && uptime_part=" ${DIM}up:${uptime}${NC}"
+            printf "${BOLD}grillmi${NC} ${CYAN}%s${NC} env:${env_color}%s${NC}${uptime_part}\n" \
+                "$version" "$APP_ENV"
+
+            local svc active sym color
+            local svc_line=""
+            for svc in "${SERVICES[@]}"; do
+                active=$(systemctl is-active "$svc" 2>/dev/null || echo "unknown")
+                if [[ "$active" == "active" ]]; then sym="$SYM_OK"; color="$GREEN"
+                else sym="$SYM_FAIL"; color="$RED"
+                fi
+                svc_line+="${color}${sym}${NC} ${svc}  "
+            done
+            if check_build; then svc_line+="${GREEN}${SYM_OK}${NC} build"
+            else svc_line+="${RED}${SYM_FAIL}${NC} build"
+            fi
+            printf "  %b\n" "$svc_line"
+
+            printf "  %s ${CYAN}%s${NC}" "$SYM_ARROW" "$url"
+            if check_http; then printf " ${GREEN}${SYM_OK}${NC}\n"
+            else printf " ${RED}${SYM_FAIL}${NC} (no local HTTP)\n"
+            fi
+            ;;
+    esac
+
+    case "$state" in
+        ok)       return 0 ;;
+        degraded) return 1 ;;
+        down)     return 2 ;;
+    esac
+}
+
+# === Service control ===
+cmd_start() {
+    local svc
+    for svc in "${SERVICES[@]}"; do
+        log_info "Starting $svc..."
+        sudo systemctl start "$svc"
+        wait_for_start "$svc" || fail "$svc failed to start within ${SERVICE_TIMEOUT}s"
+        log_ok "$svc started"
+    done
+    wait_for_http || log_warn "HTTP probe did not respond within ${HTTP_TIMEOUT}s"
+    cmd_status
+}
+
+cmd_stop() {
+    local svc
+    # Stop in reverse order: cloudflared first so the tunnel drains before caddy goes.
+    for ((i=${#SERVICES[@]}-1; i>=0; i--)); do
+        svc="${SERVICES[i]}"
+        log_info "Stopping $svc..."
+        sudo systemctl stop "$svc"
+        wait_for_stop "$svc" || log_warn "$svc did not stop within ${SERVICE_TIMEOUT}s"
+        log_ok "$svc stopped"
+    done
+}
+
+cmd_restart() {
+    cmd_stop
+    sudo systemctl daemon-reload
+    cmd_start
+}
+
+# Caddy reload — used after a build to swap in new static files without dropping connections.
+cmd_reload() {
+    log_info "Reloading caddy..."
+    sudo systemctl reload caddy
+    log_ok "caddy reloaded"
+}
+
+# === Logs ===
+cmd_logs() {
+    local svc="caddy" lines=50 follow=""
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            caddy|cloudflared) svc="$1" ;;
+            -f|--follow|follow) follow="-f" ;;
+            *[0-9]*) lines="$1" ;;
+            *) fail "Unknown logs argument: $1" ;;
+        esac
+        shift
+    done
+    if [[ -n "$follow" ]]; then
+        sudo journalctl -u "$svc" $follow
+    else
+        sudo journalctl -u "$svc" -n "$lines" --no-pager
+    fi
+}
+
+# === Health: one-shot probe ===
+cmd_health() {
+    local state
+    state="$(overall_status)"
+    case "$state" in
+        ok)       echo "OK"; exit 0 ;;
+        degraded) echo "DEGRADED" >&2; exit 1 ;;
+        down)     echo "DOWN" >&2; exit 2 ;;
+    esac
+}
+
+# === Deploy ===
+cmd_deploy() {
+    local branch="${1:-main}"
+
+    [[ -d "$APP_DIR/.git" ]] || fail "$APP_DIR is not a git checkout"
+
+    log_info "[1/5] Fetching origin..."
+    (cd "$APP_DIR" && git fetch origin "$branch")
+
+    local old_head new_head
+    old_head=$(cd "$APP_DIR" && git rev-parse HEAD)
+    new_head=$(cd "$APP_DIR" && git rev-parse "origin/$branch")
+
+    log_info "[2/5] Pulling $branch ($old_head → $new_head)..."
+    (cd "$APP_DIR" && git checkout "$branch" >/dev/null 2>&1 || true)
+    (cd "$APP_DIR" && git reset --hard "origin/$branch")
+
+    # Install if node_modules is missing OR pnpm-lock is newer than it.
+    # File mtime is more robust than git diff: if someone hard-resets the
+    # tree outside this script, old_head == new_head but node_modules can
+    # still be stale relative to the working tree.
+    local need_install=0
+    if [[ ! -d "$APP_DIR/node_modules" ]]; then
+        need_install=1
+    elif [[ "$APP_DIR/pnpm-lock.yaml" -nt "$APP_DIR/node_modules" ]]; then
+        need_install=1
+    fi
+    if [[ $need_install -eq 1 ]]; then
+        log_info "[3/5] Installing dependencies..."
+        (cd "$APP_DIR" && CI=true pnpm install --frozen-lockfile)
+    else
+        log_info "[3/5] Dependencies up to date — skipping install"
+    fi
+
+    # Build if build/index.html is missing OR any src/static/config file is
+    # newer than it. Same robustness reasoning as above.
+    local need_build=0
+    if [[ ! -f "$BUILD_DIR/index.html" ]]; then
+        need_build=1
+    elif (cd "$APP_DIR" && find src static svelte.config.* vite.config.* \
+            tsconfig.* package.json pnpm-lock.yaml \
+            -newer "$BUILD_DIR/index.html" -print -quit 2>/dev/null) \
+            | grep -q .; then
+        need_build=1
+    fi
+    if [[ $need_build -eq 1 ]]; then
+        log_info "[4/5] Building (doppler run -- pnpm build)..."
+        doppler_run pnpm build
+    else
+        log_info "[4/5] Build up to date — skipping"
+    fi
+
+    log_info "[5/5] Reloading caddy..."
+    sudo systemctl reload caddy
+    wait_for_http || fail "HTTP probe failed after reload"
+    log_ok "Deploy complete"
+    cmd_status
+}
+
+# === Build only (no git, no reload) ===
+cmd_build() {
+    [[ -d "$APP_DIR" ]] || fail "$APP_DIR missing"
+    log_info "Building (doppler run -- pnpm build)..."
+    doppler_run pnpm build
+    log_ok "Build complete: $BUILD_DIR/index.html"
+}
+
+# === Help ===
+cmd_help() {
+    cat <<'EOF'
+grillmi — management script for the grillmi static SvelteKit site.
+
+Usage:
+  grillmi [command] [args]
+
+Commands:
+  status [--check|--json]  Show service + build + URL status (default).
+  start                    Start caddy (and cloudflared on prod).
+  stop                     Stop services in reverse order.
+  restart                  Stop, daemon-reload, start.
+  reload                   Reload caddy only (use after build).
+  logs [svc] [N|-f]        journalctl for caddy (default) or cloudflared.
+  health                   One-shot probe. Exits 0/1/2.
+  deploy [branch]          git pull → install (if lock changed) → build (if src changed) → reload caddy.
+  build                    Run `doppler run -- pnpm build`.
+  help                     Show this message.
+
+Status formats:
+  --check   Output one of: ok, degraded, down
+  --json    Machine-readable JSON
+
+Exit codes (status / health):
+  0 = healthy
+  1 = degraded
+  2 = down
+EOF
+}
+
+# === Main ===
+main() {
+    local cmd="${1:-status}"
+    shift || true
+    case "$cmd" in
+        status)               cmd_status "$@" ;;
+        start)                cmd_start ;;
+        stop)                 cmd_stop ;;
+        restart)              cmd_restart ;;
+        reload)               cmd_reload ;;
+        logs)                 cmd_logs "$@" ;;
+        health)               cmd_health ;;
+        deploy)               cmd_deploy "$@" ;;
+        build)                cmd_build ;;
+        -h|--help|help)       cmd_help ;;
+        *)                    log_error "Unknown command: $cmd"; cmd_help; exit 1 ;;
+    esac
+}
+
+main "$@"

@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-25T15:52:31.574Z",
+  "generatedAt": "2026-04-25T16:17:11.020Z",
   "categories": [
     {
       "slug": "beef",
@@ -1861,8 +1861,8 @@
             }
           ],
           "notes": [
-            "No piercing, no mustard (traditionalist position; Migusto hedges). No splitting.",
-            "Keep heat moderate — casing bursts above 230 °C easily."
+            "Nicht einstechen, kein Senf (traditionelle Schule). Nicht aufschneiden.",
+            "Hitze moderat halten: Pelle platzt über 230 °C schnell auf."
           ]
         },
         {
@@ -1984,32 +1984,20 @@
           "rows": [
             {
               "thicknessCm": null,
-              "prepLabel": "2.5 cm cubes",
-              "doneness": null,
-              "cookSecondsMin": 480,
-              "cookSecondsMax": 720,
-              "flipFraction": 0.5,
-              "idealFlipPattern": "rotate",
-              "restSeconds": 120,
-              "heatZone": "Direct medium",
-              "notes": null
-            },
-            {
-              "thicknessCm": null,
-              "prepLabel": "3 cm cubes",
+              "prepLabel": "3 cm Würfel",
               "doneness": null,
               "cookSecondsMin": 600,
               "cookSecondsMax": 720,
               "flipFraction": 0.5,
               "idealFlipPattern": "rotate",
               "restSeconds": 120,
-              "heatZone": "Direct medium",
+              "heatZone": "Direkt mittel",
               "notes": null
             }
           ],
           "notes": [
-            "Soak bamboo skewers 30 min.",
-            "Leave small gap between pieces for even cooking."
+            "Holzspiesse 30 Min. wässern, sonst kohlen sie.",
+            "Kleinen Spalt zwischen den Würfeln lassen, damit alle Seiten Hitze bekommen."
           ]
         },
         {
@@ -2253,6 +2241,54 @@
       ]
     },
     {
+      "slug": "cheese",
+      "name": "Käse",
+      "cuts": [
+        {
+          "slug": "halloumi",
+          "name": "Halloumi",
+          "hasThickness": false,
+          "hasDoneness": false,
+          "rows": [
+            {
+              "thicknessCm": null,
+              "prepLabel": "—",
+              "doneness": null,
+              "cookSecondsMin": 480,
+              "cookSecondsMax": 480,
+              "flipFraction": 0.5,
+              "idealFlipPattern": "once",
+              "restSeconds": 0,
+              "heatZone": "Direct, lid closed",
+              "notes": null
+            }
+          ],
+          "notes": []
+        },
+        {
+          "slug": "paneer",
+          "name": "Paneer",
+          "hasThickness": false,
+          "hasDoneness": false,
+          "rows": [
+            {
+              "thicknessCm": null,
+              "prepLabel": "—",
+              "doneness": null,
+              "cookSecondsMin": 600,
+              "cookSecondsMax": 600,
+              "flipFraction": 0.5,
+              "idealFlipPattern": "once",
+              "restSeconds": 0,
+              "heatZone": "Direct, lid closed",
+              "notes": null
+            }
+          ],
+          "notes": []
+        }
+      ]
+    },
+    {
       "slug": "vegetables",
       "name": "Gemüse",
       "cuts": [
@@ -2337,48 +2373,6 @@
               "doneness": null,
               "cookSecondsMin": 300,
               "cookSecondsMax": 300,
-              "flipFraction": 0.5,
-              "idealFlipPattern": "once",
-              "restSeconds": 0,
-              "heatZone": "Direct, lid closed",
-              "notes": null
-            }
-          ],
-          "notes": []
-        },
-        {
-          "slug": "halloumi",
-          "name": "Halloumi",
-          "hasThickness": false,
-          "hasDoneness": false,
-          "rows": [
-            {
-              "thicknessCm": null,
-              "prepLabel": "—",
-              "doneness": null,
-              "cookSecondsMin": 480,
-              "cookSecondsMax": 480,
-              "flipFraction": 0.5,
-              "idealFlipPattern": "once",
-              "restSeconds": 0,
-              "heatZone": "Direct, lid closed",
-              "notes": null
-            }
-          ],
-          "notes": []
-        },
-        {
-          "slug": "paneer",
-          "name": "Paneer",
-          "hasThickness": false,
-          "hasDoneness": false,
-          "rows": [
-            {
-              "thicknessCm": null,
-              "prepLabel": "—",
-              "doneness": null,
-              "cookSecondsMin": 600,
-              "cookSecondsMax": 600,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,

@@ -544,17 +544,16 @@ Notes:
 
 ### Pouletspiessli (Chicken skewers)
 
-| Piece size   | Doneness | Heat zone     | Grate temp | Per side  | Total              | Turns                | Rest  |
-| ------------ | -------- | ------------- | ---------- | --------- | ------------------ | -------------------- | ----- |
-| 2.5 cm cubes | 72 °C    | Direct medium | 200 °C     | 2–3 min   | 8–12 min (4 sides) | Rotate every 2–3 min | 2 min |
-| 3 cm cubes   | 72 °C    | Direct medium | 200 °C     | 2.5–3 min | 10–12 min          | Rotate every 2.5 min | 2 min |
+| Piece size  | Doneness | Heat zone     | Grate temp | Per side  | Total     | Turns               | Rest  |
+| ----------- | -------- | ------------- | ---------- | --------- | --------- | ------------------- | ----- |
+| 3 cm Würfel | 72 °C    | Direkt mittel | 200 °C     | 2.5–3 min | 10–12 min | alle 2.5 min drehen | 2 min |
 
 Sources: [Weber-DE] 8–10 min. [BBCGF] 10–12 min.
 
 Notes:
 
-- Soak bamboo skewers 30 min.
-- Leave small gap between pieces for even cooking.
+- Holzspiesse 30 Min. wässern, sonst kohlen sie.
+- Kleinen Spalt zwischen den Würfeln lassen, damit alle Seiten Hitze bekommen.
 
 ### Entenbrust (Duck breast)
 
@@ -655,8 +654,8 @@ Sources: [Migros-Grilltimer] extracted from grillitarier.migros.ch app bundle (2
 
 Notes:
 
-- No piercing, no mustard (traditionalist position; Migusto hedges). No splitting.
-- Keep heat moderate — casing bursts above 230 °C easily.
+- Nicht einstechen, kein Senf (traditionelle Schule). Nicht aufschneiden.
+- Hitze moderat halten: Pelle platzt über 230 °C schnell auf.
 
 ### Merguez
 
