@@ -76,9 +76,10 @@
 	}
 
 	function pickCut(slug: string) {
-		cutSlug = slug
-		const c = category?.cuts.find(cu => cu.slug === slug)
+		const cat = categorySlug ? TIMINGS.categories.find(c => c.slug === categorySlug) : null
+		const c = cat?.cuts.find(cu => cu.slug === slug)
 		if (!c) return
+		cutSlug = slug
 
 		// Pre-select sensible defaults for the combined specs step
 		if (c.hasThickness) {
@@ -194,7 +195,9 @@
 	})
 
 	const prepOptions = $derived(
-		!cut?.hasThickness && cut ? cut.rows.map(r => r.prepLabel).filter((v): v is string => v !== null) : [],
+		!cut?.hasThickness && cut
+			? [...new Set(cut.rows.map(r => r.prepLabel).filter((v): v is string => v !== null))]
+			: [],
 	)
 
 	const specsComplete = $derived.by(() => {

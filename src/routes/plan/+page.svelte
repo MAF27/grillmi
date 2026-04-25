@@ -166,14 +166,16 @@
 	</div>
 </main>
 
-<AddItemSheet
-	open={sheetOpen}
-	initial={editing}
-	onclose={() => {
-		sheetOpen = false
-		editing = null
-	}}
-	oncommit={commit} />
+{#if sheetOpen}
+	<AddItemSheet
+		open={sheetOpen}
+		initial={editing}
+		onclose={() => {
+			sheetOpen = false
+			editing = null
+		}}
+		oncommit={commit} />
+{/if}
 
 {#if saveAsFavoriteOpen}
 	<div class="scrim" role="presentation" onclick={() => (saveAsFavoriteOpen = false)}></div>
