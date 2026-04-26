@@ -49,3 +49,6 @@ playwright-report/
 
 # MCP cache (per global CLAUDE.md)
 .mcp/
+
+# Design handoff bundles
+*.zip
