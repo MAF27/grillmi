@@ -51,10 +51,28 @@ export const sessionSchema = z.object({
 	items: z.array(sessionItemSchema),
 })
 
-export const favoriteSchema = z.object({
+export const savedPlanSchema = z.object({
 	id: z.string().uuid(),
 	name: z.string().min(1).max(60),
 	items: z.array(plannedItemSchema),
+	createdAtEpoch: z.number().int(),
+	lastUsedEpoch: z.number().int(),
+})
+
+export const favoriteSchema = z.object({
+	id: z.string().uuid(),
+	name: z.string().min(1).max(60),
+	categorySlug: z.string(),
+	cutSlug: z.string(),
+	thicknessCm: z.number().nullable(),
+	prepLabel: z.string().nullable(),
+	doneness: z.string().nullable(),
+	label: z.string().nullable(),
+	cookSeconds: z.number().int().positive(),
+	restSeconds: z.number().int().nonnegative(),
+	flipFraction: z.number().min(0).max(1),
+	idealFlipPattern: z.enum(['once', 'every-60s', 'rotate']),
+	heatZone: z.string(),
 	createdAtEpoch: z.number().int(),
 	lastUsedEpoch: z.number().int(),
 })
@@ -78,5 +96,6 @@ export type ScheduleEvent = z.infer<typeof scheduleEventSchema>
 export type SessionItem = z.infer<typeof sessionItemSchema>
 export type Session = z.infer<typeof sessionSchema>
 export type Favorite = z.infer<typeof favoriteSchema>
+export type SavedPlan = z.infer<typeof savedPlanSchema>
 export type SoundAssignment = z.infer<typeof soundAssignmentSchema>
 export type UserSettings = z.infer<typeof userSettingsSchema>

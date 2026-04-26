@@ -160,11 +160,11 @@ function createSessionStore() {
 			if (reordered.length === plan.items.length) plan = { ...plan, items: reordered }
 		},
 
-		loadFromFavorite(items: PlannedItem[]) {
+		loadFromSavedPlan(items: PlannedItem[]) {
 			plan = { targetEpoch: defaultTarget(), items: items.map(i => ({ ...i, id: uuid() })), mode: 'now' }
 		},
 
-		appendFromFavorite(items: PlannedItem[]) {
+		appendFromSavedPlan(items: PlannedItem[]) {
 			const fresh = items.map(i => ({ ...i, id: uuid() }))
 			plan = { ...plan, items: [...plan.items, ...fresh] }
 		},

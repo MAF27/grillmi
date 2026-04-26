@@ -1,19 +1,19 @@
 <script lang="ts">
-	import type { Favorite } from '$lib/models'
+	import type { SavedPlan } from '$lib/models'
 
 	interface Props {
-		favorite: Favorite
+		savedPlan: SavedPlan
 		onload: (id: string) => void
 		onlongpress: (id: string) => void
 	}
 
-	let { favorite, onload, onlongpress }: Props = $props()
+	let { savedPlan, onload, onlongpress }: Props = $props()
 
 	let pressTimer: ReturnType<typeof setTimeout> | null = null
 
 	function pointerdown() {
 		pressTimer = setTimeout(() => {
-			onlongpress(favorite.id)
+			onlongpress(savedPlan.id)
 			pressTimer = null
 		}, 500)
 	}
@@ -21,7 +21,7 @@
 		if (pressTimer) {
 			clearTimeout(pressTimer)
 			pressTimer = null
-			onload(favorite.id)
+			onload(savedPlan.id)
 		}
 	}
 	function pointercancel() {
@@ -31,8 +31,8 @@
 		}
 	}
 
-	const summary = $derived(favorite.items.map(i => i.label || i.cutSlug).join(', '))
-	const lastUsed = $derived(new Date(favorite.lastUsedEpoch).toLocaleDateString('de-CH'))
+	const summary = $derived(savedPlan.items.map(i => i.label || i.cutSlug).join(', '))
+	const lastUsed = $derived(new Date(savedPlan.lastUsedEpoch).toLocaleDateString('de-CH'))
 </script>
 
 <button
@@ -42,8 +42,8 @@
 	onpointerleave={pointercancel}
 	onpointercancel={pointercancel}>
 	<div class="head">
-		<span class="name">{favorite.name}</span>
-		<span class="count">{favorite.items.length}</span>
+		<span class="name">{savedPlan.name}</span>
+		<span class="count">{savedPlan.items.length}</span>
 	</div>
 	<p class="summary">{summary}</p>
 	<span class="last">Zuletzt: {lastUsed}</span>

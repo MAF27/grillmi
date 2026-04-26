@@ -5,13 +5,13 @@
 	import EmptyState from '$lib/components/EmptyState.svelte'
 	import { sessionStore } from '$lib/stores/sessionStore.svelte'
 	import { settingsStore } from '$lib/stores/settingsStore.svelte'
-	import { favoritesStore } from '$lib/stores/favoritesStore.svelte'
+	import { savedPlansStore } from '$lib/stores/savedPlansStore.svelte'
 
 	let installAvailable = $state(false)
 
 	onMount(async () => {
 		await sessionStore.init()
-		await favoritesStore.init()
+		await savedPlansStore.init()
 		await settingsStore.init()
 		installAvailable = typeof window !== 'undefined' && !!window.installPromptEvent
 		if (sessionStore.session) goto('/session')
@@ -20,8 +20,8 @@
 	function startNewSession() {
 		goto('/plan')
 	}
-	function openFavorites() {
-		goto('/favorites')
+	function openSavedPlans() {
+		goto('/plans')
 	}
 	function openSettings() {
 		goto('/settings')
@@ -50,7 +50,7 @@
 		description="Plane deine Session, setze die Zielzeit fürs Essen, und Grillmi sagt dir genau, wann was auf den Rost muss.">
 		{#snippet actions()}
 			<Button variant="primary" size="lg" fullWidth onclick={startNewSession}>Neue Session</Button>
-			<Button variant="secondary" fullWidth onclick={openFavorites}>Favoriten</Button>
+			<Button variant="secondary" fullWidth onclick={openSavedPlans}>Plan-Vorlagen</Button>
 			<Button variant="ghost" fullWidth onclick={openSettings}>Einstellungen</Button>
 			{#if installAvailable}
 				<Button variant="ghost" fullWidth onclick={installApp}>App installieren</Button>

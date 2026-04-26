@@ -6,6 +6,7 @@ export type {
 	SessionItem,
 	Session,
 	Favorite,
+	SavedPlan,
 	SoundAssignment,
 	UserSettings,
 } from '$lib/schemas'

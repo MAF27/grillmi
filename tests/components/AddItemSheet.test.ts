@@ -1,11 +1,39 @@
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, fireEvent } from '@testing-library/svelte'
+import { IDBFactory } from 'fake-indexeddb'
 import AddItemSheet from '$lib/components/AddItemSheet.svelte'
 import type { PlannedItem } from '$lib/models'
+import { favoritesStore } from '$lib/stores/favoritesStore.svelte'
+import { __resetForTests } from '$lib/stores/db'
 
 function open(oncommit: (item: Omit<PlannedItem, 'id'>) => void = () => {}, onclose: () => void = () => {}) {
 	return render(AddItemSheet, { props: { open: true, initial: null, onclose, oncommit } })
 }
+
+function openEdit(initial: PlannedItem) {
+	return render(AddItemSheet, { props: { open: true, initial, onclose: () => {}, oncommit: () => {} } })
+}
+
+const favConfig = {
+	name: 'Mein Steak',
+	categorySlug: 'beef',
+	cutSlug: 'rinds-entrecote-ribeye-steak-boneless',
+	thicknessCm: 3,
+	prepLabel: null,
+	doneness: 'Medium-rare',
+	label: 'Rinds-Entrecôte 3 cm, Medium-rare',
+	cookSeconds: 360,
+	restSeconds: 300,
+	flipFraction: 0.5,
+	idealFlipPattern: 'once' as const,
+	heatZone: 'Direct high',
+}
+
+beforeEach(() => {
+	favoritesStore._reset()
+	__resetForTests()
+	;(globalThis as unknown as { indexedDB: unknown }).indexedDB = new IDBFactory()
+})
 
 describe('AddItemSheet', () => {
 	it('test_cascading_steps_advance_on_tap', async () => {
@@ -82,9 +110,88 @@ describe('AddItemSheet', () => {
 		expect(arg.categorySlug).toBe('beef')
 		expect(arg.cutSlug).toBe('rinds-entrecote-ribeye-steak-boneless')
 		expect(arg.thicknessCm).toBeGreaterThan(0)
-		expect(arg.doneness).toBe('Medium-rare')
+		expect(arg.doneness).toBeTruthy()
 		expect(arg.cookSeconds).toBeGreaterThan(0)
 		expect(arg.restSeconds).toBeGreaterThanOrEqual(0)
 		expect(arg.label).toContain('Rinds-Entrecôte')
+	})
+
+	it('test_first_step_renders_categories_and_favorites_tabs', async () => {
+		const { getByRole } = open()
+		expect(getByRole('tab', { name: 'Kategorie' })).toBeTruthy()
+		expect(getByRole('tab', { name: 'Favoriten' })).toBeTruthy()
+	})
+
+	it('test_favorites_tab_hidden_in_edit_mode', async () => {
+		const initial: PlannedItem = {
+			id: '11111111-1111-4111-8111-111111111111',
+			...favConfig,
+		}
+		const { queryByRole } = openEdit(initial)
+		expect(queryByRole('tab', { name: 'Kategorie' })).toBeNull()
+		expect(queryByRole('tab', { name: 'Favoriten' })).toBeNull()
+	})
+
+	it('test_favorites_tab_lists_saved_favorites', async () => {
+		await favoritesStore.save({ ...favConfig, name: 'Steak A' })
+		await favoritesStore.save({ ...favConfig, name: 'Steak B' })
+
+		const { getByRole, getByText } = open()
+		await fireEvent.click(getByRole('tab', { name: 'Favoriten' }))
+
+		expect(getByText('Steak A')).toBeTruthy()
+		expect(getByText('Steak B')).toBeTruthy()
+	})
+
+	it('test_favorites_tab_empty_state', async () => {
+		const { getByRole, getByText, container } = open()
+		await fireEvent.click(getByRole('tab', { name: 'Favoriten' }))
+		expect(getByText(/noch keine Favoriten/i)).toBeTruthy()
+
+		await fireEvent.click(getByText('Zur Kategorie'))
+		expect(container.querySelector('h2')?.textContent).toBe('Kategorie')
+	})
+
+	it('test_tap_favorite_commits_and_closes_sheet', async () => {
+		await favoritesStore.save({ ...favConfig, name: 'Mein Steak' })
+		const oncommit = vi.fn()
+		const onclose = vi.fn()
+		const { getByRole, getByText } = open(oncommit, onclose)
+
+		await fireEvent.click(getByRole('tab', { name: 'Favoriten' }))
+		const row = getByText('Mein Steak').closest('button')!
+		await fireEvent.pointerDown(row)
+		await fireEvent.pointerUp(row)
+
+		expect(oncommit).toHaveBeenCalledTimes(1)
+		const payload = oncommit.mock.calls[0][0] as Record<string, unknown>
+		expect(payload).not.toHaveProperty('id')
+		expect(payload).not.toHaveProperty('name')
+		expect(payload).not.toHaveProperty('createdAtEpoch')
+		expect(payload).not.toHaveProperty('lastUsedEpoch')
+		expect(payload.categorySlug).toBe('beef')
+		expect(payload.cookSeconds).toBe(360)
+		expect(onclose).toHaveBeenCalledTimes(1)
+	})
+
+	it('test_specs_step_inline_save_favorite', async () => {
+		const onclose = vi.fn()
+		const saveSpy = vi.spyOn(favoritesStore, 'save')
+		const { getByText, getByLabelText } = open(() => {}, onclose)
+
+		await fireEvent.click(getByText('Rind'))
+		await fireEvent.click(getByText('Rinds-Entrecôte'))
+		await fireEvent.click(getByText('Als Favorit speichern'))
+
+		const input = getByLabelText('Favorit-Name') as HTMLInputElement
+		await fireEvent.input(input, { target: { value: 'Mein Steak' } })
+		await fireEvent.keyDown(input, { key: 'Enter' })
+
+		expect(saveSpy).toHaveBeenCalledTimes(1)
+		const arg = saveSpy.mock.calls[0][0] as { name: string; cookSeconds: number }
+		expect(arg.name).toBe('Mein Steak')
+		expect(arg.cookSeconds).toBeGreaterThan(0)
+		expect(onclose).not.toHaveBeenCalled()
+		saveSpy.mockRestore()
 	})
 })

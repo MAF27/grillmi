@@ -3,14 +3,14 @@ import { IDBFactory } from 'fake-indexeddb'
 import { favoritesStore } from '$lib/stores/favoritesStore.svelte'
 import { __resetForTests } from '$lib/stores/db'
 
-const item = {
-	id: '11111111-1111-4111-8111-111111111111',
+const config = {
+	name: 'Mein Steak',
 	categorySlug: 'beef',
-	cutSlug: 'entrecote',
+	cutSlug: 'rinds-entrecote-ribeye-steak-boneless',
 	thicknessCm: 3,
 	prepLabel: null,
 	doneness: 'Medium-rare',
-	label: 'Steak',
+	label: 'Rinds-Entrecôte 3 cm, Medium-rare',
 	cookSeconds: 360,
 	restSeconds: 300,
 	flipFraction: 0.5,
@@ -25,26 +25,51 @@ beforeEach(() => {
 })
 
 describe('favoritesStore', () => {
-	it('test_save_favorite', async () => {
-		const fav = await favoritesStore.save('Test', [item])
+	it('test_save_favorite_persists_single_item', async () => {
+		const fav = await favoritesStore.save(config)
 		expect(fav.id).toBeTruthy()
+		expect(fav.cookSeconds).toBe(360)
 		expect(favoritesStore.all).toHaveLength(1)
+
+		// Round-trip through IDB.
+		favoritesStore._reset()
+		await favoritesStore.init()
+		expect(favoritesStore.all).toHaveLength(1)
+		expect(favoritesStore.all[0].label).toBe('Rinds-Entrecôte 3 cm, Medium-rare')
 	})
 
 	it('test_rename_favorite', async () => {
-		const fav = await favoritesStore.save('Test', [item])
+		const fav = await favoritesStore.save(config)
 		await favoritesStore.rename(fav.id, 'New Name')
+		expect(favoritesStore.all[0].name).toBe('New Name')
+
+		favoritesStore._reset()
+		await favoritesStore.init()
 		expect(favoritesStore.all[0].name).toBe('New Name')
 	})
 
 	it('test_delete_favorite', async () => {
-		const fav = await favoritesStore.save('Test', [item])
+		const fav = await favoritesStore.save(config)
 		await favoritesStore.remove(fav.id)
+		expect(favoritesStore.all).toHaveLength(0)
+
+		favoritesStore._reset()
+		await favoritesStore.init()
 		expect(favoritesStore.all).toHaveLength(0)
 	})
 
-	it('test_load_favorite_as_plan', async () => {
-		const fav = await favoritesStore.save('Test', [item, { ...item, id: '22222222-2222-4222-8222-222222222222' }])
-		expect(fav.items).toHaveLength(2)
+	it('test_touch_favorite_updates_last_used', async () => {
+		const a = await favoritesStore.save({ ...config, name: 'A' })
+		const b = await favoritesStore.save({ ...config, name: 'B' })
+		expect(favoritesStore.all[0].id).toBe(b.id)
+
+		await favoritesStore.touch(a.id)
+		expect(favoritesStore.all[0].id).toBe(a.id)
+		expect(favoritesStore.all[0].lastUsedEpoch).toBeGreaterThanOrEqual(a.lastUsedEpoch)
+	})
+
+	it('test_favorites_init_returns_empty_list_on_fresh_db', async () => {
+		await favoritesStore.init()
+		expect(favoritesStore.all).toEqual([])
 	})
 })

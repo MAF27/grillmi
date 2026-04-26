@@ -1,6 +1,8 @@
-import { favoriteSchema, type Favorite, type PlannedItem } from '$lib/schemas'
+import { favoriteSchema, type Favorite } from '$lib/schemas'
 import { listFavorites, putFavorite, deleteFavorite } from './db'
 import { uuid } from '$lib/util/uuid'
+
+export type FavoriteConfig = Omit<Favorite, 'id' | 'createdAtEpoch' | 'lastUsedEpoch'>
 
 function createFavoritesStore() {
 	let items = $state<Favorite[]>([])
@@ -17,14 +19,13 @@ function createFavoritesStore() {
 			items = await listFavorites()
 		},
 
-		async save(name: string, planItems: PlannedItem[]): Promise<Favorite> {
+		async save(config: FavoriteConfig): Promise<Favorite> {
 			const now = Date.now()
 			const fav: Favorite = favoriteSchema.parse({
 				id: uuid(),
-				name,
-				items: planItems,
 				createdAtEpoch: now,
 				lastUsedEpoch: now,
+				...config,
 			})
 			await putFavorite(fav)
 			items = [fav, ...items]

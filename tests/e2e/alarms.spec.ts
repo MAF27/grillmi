@@ -21,12 +21,13 @@ async function dismissFirstRun(page: import('@playwright/test').Page) {
 
 async function seedSession(page: import('@playwright/test').Page, session: SeededSession) {
 	await page.evaluate(async s => {
-		const open = indexedDB.open('grillmi', 1)
+		const open = indexedDB.open('grillmi', 2)
 		await new Promise<void>((resolve, reject) => {
 			open.onupgradeneeded = () => {
 				const db = open.result
 				if (!db.objectStoreNames.contains('sessions')) db.createObjectStore('sessions')
 				if (!db.objectStoreNames.contains('favorites')) db.createObjectStore('favorites')
+				if (!db.objectStoreNames.contains('plans')) db.createObjectStore('plans')
 				if (!db.objectStoreNames.contains('settings')) db.createObjectStore('settings')
 			}
 			open.onsuccess = () => resolve()
