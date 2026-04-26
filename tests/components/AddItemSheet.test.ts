@@ -95,7 +95,7 @@ describe('AddItemSheet', () => {
 		expect(inc.disabled).toBe(false)
 	})
 
-	it('test_thickness_minus_never_increases_value', async () => {
+	it('test_thickness_minus_disabled_at_documented_min', async () => {
 		const { getByText, getByLabelText, container } = open()
 		await fireEvent.click(getByText('Rind'))
 		await fireEvent.click(getByText('Rinds-Filet'))
@@ -103,12 +103,25 @@ describe('AddItemSheet', () => {
 		const num = () => parseFloat(container.querySelector('.thickness-value .num')!.textContent!.trim())
 		const dec = getByLabelText('Dünner') as HTMLButtonElement
 
-		const initial = num()
-		expect(initial).toBe(1)
-		expect(dec.disabled).toBe(false)
+		expect(num()).toBe(1)
+		expect(dec.disabled).toBe(true)
+	})
 
-		await fireEvent.click(dec)
-		expect(num()).toBeLessThanOrEqual(initial)
+	it('test_thickness_options_match_documented_only_no_interpolation', async () => {
+		const { getByText, getByLabelText, container } = open()
+		await fireEvent.click(getByText('Rind'))
+		await fireEvent.click(getByText('Rinds-Filet'))
+
+		const num = () => parseFloat(container.querySelector('.thickness-value .num')!.textContent!.trim())
+		const inc = getByLabelText('Dicker') as HTMLButtonElement
+
+		const seen = [num()]
+		let safety = 20
+		while (!inc.disabled && safety-- > 0) {
+			await fireEvent.click(inc)
+			seen.push(num())
+		}
+		expect(seen).toEqual([1, 2, 3, 4, 5])
 	})
 
 	it('test_final_step_dispatches_new_item_with_computed_cook_time', async () => {

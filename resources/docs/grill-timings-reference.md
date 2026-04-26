@@ -13,7 +13,7 @@ Alle Angaben unten setzen voraus:
 - **Sauberer, heisser Rost**: 10–15 Min. mit geschlossenem Deckel vorheizen, bevor etwas darauf kommt.
 - **Kerntemperatur ist die Wahrheit**. Zeitangaben sind Richtwerte; bei Zielkerntemperatur mit Einstech-Thermometer (Thermapen-Klasse) ziehen. Alle Kerntemperaturen unten sind Pull-Temperaturen, das Nachgaren bringt 2–5 °C bei Steaks und 3–7 °C bei Braten während der Ruhezeit dazu. [SE, Meathead]
 - **Wendeanzahl**: "einmal wenden" ist der Serious-Eats-Standard für Steaks ab 3 cm; Weber empfiehlt zunehmend, alle 45–60 s zu wenden für gleichmässigere Kruste und gleichmässigeres Garen (Kenji hat das empirisch gezeigt). Beides funktioniert. Der Grillmi-Standard ist **einmal wenden** für Cuts bis 3 cm und **alle 60 s wenden** für Cuts ab 4 cm oder bei Reverse-Sear-Finish.
-- **Ruhezeit** gilt für jeden Cut, der ab 3 cm Dicke auf medium-rare oder mehr gegart wird. Locker mit Alufolie zelten; nicht straff einwickeln (dämpft die Kruste).
+- **Ruhezeit** gilt für jeden Cut, der ab 3 cm Dicke auf englisch oder mehr gegart wird. Locker mit Alufolie zelten; nicht straff einwickeln (dämpft die Kruste).
 - **Schweizer/DACH-Cut-Bezeichnungen** folgen `[Migros-Grilltimer]` und `[Weber-DE]`. Wo ein Schweizer Cut keine saubere US-Entsprechung hat (Hohrücken, Huft, Nierstück), ist der deutsche Begriff primär.
 
 ## Interne Pull-Temperaturen (°C)
@@ -22,9 +22,9 @@ Alle Angaben unten setzen voraus:
 | ------------------ | ------------------ | ------- | ---------------- | ------------------- | -------------- | --------- |
 | bleu / sehr blutig | 46–48              | -       | -                | -                   | -              | 38–42     |
 | blutig             | 49–52              | -       | -                | -                   | -              | 43–46     |
-| medium-rare        | 53–56              | 58–60   | -                | -                   | 48–52          | 47–50     |
-| medium             | 57–60              | 62–65   | 70–72            | -                   | 55–58          | 52–55     |
-| medium-well        | 61–65              | 66–68   | 73–74            | -                   | 60–63          | -         |
+| englisch           | 53–56              | 58–60   | -                | -                   | 48–52          | 47–50     |
+| rosa               | 57–60              | 62–65   | 70–72            | -                   | 55–58          | 52–55     |
+| rosa-durch         | 61–65              | 66–68   | 73–74            | -                   | 60–63          | -         |
 | durchgebraten      | 66+                | 70+     | 75               | 80–85               | 65+            | -         |
 
 Hinweis Schwein: Schweizer und US-Empfehlungen seit 2011 (USDA) erlauben ganzes Schweinemuskelfleisch (Filet, Schweinshals, Koteletts) bei 62–63 °C Pull mit Ruhezeit, Endtemperatur 65 °C. Ältere DACH-Empfehlungen nennen weiterhin 70 °C; Grillmi setzt standardmässig 63 °C Pull für ganzes Schweinemuskelfleisch und 70 °C für Hackfleisch und Schweinsbraten. [USDA]
@@ -46,16 +46,16 @@ Fett, gutmütig. Der DACH-Steakklassiker. Zwei-Zonen-Reverse-Sear bevorzugt ab 4
 | 3 cm | blutig | Direkt, Deckel zu | 230 °C | 3 min 30 s | 7 min | Einmal halbzeitig wenden | 3 min |
 | 4 cm | blutig | Direkt, Deckel zu | 230 °C | 6 min 30 s | 13 min | Einmal halbzeitig wenden | 5–8 min |
 | 5 cm | blutig | Reverse-Sear (indirekt zu direkt) | 230 °C | 7 min 30 s | 15 min | Einmal halbzeitig wenden | 8–10 min |
-| 1 cm | medium-rare | Direkt, Deckel zu | 230 °C | 1 min 20 s | 2 min 40 s | Einmal halbzeitig wenden | 3 min |
-| 2 cm | medium-rare | Direkt, Deckel zu | 230 °C | 2 min 45 s | 5 min 30 s | Einmal halbzeitig wenden | 3 min |
-| 3 cm | medium-rare | Direkt, Deckel zu | 230 °C | 5 min | 10 min | Einmal halbzeitig wenden | 5 min |
-| 4 cm | medium-rare | Direkt zu indirekt | 230 °C | 7 min 30 s | 15 min | Einmal halbzeitig wenden | 5–8 min |
-| 5 cm | medium-rare | Reverse-Sear (indirekt zu direkt) | 230 °C | 9 min | 18 min | Einmal halbzeitig wenden | 8–10 min |
-| 1 cm | medium | Direkt, Deckel zu | 230 °C | 2 min | 4 min | Einmal halbzeitig wenden | 3 min |
-| 2 cm | medium | Direkt, Deckel zu | 230 °C | 3 min 45 s | 7 min 30 s | Einmal halbzeitig wenden | 3 min |
-| 3 cm | medium | Direkt, Deckel zu | 230 °C | 6 min | 12 min | Einmal halbzeitig wenden | 5 min |
-| 4 cm | medium | Direkt zu indirekt | 230 °C | 9 min | 18 min | Einmal halbzeitig wenden | 5–8 min |
-| 5 cm | medium | Reverse-Sear (indirekt zu direkt) | 230 °C | 10 min | 20 min | Einmal halbzeitig wenden | 8–10 min |
+| 1 cm | englisch | Direkt, Deckel zu | 230 °C | 1 min 20 s | 2 min 40 s | Einmal halbzeitig wenden | 3 min |
+| 2 cm | englisch | Direkt, Deckel zu | 230 °C | 2 min 45 s | 5 min 30 s | Einmal halbzeitig wenden | 3 min |
+| 3 cm | englisch | Direkt, Deckel zu | 230 °C | 5 min | 10 min | Einmal halbzeitig wenden | 5 min |
+| 4 cm | englisch | Direkt zu indirekt | 230 °C | 7 min 30 s | 15 min | Einmal halbzeitig wenden | 5–8 min |
+| 5 cm | englisch | Reverse-Sear (indirekt zu direkt) | 230 °C | 9 min | 18 min | Einmal halbzeitig wenden | 8–10 min |
+| 1 cm | rosa | Direkt, Deckel zu | 230 °C | 2 min | 4 min | Einmal halbzeitig wenden | 3 min |
+| 2 cm | rosa | Direkt, Deckel zu | 230 °C | 3 min 45 s | 7 min 30 s | Einmal halbzeitig wenden | 3 min |
+| 3 cm | rosa | Direkt, Deckel zu | 230 °C | 6 min | 12 min | Einmal halbzeitig wenden | 5 min |
+| 4 cm | rosa | Direkt zu indirekt | 230 °C | 9 min | 18 min | Einmal halbzeitig wenden | 5–8 min |
+| 5 cm | rosa | Reverse-Sear (indirekt zu direkt) | 230 °C | 10 min | 20 min | Einmal halbzeitig wenden | 8–10 min |
 | 1 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 3 min 30 s | 7 min | Einmal halbzeitig wenden | 3 min |
 | 2 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 8 min | 16 min | Einmal halbzeitig wenden | 5 min |
 | 3 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 8 min 30 s | 17 min | Einmal halbzeitig wenden | 5 min |
@@ -81,16 +81,16 @@ Mager, weniger fehlerverzeihend als das Entrecôte. 2–3 °C früher ziehen als
 | 3 cm | blutig | Direkt, Deckel zu | 230 °C | 3 min 30 s | 7 min | Einmal halbzeitig wenden | 3 min |
 | 4 cm | blutig | Direkt, Deckel zu | 230 °C | 6 min 30 s | 13 min | Einmal halbzeitig wenden | 5–8 min |
 | 5 cm | blutig | Reverse-Sear (indirekt zu direkt) | 230 °C | 7 min 30 s | 15 min | Einmal halbzeitig wenden | 8–10 min |
-| 1 cm | medium-rare | Direkt, Deckel zu | 230 °C | 1 min 15 s | 2 min 30 s | Einmal halbzeitig wenden | 3 min |
-| 2 cm | medium-rare | Direkt, Deckel zu | 230 °C | 3 min 30 s | 7 min | Einmal halbzeitig wenden | 3 min |
-| 3 cm | medium-rare | Direkt, Deckel zu | 230 °C | 5 min | 10 min | Einmal halbzeitig wenden | 5 min |
-| 4 cm | medium-rare | Direkt zu indirekt | 230 °C | 7 min 30 s | 15 min | Einmal halbzeitig wenden | 5–8 min |
-| 5 cm | medium-rare | Reverse-Sear (indirekt zu direkt) | 230 °C | 8 min 30 s | 17 min | Einmal halbzeitig wenden | 8–10 min |
-| 1 cm | medium | Direkt, Deckel zu | 230 °C | 2 min | 4 min | Einmal halbzeitig wenden | 3 min |
-| 2 cm | medium | Direkt, Deckel zu | 230 °C | 4 min 30 s | 9 min | Einmal halbzeitig wenden | 3 min |
-| 3 cm | medium | Direkt, Deckel zu | 230 °C | 6 min | 12 min | Einmal halbzeitig wenden | 5 min |
-| 4 cm | medium | Direkt zu indirekt | 230 °C | 9 min | 18 min | Einmal halbzeitig wenden | 5–8 min |
-| 5 cm | medium | Reverse-Sear (indirekt zu direkt) | 230 °C | 9 min 30 s | 19 min | Einmal halbzeitig wenden | 8–10 min |
+| 1 cm | englisch | Direkt, Deckel zu | 230 °C | 1 min 15 s | 2 min 30 s | Einmal halbzeitig wenden | 3 min |
+| 2 cm | englisch | Direkt, Deckel zu | 230 °C | 3 min 30 s | 7 min | Einmal halbzeitig wenden | 3 min |
+| 3 cm | englisch | Direkt, Deckel zu | 230 °C | 5 min | 10 min | Einmal halbzeitig wenden | 5 min |
+| 4 cm | englisch | Direkt zu indirekt | 230 °C | 7 min 30 s | 15 min | Einmal halbzeitig wenden | 5–8 min |
+| 5 cm | englisch | Reverse-Sear (indirekt zu direkt) | 230 °C | 8 min 30 s | 17 min | Einmal halbzeitig wenden | 8–10 min |
+| 1 cm | rosa | Direkt, Deckel zu | 230 °C | 2 min | 4 min | Einmal halbzeitig wenden | 3 min |
+| 2 cm | rosa | Direkt, Deckel zu | 230 °C | 4 min 30 s | 9 min | Einmal halbzeitig wenden | 3 min |
+| 3 cm | rosa | Direkt, Deckel zu | 230 °C | 6 min | 12 min | Einmal halbzeitig wenden | 5 min |
+| 4 cm | rosa | Direkt zu indirekt | 230 °C | 9 min | 18 min | Einmal halbzeitig wenden | 5–8 min |
+| 5 cm | rosa | Reverse-Sear (indirekt zu direkt) | 230 °C | 9 min 30 s | 19 min | Einmal halbzeitig wenden | 8–10 min |
 | 1 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 3 min 30 s | 7 min | Einmal halbzeitig wenden | 3 min |
 | 2 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 8 min | 16 min | Einmal halbzeitig wenden | 5 min |
 | 3 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 8 min 30 s | 17 min | Einmal halbzeitig wenden | 5 min |
@@ -110,8 +110,8 @@ Dicker als entbeintes Entrecôte; der Knochen isoliert eine Seite.
 
 | Thickness | Doneness      | Heat zone          | Grate temp | Per side   | Total  | Turns                    | Rest    |
 | --------- | ------------- | ------------------ | ---------- | ---------- | ------ | ------------------------ | ------- |
-| 2 cm      | medium        | Direkt, Deckel zu  | 230 °C     | 4 min 30 s | 9 min  | Einmal halbzeitig wenden | 3 min   |
-| 4 cm      | medium        | Direkt zu indirekt | 230 °C     | 9 min      | 18 min | Einmal halbzeitig wenden | 5–8 min |
+| 2 cm      | rosa          | Direkt, Deckel zu  | 230 °C     | 4 min 30 s | 9 min  | Einmal halbzeitig wenden | 3 min   |
+| 4 cm      | rosa          | Direkt zu indirekt | 230 °C     | 9 min      | 18 min | Einmal halbzeitig wenden | 5–8 min |
 | 2 cm      | durchgebraten | Direkt, Deckel zu  | 230 °C     | 8 min      | 16 min | Einmal halbzeitig wenden | 5 min   |
 | 4 cm      | durchgebraten | Direkt zu indirekt | 230 °C     | 9 min      | 18 min | Einmal halbzeitig wenden | 5–8 min |
 
@@ -126,10 +126,10 @@ Notes:
 
 Zwei Muskeln, zwei Garzeiten: die Striploin-Seite ist schneller fertig als die Filet-Seite. Filet zur kühleren Zone ausrichten.
 
-| Thickness | Doneness    | Heat zone         | Grate temp | Per side | Total  | Turns                    | Rest    |
-| --------- | ----------- | ----------------- | ---------- | -------- | ------ | ------------------------ | ------- |
-| 4 cm      | medium-rare | Direkt, Deckel zu | 240 °C     | 4 min    | 8 min  | Einmal halbzeitig wenden | 5–8 min |
-| 4 cm      | medium      | Direkt, Deckel zu | 240 °C     | 6 min    | 12 min | Einmal halbzeitig wenden | 5–8 min |
+| Thickness | Doneness | Heat zone         | Grate temp | Per side | Total  | Turns                    | Rest    |
+| --------- | -------- | ----------------- | ---------- | -------- | ------ | ------------------------ | ------- |
+| 4 cm      | englisch | Direkt, Deckel zu | 240 °C     | 4 min    | 8 min  | Einmal halbzeitig wenden | 5–8 min |
+| 4 cm      | rosa     | Direkt, Deckel zu | 240 °C     | 6 min    | 12 min | Einmal halbzeitig wenden | 5–8 min |
 
 Sources: [Migros-Grilltimer].
 
@@ -140,12 +140,12 @@ Notes:
 
 ### Bavette (Flanksteak / Flank steak)
 
-Dünn, lang, mit grober Faser. Auf medium-rare essen, dünn quer zur Faser schneiden, sonst zäh.
+Dünn, lang, mit grober Faser. Auf englisch essen, dünn quer zur Faser schneiden, sonst zäh.
 
-| Thickness | Doneness    | Heat zone   | Grate temp | Per side | Total    | Turns         | Rest    |
-| --------- | ----------- | ----------- | ---------- | -------- | -------- | ------------- | ------- |
-| 1.5–2 cm  | medium-rare | Direkt hoch | 260–290 °C | 3–4 min  | 6–8 min  | Einmal wenden | 5–8 min |
-| 2–2.5 cm  | medium-rare | Direkt hoch | 260–290 °C | 4–5 min  | 8–10 min | Einmal wenden | 8 min   |
+| Thickness | Doneness | Heat zone   | Grate temp | Per side | Total    | Turns         | Rest    |
+| --------- | -------- | ----------- | ---------- | -------- | -------- | ------------- | ------- |
+| 1.5–2 cm  | englisch | Direkt hoch | 260–290 °C | 3–4 min  | 6–8 min  | Einmal wenden | 5–8 min |
+| 2–2.5 cm  | englisch | Direkt hoch | 260–290 °C | 4–5 min  | 8–10 min | Einmal wenden | 8 min   |
 
 Sources: [SE] 54 °C Kerntemperatur, 6–10 min total. [Weber-DE] 6–8 min.
 
@@ -153,16 +153,16 @@ Notes:
 
 - Marinaden (Limette, Soja, Chipotle, Chimichurri) lieben diesen Cut.
 - In etwa 5 mm dicke Streifen quer zur Faser schneiden; vor dem Garen Faserrichtung identifizieren, sie ist offensichtlich.
-- Niemals über medium hinaus, Kollagen hat in einem dünnen Steak keine Zeit zum Schmelzen.
+- Niemals über rosa hinaus, Kollagen hat in einem dünnen Steak keine Zeit zum Schmelzen.
 
 ### Kronfleisch (Nierenzapfen / Skirt steak)
 
 Noch dünner als Bavette, noch beefiger. Heiss und schnell, Punkt.
 
-| Thickness | Doneness    | Heat zone   | Grate temp | Per side | Total   | Turns         | Rest  |
-| --------- | ----------- | ----------- | ---------- | -------- | ------- | ------------- | ----- |
-| 1–1.5 cm  | medium-rare | Direkt hoch | 290 °C+    | 2–3 min  | 4–6 min | Einmal wenden | 5 min |
-| 1.5–2 cm  | medium-rare | Direkt hoch | 290 °C+    | 3–4 min  | 6–8 min | Einmal wenden | 5 min |
+| Thickness | Doneness | Heat zone   | Grate temp | Per side | Total   | Turns         | Rest  |
+| --------- | -------- | ----------- | ---------- | -------- | ------- | ------------- | ----- |
+| 1–1.5 cm  | englisch | Direkt hoch | 290 °C+    | 2–3 min  | 4–6 min | Einmal wenden | 5 min |
+| 1.5–2 cm  | englisch | Direkt hoch | 290 °C+    | 3–4 min  | 6–8 min | Einmal wenden | 5 min |
 
 Sources: [SE] "heisseste Glut, die du hinkriegst, 3–4 min total für dünnes Skirt". [Meathead] stimmt zu.
 
@@ -178,25 +178,25 @@ Dreieckig, Faser wechselt mitten im Cut die Richtung. Reverse-Sear ist am besten
 
 | Thickness / weight | Doneness | Heat zone | Grate temp | Timing | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| ~700 g, 4–5 cm dick in der Mitte | medium-rare | Reverse-Sear | 130 zu 290 °C | 25–35 ind + 2/Seite Sear | 30–45 min | alle 60 s drehen direkt | 10 min |
-| ~1 kg | medium-rare | Reverse-Sear | 130 zu 290 °C | 35–45 ind + 2/Seite Sear | 40–55 min | alle 60 s drehen direkt | 10–15 min |
+| ~700 g, 4–5 cm dick in der Mitte | englisch | Reverse-Sear | 130 zu 290 °C | 25–35 ind + 2/Seite Sear | 30–45 min | alle 60 s drehen direkt | 10 min |
+| ~1 kg | englisch | Reverse-Sear | 130 zu 290 °C | 35–45 ind + 2/Seite Sear | 40–55 min | alle 60 s drehen direkt | 10–15 min |
 
 Sources: [SE] "Santa-Maria-Style", indirekt bis 49 °C, Sear bis 54 °C. [Traeger] 130 °C Smoke bis 52 °C, dann Sear. [Weber-US] stimmt zu.
 
 Notes:
 
-- Bei 52 °C für medium-rare ziehen (das Nachgaren ist bei einem 1-kg-Stück real).
+- Bei 52 °C für englisch ziehen (das Nachgaren ist bei einem 1-kg-Stück real).
 - Dünn schneiden, am Scheitel den Faserwechsel beachten und für die zweite Hälfte des Bratens umorientieren.
 
 ### Hüftsteak (Rump / Huft)
 
 Magerer als Entrecôte, gut marmorierte Varianten existieren. Wie ein etwas weniger fehlerverzeihendes Entrecôte behandeln.
 
-| Thickness | Doneness    | Heat zone    | Grate temp    | Per side           | Total     | Turns                   | Rest  |
-| --------- | ----------- | ------------ | ------------- | ------------------ | --------- | ----------------------- | ----- |
-| 2 cm      | medium-rare | Direkt hoch  | 260–290 °C    | 2–3 min            | 4–6 min   | Einmal wenden           | 3 min |
-| 3 cm      | medium-rare | Direkt hoch  | 260–290 °C    | 3–4 min            | 6–8 min   | Einmal wenden           | 5 min |
-| 4 cm      | medium-rare | Reverse-Sear | 130 zu 290 °C | 12 ind + 1.5/Seite | 15–18 min | alle 60 s drehen direkt | 6 min |
+| Thickness | Doneness | Heat zone    | Grate temp    | Per side           | Total     | Turns                   | Rest  |
+| --------- | -------- | ------------ | ------------- | ------------------ | --------- | ----------------------- | ----- |
+| 2 cm      | englisch | Direkt hoch  | 260–290 °C    | 2–3 min            | 4–6 min   | Einmal wenden           | 3 min |
+| 3 cm      | englisch | Direkt hoch  | 260–290 °C    | 3–4 min            | 6–8 min   | Einmal wenden           | 5 min |
+| 4 cm      | englisch | Reverse-Sear | 130 zu 290 °C | 12 ind + 1.5/Seite | 15–18 min | alle 60 s drehen direkt | 6 min |
 
 Sources: [Weber-DE] stimmt zu.
 
@@ -204,11 +204,11 @@ Sources: [Weber-DE] stimmt zu.
 
 Liegt geschmacklich nahe am Entrecôte, ist aber auf einer Seite magerer mit einem Fettstreifen auf der anderen.
 
-| Thickness | Doneness    | Heat zone    | Grate temp    | Per side           | Total     | Turns                   | Rest  |
-| --------- | ----------- | ------------ | ------------- | ------------------ | --------- | ----------------------- | ----- |
-| 2.5 cm    | medium-rare | Direkt hoch  | 260–290 °C    | 3 min              | 6 min     | Einmal wenden           | 4 min |
-| 3 cm      | medium-rare | Direkt hoch  | 260–290 °C    | 3.5–4 min          | 7–8 min   | Einmal wenden           | 5 min |
-| 4 cm      | medium-rare | Reverse-Sear | 130 zu 290 °C | 12 ind + 1.5/Seite | 15–18 min | alle 60 s drehen direkt | 6 min |
+| Thickness | Doneness | Heat zone    | Grate temp    | Per side           | Total     | Turns                   | Rest  |
+| --------- | -------- | ------------ | ------------- | ------------------ | --------- | ----------------------- | ----- |
+| 2.5 cm    | englisch | Direkt hoch  | 260–290 °C    | 3 min              | 6 min     | Einmal wenden           | 4 min |
+| 3 cm      | englisch | Direkt hoch  | 260–290 °C    | 3.5–4 min          | 7–8 min   | Einmal wenden           | 5 min |
+| 4 cm      | englisch | Reverse-Sear | 130 zu 290 °C | 12 ind + 1.5/Seite | 15–18 min | alle 60 s drehen direkt | 6 min |
 
 Sources: [Weber-US] NY Strip 3 cm: 6–8 min. [SE] stimmt zu.
 
@@ -223,7 +223,7 @@ Wird separat von Steaks behandelt, es ist ein Braten.
 
 | Thickness | Doneness      | Heat zone         | Grate temp | Per side | Total  | Turns               | Rest     |
 | --------- | ------------- | ----------------- | ---------- | -------- | ------ | ------------------- | -------- |
-| -         | medium        | Indirekt, niedrig | 200 °C     | 25 min   | 50 min | alle 2–3 min drehen | 8–10 min |
+| -         | rosa          | Indirekt, niedrig | 200 °C     | 25 min   | 50 min | alle 2–3 min drehen | 8–10 min |
 | -         | durchgebraten | Indirekt, niedrig | 200 °C     | 30 min   | 60 min | alle 2–3 min drehen | 8–10 min |
 
 Sources: [Migros-Grilltimer].
@@ -239,12 +239,12 @@ Notes:
 
 ### Kalbs-Hohrücken (Veal rib steak)
 
-Hell, delikat. Nie über medium, Kalb wird über 60 °C trocken.
+Hell, delikat. Nie über rosa, Kalb wird über 60 °C trocken.
 
 | Thickness | Doneness      | Heat zone          | Grate temp | Per side   | Total  | Turns                    | Rest    |
 | --------- | ------------- | ------------------ | ---------- | ---------- | ------ | ------------------------ | ------- |
-| 2 cm      | medium        | Direkt, Deckel zu  | 230 °C     | 4 min 30 s | 9 min  | Einmal halbzeitig wenden | 3 min   |
-| 4 cm      | medium        | Direkt zu indirekt | 230 °C     | 9 min      | 18 min | Einmal halbzeitig wenden | 5–8 min |
+| 2 cm      | rosa          | Direkt, Deckel zu  | 230 °C     | 4 min 30 s | 9 min  | Einmal halbzeitig wenden | 3 min   |
+| 4 cm      | rosa          | Direkt zu indirekt | 230 °C     | 9 min      | 18 min | Einmal halbzeitig wenden | 5–8 min |
 | 2 cm      | durchgebraten | Direkt, Deckel zu  | 230 °C     | 8 min      | 16 min | Einmal halbzeitig wenden | 5 min   |
 | 4 cm      | durchgebraten | Direkt zu indirekt | 230 °C     | 14 min     | 28 min | alle 2–3 min drehen      | 5–8 min |
 
@@ -259,8 +259,8 @@ Notes:
 
 | Thickness | Doneness      | Heat zone          | Grate temp | Per side    | Total  | Turns                    | Rest    |
 | --------- | ------------- | ------------------ | ---------- | ----------- | ------ | ------------------------ | ------- |
-| 2 cm      | medium        | Direkt, Deckel zu  | 230 °C     | 5 min       | 10 min | Einmal halbzeitig wenden | 5 min   |
-| 4 cm      | medium        | Direkt zu indirekt | 230 °C     | 9 min 30 s  | 19 min | Einmal halbzeitig wenden | 5–8 min |
+| 2 cm      | rosa          | Direkt, Deckel zu  | 230 °C     | 5 min       | 10 min | Einmal halbzeitig wenden | 5 min   |
+| 4 cm      | rosa          | Direkt zu indirekt | 230 °C     | 9 min 30 s  | 19 min | Einmal halbzeitig wenden | 5–8 min |
 | 2 cm      | durchgebraten | Direkt, Deckel zu  | 230 °C     | 7 min 30 s  | 15 min | Einmal halbzeitig wenden | 5 min   |
 | 4 cm      | durchgebraten | Direkt zu indirekt | 230 °C     | 11 min 30 s | 23 min | Einmal halbzeitig wenden | 5–8 min |
 
@@ -277,14 +277,14 @@ Notes:
 
 ### Schweinsteak (Schulter oder Keule / Pork steak)
 
-Meist Schulter; Budget-Cut, schmeckt am besten medium-well.
+Meist Schulter; Budget-Cut, schmeckt am besten rosa-durch.
 
 | Thickness | Doneness      | Heat zone          | Grate temp | Per side   | Total      | Turns                    | Rest    |
 | --------- | ------------- | ------------------ | ---------- | ---------- | ---------- | ------------------------ | ------- |
-| 1 cm      | medium        | Direkt, Deckel zu  | 230 °C     | 1 min 30 s | 3 min      | Einmal halbzeitig wenden | 3 min   |
-| 2 cm      | medium        | Direkt, Deckel zu  | 230 °C     | 3 min      | 6 min      | Einmal halbzeitig wenden | 3 min   |
-| 3 cm      | medium        | Direkt, Deckel zu  | 230 °C     | 4 min      | 8 min      | Einmal halbzeitig wenden | 3 min   |
-| 4 cm      | medium        | Direkt, Deckel zu  | 230 °C     | 5 min      | 10 min     | Einmal halbzeitig wenden | 5–8 min |
+| 1 cm      | rosa          | Direkt, Deckel zu  | 230 °C     | 1 min 30 s | 3 min      | Einmal halbzeitig wenden | 3 min   |
+| 2 cm      | rosa          | Direkt, Deckel zu  | 230 °C     | 3 min      | 6 min      | Einmal halbzeitig wenden | 3 min   |
+| 3 cm      | rosa          | Direkt, Deckel zu  | 230 °C     | 4 min      | 8 min      | Einmal halbzeitig wenden | 3 min   |
+| 4 cm      | rosa          | Direkt, Deckel zu  | 230 °C     | 5 min      | 10 min     | Einmal halbzeitig wenden | 5–8 min |
 | 1 cm      | durchgebraten | Direkt, Deckel zu  | 230 °C     | 2 min      | 4 min      | Einmal halbzeitig wenden | 3 min   |
 | 2 cm      | durchgebraten | Direkt, Deckel zu  | 230 °C     | 4 min 45 s | 9 min 30 s | Einmal halbzeitig wenden | 3 min   |
 | 3 cm      | durchgebraten | Direkt, Deckel zu  | 230 °C     | 6 min      | 12 min     | Einmal halbzeitig wenden | 5 min   |
@@ -303,7 +303,7 @@ Der Reverse-Sear-Star unter den Schweinecuts. Etwa 500 g pro Stück. NICHT über
 
 | Thickness | Doneness      | Heat zone         | Grate temp | Per side   | Total  | Turns                    | Rest  |
 | --------- | ------------- | ----------------- | ---------- | ---------- | ------ | ------------------------ | ----- |
-| -         | medium        | Direkt, Deckel zu | 230 °C     | 6 min      | 12 min | Einmal halbzeitig wenden | 5 min |
+| -         | rosa          | Direkt, Deckel zu | 230 °C     | 6 min      | 12 min | Einmal halbzeitig wenden | 5 min |
 | -         | durchgebraten | Direkt, Deckel zu | 230 °C     | 8 min 30 s | 17 min | Einmal halbzeitig wenden | 5 min |
 
 Sources: [Migros-Grilltimer].
@@ -391,8 +391,8 @@ Schweizer Cut, üblicherweise 2–3 cm dick.
 | Thickness | Doneness      | Heat zone         | Grate temp | Per side   | Total  | Turns                    | Rest  |
 | --------- | ------------- | ----------------- | ---------- | ---------- | ------ | ------------------------ | ----- |
 | -         | blutig        | Direkt, Deckel zu | 230 °C     | 3 min 30 s | 7 min  | Einmal halbzeitig wenden | 3 min |
-| -         | medium-rare   | Direkt, Deckel zu | 230 °C     | 4 min 30 s | 9 min  | Einmal halbzeitig wenden | 3 min |
-| -         | medium        | Direkt, Deckel zu | 230 °C     | 6 min 30 s | 13 min | Einmal halbzeitig wenden | 5 min |
+| -         | englisch      | Direkt, Deckel zu | 230 °C     | 4 min 30 s | 9 min  | Einmal halbzeitig wenden | 3 min |
+| -         | rosa          | Direkt, Deckel zu | 230 °C     | 6 min 30 s | 13 min | Einmal halbzeitig wenden | 5 min |
 | -         | durchgebraten | Direkt, Deckel zu | 230 °C     | 8 min 30 s | 17 min | Einmal halbzeitig wenden | 5 min |
 
 Sources: [Migros-Grilltimer].
@@ -403,7 +403,7 @@ Klein, schnell. Klassisch mit Rosmarin.
 
 | Thickness | Doneness      | Heat zone         | Grate temp | Per side   | Total | Turns                    | Rest  |
 | --------- | ------------- | ----------------- | ---------- | ---------- | ----- | ------------------------ | ----- |
-| -         | medium        | Direkt, Deckel zu | 230 °C     | 3 min 30 s | 7 min | Einmal halbzeitig wenden | 3 min |
+| -         | rosa          | Direkt, Deckel zu | 230 °C     | 3 min 30 s | 7 min | Einmal halbzeitig wenden | 3 min |
 | -         | durchgebraten | Direkt, Deckel zu | 230 °C     | 4 min 30 s | 9 min | Einmal halbzeitig wenden | 3 min |
 
 Sources: [Migros-Grilltimer].
@@ -419,10 +419,10 @@ Notes:
 | --------- | ------------- | ----------------- | ---------- | ---------- | ----------- | ------------------------ | ----- |
 | 2 cm      | blutig        | Direkt, Deckel zu | 230 °C     | 2 min      | 4 min       | Einmal halbzeitig wenden | 3 min |
 | 3 cm      | blutig        | Direkt, Deckel zu | 230 °C     | 3 min      | 6 min       | Einmal halbzeitig wenden | 3 min |
-| 2 cm      | medium-rare   | Direkt, Deckel zu | 230 °C     | 2 min 30 s | 5 min       | Einmal halbzeitig wenden | 3 min |
-| 3 cm      | medium-rare   | Direkt, Deckel zu | 230 °C     | 4 min      | 8 min       | Einmal halbzeitig wenden | 3 min |
-| 2 cm      | medium        | Direkt, Deckel zu | 230 °C     | 3 min 15 s | 6 min 30 s  | Einmal halbzeitig wenden | 3 min |
-| 3 cm      | medium        | Direkt, Deckel zu | 230 °C     | 5 min      | 10 min      | Einmal halbzeitig wenden | 5 min |
+| 2 cm      | englisch      | Direkt, Deckel zu | 230 °C     | 2 min 30 s | 5 min       | Einmal halbzeitig wenden | 3 min |
+| 3 cm      | englisch      | Direkt, Deckel zu | 230 °C     | 4 min      | 8 min       | Einmal halbzeitig wenden | 3 min |
+| 2 cm      | rosa          | Direkt, Deckel zu | 230 °C     | 3 min 15 s | 6 min 30 s  | Einmal halbzeitig wenden | 3 min |
+| 3 cm      | rosa          | Direkt, Deckel zu | 230 °C     | 5 min      | 10 min      | Einmal halbzeitig wenden | 5 min |
 | 2 cm      | durchgebraten | Direkt, Deckel zu | 230 °C     | 4 min 15 s | 8 min 30 s  | Einmal halbzeitig wenden | 3 min |
 | 3 cm      | durchgebraten | Direkt, Deckel zu | 230 °C     | 6 min 15 s | 12 min 30 s | Einmal halbzeitig wenden | 5 min |
 
@@ -434,7 +434,7 @@ Reverse-Sear ist der Move.
 
 | Thickness | Doneness      | Heat zone         | Grate temp | Per side | Total  | Turns                    | Rest  |
 | --------- | ------------- | ----------------- | ---------- | -------- | ------ | ------------------------ | ----- |
-| -         | medium        | Direkt, Deckel zu | 230 °C     | 7 min    | 14 min | Einmal halbzeitig wenden | 5 min |
+| -         | rosa          | Direkt, Deckel zu | 230 °C     | 7 min    | 14 min | Einmal halbzeitig wenden | 5 min |
 | -         | durchgebraten | Direkt, Deckel zu | 230 °C     | 9 min    | 18 min | Einmal halbzeitig wenden | 5 min |
 
 Sources: [Migros-Grilltimer].
@@ -470,15 +470,15 @@ Sehr mager, sehr rot, gart SCHNELL, 2–3 °C früher ziehen.
 | Thickness | Doneness      | Heat zone         | Grate temp | Per side   | Total  | Turns                    | Rest  |
 | --------- | ------------- | ----------------- | ---------- | ---------- | ------ | ------------------------ | ----- |
 | -         | blutig        | Direkt, Deckel zu | 230 °C     | 2 min      | 4 min  | Einmal halbzeitig wenden | 3 min |
-| -         | medium-rare   | Direkt, Deckel zu | 230 °C     | 3 min 30 s | 7 min  | Einmal halbzeitig wenden | 3 min |
-| -         | medium        | Direkt, Deckel zu | 230 °C     | 5 min      | 10 min | Einmal halbzeitig wenden | 5 min |
+| -         | englisch      | Direkt, Deckel zu | 230 °C     | 3 min 30 s | 7 min  | Einmal halbzeitig wenden | 3 min |
+| -         | rosa          | Direkt, Deckel zu | 230 °C     | 5 min      | 10 min | Einmal halbzeitig wenden | 5 min |
 | -         | durchgebraten | Direkt, Deckel zu | 230 °C     | 8 min      | 16 min | Einmal halbzeitig wenden | 5 min |
 
 Sources: [Migros-Grilltimer].
 
 Notes:
 
-- NICHT über medium-rare hinaus garen, Pferd hat etwa 3 % Fett und wird zum Stein.
+- NICHT über englisch hinaus garen, Pferd hat etwa 3 % Fett und wird zum Stein.
 - In Rotwein, Wacholder und Lorbeer für Tiefe marinieren.
 
 ---
@@ -561,7 +561,7 @@ Der Klassiker: Fett einritzen, mit der Hautseite auf einer kühlen Zone starten,
 
 | Thickness | Doneness      | Heat zone         | Grate temp | Per side   | Total  | Turns                    | Rest  |
 | --------- | ------------- | ----------------- | ---------- | ---------- | ------ | ------------------------ | ----- |
-| -         | medium        | Direkt, Deckel zu | 230 °C     | 5 min 30 s | 11 min | Einmal halbzeitig wenden | 5 min |
+| -         | rosa          | Direkt, Deckel zu | 230 °C     | 5 min 30 s | 11 min | Einmal halbzeitig wenden | 5 min |
 | -         | durchgebraten | Direkt, Deckel zu | 230 °C     | 8 min 30 s | 17 min | Einmal halbzeitig wenden | 5 min |
 
 Sources: [Migros-Grilltimer].
@@ -821,7 +821,7 @@ Notes:
 
 ### Gelbflossenthunfisch (Yellowfin tuna steak)
 
-Maximales Anbraten, innen blutig oder höchstens medium, alles darüber ist Tunfischverschwendung.
+Maximales Anbraten, innen blutig oder höchstens rosa, alles darüber ist Tunfischverschwendung.
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total | Turns                    | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ----- | ------------------------ | ---- |
@@ -835,10 +835,10 @@ Notes:
 
 ### Schwertfisch (Swordfish steak)
 
-| Thickness | Doneness     | Heat zone         | Grate temp | Per side | Total    | Turns         | Rest  |
-| --------- | ------------ | ----------------- | ---------- | -------- | -------- | ------------- | ----- |
-| 2 cm      | medium 55 °C | Direkt mittelhoch | 230 °C     | 3 min    | 6 min    | Einmal wenden | 2 min |
-| 3 cm      | medium       | Direkt mittelhoch | 230 °C     | 4–5 min  | 8–10 min | Einmal wenden | 2 min |
+| Thickness | Doneness   | Heat zone         | Grate temp | Per side | Total    | Turns         | Rest  |
+| --------- | ---------- | ----------------- | ---------- | -------- | -------- | ------------- | ----- |
+| 2 cm      | rosa 55 °C | Direkt mittelhoch | 230 °C     | 3 min    | 6 min    | Einmal wenden | 2 min |
+| 3 cm      | rosa       | Direkt mittelhoch | 230 °C     | 4–5 min  | 8–10 min | Einmal wenden | 2 min |
 
 Sources: [Weber-US] Schwertfisch 3 cm 8–10 min. [BBCGF] 6–8 min für 2 cm.
 
@@ -1219,7 +1219,7 @@ Notes:
 Punkte, an denen Quellen materiell auseinandergehen oder Grillmi eine Marco-Entscheidung braucht:
 
 - **Pull-Temperatur für Schwein, 63 °C (USDA / modern) gegen 70 °C (konservativ DACH)**. `[Migros-Grilltimer]` und neuere Schweizer Quellen nutzen 62–63 °C für ganzes Schweinemuskelfleisch, ältere Schweizer Literatur nennt weiterhin 70 °C. Grillmi-Standard gewählt: **63 °C für ganzes Muskelfleisch, 70 °C für Hackfleisch und Braten**. Bestätigen, dass das für ein Schweiz-zuerst-Publikum passt, oder als benutzerseitige Voreinstellung anbieten.
-- **Pull-Temperatur für selbstgemachte Burger-Patties**. USDA und BLV nennen 70 °C, weil das Mahlen das Innere kontaminiert. Ein grosser Teil der Schweizer BBQ-Kultur isst Burger trotzdem medium-rare. Grillmi-Standard gewählt: **70 °C Pull**, mit explizitem Override "Nur selbst gemahlen, auf eigenes Risiko". Braucht UX-Überlegung.
+- **Pull-Temperatur für selbstgemachte Burger-Patties**. USDA und BLV nennen 70 °C, weil das Mahlen das Innere kontaminiert. Ein grosser Teil der Schweizer BBQ-Kultur isst Burger trotzdem englisch. Grillmi-Standard gewählt: **70 °C Pull**, mit explizitem Override "Nur selbst gemahlen, auf eigenes Risiko". Braucht UX-Überlegung.
 - **Einmal wenden gegen häufig wenden bei Steaks**. Beides funktioniert, die Forschung stützt häufiges Wenden als leicht gleichmässiger. Aktueller Grillmi-Standard: einmal wenden bis 3 cm, alle 60 s wenden bei Reverse-Sear und dicken Cuts. Liesse sich vereinfachen.
 - **Senf-Debatte zur St. Galler Bratwurst**: reine Tradition, keine Lebensmittelsicherheits-Frage; falls Grillmi Tipps zeigt, brauchen wir eine Position. Vorschlag: neutralen Hinweis zeigen, ohne Empfehlung.
 - **Pferdesteak**: nur Schweizer Quellen, keine Weber- oder Serious-Eats-Abdeckung. Werte basieren auf `[Migros-Grilltimer]` allein, nicht trianguliert. Als "Schweizer Spezialität, Einzelquelle" markieren, falls wir Quellenvertrauen anzeigen.

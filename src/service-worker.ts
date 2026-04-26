@@ -12,19 +12,25 @@ declare const self: ServiceWorkerGlobalScope
 
 const PRECACHE = [...build, ...files, ...prerendered].map(url => ({ url, revision: version }))
 
-precacheAndRoute(PRECACHE)
-cleanupOutdatedCaches()
+// In dev, $service-worker has no entries — skip precaching to avoid the
+// `createHandlerBoundToURL('/')` non-precached-url error and let dev pages
+// load from network. We also unregister this worker on activate so a stale
+// dev SW can't poison subsequent loads.
+if (PRECACHE.length > 0) {
+	precacheAndRoute(PRECACHE)
+	cleanupOutdatedCaches()
 
-// SPA navigation fallback: any client-side route the precache doesn't have lands on the precached `/`.
-registerRoute(new NavigationRoute(createHandlerBoundToURL('/')))
+	// SPA navigation fallback: any client-side route the precache doesn't have lands on the precached `/`.
+	registerRoute(new NavigationRoute(createHandlerBoundToURL('/')))
 
-registerRoute(({ url }) => url.pathname.startsWith('/sounds/'), new CacheFirst({ cacheName: `grillmi-sounds-${version}` }))
-registerRoute(({ url }) => url.pathname.startsWith('/icons/'), new CacheFirst({ cacheName: `grillmi-icons-${version}` }))
-registerRoute(({ url }) => url.pathname.startsWith('/fonts/'), new CacheFirst({ cacheName: `grillmi-fonts-${version}` }))
-registerRoute(
-	({ url }) => url.pathname === '/manifest.webmanifest',
-	new StaleWhileRevalidate({ cacheName: `grillmi-manifest-${version}` }),
-)
+	registerRoute(({ url }) => url.pathname.startsWith('/sounds/'), new CacheFirst({ cacheName: `grillmi-sounds-${version}` }))
+	registerRoute(({ url }) => url.pathname.startsWith('/icons/'), new CacheFirst({ cacheName: `grillmi-icons-${version}` }))
+	registerRoute(({ url }) => url.pathname.startsWith('/fonts/'), new CacheFirst({ cacheName: `grillmi-fonts-${version}` }))
+	registerRoute(
+		({ url }) => url.pathname === '/manifest.webmanifest',
+		new StaleWhileRevalidate({ cacheName: `grillmi-manifest-${version}` }),
+	)
+}
 
 self.addEventListener('install', () => {
 	void self.skipWaiting()

@@ -19,7 +19,12 @@
 	let firingItemId = $state<string | null>(null)
 
 	const session = $derived(sessionStore.session)
-	const visibleAlarms = $derived(stickyAlarms.filter(a => !dismissedKeys.has(a.id)))
+	const visibleAlarms = $derived(
+		stickyAlarms
+			.filter(a => !dismissedKeys.has(a.id))
+			.slice()
+			.reverse(),
+	)
 	const alarming = $derived(visibleAlarms[0] ?? null)
 	const planMode = $derived(sessionStore.planMode)
 

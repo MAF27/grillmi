@@ -253,6 +253,14 @@ function parseDurationRange(raw: string): [number, number] | null {
 		return [v, v]
 	}
 
+	// Compound "X min Y s" / "X min Y sec" — parse before plain "X min" so the
+	// trailing seconds aren't dropped. Examples: "2 min 30 s", "1 min 15 s".
+	const minSec = /(\d+)\s*min\s*(\d+)\s*s(?!ide)/.exec(cleaned)
+	if (minSec) {
+		const total = parseInt(minSec[1], 10) * 60 + parseInt(minSec[2], 10)
+		return [total, total]
+	}
+
 	// Minute range "8–10 min" / "8-10 min"
 	const minRange = /(\d+(?:\.\d+)?)\s*[–-]\s*(\d+(?:\.\d+)?)\s*min/.exec(cleaned)
 	if (minRange) return [Math.round(parseFloat(minRange[1]) * 60), Math.round(parseFloat(minRange[2]) * 60)]

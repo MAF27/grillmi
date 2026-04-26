@@ -80,4 +80,47 @@ describe('TimerCard', () => {
 		})
 		expect(container.querySelector('button.remove')).toBeNull()
 	})
+
+	it('test_unstarted_card_renders_los_button_and_calls_onstart', async () => {
+		const onstart = vi.fn()
+		const { getByText } = render(TimerCard, {
+			props: { item: makeItem({ status: 'pending' }), status: 'unstarted', alarmFiring: false, onstart },
+		})
+		await fireEvent.click(getByText('Los'))
+		expect(onstart).toHaveBeenCalledWith('11111111-1111-4111-8111-111111111111')
+	})
+
+	it('test_ready_card_renders_anrichten_button_and_calls_onplate', async () => {
+		const onplate = vi.fn()
+		const { getByText } = render(TimerCard, {
+			props: { item: makeItem({ status: 'ready' }), alarmFiring: false, onplate },
+		})
+		await fireEvent.click(getByText('Anrichten'))
+		expect(onplate).toHaveBeenCalledWith('11111111-1111-4111-8111-111111111111')
+	})
+
+	it('test_ready_card_swipe_past_threshold_calls_onplate', async () => {
+		const onplate = vi.fn()
+		const { container } = render(TimerCard, {
+			props: { item: makeItem({ status: 'ready' }), alarmFiring: false, onplate },
+		})
+		const card = container.querySelector('[data-testid="timer-card"]') as HTMLElement
+		await fireEvent.touchStart(card, { touches: [{ clientX: 0 }] })
+		await fireEvent.touchMove(card, { touches: [{ clientX: 90 }] })
+		await fireEvent.touchEnd(card)
+		expect(onplate).toHaveBeenCalledWith('11111111-1111-4111-8111-111111111111')
+	})
+
+	it('test_long_press_invokes_onlongpress', async () => {
+		vi.useFakeTimers()
+		const onlongpress = vi.fn()
+		const { container } = render(TimerCard, {
+			props: { item: makeItem({ status: 'cooking' }), alarmFiring: false, onlongpress },
+		})
+		const card = container.querySelector('[data-testid="timer-card"]') as HTMLElement
+		await fireEvent.touchStart(card, { touches: [{ clientX: 0 }] })
+		vi.advanceTimersByTime(550)
+		expect(onlongpress).toHaveBeenCalledWith('11111111-1111-4111-8111-111111111111')
+		vi.useRealTimers()
+	})
 })

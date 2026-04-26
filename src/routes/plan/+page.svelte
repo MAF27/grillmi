@@ -89,7 +89,12 @@
 		return `Los, fertig um ${formatHHMM(effectiveTarget)}`
 	})
 
-	const visibleAlarms = $derived(sessionStore.manualAlarms.filter(a => !sessionStore.manualAlarmDismissed.has(a.id)))
+	const visibleAlarms = $derived(
+		sessionStore.manualAlarms
+			.filter(a => !sessionStore.manualAlarmDismissed.has(a.id))
+			.slice()
+			.reverse(),
+	)
 	const alarming = $derived(visibleAlarms[0] ?? null)
 
 	$effect(() => {
@@ -295,14 +300,16 @@
 				<div class="manual-grid" role="list">
 					{#each plan.items as item, i (item.id)}
 						{@const status = deriveManualStatus(item, now).status}
-						<div role="listitem">
-							<TimerCard
-								item={manualSession[i]}
-								status={status as never}
-								onstart={startMatch}
-								onplate={plateMatch}
-								onremove={deleteItem} />
-						</div>
+						{#if status !== 'plated'}
+							<div role="listitem">
+								<TimerCard
+									item={manualSession[i]}
+									status={status as never}
+									onstart={startMatch}
+									onplate={plateMatch}
+									onremove={deleteItem} />
+							</div>
+						{/if}
 					{/each}
 					<button class="more-add" type="button" onclick={openAddSheet}>
 						<span class="plus-glyph">+</span>

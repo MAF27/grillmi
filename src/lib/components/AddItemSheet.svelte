@@ -275,22 +275,13 @@
 		return Number.isInteger(cm) ? String(cm) : cm.toFixed(1)
 	}
 
-	// Thickness range: snap to 0.5 cm steps, extend 1 cm below documented min
-	// with a hard floor of 0.5 cm. Floor must never exclude the documented min.
-	const THICKNESS_FLOOR = 0.5
+	// Thickness options come straight from the documented reference rows;
+	// we never interpolate or extrapolate, so the UI only offers values for
+	// which we have researched cook times.
 	const thicknessOptions = $derived.by<number[]>(() => {
 		if (!cut?.hasThickness) return []
-		const ts = cut.rows.map(r => r.thicknessCm).filter((v): v is number => v !== null)
-		if (ts.length === 0) return []
-		const documentedMin = Math.min(...ts)
-		const max = Math.max(...ts)
-		const extended = Math.round((documentedMin - 1) * 2) / 2
-		const min = Math.min(documentedMin, Math.max(THICKNESS_FLOOR, extended))
-		const out: number[] = []
-		for (let v = min; v <= max + 1e-6; v = Math.round((v + 0.5) * 10) / 10) {
-			out.push(Math.round(v * 10) / 10)
-		}
-		return out
+		const ts = Array.from(new Set(cut.rows.map(r => r.thicknessCm).filter((v): v is number => v !== null)))
+		return ts.sort((a, b) => a - b)
 	})
 
 	function stepThickness(delta: number) {

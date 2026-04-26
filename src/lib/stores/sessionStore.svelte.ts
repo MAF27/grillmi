@@ -3,6 +3,7 @@ import { planSchema, sessionSchema } from '$lib/schemas'
 import { schedule, buildSessionItem } from '$lib/scheduler/schedule'
 import { uuid } from '$lib/util/uuid'
 import {
+	clearCurrentPlanState,
 	clearCurrentSession,
 	getCurrentPlanState,
 	getCurrentSession,
@@ -167,12 +168,23 @@ function createSessionStore() {
 			if (storedPlan) {
 				const parsed = planSchema.safeParse(storedPlan.plan)
 				if (parsed.success) {
-					plan = parsed.data
-					planMode = storedPlan.planMode === 'manual' ? 'manual' : 'auto'
-					manualStarts = storedPlan.manualStarts ?? {}
-					manualPlated = new Set(storedPlan.manualPlated ?? [])
-					manualAlarms = storedPlan.alarms ?? []
-					manualAlarmDismissed = new Set(storedPlan.dismissedAlarmKeys ?? [])
+					// Drop manual sessions that are clearly stale (oldest start older
+					// than the staleness window): leftover state from a prior testing
+					// run is more confusing than helpful when the user comes back hours
+					// later expecting a clean slate.
+					const starts = Object.values(storedPlan.manualStarts ?? {})
+					const oldestStart = starts.length > 0 ? Math.min(...starts) : null
+					const stalePlan = oldestStart !== null && oldestStart < Date.now() - STALE_AFTER_MS
+					if (stalePlan) {
+						await clearCurrentPlanState()
+					} else {
+						plan = parsed.data
+						planMode = storedPlan.planMode === 'manual' ? 'manual' : 'auto'
+						manualStarts = storedPlan.manualStarts ?? {}
+						manualPlated = new Set(storedPlan.manualPlated ?? [])
+						manualAlarms = storedPlan.alarms ?? []
+						manualAlarmDismissed = new Set(storedPlan.dismissedAlarmKeys ?? [])
+					}
 				}
 			}
 		},

@@ -31,7 +31,7 @@
 				fill="none"
 				stroke-dasharray={c}
 				stroke-dashoffset={offset}
-				stroke-linecap="round"
+				stroke-linecap="butt"
 				transform={`rotate(-90 ${size / 2} ${size / 2})`} />
 		{/if}
 	</svg>
