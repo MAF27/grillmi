@@ -2,53 +2,53 @@
 	import { goto } from '$app/navigation'
 	import { onMount } from 'svelte'
 	import Button from '$lib/components/Button.svelte'
-	import FavoriteCard from '$lib/components/FavoriteCard.svelte'
-	import { favoritesStore } from '$lib/stores/favoritesStore.svelte'
+	import SavedPlanCard from '$lib/components/SavedPlanCard.svelte'
+	import { savedPlansStore } from '$lib/stores/savedPlansStore.svelte'
 	import { sessionStore } from '$lib/stores/sessionStore.svelte'
 
 	onMount(async () => {
-		await favoritesStore.init()
+		await savedPlansStore.init()
 	})
 
 	function load(id: string) {
-		const fav = favoritesStore.all.find(f => f.id === id)
-		if (!fav) return
-		void favoritesStore.touch(id)
-		sessionStore.loadFromFavorite(fav.items)
+		const plan = savedPlansStore.all.find(p => p.id === id)
+		if (!plan) return
+		void savedPlansStore.touch(id)
+		sessionStore.loadFromSavedPlan(plan.items)
 		goto('/plan')
 	}
 
 	function longPress(id: string) {
-		const fav = favoritesStore.all.find(f => f.id === id)
-		if (!fav) return
-		const action = window.prompt(`${fav.name}\n\n1 — Umbenennen\n2 — Löschen\n\nNummer eingeben:`)
+		const plan = savedPlansStore.all.find(p => p.id === id)
+		if (!plan) return
+		const action = window.prompt(`${plan.name}\n\n1. Umbenennen\n2. Löschen\n\nNummer eingeben:`)
 		if (action === '1') {
-			const newName = window.prompt('Neuer Name:', fav.name)
-			if (newName?.trim()) void favoritesStore.rename(id, newName.trim())
+			const newName = window.prompt('Neuer Name:', plan.name)
+			if (newName?.trim()) void savedPlansStore.rename(id, newName.trim())
 		}
-		if (action === '2' && window.confirm(`Favorit "${fav.name}" wirklich löschen?`)) {
-			void favoritesStore.remove(id)
+		if (action === '2' && window.confirm(`Plan-Vorlage "${plan.name}" wirklich löschen?`)) {
+			void savedPlansStore.remove(id)
 		}
 	}
 </script>
 
 <svelte:head>
-	<title>Favoriten · Grillmi</title>
+	<title>Plan-Vorlagen · Grillmi</title>
 </svelte:head>
 
 <main>
 	<header>
 		<button class="back" onclick={() => goto('/')} aria-label="Zurück">‹</button>
-		<h1>Favoriten</h1>
+		<h1>Plan-Vorlagen</h1>
 	</header>
 
-	{#if favoritesStore.all.length === 0}
-		<p class="empty">Noch keine Favoriten — speichere eine Plan-Konstellation auf der Plan-Seite.</p>
+	{#if savedPlansStore.all.length === 0}
+		<p class="empty">Noch keine Plan-Vorlage gespeichert. Stelle einen Plan zusammen und tippe auf Plan speichern.</p>
 		<Button variant="primary" onclick={() => goto('/plan')}>Neue Session</Button>
 	{:else}
 		<div class="list">
-			{#each favoritesStore.all as fav (fav.id)}
-				<FavoriteCard favorite={fav} onload={load} onlongpress={longPress} />
+			{#each savedPlansStore.all as plan (plan.id)}
+				<SavedPlanCard savedPlan={plan} onload={load} onlongpress={longPress} />
 			{/each}
 		</div>
 	{/if}

@@ -2,7 +2,7 @@
 
 ## Meta
 
-- Status: Reviewed
+- Status: Implemented
 - Branch: feature/favorit-plan-vorlage-split
 
 ---
@@ -65,7 +65,7 @@ The schema change is the linchpin. `src/lib/schemas/index.ts` introduces a new `
 
 The IDB layer (`src/lib/stores/db.ts`) bumps `DB_VERSION` from 1 to 2 and introduces a v1 to v2 upgrade path inside the existing `upgrade(db, oldVersion)` callback: when `oldVersion < 2`, read all records out of `favorites`, create a new `plans` object store, write the records into `plans` keyed by the record's `id`, delete the old `favorites` store, then create a fresh `favorites` store for the new Favorit shape. The accessor functions split: `listSavedPlans / putSavedPlan / deleteSavedPlan` operate on `plans`; `listFavorites / putFavorite / deleteFavorite` operate on the new `favorites` store with the new shape.
 
-The store layer mirrors the schema split. The current `src/lib/stores/favoritesStore.svelte.ts` is renamed to `savedPlansStore.svelte.ts` and its types swap to `SavedPlan`. A new `favoritesStore.svelte.ts` is written from scratch, modeled on the same shape (init, save, rename, remove, touch, all, _reset) but holding `Favorite` (single-item) values. The AddItemSheet reads `favoritesStore.all` directly and dispatches its existing `oncommit` callback when a Favorit row is tapped; no bespoke "loadIntoSheet" action is needed.
+The store layer mirrors the schema split. The current `src/lib/stores/favoritesStore.svelte.ts` is renamed to `savedPlansStore.svelte.ts` and its types swap to `SavedPlan`. A new `favoritesStore.svelte.ts` is written from scratch, modeled on the same shape (init, save, rename, remove, touch, all, \_reset) but holding `Favorite` (single-item) values. The AddItemSheet reads `favoritesStore.all` directly and dispatches its existing `oncommit` callback when a Favorit row is tapped; no bespoke "loadIntoSheet" action is needed.
 
 The two `sessionStore` methods that consume saved-plan items today (`loadFromFavorite(items)` and `appendFromFavorite(items)`) are renamed to `loadFromSavedPlan(items)` and `appendFromSavedPlan(items)`. The names are misleading after the split because "Favorite" now means a single configured grillable, not a list. Body of each method is unchanged.
 
@@ -99,46 +99,46 @@ The route rename moves `src/routes/favorites/+page.svelte` to `src/routes/plans/
 
 #### Phase 1: Schema and IDB
 
-1. [ ] In `src/lib/schemas/index.ts`, rename `favoriteSchema` to `savedPlanSchema` (and `Favorite` type to `SavedPlan`). Define a new `favoriteSchema` shaped as `{ id, name, categorySlug, cutSlug, thicknessCm, prepLabel, doneness, label, cookSeconds, restSeconds, flipFraction, idealFlipPattern, heatZone, createdAtEpoch, lastUsedEpoch }`. Export `Favorite` and `SavedPlan` types.
-2. [ ] In `src/lib/models/index.ts`, re-export `Favorite` and `SavedPlan`.
-3. [ ] In `src/lib/stores/db.ts`, bump `DB_VERSION` to 2, extend the `GrillmiDB` interface with a `plans: { key: string; value: SavedPlan }` member and retype `favorites` to `value: Favorite` (new shape). Update the `upgrade(db, oldVersion)` callback so it handles three entry points inside the same versionchange transaction: (a) `oldVersion < 1` creates `sessions`, `favorites`, `settings`, and `plans` from scratch, (b) `oldVersion < 2` reads all records out of the existing `favorites` store, creates `plans`, writes those records into `plans` keyed by `record.id`, deletes the old `favorites` store, and re-creates an empty `favorites` store for the new shape. Split the accessor functions: `listSavedPlans / putSavedPlan / deleteSavedPlan` operate on `plans`; the existing `listFavorites / putFavorite / deleteFavorite` keep their names but now read/write the new single-item shape. Extend `resetAll` to clear `sessions`, `favorites`, `plans`, and `settings`.
-4. [ ] `tests/setup.ts` only imports `fake-indexeddb/auto` and does not pin a DB version, so no change is required there. Confirm `__resetForTests` in `db.ts` still works (it just nulls the cached promise); add a unit assertion only if a v2 path needs explicit teardown.
+1. [x] In `src/lib/schemas/index.ts`, rename `favoriteSchema` to `savedPlanSchema` (and `Favorite` type to `SavedPlan`). Define a new `favoriteSchema` shaped as `{ id, name, categorySlug, cutSlug, thicknessCm, prepLabel, doneness, label, cookSeconds, restSeconds, flipFraction, idealFlipPattern, heatZone, createdAtEpoch, lastUsedEpoch }`. Export `Favorite` and `SavedPlan` types.
+2. [x] In `src/lib/models/index.ts`, re-export `Favorite` and `SavedPlan`.
+3. [x] In `src/lib/stores/db.ts`, bump `DB_VERSION` to 2, extend the `GrillmiDB` interface with a `plans: { key: string; value: SavedPlan }` member and retype `favorites` to `value: Favorite` (new shape). Update the `upgrade(db, oldVersion)` callback so it handles three entry points inside the same versionchange transaction: (a) `oldVersion < 1` creates `sessions`, `favorites`, `settings`, and `plans` from scratch, (b) `oldVersion < 2` reads all records out of the existing `favorites` store, creates `plans`, writes those records into `plans` keyed by `record.id`, deletes the old `favorites` store, and re-creates an empty `favorites` store for the new shape. Split the accessor functions: `listSavedPlans / putSavedPlan / deleteSavedPlan` operate on `plans`; the existing `listFavorites / putFavorite / deleteFavorite` keep their names but now read/write the new single-item shape. Extend `resetAll` to clear `sessions`, `favorites`, `plans`, and `settings`.
+4. [x] `tests/setup.ts` only imports `fake-indexeddb/auto` and does not pin a DB version, so no change is required there. Confirm `__resetForTests` in `db.ts` still works (it just nulls the cached promise); add a unit assertion only if a v2 path needs explicit teardown.
 
 #### Phase 2: Stores
 
-1. [ ] Rename `src/lib/stores/favoritesStore.svelte.ts` to `src/lib/stores/savedPlansStore.svelte.ts`. Rename the exported `favoritesStore` to `savedPlansStore`. Type swap to `SavedPlan`. Update its `db.ts` imports (`listSavedPlans`, `putSavedPlan`, `deleteSavedPlan`).
-2. [ ] Write a new `src/lib/stores/favoritesStore.svelte.ts` modeled on `savedPlansStore` but holding `Favorite` (single-item) values. Methods: `init`, `save(name, config: Omit<Favorite, 'id' | 'name' | 'createdAtEpoch' | 'lastUsedEpoch'>)`, `rename(id, name)`, `remove(id)`, `touch(id)` (updates lastUsedEpoch and re-sorts the in-memory list to the front), `all` (sorted by lastUsedEpoch desc), `_reset`.
-3. [ ] In `src/lib/stores/sessionStore.svelte.ts`, rename `loadFromFavorite(items)` to `loadFromSavedPlan(items)` and `appendFromFavorite(items)` to `appendFromSavedPlan(items)`. Bodies unchanged. Update the two call sites (`/plans/+page.svelte` after the route move, and `/plan/+page.svelte`'s `appendFavorite` handler).
-4. [ ] Find every existing import of `favoritesStore` across the codebase. For uses that consume the saved-plan list (Plan screen's "Plan-Vorlage" loader, `/plans` route, `SavedPlanCard.svelte`), swap to `savedPlansStore`. Run `pnpm exec tsc --noEmit` to confirm the rename is consistent.
+1. [x] Rename `src/lib/stores/favoritesStore.svelte.ts` to `src/lib/stores/savedPlansStore.svelte.ts`. Rename the exported `favoritesStore` to `savedPlansStore`. Type swap to `SavedPlan`. Update its `db.ts` imports (`listSavedPlans`, `putSavedPlan`, `deleteSavedPlan`).
+2. [x] Write a new `src/lib/stores/favoritesStore.svelte.ts` modeled on `savedPlansStore` but holding `Favorite` (single-item) values. Methods: `init`, `save(name, config: Omit<Favorite, 'id' | 'name' | 'createdAtEpoch' | 'lastUsedEpoch'>)`, `rename(id, name)`, `remove(id)`, `touch(id)` (updates lastUsedEpoch and re-sorts the in-memory list to the front), `all` (sorted by lastUsedEpoch desc), `_reset`.
+3. [x] In `src/lib/stores/sessionStore.svelte.ts`, rename `loadFromFavorite(items)` to `loadFromSavedPlan(items)` and `appendFromFavorite(items)` to `appendFromSavedPlan(items)`. Bodies unchanged. Update the two call sites (`/plans/+page.svelte` after the route move, and `/plan/+page.svelte`'s `appendFavorite` handler).
+4. [x] Find every existing import of `favoritesStore` across the codebase. For uses that consume the saved-plan list (Plan screen's "Plan-Vorlage" loader, `/plans` route, `SavedPlanCard.svelte`), swap to `savedPlansStore`. Run `pnpm exec tsc --noEmit` to confirm the rename is consistent.
 
 #### Phase 3: UI - Plan-Vorlagen route
 
-1. [ ] Move `src/routes/favorites/+page.svelte` to `src/routes/plans/+page.svelte`. Rename `src/lib/components/FavoriteCard.svelte` to `src/lib/components/SavedPlanCard.svelte` (rename the `favorite` prop to `savedPlan` and update its `<svelte:head>` title to "Plan-Vorlagen · Grillmi"). Update imports inside the moved page and the card.
-2. [ ] Update copy on the Plan-Vorlagen page: header "Plan-Vorlagen", empty-state copy reads "Noch keine Plan-Vorlage gespeichert. Stelle einen Plan zusammen und tippe auf Plan speichern.", the long-press `window.prompt` menu text replaces the existing "1 — Umbenennen" / "2 — Löschen" with "1. Umbenennen" / "2. Löschen" (no em-dash), confirm-delete text becomes `Plan-Vorlage "${plan.name}" wirklich löschen?`. Action labels remain Umbenennen / Löschen.
-3. [ ] Update Home (`src/routes/+page.svelte`) so the existing "Favoriten" CTA becomes "Plan-Vorlagen" and links to `/plans`. Rename `openFavorites` to `openSavedPlans`. Confirm no other `/favorites` link exists.
-4. [ ] Update `tests/e2e/a11y.spec.ts`: rename `test_axe_core_clean_on_favorites` to `test_axe_core_clean_on_plans` and change `await page.goto('/favorites')` to `await page.goto('/plans')`.
-5. [ ] Update the IDB priming in `tests/e2e/alarms.spec.ts` and `tests/e2e/resume.spec.ts`: bump `indexedDB.open('grillmi', 1)` to `indexedDB.open('grillmi', 2)` and add a `plans` object store creation in the `onupgradeneeded` block alongside the existing `sessions / favorites / settings` lines so the seeded DB matches the v2 schema the app expects.
-6. [ ] Rename `tests/e2e/favorites.spec.ts` to `tests/e2e/saved-plans.spec.ts`, change the describe block name to `saved-plans`, retitle the test to `test_save_and_reload_saved_plan`, and update the post-save assertion to read records out of the `plans` object store (not `favorites`). The flow stays: plan an item, tap "Plan speichern", name the entry, assert one record in `plans`. Update copy assertions: input placeholder is still "Mörgeli-Plausch", but the modal heading is now "Plan speichern" and the confirm button text remains "Speichern".
+1. [x] Move `src/routes/favorites/+page.svelte` to `src/routes/plans/+page.svelte`. Rename `src/lib/components/FavoriteCard.svelte` to `src/lib/components/SavedPlanCard.svelte` (rename the `favorite` prop to `savedPlan` and update its `<svelte:head>` title to "Plan-Vorlagen · Grillmi"). Update imports inside the moved page and the card.
+2. [x] Update copy on the Plan-Vorlagen page: header "Plan-Vorlagen", empty-state copy reads "Noch keine Plan-Vorlage gespeichert. Stelle einen Plan zusammen und tippe auf Plan speichern.", the long-press `window.prompt` menu text replaces the existing "1 — Umbenennen" / "2 — Löschen" with "1. Umbenennen" / "2. Löschen" (no em-dash), confirm-delete text becomes `Plan-Vorlage "${plan.name}" wirklich löschen?`. Action labels remain Umbenennen / Löschen.
+3. [x] Update Home (`src/routes/+page.svelte`) so the existing "Favoriten" CTA becomes "Plan-Vorlagen" and links to `/plans`. Rename `openFavorites` to `openSavedPlans`. Confirm no other `/favorites` link exists.
+4. [x] Update `tests/e2e/a11y.spec.ts`: rename `test_axe_core_clean_on_favorites` to `test_axe_core_clean_on_plans` and change `await page.goto('/favorites')` to `await page.goto('/plans')`.
+5. [x] Update the IDB priming in `tests/e2e/alarms.spec.ts` and `tests/e2e/resume.spec.ts`: bump `indexedDB.open('grillmi', 1)` to `indexedDB.open('grillmi', 2)` and add a `plans` object store creation in the `onupgradeneeded` block alongside the existing `sessions / favorites / settings` lines so the seeded DB matches the v2 schema the app expects.
+6. [x] Rename `tests/e2e/favorites.spec.ts` to `tests/e2e/saved-plans.spec.ts`, change the describe block name to `saved-plans`, retitle the test to `test_save_and_reload_saved_plan`, and update the post-save assertion to read records out of the `plans` object store (not `favorites`). The flow stays: plan an item, tap "Plan speichern", name the entry, assert one record in `plans`. Update copy assertions: input placeholder is still "Mörgeli-Plausch", but the modal heading is now "Plan speichern" and the confirm button text remains "Speichern".
 
 #### Phase 4: UI - AddItemSheet Favoriten tab and inline save
 
-1. [ ] In `src/lib/components/AddItemSheet.svelte`, add `let tab = $state<'categories' | 'favorites'>('categories')`. Reset to `'categories'` inside the existing `reset()` function and inside the open-side branch of the `$effect` that handles `initial !== null` (edit mode forces categories tab off because edit mode bypasses the first step). Render the tab pivot above the body only when `step === 'category'` and `initial === null`.
-2. [ ] When `tab === 'favorites'`, render a vertical list bound to `favoritesStore.all`. Each row shows the Favorit name, a one-line summary in the form "Rinds-Entrecôte 3 cm, Medium-rare" derived from the saved label, and a last-used date formatted via `toLocaleDateString('de-CH')`. Tap calls `oncommit` with the Favorit's PlannedItem-shaped payload (categorySlug, cutSlug, thicknessCm, prepLabel, doneness, label, cookSeconds, restSeconds, flipFraction, idealFlipPattern, heatZone; every field on `Favorite` except `id`, `name`, `createdAtEpoch`, `lastUsedEpoch`). Use `void favoritesStore.touch(id)` (fire-and-forget) to update lastUsedEpoch in the background, then close via `onclose()`. The Plan screen's existing `commit` handler attaches a fresh id via `sessionStore.addItem`.
-3. [ ] Render an empty-state view when `favoritesStore.all.length === 0`: one-line copy "Du hast noch keine Favoriten. Stelle ein Stück zusammen und speichere es unten." plus a button "Zur Kategorie" that flips `tab` back to `'categories'`.
-4. [ ] In the sheet's specs step footer, add an "Als Favorit speichern" inline action rendered next to the existing "Übernehmen" primary button. Tap reveals an inline name input (max 60 chars to match `favoriteSchema.name`). Confirm via the input's Enter key calls `favoritesStore.save({ name, categorySlug, cutSlug, thicknessCm, prepLabel, doneness, label: autoLabel(), cookSeconds: computedSeconds, restSeconds, flipFraction, idealFlipPattern, heatZone })` using the existing `$state` and `$derived` values. The save action shares `specsComplete` for its disabled state. The sheet stays open after save so the user can still tap "Übernehmen".
-5. [ ] Add long-press support on Favorit rows: 500 ms timer pattern matching `FavoriteCard.svelte`. Long-press triggers the same two-step `window.prompt` flow the existing `/favorites` page uses: a first prompt offers `1. Umbenennen` / `2. Löschen`, then either a second `window.prompt` for the new name (calls `favoritesStore.rename(id, newName)`) or a `window.confirm` on the delete (calls `favoritesStore.remove(id)`). Tap (release before 500 ms) still applies the Favorit per task 2.
-6. [ ] Update `src/lib/components/AddItemSheet.svelte`'s back-button rules: from `step === 'category'` with `tab === 'favorites'`, the back gesture returns the user to `tab === 'categories'`, not closing the sheet, so a casual mis-tap on the tab does not exit the flow.
+1. [x] In `src/lib/components/AddItemSheet.svelte`, add `let tab = $state<'categories' | 'favorites'>('categories')`. Reset to `'categories'` inside the existing `reset()` function and inside the open-side branch of the `$effect` that handles `initial !== null` (edit mode forces categories tab off because edit mode bypasses the first step). Render the tab pivot above the body only when `step === 'category'` and `initial === null`.
+2. [x] When `tab === 'favorites'`, render a vertical list bound to `favoritesStore.all`. Each row shows the Favorit name, a one-line summary in the form "Rinds-Entrecôte 3 cm, Medium-rare" derived from the saved label, and a last-used date formatted via `toLocaleDateString('de-CH')`. Tap calls `oncommit` with the Favorit's PlannedItem-shaped payload (categorySlug, cutSlug, thicknessCm, prepLabel, doneness, label, cookSeconds, restSeconds, flipFraction, idealFlipPattern, heatZone; every field on `Favorite` except `id`, `name`, `createdAtEpoch`, `lastUsedEpoch`). Use `void favoritesStore.touch(id)` (fire-and-forget) to update lastUsedEpoch in the background, then close via `onclose()`. The Plan screen's existing `commit` handler attaches a fresh id via `sessionStore.addItem`.
+3. [x] Render an empty-state view when `favoritesStore.all.length === 0`: one-line copy "Du hast noch keine Favoriten. Stelle ein Stück zusammen und speichere es unten." plus a button "Zur Kategorie" that flips `tab` back to `'categories'`.
+4. [x] In the sheet's specs step footer, add an "Als Favorit speichern" inline action rendered next to the existing "Übernehmen" primary button. Tap reveals an inline name input (max 60 chars to match `favoriteSchema.name`). Confirm via the input's Enter key calls `favoritesStore.save({ name, categorySlug, cutSlug, thicknessCm, prepLabel, doneness, label: autoLabel(), cookSeconds: computedSeconds, restSeconds, flipFraction, idealFlipPattern, heatZone })` using the existing `$state` and `$derived` values. The save action shares `specsComplete` for its disabled state. The sheet stays open after save so the user can still tap "Übernehmen".
+5. [x] Add long-press support on Favorit rows: 500 ms timer pattern matching `FavoriteCard.svelte`. Long-press triggers the same two-step `window.prompt` flow the existing `/favorites` page uses: a first prompt offers `1. Umbenennen` / `2. Löschen`, then either a second `window.prompt` for the new name (calls `favoritesStore.rename(id, newName)`) or a `window.confirm` on the delete (calls `favoritesStore.remove(id)`). Tap (release before 500 ms) still applies the Favorit per task 2.
+6. [x] Update `src/lib/components/AddItemSheet.svelte`'s back-button rules: from `step === 'category'` with `tab === 'favorites'`, the back gesture returns the user to `tab === 'categories'`, not closing the sheet, so a casual mis-tap on the tab does not exit the flow.
 
 #### Phase 5: UI - Plan screen
 
-1. [ ] In `src/routes/plan/+page.svelte`, rename the "Als Favorit speichern" button to "Plan speichern". Rename the `openSaveFavorite` / `saveFavorite` handlers and the `saveAsFavoriteOpen` / `favoriteName` state variables to `openSavePlan` / `savePlan` / `savePlanOpen` / `planName`. Rewire the click handler to `savedPlansStore.save(planName, plan.items)`. The modal heading changes from "Favorit speichern" to "Plan speichern"; the `aria-label` becomes "Plan speichern"; placeholder copy stays "Name (z.B. Mörgeli-Plausch)".
-2. [ ] Relabel the inline `★ Favorit` button on the plan screen to `★ Plan-Vorlage`. Rename the `favoritesSheetOpen` state to `savedPlansSheetOpen`, the `appendFavorite` handler to `appendSavedPlan`, and the `openFavoritesSheet` handler to `openSavedPlansSheet`. Rewire the sheet to `savedPlansStore.all`, call `savedPlansStore.touch(id)` plus `sessionStore.appendFromSavedPlan(plan.items)` on tap, and rewrite the visible copy: dialog `aria-label` becomes "Plan-Vorlage hinzufügen", header reads "Plan-Vorlage hinzufügen", and the hint reads "Tippe auf eine Plan-Vorlage. Die Einträge werden an deinen Plan angehängt." (no em-dash).
+1. [x] In `src/routes/plan/+page.svelte`, rename the "Als Favorit speichern" button to "Plan speichern". Rename the `openSaveFavorite` / `saveFavorite` handlers and the `saveAsFavoriteOpen` / `favoriteName` state variables to `openSavePlan` / `savePlan` / `savePlanOpen` / `planName`. Rewire the click handler to `savedPlansStore.save(planName, plan.items)`. The modal heading changes from "Favorit speichern" to "Plan speichern"; the `aria-label` becomes "Plan speichern"; placeholder copy stays "Name (z.B. Mörgeli-Plausch)".
+2. [x] Relabel the inline `★ Favorit` button on the plan screen to `★ Plan-Vorlage`. Rename the `favoritesSheetOpen` state to `savedPlansSheetOpen`, the `appendFavorite` handler to `appendSavedPlan`, and the `openFavoritesSheet` handler to `openSavedPlansSheet`. Rewire the sheet to `savedPlansStore.all`, call `savedPlansStore.touch(id)` plus `sessionStore.appendFromSavedPlan(plan.items)` on tap, and rewrite the visible copy: dialog `aria-label` becomes "Plan-Vorlage hinzufügen", header reads "Plan-Vorlage hinzufügen", and the hint reads "Tippe auf eine Plan-Vorlage. Die Einträge werden an deinen Plan angehängt." (no em-dash).
 
 #### Phase 6: Polish
 
-1. [ ] Update `resources/specs/260424-2-grillmi-app.md` "Post-launch corrections" section: move "Favorit and Plan-Vorlage split" from Deferred to Done, summarize what shipped.
-2. [ ] Run `pnpm test:unit && pnpm test:components && pnpm test:e2e && pnpm lint && pnpm build`. All green.
-3. [ ] Walk through the Manual Verification checklist below on `pnpm dev`. Sign-off blocks merge.
+1. [x] Update `resources/specs/260424-2-grillmi-app.md` "Post-launch corrections" section: move "Favorit and Plan-Vorlage split" from Deferred to Done, summarize what shipped.
+2. [x] Run `pnpm test:unit && pnpm test:components && pnpm test:e2e && pnpm lint && pnpm build`. All green.
+3. [x] Walk through the Manual Verification checklist below on `pnpm dev`. Sign-off blocks merge.
 
 ---
 
@@ -148,43 +148,43 @@ Tests are implementation tasks. Every checkbox below is part of Phase 2-5 work a
 
 ### Unit Tests (`tests/unit/*.test.ts`)
 
-1. [ ] `savedPlansStore.test.ts` (renamed from `favoritesStore.test.ts`):
+1. [x] `savedPlansStore.test.ts` (renamed from `favoritesStore.test.ts`):
    - `test_save_saved_plan` saves an item list as a SavedPlan and persists.
    - `test_rename_saved_plan` renames in IDB and in-memory.
    - `test_delete_saved_plan` removes from both.
    - `test_save_saved_plan_persists_multiple_items` (renamed from `test_load_favorite_as_plan`) saves a SavedPlan with two PlannedItem entries and asserts both round-trip through IDB.
-2. [ ] `favoritesStore.test.ts` (new):
+2. [x] `favoritesStore.test.ts` (new):
    - `test_save_favorite_persists_single_item` saves a configured grillable, reads it back.
    - `test_rename_favorite` updates the name in IDB.
    - `test_delete_favorite` removes from IDB.
    - `test_touch_favorite_updates_last_used` advances lastUsedEpoch on touch and reorders the list.
    - `test_favorites_init_returns_empty_list_on_fresh_db` confirms first-run path.
-3. [ ] `db.migration.test.ts` (new). Each test starts by replacing `globalThis.indexedDB` with a fresh `new IDBFactory()` and calling `__resetForTests()`, mirroring the existing `tests/unit/favoritesStore.test.ts` setup. Cases:
+3. [x] `db.migration.test.ts` (new). Each test starts by replacing `globalThis.indexedDB` with a fresh `new IDBFactory()` and calling `__resetForTests()`, mirroring the existing `tests/unit/favoritesStore.test.ts` setup. Cases:
    - `test_v1_to_v2_moves_records_into_plans` opens `grillmi` at version 1 manually with the v1 upgrade path (creating only `sessions / favorites / settings`), writes two SavedPlan-shaped records into `favorites` keyed by id, closes the connection. Then calls `getDB()` (which opens at v2). Asserts: `plans` contains both records keyed by id; the new `favorites` store exists and is empty.
    - `test_v1_to_v2_drops_old_favorites_store_shape` writes a v1-shaped record (with `items: PlannedItem[]`), runs the migration, then asserts that no record matching the old shape remains in any store (the moved records live in `plans`; the new `favorites` store rejects v1-shaped writes via the new `favoriteSchema`).
    - `test_fresh_install_at_v2_creates_all_stores` opens `getDB()` directly with no prior data and asserts all four object stores exist and are empty.
 
 ### Component Tests (`tests/components/*.test.ts`)
 
-1. [ ] `AddItemSheet.test.ts` (additions). Each new test uses the existing `open(...)` helper with `initial: null` so the tab pivot renders. Where store seeding is needed, call `await favoritesStore.save(...)` before render (and `favoritesStore._reset()` plus `__resetForTests()` plus a fresh `IDBFactory` in `beforeEach`, mirroring the unit-test pattern). Cases:
+1. [x] `AddItemSheet.test.ts` (additions). Each new test uses the existing `open(...)` helper with `initial: null` so the tab pivot renders. Where store seeding is needed, call `await favoritesStore.save(...)` before render (and `favoritesStore._reset()` plus `__resetForTests()` plus a fresh `IDBFactory` in `beforeEach`, mirroring the unit-test pattern). Cases:
    - `test_first_step_renders_categories_and_favorites_tabs` opens with no Favoriten and asserts both tab buttons (`Kategorie`, `Favoriten`) exist when `step === 'category'`.
    - `test_favorites_tab_hidden_in_edit_mode` opens with `initial` set and asserts neither tab button is present.
    - `test_favorites_tab_lists_saved_favorites` seeds two Favoriten via `favoritesStore.save`, taps the Favoriten tab, asserts each row's name and summary text are rendered.
    - `test_favorites_tab_empty_state` opens with no Favoriten, taps the Favoriten tab, asserts the empty-state copy and the "Zur Kategorie" CTA. Tapping "Zur Kategorie" returns the body to the category grid.
    - `test_tap_favorite_commits_and_closes_sheet` seeds one Favorit, mocks `oncommit` and `onclose`, taps the row, asserts `oncommit` fires once with the PlannedItem-shaped payload (no `id`, no `name`, no `*Epoch` fields) and `onclose` fires once.
    - `test_specs_step_inline_save_favorite` walks Kategorie → Stück → Specs, stubs `favoritesStore.save`, types a name, dispatches Enter on the input, asserts `save` was called once with the full Favorit shape and that the sheet remained open (`onclose` did not fire).
-2. [ ] `SavedPlanCard.test.ts` (renamed from `FavoriteCard.test.ts` if such test exists; otherwise add):
+2. [x] `SavedPlanCard.test.ts` (renamed from `FavoriteCard.test.ts` if such test exists; otherwise add):
    - `test_renders_name_and_item_count` confirms the card.
    - `test_long_press_opens_action_sheet` confirms the umbenennen / löschen affordance.
 
 ### E2E Tests (`tests/e2e/*.spec.ts`)
 
-1. [ ] `saved-plans.spec.ts` (renamed from `favorites.spec.ts`):
+1. [x] `saved-plans.spec.ts` (renamed from `favorites.spec.ts`):
    - `test_save_and_reload_saved_plan` saves a session as a Plan-Vorlage, navigates to `/plans`, taps it, sees the Plan pre-populated. Existing assertion, just routed through the renamed action.
-2. [ ] `favorites.spec.ts` (new):
+2. [x] `favorites.spec.ts` (new):
    - `test_save_favorite_from_sheet` opens the AddItemSheet, configures a cut, taps "Als Favorit speichern", names it, asserts the Favoriten tab now lists it.
    - `test_load_favorite_into_plan` opens the AddItemSheet, taps the Favoriten tab, taps a seeded Favorit, asserts the sheet closes and the plan now includes the configured item.
-3. [ ] `migration.spec.ts` (new, runs against a real-browser IDB):
+3. [x] `migration.spec.ts` (new, runs against a real-browser IDB):
    - `test_v1_database_migrates_to_v2_on_app_open` clears IDB, opens `grillmi` at version 1 with the v1 upgrade callback (creates `sessions / favorites / settings`), seeds one v1 Favorit-shaped record (a SavedPlan with name + items array) into the `favorites` store, closes the connection. Then `await page.goto('/')`, dismisses the first-run notice via the existing `dismissFirstRun` helper, navigates to `/plans`, asserts the seeded record renders as a Plan-Vorlage card with its original name and item count.
 
 ### Manual Verification

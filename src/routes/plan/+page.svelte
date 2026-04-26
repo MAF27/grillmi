@@ -7,15 +7,16 @@
 	import AddItemSheet from '$lib/components/AddItemSheet.svelte'
 	import { sessionStore } from '$lib/stores/sessionStore.svelte'
 	import { favoritesStore } from '$lib/stores/favoritesStore.svelte'
+	import { savedPlansStore } from '$lib/stores/savedPlansStore.svelte'
 	import { schedule } from '$lib/scheduler/schedule'
 	import { formatHHMM } from '$lib/util/format'
 	import type { PlannedItem } from '$lib/models'
 
 	let sheetOpen = $state(false)
 	let editing = $state<PlannedItem | null>(null)
-	let saveAsFavoriteOpen = $state(false)
-	let favoriteName = $state('')
-	let favoritesSheetOpen = $state(false)
+	let savePlanOpen = $state(false)
+	let planName = $state('')
+	let savedPlansSheetOpen = $state(false)
 
 	const plan = $derived(sessionStore.plan)
 	let now = $state(Date.now())
@@ -41,6 +42,7 @@
 		;(async () => {
 			await sessionStore.init()
 			await favoritesStore.init()
+			await savedPlansStore.init()
 			if (sessionStore.session) goto('/session')
 		})()
 		return () => clearInterval(tickId)
@@ -87,28 +89,28 @@
 		await goto('/session')
 	}
 
-	function openSaveFavorite() {
-		favoriteName = ''
-		saveAsFavoriteOpen = true
+	function openSavePlan() {
+		planName = ''
+		savePlanOpen = true
 	}
 
-	async function saveFavorite() {
-		const name = favoriteName.trim()
+	async function savePlan() {
+		const name = planName.trim()
 		if (!name) return
-		await favoritesStore.save(name, plan.items)
-		saveAsFavoriteOpen = false
+		await savedPlansStore.save(name, plan.items)
+		savePlanOpen = false
 	}
 
-	function openFavoritesSheet() {
-		favoritesSheetOpen = true
+	function openSavedPlansSheet() {
+		savedPlansSheetOpen = true
 	}
 
-	function appendFavorite(id: string) {
-		const fav = favoritesStore.all.find(f => f.id === id)
-		if (!fav) return
-		void favoritesStore.touch(id)
-		sessionStore.appendFromFavorite(fav.items)
-		favoritesSheetOpen = false
+	function appendSavedPlan(id: string) {
+		const sp = savedPlansStore.all.find(p => p.id === id)
+		if (!sp) return
+		void savedPlansStore.touch(id)
+		sessionStore.appendFromSavedPlan(sp.items)
+		savedPlansSheetOpen = false
 	}
 </script>
 
@@ -159,8 +161,8 @@
 		<div class="section-header">
 			<h2>Auf den Grill</h2>
 			<div class="section-actions">
-				{#if favoritesStore.all.length > 0}
-					<Button variant="ghost" size="sm" onclick={openFavoritesSheet}>★ Favorit</Button>
+				{#if savedPlansStore.all.length > 0}
+					<Button variant="ghost" size="sm" onclick={openSavedPlansSheet}>★ Plan-Vorlage</Button>
 				{/if}
 				<Button variant="ghost" size="sm" onclick={openAddSheet}>+ Gericht</Button>
 			</div>
@@ -185,7 +187,7 @@
 
 	{#if plan.items.length > 0}
 		<div class="favorite-row">
-			<Button variant="ghost" size="sm" onclick={openSaveFavorite}>Als Favorit speichern</Button>
+			<Button variant="ghost" size="sm" onclick={openSavePlan}>Plan speichern</Button>
 		</div>
 	{/if}
 
@@ -205,20 +207,20 @@
 		oncommit={commit} />
 {/if}
 
-{#if favoritesSheetOpen}
-	<div class="scrim" role="presentation" onclick={() => (favoritesSheetOpen = false)}></div>
-	<div class="fav-sheet" role="dialog" aria-modal="true" aria-label="Favorit hinzufügen">
+{#if savedPlansSheetOpen}
+	<div class="scrim" role="presentation" onclick={() => (savedPlansSheetOpen = false)}></div>
+	<div class="fav-sheet" role="dialog" aria-modal="true" aria-label="Plan-Vorlage hinzufügen">
 		<header class="fav-sheet-header">
-			<h2>Favorit hinzufügen</h2>
-			<button class="dismiss" onclick={() => (favoritesSheetOpen = false)} aria-label="Schliessen">×</button>
+			<h2>Plan-Vorlage hinzufügen</h2>
+			<button class="dismiss" onclick={() => (savedPlansSheetOpen = false)} aria-label="Schliessen">×</button>
 		</header>
-		<p class="fav-sheet-hint">Tippe auf einen Favoriten — die Einträge werden an deinen Plan angehängt.</p>
+		<p class="fav-sheet-hint">Tippe auf eine Plan-Vorlage. Die Einträge werden an deinen Plan angehängt.</p>
 		<ul class="fav-list">
-			{#each favoritesStore.all as fav (fav.id)}
+			{#each savedPlansStore.all as sp (sp.id)}
 				<li>
-					<button class="fav-row" onclick={() => appendFavorite(fav.id)}>
-						<span class="fav-name">{fav.name}</span>
-						<span class="fav-count">{fav.items.length} Einträge</span>
+					<button class="fav-row" onclick={() => appendSavedPlan(sp.id)}>
+						<span class="fav-name">{sp.name}</span>
+						<span class="fav-count">{sp.items.length} Einträge</span>
 					</button>
 				</li>
 			{/each}
@@ -226,14 +228,14 @@
 	</div>
 {/if}
 
-{#if saveAsFavoriteOpen}
-	<div class="scrim" role="presentation" onclick={() => (saveAsFavoriteOpen = false)}></div>
-	<div class="favorite-modal" role="dialog" aria-modal="true" aria-label="Favorit speichern">
-		<h3>Favorit speichern</h3>
-		<input type="text" bind:value={favoriteName} maxlength="40" placeholder="Name (z.B. Mörgeli-Plausch)" />
+{#if savePlanOpen}
+	<div class="scrim" role="presentation" onclick={() => (savePlanOpen = false)}></div>
+	<div class="favorite-modal" role="dialog" aria-modal="true" aria-label="Plan speichern">
+		<h3>Plan speichern</h3>
+		<input type="text" bind:value={planName} maxlength="40" placeholder="Name (z.B. Mörgeli-Plausch)" />
 		<div class="row-buttons">
-			<Button variant="ghost" onclick={() => (saveAsFavoriteOpen = false)}>Abbrechen</Button>
-			<Button variant="primary" onclick={saveFavorite}>Speichern</Button>
+			<Button variant="ghost" onclick={() => (savePlanOpen = false)}>Abbrechen</Button>
+			<Button variant="primary" onclick={savePlan}>Speichern</Button>
 		</div>
 	</div>
 {/if}

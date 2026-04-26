@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { TIMINGS, findRow } from '$lib/data/timings'
-	import type { PlannedItem } from '$lib/models'
+	import type { PlannedItem, Favorite } from '$lib/models'
 	import { formatDuration } from '$lib/util/format'
+	import { favoritesStore } from '$lib/stores/favoritesStore.svelte'
 	import Button from './Button.svelte'
 
 	type Step = 'category' | 'cut' | 'specs'
+	type Tab = 'categories' | 'favorites'
 
 	interface Props {
 		open: boolean
@@ -16,11 +18,15 @@
 	let { open, initial = null, onclose, oncommit }: Props = $props()
 
 	let step = $state<Step>('category')
+	let tab = $state<Tab>('categories')
 	let categorySlug = $state<string | null>(null)
 	let cutSlug = $state<string | null>(null)
 	let thicknessCm = $state<number | null>(null)
 	let prepLabel = $state<string | null>(null)
 	let doneness = $state<string | null>(null)
+
+	let saveFavoriteOpen = $state(false)
+	let favoriteName = $state('')
 
 	const category = $derived(categorySlug ? (TIMINGS.categories.find(c => c.slug === categorySlug) ?? null) : null)
 	const cut = $derived(category && cutSlug ? (category.cuts.find(c => c.slug === cutSlug) ?? null) : null)
@@ -71,19 +77,24 @@
 			thicknessCm = initial.thicknessCm
 			prepLabel = initial.prepLabel
 			doneness = initial.doneness
+			tab = 'categories'
 			step = specsHasAnything ? 'specs' : 'cut'
 		} else {
 			reset()
+			void favoritesStore.init()
 		}
 	})
 
 	function reset() {
 		step = 'category'
+		tab = 'categories'
 		categorySlug = null
 		cutSlug = null
 		thicknessCm = null
 		prepLabel = null
 		doneness = null
+		saveFavoriteOpen = false
+		favoriteName = ''
 	}
 
 	function pickCategory(slug: string) {
@@ -130,6 +141,10 @@
 
 	function back() {
 		if (step === 'category') {
+			if (tab === 'favorites') {
+				tab = 'categories'
+				return
+			}
 			onclose()
 			return
 		}
@@ -166,6 +181,94 @@
 			heatZone: matchedRow.heatZone,
 		})
 		reset()
+	}
+
+	function applyFavorite(fav: Favorite) {
+		oncommit({
+			categorySlug: fav.categorySlug,
+			cutSlug: fav.cutSlug,
+			thicknessCm: fav.thicknessCm,
+			prepLabel: fav.prepLabel,
+			doneness: fav.doneness,
+			label: fav.label,
+			cookSeconds: fav.cookSeconds,
+			restSeconds: fav.restSeconds,
+			flipFraction: fav.flipFraction,
+			idealFlipPattern: fav.idealFlipPattern,
+			heatZone: fav.heatZone,
+		})
+		void favoritesStore.touch(fav.id)
+		onclose()
+	}
+
+	let pressTimer: ReturnType<typeof setTimeout> | null = null
+	let longPressed = false
+
+	function favPointerdown(fav: Favorite) {
+		longPressed = false
+		pressTimer = setTimeout(() => {
+			longPressed = true
+			pressTimer = null
+			handleFavoriteLongPress(fav)
+		}, 500)
+	}
+	function favPointerup(fav: Favorite) {
+		if (pressTimer) {
+			clearTimeout(pressTimer)
+			pressTimer = null
+			if (!longPressed) applyFavorite(fav)
+		}
+	}
+	function favPointercancel() {
+		if (pressTimer) {
+			clearTimeout(pressTimer)
+			pressTimer = null
+		}
+	}
+
+	function handleFavoriteLongPress(fav: Favorite) {
+		const action = window.prompt(`${fav.name}\n\n1. Umbenennen\n2. Löschen\n\nNummer eingeben:`)
+		if (action === '1') {
+			const newName = window.prompt('Neuer Name:', fav.name)
+			if (newName?.trim()) void favoritesStore.rename(fav.id, newName.trim())
+		}
+		if (action === '2' && window.confirm(`Favorit "${fav.name}" wirklich löschen?`)) {
+			void favoritesStore.remove(fav.id)
+		}
+	}
+
+	function openSaveFavorite() {
+		favoriteName = ''
+		saveFavoriteOpen = true
+	}
+
+	async function confirmSaveFavorite() {
+		const name = favoriteName.trim()
+		if (!name || !cut || !category || !matchedRow) return
+		await favoritesStore.save({
+			name,
+			categorySlug: category.slug,
+			cutSlug: cut.slug,
+			thicknessCm,
+			prepLabel,
+			doneness,
+			label: autoLabel(),
+			cookSeconds: computedSeconds,
+			restSeconds: matchedRow.restSeconds,
+			flipFraction: matchedRow.flipFraction,
+			idealFlipPattern: matchedRow.idealFlipPattern,
+			heatZone: matchedRow.heatZone,
+		})
+		saveFavoriteOpen = false
+		favoriteName = ''
+	}
+
+	function favoriteSummary(fav: Favorite): string {
+		return fav.label ?? fav.cutSlug
+	}
+
+	function favoriteLastUsed(fav: Favorite): string {
+		return new Date(fav.lastUsedEpoch).toLocaleDateString('de-CH')
 	}
 
 	function formatThickness(cm: number): string {
@@ -218,6 +321,8 @@
 		if (cut.hasDoneness && doneness === null) return false
 		return true
 	})
+
+	const showTabs = $derived(open && step === 'category' && initial === null)
 </script>
 
 {#if open}
@@ -234,8 +339,50 @@
 			<button class="dismiss" onclick={onclose} aria-label="Schliessen">×</button>
 		</header>
 
+		{#if showTabs}
+			<div class="tabs" role="tablist" aria-label="Modus">
+				<button
+					type="button"
+					role="tab"
+					aria-selected={tab === 'categories'}
+					class:active={tab === 'categories'}
+					onclick={() => (tab = 'categories')}>Kategorie</button>
+				<button
+					type="button"
+					role="tab"
+					aria-selected={tab === 'favorites'}
+					class:active={tab === 'favorites'}
+					onclick={() => (tab = 'favorites')}>Favoriten</button>
+			</div>
+		{/if}
+
 		<div class="body">
-			{#if step === 'category'}
+			{#if step === 'category' && tab === 'favorites'}
+				{#if favoritesStore.all.length === 0}
+					<div class="empty-state">
+						<p>Du hast noch keine Favoriten. Stelle ein Stück zusammen und speichere es unten.</p>
+						<Button variant="ghost" onclick={() => (tab = 'categories')}>Zur Kategorie</Button>
+					</div>
+				{:else}
+					<ul class="fav-list">
+						{#each favoritesStore.all as fav (fav.id)}
+							<li>
+								<button
+									type="button"
+									class="fav-row"
+									onpointerdown={() => favPointerdown(fav)}
+									onpointerup={() => favPointerup(fav)}
+									onpointerleave={favPointercancel}
+									onpointercancel={favPointercancel}>
+									<span class="fav-name">{fav.name}</span>
+									<span class="fav-summary">{favoriteSummary(fav)}</span>
+									<span class="fav-last">Zuletzt: {favoriteLastUsed(fav)}</span>
+								</button>
+							</li>
+						{/each}
+					</ul>
+				{/if}
+			{:else if step === 'category'}
 				<div class="grid">
 					{#each TIMINGS.categories as c (c.slug)}
 						<button class="tile" onclick={() => pickCategory(c.slug)}>{c.name}</button>
@@ -298,6 +445,23 @@
 				{/if}
 			</div>
 			{#if step === 'specs'}
+				{#if saveFavoriteOpen}
+					<input
+						type="text"
+						class="favorite-input"
+						bind:value={favoriteName}
+						maxlength="60"
+						placeholder="Name speichern"
+						aria-label="Favorit-Name"
+						onkeydown={e => {
+							if (e.key === 'Enter') {
+								e.preventDefault()
+								void confirmSaveFavorite()
+							}
+						}} />
+				{:else if initial === null}
+					<Button variant="ghost" size="sm" disabled={!specsComplete} onclick={openSaveFavorite}>Als Favorit speichern</Button>
+				{/if}
 				<Button variant="primary" fullWidth disabled={!specsComplete} onclick={commit}>Übernehmen</Button>
 			{/if}
 		</footer>
@@ -375,6 +539,29 @@
 		font-size: var(--font-size-2xl);
 		cursor: pointer;
 	}
+	.tabs {
+		display: flex;
+		gap: 2px;
+		margin: var(--space-3) var(--space-4) 0;
+		background: var(--color-bg-surface);
+		border: 1px solid var(--color-border-subtle);
+		border-radius: var(--radius-md);
+		padding: 2px;
+	}
+	.tabs button {
+		flex: 1;
+		min-height: 40px;
+		background: transparent;
+		border: none;
+		color: var(--color-fg-base);
+		font: inherit;
+		border-radius: calc(var(--radius-md) - 2px);
+		cursor: pointer;
+	}
+	.tabs button.active {
+		background: var(--color-accent-default);
+		color: var(--color-fg-on-accent);
+	}
 	.body {
 		flex: 1;
 		overflow: auto;
@@ -429,6 +616,53 @@
 	}
 	.list .row.active {
 		border-color: var(--color-accent-default);
+	}
+	.fav-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2);
+	}
+	.fav-row {
+		width: 100%;
+		text-align: left;
+		padding: var(--space-3) var(--space-4);
+		min-height: 64px;
+		background: var(--color-bg-surface);
+		color: var(--color-fg-base);
+		border: 1px solid var(--color-border-subtle);
+		border-radius: var(--radius-md);
+		font: inherit;
+		cursor: pointer;
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+	.fav-name {
+		font-size: var(--font-size-md);
+		font-weight: var(--font-weight-semibold);
+	}
+	.fav-summary {
+		font-size: var(--font-size-sm);
+		color: var(--color-fg-muted);
+	}
+	.fav-last {
+		font-size: var(--font-size-xs);
+		color: var(--color-fg-subtle);
+	}
+	.empty-state {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-3);
+		align-items: center;
+		text-align: center;
+		padding: var(--space-6) var(--space-4);
+		color: var(--color-fg-muted);
+	}
+	.empty-state p {
+		margin: 0;
 	}
 	.stepper {
 		display: flex;
@@ -514,5 +748,14 @@
 	.cook-summary strong {
 		color: var(--color-fg-base);
 		font-family: var(--font-mono);
+	}
+	.favorite-input {
+		min-height: 44px;
+		padding: var(--space-3);
+		background: var(--color-bg-input);
+		border: 1px solid var(--color-border-default);
+		border-radius: var(--radius-md);
+		color: var(--color-fg-base);
+		font-size: var(--font-size-md);
 	}
 </style>
