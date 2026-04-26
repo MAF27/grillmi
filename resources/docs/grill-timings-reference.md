@@ -151,7 +151,6 @@ Sources: [SE] 54 °C Kerntemperatur, 6–10 min total. [Weber-DE] 6–8 min.
 
 Notes:
 
-- Marinaden (Limette, Soja, Chipotle, Chimichurri) lieben diesen Cut.
 - In etwa 5 mm dicke Streifen quer zur Faser schneiden; vor dem Garen Faserrichtung identifizieren, sie ist offensichtlich.
 - Niemals über medium hinaus, Kollagen hat in einem dünnen Steak keine Zeit zum Schmelzen.
 
@@ -254,23 +253,23 @@ Notes:
 - Am Ende 60 s auf den Knochen stellen für Aromaübertragung.
 - Bei 60 °C ziehen, nach Ruhezeit 63 °C.
 
-### Kalbshaxe (Veal shank, bone-in)
+### Kalbshaxe (Veal shank, cross-cut / Beinscheibe / Osso buco)
 
-Klassischer Schmorbraten am Grill. Kollagen schmilzt erst ab ~70 °C, deshalb low-and-slow im indirekten Bereich. ~1.0–1.5 kg ganz, bone-in.
+Die ganze Haxe (1.0–1.5 kg) ist ein Schmorbraten und gehört in den Topf, nicht auf den Rost. Was auf den Grill kommt, ist die quergeschnittene Beinscheibe (Osso-buco-Schnitt) mit Knochen in der Mitte: 2–3 cm dick, direkt, in 15–20 min fertig. Beim Metzger als "Kalbsbeinscheibe" oder "Osso buco" bestellen.
 
-| Thickness | Doneness  | Heat zone         | Grate temp | Per side | Total   | Turns              | Rest      |
-| --------- | --------- | ----------------- | ---------- | -------- | ------- | ------------------ | --------- |
-| -         | medium    | Indirekt, niedrig | 140 °C     | 75 min   | 150 min | alle 30 min drehen | 15 min    |
-| -         | well-done | Indirekt, niedrig | 140 °C     | 105 min  | 210 min | alle 30 min drehen | 15–20 min |
+| Thickness | Doneness  | Heat zone          | Grate temp | Per side | Total  | Turns                    | Rest  |
+| --------- | --------- | ------------------ | ---------- | -------- | ------ | ------------------------ | ----- |
+| 2 cm      | well-done | Direkt, Deckel zu  | 220 °C     | 7 min    | 14 min | Einmal halbzeitig wenden | 5 min |
+| 3 cm      | well-done | Direkt zu indirekt | 220 °C     | 10 min   | 20 min | Einmal halbzeitig wenden | 5 min |
 
-Sources: [Weber-Grill-Academy] "Schulter & Haxe / niedrig & langsam, 130–140 °C". [Meathead] AmazingRibs collagen guide (≥75 °C Kerntemperatur für scheibenfähig, ≥85 °C für fall-off-the-bone).
+Sources: [Weber-Grill-Academy] "Beinscheibe / Osso buco direkt, 8–10 min pro Seite". [Meathead] AmazingRibs collagen guide (≥70 °C Kerntemperatur für zarte Beinscheibe).
 
 Notes:
 
-- Kerntemperatur 75 °C für scheibenfähig, 85–90 °C für "fall off the bone".
-- Mindestens 1 h vorher salzen; mit Rosmarin, Knoblauch und Senf einreiben.
-- Letzte 8–10 min direkt für Kruste; aufpassen, dass die Kollagen-Glasur nicht verbrennt.
-- Mit etwas Bier oder Bouillon in der Tropfschale unten — der Dampf hält die Haxe saftig.
+- Sehnen rundum mit der Spitze des Messers an 3–4 Stellen einschneiden, sonst zieht sich die Scheibe schüsselförmig zusammen.
+- Salzen mindestens 30 min vorher.
+- Kerntemperatur 65–70 °C — Beinscheiben sind erst ab dieser Temperatur richtig zart.
+- Für die ganze Haxe: niedrig-und-langsam-Schmorbraten im Topf oder Smoker; kein direkter Grill.
 
 ---
 
@@ -480,7 +479,6 @@ Sources: [Migros-Grilltimer].
 Notes:
 
 - NICHT über medium-rare hinaus garen, Pferd hat etwa 3 % Fett und wird zum Stein.
-- In Rotwein, Wacholder und Lorbeer für Tiefe marinieren.
 
 ---
 
@@ -571,7 +569,6 @@ Notes:
 
 - Fett rautenförmig einritzen, aber nicht ins Fleisch schneiden.
 - Auf einer kühlen Zone starten, damit das Fett ausläuft, bevor die Haut verbrennt.
-- Fett für Confit-Kartoffeln aufheben, niemals wegwerfen.
 
 ### Trutenschnitzel (Turkey cutlet)
 
@@ -735,7 +732,6 @@ Sources: [Migros-Grilltimer].
 Notes:
 
 - Käse 30 s vor Schluss auflegen, Deckel zu zum Schmelzen.
-- USDA und Schweizer Lebensmittelsicherheit empfehlen 70 °C für Hackfleisch, weil das Mahlen Oberflächenkeime im Inneren verteilt. Medium-rare bei zu Hause selbst gemahlenem Vollmuskel ist ein anderes Risikoprofil. Grillmi setzt für jede Hackfleisch-UI standardmässig 70 °C Pull und bietet einen Override "Nur selbst gemahlen".
 
 ### Mixed-Grill Spiessli (Gemischte Spiessli)
 
@@ -844,8 +840,6 @@ Notes:
 Sources: [Weber-US] Schwertfisch 3 cm 8–10 min. [BBCGF] 6–8 min für 2 cm.
 
 Notes:
-
-- Sehr fehlerverzeihend für einen Fisch, dichte und fleischige Textur.
 
 ### Riesencrevetten (King prawns, shell-on)
 

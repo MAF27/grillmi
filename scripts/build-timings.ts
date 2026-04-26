@@ -248,13 +248,9 @@ function parseDurationRange(raw: string): [number, number] | null {
 	const hRange = /(\d+(?:\.\d+)?)\s*[–-]\s*(\d+(?:\.\d+)?)\s*h(?!\w)/.exec(cleaned)
 	if (hRange) return [Math.round(parseFloat(hRange[1]) * 3600), Math.round(parseFloat(hRange[2]) * 3600)]
 	const hSingle = /(\d+(?:\.\d+)?)\s*h(?!\w)/.exec(cleaned)
-	if (hSingle) {
-		const v = Math.round(parseFloat(hSingle[1]) * 3600)
-		return [v, v]
-	}
+	if (hSingle) return [Math.round(parseFloat(hSingle[1]) * 3600), Math.round(parseFloat(hSingle[1]) * 3600)]
 
-	// Compound "X min Y s" / "X min Y sec" — parse before plain "X min" so the
-	// trailing seconds aren't dropped. Examples: "2 min 30 s", "1 min 15 s".
+	// Compound "X min Y s" — parse before plain "X min" so trailing seconds aren't dropped.
 	const minSec = /(\d+)\s*min\s*(\d+)\s*s(?!ide)/.exec(cleaned)
 	if (minSec) {
 		const total = parseInt(minSec[1], 10) * 60 + parseInt(minSec[2], 10)
@@ -267,21 +263,26 @@ function parseDurationRange(raw: string): [number, number] | null {
 
 	// Single "2 min"
 	const minSingle = /(\d+(?:\.\d+)?)\s*min/.exec(cleaned)
-	if (minSingle) {
-		const v = Math.round(parseFloat(minSingle[1]) * 60)
-		return [v, v]
-	}
+	if (minSingle) return [Math.round(parseFloat(minSingle[1]) * 60), Math.round(parseFloat(minSingle[1]) * 60)]
 
 	// Seconds range "90 s–2 min" already handled by min above; bare seconds:
 	const sRange = /(\d+(?:\.\d+)?)\s*[–-]\s*(\d+(?:\.\d+)?)\s*s(?!ide)/.exec(cleaned)
 	if (sRange) return [Math.round(parseFloat(sRange[1])), Math.round(parseFloat(sRange[2]))]
 	const sSingle = /(\d+(?:\.\d+)?)\s*s(?!ide)/.exec(cleaned)
-	if (sSingle) {
-		const v = Math.round(parseFloat(sSingle[1]))
-		return [v, v]
-	}
+	if (sSingle) return [Math.round(parseFloat(sSingle[1])), Math.round(parseFloat(sSingle[1]))]
 
 	return null
+}
+
+// "230 °C" / "290 °C+" / "120-140 °C". Range -> upper bound (typical target,
+// not the conservative floor).
+function parseGrateTemp(raw: string): number | null {
+	const c = (raw ?? '').replace(/\s+/g, ' ').trim()
+	if (!c || c === '-' || c === '—') return null
+	const range = /(\d+)\s*[–-]\s*(\d+)\s*°?C/.exec(c)
+	if (range) return parseInt(range[2], 10)
+	const single = /(\d+)\s*°?C/.exec(c)
+	return single ? parseInt(single[1], 10) : null
 }
 
 function parseRest(raw: string): number {
@@ -372,6 +373,9 @@ function parseCut(name: string, body: string[], stats: ParseStats): Cut | null {
 
 		const heatZone = pickColumn(row, 'Heat zone', 'Method').trim() || '—'
 
+		const grateTempRaw = pickColumn(row, 'Grate temp', 'Temperature', 'Temp')
+		const grateTempC = parseGrateTemp(grateTempRaw)
+
 		const thicknessRaw = pickColumn(
 			row,
 			'Thickness',
@@ -410,6 +414,7 @@ function parseCut(name: string, body: string[], stats: ParseStats): Cut | null {
 			idealFlipPattern: flip.pattern,
 			restSeconds,
 			heatZone,
+			grateTempC,
 			notes: note || null,
 		})
 	}

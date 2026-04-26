@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-26T20:05:32.742Z",
+  "generatedAt": "2026-04-26T20:38:20.398Z",
   "categories": [
     {
       "slug": "beef",
@@ -22,6 +22,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -34,6 +35,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -46,6 +48,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -58,6 +61,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -70,6 +74,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 480,
               "heatZone": "Reverse-Sear (indirekt zu direkt)",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -82,6 +87,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -94,6 +100,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -106,6 +113,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -118,6 +126,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -130,6 +139,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 480,
               "heatZone": "Reverse-Sear (indirekt zu direkt)",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -142,6 +152,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -154,6 +165,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -166,6 +178,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -178,6 +191,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -190,6 +204,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 480,
               "heatZone": "Reverse-Sear (indirekt zu direkt)",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -202,6 +217,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -214,6 +230,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -226,6 +243,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -238,6 +256,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -250,6 +269,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 480,
               "heatZone": "Reverse-Sear (indirekt zu direkt)",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -275,6 +295,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -287,6 +308,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -299,6 +321,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -311,6 +334,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -323,6 +347,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 480,
               "heatZone": "Reverse-Sear (indirekt zu direkt)",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -335,6 +360,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -347,6 +373,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -359,6 +386,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -371,6 +399,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -383,6 +412,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 480,
               "heatZone": "Reverse-Sear (indirekt zu direkt)",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -395,6 +425,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -407,6 +438,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -419,6 +451,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -431,6 +464,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -443,6 +477,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 480,
               "heatZone": "Reverse-Sear (indirekt zu direkt)",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -455,6 +490,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -467,6 +503,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -479,6 +516,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -491,6 +529,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -503,6 +542,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 480,
               "heatZone": "Reverse-Sear (indirekt zu direkt)",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -527,6 +567,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -539,6 +580,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -551,6 +593,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -563,6 +606,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -587,6 +631,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 240,
               "notes": null
             },
             {
@@ -599,6 +644,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 240,
               "notes": null
             }
           ],
@@ -623,6 +669,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt hoch",
+              "grateTempC": 290,
               "notes": null
             },
             {
@@ -635,11 +682,11 @@
               "idealFlipPattern": "once",
               "restSeconds": 480,
               "heatZone": "Direkt hoch",
+              "grateTempC": 290,
               "notes": null
             }
           ],
           "notes": [
-            "Marinaden (Limette, Soja, Chipotle, Chimichurri) lieben diesen Cut.",
             "In etwa 5 mm dicke Streifen quer zur Faser schneiden; vor dem Garen Faserrichtung identifizieren, sie ist offensichtlich.",
             "Niemals über medium hinaus, Kollagen hat in einem dünnen Steak keine Zeit zum Schmelzen."
           ]
@@ -660,6 +707,7 @@
               "idealFlipPattern": "every-60s",
               "restSeconds": 600,
               "heatZone": "Reverse-Sear",
+              "grateTempC": 290,
               "notes": null
             },
             {
@@ -672,6 +720,7 @@
               "idealFlipPattern": "every-60s",
               "restSeconds": 600,
               "heatZone": "Reverse-Sear",
+              "grateTempC": 290,
               "notes": null
             }
           ],
@@ -696,6 +745,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt hoch",
+              "grateTempC": 290,
               "notes": null
             },
             {
@@ -708,6 +758,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt hoch",
+              "grateTempC": 290,
               "notes": null
             },
             {
@@ -720,6 +771,7 @@
               "idealFlipPattern": "every-60s",
               "restSeconds": 360,
               "heatZone": "Reverse-Sear",
+              "grateTempC": 290,
               "notes": null
             }
           ],
@@ -741,6 +793,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 240,
               "heatZone": "Direkt hoch",
+              "grateTempC": 290,
               "notes": null
             },
             {
@@ -753,6 +806,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt hoch",
+              "grateTempC": 290,
               "notes": null
             },
             {
@@ -765,6 +819,7 @@
               "idealFlipPattern": "every-60s",
               "restSeconds": 360,
               "heatZone": "Reverse-Sear",
+              "grateTempC": 290,
               "notes": null
             }
           ],
@@ -789,6 +844,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 480,
               "heatZone": "Indirekt, niedrig",
+              "grateTempC": 200,
               "notes": null
             },
             {
@@ -801,6 +857,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 480,
               "heatZone": "Indirekt, niedrig",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -825,12 +882,12 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
               "notes": null
             }
           ],
           "notes": [
-            "Käse 30 s vor Schluss auflegen, Deckel zu zum Schmelzen.",
-            "USDA und Schweizer Lebensmittelsicherheit empfehlen 70 °C für Hackfleisch, weil das Mahlen Oberflächenkeime im Inneren verteilt. Medium-rare bei zu Hause selbst gemahlenem Vollmuskel ist ein anderes Risikoprofil. Grillmi setzt für jede Hackfleisch-UI standardmässig 70 °C Pull und bietet einen Override \"Nur selbst gemahlen\"."
+            "Käse 30 s vor Schluss auflegen, Deckel zu zum Schmelzen."
           ]
         }
       ]
@@ -855,6 +912,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -867,6 +925,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -879,6 +938,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -891,6 +951,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -915,6 +976,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -927,6 +989,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -939,6 +1002,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -951,6 +1015,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -960,41 +1025,43 @@
           ]
         },
         {
-          "slug": "kalbshaxe-veal-shank-bone-in",
+          "slug": "kalbshaxe-veal-shank-cross-cut-beinscheibe-osso-buco",
           "name": "Kalbshaxe",
-          "hasThickness": false,
+          "hasThickness": true,
           "hasDoneness": true,
           "rows": [
             {
-              "thicknessCm": null,
-              "prepLabel": "-",
-              "doneness": "medium",
-              "cookSecondsMin": 9000,
-              "cookSecondsMax": 9000,
+              "thicknessCm": 2,
+              "prepLabel": null,
+              "doneness": "well-done",
+              "cookSecondsMin": 840,
+              "cookSecondsMax": 840,
               "flipFraction": 0.5,
-              "idealFlipPattern": "rotate",
-              "restSeconds": 900,
-              "heatZone": "Indirekt, niedrig",
+              "idealFlipPattern": "once",
+              "restSeconds": 300,
+              "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
               "notes": null
             },
             {
-              "thicknessCm": null,
-              "prepLabel": "-",
+              "thicknessCm": 3,
+              "prepLabel": null,
               "doneness": "well-done",
-              "cookSecondsMin": 12600,
-              "cookSecondsMax": 12600,
+              "cookSecondsMin": 1200,
+              "cookSecondsMax": 1200,
               "flipFraction": 0.5,
-              "idealFlipPattern": "rotate",
-              "restSeconds": 900,
-              "heatZone": "Indirekt, niedrig",
+              "idealFlipPattern": "once",
+              "restSeconds": 300,
+              "heatZone": "Direkt zu indirekt",
+              "grateTempC": 220,
               "notes": null
             }
           ],
           "notes": [
-            "Kerntemperatur 75 °C für scheibenfähig, 85–90 °C für \"fall off the bone\".",
-            "Mindestens 1 h vorher salzen; mit Rosmarin, Knoblauch und Senf einreiben.",
-            "Letzte 8–10 min direkt für Kruste; aufpassen, dass die Kollagen-Glasur nicht verbrennt.",
-            "Mit etwas Bier oder Bouillon in der Tropfschale unten — der Dampf hält die Haxe saftig."
+            "Sehnen rundum mit der Spitze des Messers an 3–4 Stellen einschneiden, sonst zieht sich die Scheibe schüsselförmig zusammen.",
+            "Salzen mindestens 30 min vorher.",
+            "Kerntemperatur 65–70 °C — Beinscheiben sind erst ab dieser Temperatur richtig zart.",
+            "Für die ganze Haxe: niedrig-und-langsam-Schmorbraten im Topf oder Smoker; kein direkter Grill."
           ]
         }
       ]
@@ -1019,6 +1086,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1031,6 +1099,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1043,6 +1112,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1055,6 +1125,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1067,6 +1138,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1079,6 +1151,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1091,6 +1164,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1103,6 +1177,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -1127,6 +1202,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1139,6 +1215,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -1163,6 +1240,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -1187,6 +1265,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 480,
               "heatZone": "Indirekt, niedrig",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -1208,6 +1287,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -1232,6 +1312,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -1257,6 +1338,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 600,
               "heatZone": "Indirekt",
+              "grateTempC": 120,
               "notes": null
             },
             {
@@ -1269,6 +1351,7 @@
               "idealFlipPattern": "rotate",
               "restSeconds": 600,
               "heatZone": "Indirekt",
+              "grateTempC": 135,
               "notes": null
             }
           ],
@@ -1290,6 +1373,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -1319,6 +1403,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1331,6 +1416,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1343,6 +1429,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1355,6 +1442,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -1376,6 +1464,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1388,6 +1477,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -1412,6 +1502,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1424,6 +1515,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1436,6 +1528,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1448,6 +1541,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1460,6 +1554,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1472,6 +1567,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1484,6 +1580,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1496,6 +1593,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -1517,6 +1615,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1529,6 +1628,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -1553,6 +1653,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 480,
               "heatZone": "Indirekt, niedrig",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -1583,6 +1684,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -1607,6 +1709,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -1631,6 +1734,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 250,
               "notes": null
             }
           ],
@@ -1655,6 +1759,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 600,
               "heatZone": "Indirekt, Brustseite oben",
+              "grateTempC": 200,
               "notes": null
             },
             {
@@ -1667,6 +1772,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 900,
               "heatZone": "Indirekt, Brustseite oben",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -1691,6 +1797,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1703,13 +1810,13 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             }
           ],
           "notes": [
             "Fett rautenförmig einritzen, aber nicht ins Fleisch schneiden.",
-            "Auf einer kühlen Zone starten, damit das Fett ausläuft, bevor die Haut verbrennt.",
-            "Fett für Confit-Kartoffeln aufheben, niemals wegwerfen."
+            "Auf einer kühlen Zone starten, damit das Fett ausläuft, bevor die Haut verbrennt."
           ]
         },
         {
@@ -1728,6 +1835,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
               "notes": null
             },
             {
@@ -1740,6 +1848,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -1769,6 +1878,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -1790,6 +1900,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 250,
               "notes": null
             }
           ],
@@ -1814,6 +1925,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -1835,6 +1947,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -1858,6 +1971,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -1882,6 +1996,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -1903,6 +2018,7 @@
               "idealFlipPattern": "every-60s",
               "restSeconds": 120,
               "heatZone": "Indirekt + direktes Finish",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -1924,6 +2040,7 @@
               "idealFlipPattern": "every-60s",
               "restSeconds": 0,
               "heatZone": "Indirekt + direktes Finish",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -1945,6 +2062,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt mittel",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -1966,6 +2084,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt mittel",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -1993,6 +2112,7 @@
               "idealFlipPattern": "rotate",
               "restSeconds": 120,
               "heatZone": "Direkt mittel",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2017,6 +2137,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -2044,6 +2165,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2068,6 +2190,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2092,6 +2215,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             },
             {
@@ -2104,6 +2228,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2128,6 +2253,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2152,6 +2278,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 250,
               "notes": null
             }
           ],
@@ -2175,6 +2302,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 120,
               "heatZone": "Direkt mittelhoch",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -2187,12 +2315,11 @@
               "idealFlipPattern": "once",
               "restSeconds": 120,
               "heatZone": "Direkt mittelhoch",
+              "grateTempC": 230,
               "notes": null
             }
           ],
-          "notes": [
-            "Sehr fehlerverzeihend für einen Fisch, dichte und fleischige Textur."
-          ]
+          "notes": []
         },
         {
           "slug": "riesencrevetten-king-prawns-shell-on",
@@ -2210,6 +2337,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2234,6 +2362,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -2261,6 +2390,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -2282,6 +2412,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -2309,6 +2440,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -2332,6 +2464,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2355,6 +2488,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2378,6 +2512,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -2399,6 +2534,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2420,6 +2556,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2441,6 +2578,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2464,6 +2602,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2485,6 +2624,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2508,6 +2648,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2529,6 +2670,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -2553,6 +2695,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2574,6 +2717,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2595,6 +2739,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2616,6 +2761,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2637,6 +2783,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 250,
               "notes": null
             }
           ],
@@ -2662,6 +2809,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2689,6 +2837,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2710,6 +2859,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2731,6 +2881,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2752,6 +2903,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2776,6 +2928,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2797,6 +2950,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2820,6 +2974,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2841,6 +2996,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2865,6 +3021,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2886,6 +3043,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2907,6 +3065,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2930,6 +3089,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2959,6 +3119,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -2971,6 +3132,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -2983,6 +3145,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -2995,12 +3158,12 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             }
           ],
           "notes": [
-            "NICHT über medium-rare hinaus garen, Pferd hat etwa 3 % Fett und wird zum Stein.",
-            "In Rotwein, Wacholder und Lorbeer für Tiefe marinieren."
+            "NICHT über medium-rare hinaus garen, Pferd hat etwa 3 % Fett und wird zum Stein."
           ]
         },
         {
@@ -3019,6 +3182,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             }
           ],

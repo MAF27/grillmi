@@ -53,6 +53,8 @@
 		else if (item.prepLabel && item.prepLabel !== '—' && item.prepLabel !== '-') parts.push(item.prepLabel)
 		if (item.doneness) parts.push(item.doneness)
 		if (parts.length === 0 && item.prepLabel) parts.push(item.prepLabel)
+		if (item.grateTempC) parts.push(`${item.grateTempC} °C`)
+		if (item.heatZone && item.heatZone !== '—' && item.heatZone !== '-') parts.push(item.heatZone)
 		return parts.join(' · ')
 	}
 

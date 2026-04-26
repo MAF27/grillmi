@@ -180,6 +180,7 @@
 			flipFraction: matchedRow.flipFraction,
 			idealFlipPattern: matchedRow.idealFlipPattern,
 			heatZone: matchedRow.heatZone,
+			grateTempC: matchedRow.grateTempC,
 		})
 		reset()
 	}
@@ -197,6 +198,7 @@
 			flipFraction: fav.flipFraction,
 			idealFlipPattern: fav.idealFlipPattern,
 			heatZone: fav.heatZone,
+			grateTempC: fav.grateTempC,
 		})
 		void favoritesStore.touch(fav.id)
 		onclose()
@@ -259,6 +261,7 @@
 			flipFraction: matchedRow.flipFraction,
 			idealFlipPattern: matchedRow.idealFlipPattern,
 			heatZone: matchedRow.heatZone,
+			grateTempC: matchedRow.grateTempC,
 		})
 		saveFavoriteOpen = false
 		favoriteName = ''
@@ -455,6 +458,19 @@
 						</div>
 					</section>
 				{/if}
+				{#if (cut.notes && cut.notes.length > 0) || matchedRow?.notes}
+					<section class="section">
+						<h3>Tipps</h3>
+						<ul class="tips">
+							{#if matchedRow?.notes}
+								<li>{matchedRow.notes}</li>
+							{/if}
+							{#each cut.notes as note (note)}
+								<li>{note}</li>
+							{/each}
+						</ul>
+					</section>
+				{/if}
 			{/if}
 		</div>
 
@@ -470,6 +486,20 @@
 						{/if}
 					</span>
 				</div>
+				{#if matchedRow.grateTempC || (matchedRow.heatZone && matchedRow.heatZone !== '—')}
+					<div class="heat-summary">
+						<span class="cook-eyebrow">Hitze</span>
+						<span class="cook-values">
+							{#if matchedRow.grateTempC}
+								<strong>{matchedRow.grateTempC}&nbsp;°C</strong>
+							{/if}
+							{#if matchedRow.heatZone && matchedRow.heatZone !== '—'}
+								<span class="cook-sep">·</span>
+								<span>{matchedRow.heatZone}</span>
+							{/if}
+						</span>
+					</div>
+				{/if}
 			{/if}
 			{#if step === 'specs'}
 				<div class="footer-actions">
@@ -856,6 +886,35 @@
 		color: var(--color-ember-ink);
 		border-color: var(--color-ember);
 	}
+	.tips {
+		list-style: none;
+		padding: 14px 16px;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		background: var(--color-bg-surface-2);
+		border: 1px solid var(--color-border-subtle);
+		border-radius: 12px;
+	}
+	.tips li {
+		position: relative;
+		padding-left: 16px;
+		font-family: var(--font-body);
+		font-size: 13px;
+		line-height: 1.45;
+		color: var(--color-fg-base);
+	}
+	.tips li::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 7px;
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: var(--color-ember);
+	}
 	footer {
 		padding-top: 16px;
 		padding-bottom: calc(16px + env(safe-area-inset-bottom));
@@ -864,7 +923,8 @@
 		flex-direction: column;
 		gap: 12px;
 	}
-	.cook-summary {
+	.cook-summary,
+	.heat-summary {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -872,6 +932,17 @@
 		border: 1px solid var(--color-border-subtle);
 		border-radius: 12px;
 		padding: 12px 16px;
+	}
+	.heat-summary {
+		margin-top: 8px;
+	}
+	.heat-summary .cook-values {
+		font-size: 13px;
+		gap: 8px;
+	}
+	.heat-summary strong {
+		color: var(--color-fg-base);
+		font-weight: 700;
 	}
 	.cook-eyebrow {
 		font-family: var(--font-body);

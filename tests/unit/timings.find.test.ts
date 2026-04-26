@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { findCategory, findCut, findRow } from '$lib/data/timings'
+import { findCategory, findCut, findRow, TIMINGS } from '$lib/data/timings'
 
 const RIND_FILET = 'rinds-filet-beef-tenderloin-filet-mignon'
 const ENTRECOTE = 'rinds-entrecote-ribeye-steak-boneless'
@@ -63,5 +63,25 @@ describe('findRow', () => {
 		if (!sausage) return
 		const row = findRow(sausage, 999, null)
 		expect(row).toBeTruthy()
+	})
+
+	it('test_grate_temp_parsed_from_reference', () => {
+		const cut = findCut('beef', RIND_FILET)!
+		const row = findRow(cut, 1, 'rare')!
+		expect(row.grateTempC).toBe(230)
+	})
+
+	it('test_grate_temp_present_for_every_row', () => {
+		const missing: string[] = []
+		for (const c of TIMINGS.categories) {
+			for (const cut of c.cuts) {
+				for (const row of cut.rows) {
+					if (typeof row.grateTempC !== 'number' || row.grateTempC <= 0) {
+						missing.push(`${cut.slug}/${row.thicknessCm ?? row.prepLabel}/${row.doneness}`)
+					}
+				}
+			}
+		}
+		expect(missing).toEqual([])
 	})
 })

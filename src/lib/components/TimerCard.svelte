@@ -147,6 +147,13 @@
 
 	<div class="name">{item.label || item.cutSlug}</div>
 	<div class="status-eyebrow" aria-live="polite">{labelMap[effectiveStatus]}</div>
+	{#if item.heatZone || item.grateTempC}
+		<div class="heat-meta">
+			{#if item.grateTempC}<span class="temp">{item.grateTempC}&#8239;&deg;C</span>{/if}
+			{#if item.grateTempC && item.heatZone}<span class="dot" aria-hidden="true">&middot;</span>{/if}
+			{#if item.heatZone}<span class="zone">{item.heatZone}</span>{/if}
+		</div>
+	{/if}
 
 	{#if effectiveStatus === 'unstarted' && onstart}
 		<button class="action start" onclick={() => onstart!(item.id)}>Los</button>
@@ -246,6 +253,30 @@
 		text-transform: uppercase;
 		text-align: center;
 		color: var(--color-fg-muted);
+	}
+	.heat-meta {
+		margin-top: 4px;
+		font-family: var(--font-body);
+		font-size: 11px;
+		font-weight: 500;
+		text-align: center;
+		color: var(--color-fg-subtle);
+		display: flex;
+		align-items: baseline;
+		justify-content: center;
+		gap: 4px;
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.heat-meta .temp {
+		color: var(--color-fg-muted);
+		font-variant-numeric: tabular-nums;
+	}
+	.heat-meta .zone {
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 	.card[data-state='cooking'] .status-eyebrow,
 	.card[data-state='flip'] .status-eyebrow {

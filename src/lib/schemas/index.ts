@@ -15,6 +15,7 @@ export const plannedItemSchema = z.object({
 	flipFraction: z.number().min(0).max(1),
 	idealFlipPattern: z.enum(['once', 'every-60s', 'rotate']),
 	heatZone: z.string(),
+	grateTempC: z.number().int().positive().nullable().default(null),
 })
 
 export const planSchema = z.object({
@@ -73,6 +74,7 @@ export const favoriteSchema = z.object({
 	flipFraction: z.number().min(0).max(1),
 	idealFlipPattern: z.enum(['once', 'every-60s', 'rotate']),
 	heatZone: z.string(),
+	grateTempC: z.number().int().positive().nullable().default(null),
 	createdAtEpoch: z.number().int(),
 	lastUsedEpoch: z.number().int(),
 })
