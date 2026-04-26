@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-26T17:32:54.877Z",
+  "generatedAt": "2026-04-26T18:25:01.640Z",
   "categories": [
     {
       "slug": "beef",
@@ -15,7 +15,7 @@
             {
               "thicknessCm": 1,
               "prepLabel": null,
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 120,
               "cookSecondsMax": 120,
               "flipFraction": 0.5,
@@ -27,7 +27,7 @@
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 270,
               "cookSecondsMax": 270,
               "flipFraction": 0.5,
@@ -39,7 +39,7 @@
             {
               "thicknessCm": 3,
               "prepLabel": null,
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 420,
               "cookSecondsMax": 420,
               "flipFraction": 0.5,
@@ -51,7 +51,7 @@
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 780,
               "cookSecondsMax": 780,
               "flipFraction": 0.5,
@@ -63,7 +63,7 @@
             {
               "thicknessCm": 5,
               "prepLabel": null,
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 900,
               "cookSecondsMax": 900,
               "flipFraction": 0.5,
@@ -75,7 +75,7 @@
             {
               "thicknessCm": 1,
               "prepLabel": null,
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 160,
               "cookSecondsMax": 160,
               "flipFraction": 0.5,
@@ -87,7 +87,7 @@
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 330,
               "cookSecondsMax": 330,
               "flipFraction": 0.5,
@@ -99,7 +99,7 @@
             {
               "thicknessCm": 3,
               "prepLabel": null,
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 600,
               "cookSecondsMax": 600,
               "flipFraction": 0.5,
@@ -111,7 +111,7 @@
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 900,
               "cookSecondsMax": 900,
               "flipFraction": 0.5,
@@ -123,7 +123,7 @@
             {
               "thicknessCm": 5,
               "prepLabel": null,
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 1080,
               "cookSecondsMax": 1080,
               "flipFraction": 0.5,
@@ -135,7 +135,7 @@
             {
               "thicknessCm": 1,
               "prepLabel": null,
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 240,
               "cookSecondsMax": 240,
               "flipFraction": 0.5,
@@ -147,7 +147,7 @@
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 450,
               "cookSecondsMax": 450,
               "flipFraction": 0.5,
@@ -159,7 +159,7 @@
             {
               "thicknessCm": 3,
               "prepLabel": null,
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 720,
               "cookSecondsMax": 720,
               "flipFraction": 0.5,
@@ -171,7 +171,7 @@
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 1080,
               "cookSecondsMax": 1080,
               "flipFraction": 0.5,
@@ -183,7 +183,7 @@
             {
               "thicknessCm": 5,
               "prepLabel": null,
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 1200,
               "cookSecondsMax": 1200,
               "flipFraction": 0.5,
@@ -195,7 +195,7 @@
             {
               "thicknessCm": 1,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 420,
               "cookSecondsMax": 420,
               "flipFraction": 0.5,
@@ -207,7 +207,7 @@
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 960,
               "cookSecondsMax": 960,
               "flipFraction": 0.5,
@@ -219,7 +219,7 @@
             {
               "thicknessCm": 3,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 1020,
               "cookSecondsMax": 1020,
               "flipFraction": 0.5,
@@ -231,7 +231,7 @@
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 1680,
               "cookSecondsMax": 1680,
               "flipFraction": 0.5,
@@ -243,7 +243,7 @@
             {
               "thicknessCm": 5,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 1800,
               "cookSecondsMax": 1800,
               "flipFraction": 0.5,
@@ -268,7 +268,7 @@
             {
               "thicknessCm": 1,
               "prepLabel": null,
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 120,
               "cookSecondsMax": 120,
               "flipFraction": 0.5,
@@ -280,7 +280,7 @@
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 300,
               "cookSecondsMax": 300,
               "flipFraction": 0.5,
@@ -292,7 +292,7 @@
             {
               "thicknessCm": 3,
               "prepLabel": null,
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 420,
               "cookSecondsMax": 420,
               "flipFraction": 0.5,
@@ -304,7 +304,7 @@
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 780,
               "cookSecondsMax": 780,
               "flipFraction": 0.5,
@@ -316,7 +316,7 @@
             {
               "thicknessCm": 5,
               "prepLabel": null,
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 900,
               "cookSecondsMax": 900,
               "flipFraction": 0.5,
@@ -328,7 +328,7 @@
             {
               "thicknessCm": 1,
               "prepLabel": null,
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 150,
               "cookSecondsMax": 150,
               "flipFraction": 0.5,
@@ -340,7 +340,7 @@
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 420,
               "cookSecondsMax": 420,
               "flipFraction": 0.5,
@@ -352,7 +352,7 @@
             {
               "thicknessCm": 3,
               "prepLabel": null,
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 600,
               "cookSecondsMax": 600,
               "flipFraction": 0.5,
@@ -364,7 +364,7 @@
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 900,
               "cookSecondsMax": 900,
               "flipFraction": 0.5,
@@ -376,7 +376,7 @@
             {
               "thicknessCm": 5,
               "prepLabel": null,
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 1020,
               "cookSecondsMax": 1020,
               "flipFraction": 0.5,
@@ -388,7 +388,7 @@
             {
               "thicknessCm": 1,
               "prepLabel": null,
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 240,
               "cookSecondsMax": 240,
               "flipFraction": 0.5,
@@ -400,7 +400,7 @@
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 540,
               "cookSecondsMax": 540,
               "flipFraction": 0.5,
@@ -412,7 +412,7 @@
             {
               "thicknessCm": 3,
               "prepLabel": null,
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 720,
               "cookSecondsMax": 720,
               "flipFraction": 0.5,
@@ -424,7 +424,7 @@
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 1080,
               "cookSecondsMax": 1080,
               "flipFraction": 0.5,
@@ -436,7 +436,7 @@
             {
               "thicknessCm": 5,
               "prepLabel": null,
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 1140,
               "cookSecondsMax": 1140,
               "flipFraction": 0.5,
@@ -448,7 +448,7 @@
             {
               "thicknessCm": 1,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 420,
               "cookSecondsMax": 420,
               "flipFraction": 0.5,
@@ -460,7 +460,7 @@
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 960,
               "cookSecondsMax": 960,
               "flipFraction": 0.5,
@@ -472,7 +472,7 @@
             {
               "thicknessCm": 3,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 1020,
               "cookSecondsMax": 1020,
               "flipFraction": 0.5,
@@ -484,7 +484,7 @@
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 1680,
               "cookSecondsMax": 1680,
               "flipFraction": 0.5,
@@ -496,7 +496,7 @@
             {
               "thicknessCm": 5,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 1680,
               "cookSecondsMax": 1680,
               "flipFraction": 0.5,
@@ -520,7 +520,7 @@
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 540,
               "cookSecondsMax": 540,
               "flipFraction": 0.5,
@@ -532,7 +532,7 @@
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 1080,
               "cookSecondsMax": 1080,
               "flipFraction": 0.5,
@@ -544,7 +544,7 @@
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 960,
               "cookSecondsMax": 960,
               "flipFraction": 0.5,
@@ -556,7 +556,7 @@
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 1080,
               "cookSecondsMax": 1080,
               "flipFraction": 0.5,
@@ -580,7 +580,7 @@
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 480,
               "cookSecondsMax": 480,
               "flipFraction": 0.5,
@@ -592,7 +592,7 @@
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 720,
               "cookSecondsMax": 720,
               "flipFraction": 0.5,
@@ -616,7 +616,7 @@
             {
               "thicknessCm": 1.75,
               "prepLabel": null,
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 360,
               "cookSecondsMax": 480,
               "flipFraction": 0.5,
@@ -628,7 +628,7 @@
             {
               "thicknessCm": 2.25,
               "prepLabel": null,
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 480,
               "cookSecondsMax": 600,
               "flipFraction": 0.5,
@@ -641,7 +641,7 @@
           "notes": [
             "Marinaden (Limette, Soja, Chipotle, Chimichurri) lieben diesen Cut.",
             "In etwa 5 mm dicke Streifen quer zur Faser schneiden; vor dem Garen Faserrichtung identifizieren, sie ist offensichtlich.",
-            "Niemals über rosa hinaus, Kollagen hat in einem dünnen Steak keine Zeit zum Schmelzen."
+            "Niemals über medium hinaus, Kollagen hat in einem dünnen Steak keine Zeit zum Schmelzen."
           ]
         },
         {
@@ -653,7 +653,7 @@
             {
               "thicknessCm": 1.25,
               "prepLabel": null,
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 240,
               "cookSecondsMax": 360,
               "flipFraction": 0.5,
@@ -665,7 +665,7 @@
             {
               "thicknessCm": 1.75,
               "prepLabel": null,
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 360,
               "cookSecondsMax": 480,
               "flipFraction": 0.5,
@@ -690,7 +690,7 @@
             {
               "thicknessCm": 4.5,
               "prepLabel": null,
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 1800,
               "cookSecondsMax": 2700,
               "flipFraction": 0.5,
@@ -702,7 +702,7 @@
             {
               "thicknessCm": null,
               "prepLabel": "~1 kg",
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 2400,
               "cookSecondsMax": 3300,
               "flipFraction": 0.5,
@@ -713,7 +713,7 @@
             }
           ],
           "notes": [
-            "Bei 52 °C für englisch ziehen (das Nachgaren ist bei einem 1-kg-Stück real).",
+            "Bei 52 °C für medium-rare ziehen (das Nachgaren ist bei einem 1-kg-Stück real).",
             "Dünn schneiden, am Scheitel den Faserwechsel beachten und für die zweite Hälfte des Bratens umorientieren."
           ]
         },
@@ -726,7 +726,7 @@
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 240,
               "cookSecondsMax": 360,
               "flipFraction": 0.5,
@@ -738,7 +738,7 @@
             {
               "thicknessCm": 3,
               "prepLabel": null,
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 360,
               "cookSecondsMax": 480,
               "flipFraction": 0.5,
@@ -750,7 +750,7 @@
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 900,
               "cookSecondsMax": 1080,
               "flipFraction": 0.5,
@@ -771,7 +771,7 @@
             {
               "thicknessCm": 2.5,
               "prepLabel": null,
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 360,
               "cookSecondsMax": 360,
               "flipFraction": 0.5,
@@ -783,7 +783,7 @@
             {
               "thicknessCm": 3,
               "prepLabel": null,
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 420,
               "cookSecondsMax": 480,
               "flipFraction": 0.5,
@@ -795,7 +795,7 @@
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 900,
               "cookSecondsMax": 1080,
               "flipFraction": 0.5,
@@ -819,7 +819,7 @@
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 3000,
               "cookSecondsMax": 3000,
               "flipFraction": 0.5,
@@ -831,7 +831,7 @@
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 3600,
               "cookSecondsMax": 3600,
               "flipFraction": 0.5,
@@ -885,7 +885,7 @@
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 540,
               "cookSecondsMax": 540,
               "flipFraction": 0.5,
@@ -897,7 +897,7 @@
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 1080,
               "cookSecondsMax": 1080,
               "flipFraction": 0.5,
@@ -909,7 +909,7 @@
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 960,
               "cookSecondsMax": 960,
               "flipFraction": 0.5,
@@ -921,7 +921,7 @@
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 1680,
               "cookSecondsMax": 1680,
               "flipFraction": 0.5,
@@ -945,7 +945,7 @@
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 600,
               "cookSecondsMax": 600,
               "flipFraction": 0.5,
@@ -957,7 +957,7 @@
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 1140,
               "cookSecondsMax": 1140,
               "flipFraction": 0.5,
@@ -969,7 +969,7 @@
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 900,
               "cookSecondsMax": 900,
               "flipFraction": 0.5,
@@ -981,7 +981,7 @@
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 1380,
               "cookSecondsMax": 1380,
               "flipFraction": 0.5,
@@ -1011,7 +1011,7 @@
             {
               "thicknessCm": 1,
               "prepLabel": null,
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 180,
               "cookSecondsMax": 180,
               "flipFraction": 0.5,
@@ -1023,7 +1023,7 @@
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 360,
               "cookSecondsMax": 360,
               "flipFraction": 0.5,
@@ -1035,7 +1035,7 @@
             {
               "thicknessCm": 3,
               "prepLabel": null,
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 480,
               "cookSecondsMax": 480,
               "flipFraction": 0.5,
@@ -1047,7 +1047,7 @@
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 600,
               "cookSecondsMax": 600,
               "flipFraction": 0.5,
@@ -1059,7 +1059,7 @@
             {
               "thicknessCm": 1,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 240,
               "cookSecondsMax": 240,
               "flipFraction": 0.5,
@@ -1071,7 +1071,7 @@
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 570,
               "cookSecondsMax": 570,
               "flipFraction": 0.5,
@@ -1083,7 +1083,7 @@
             {
               "thicknessCm": 3,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 720,
               "cookSecondsMax": 720,
               "flipFraction": 0.5,
@@ -1095,7 +1095,7 @@
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 900,
               "cookSecondsMax": 900,
               "flipFraction": 0.5,
@@ -1119,7 +1119,7 @@
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 720,
               "cookSecondsMax": 720,
               "flipFraction": 0.5,
@@ -1131,7 +1131,7 @@
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 1020,
               "cookSecondsMax": 1020,
               "flipFraction": 0.5,
@@ -1311,7 +1311,7 @@
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 420,
               "cookSecondsMax": 420,
               "flipFraction": 0.5,
@@ -1323,7 +1323,7 @@
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 540,
               "cookSecondsMax": 540,
               "flipFraction": 0.5,
@@ -1335,7 +1335,7 @@
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 780,
               "cookSecondsMax": 780,
               "flipFraction": 0.5,
@@ -1347,7 +1347,7 @@
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 1020,
               "cookSecondsMax": 1020,
               "flipFraction": 0.5,
@@ -1368,7 +1368,7 @@
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 420,
               "cookSecondsMax": 420,
               "flipFraction": 0.5,
@@ -1380,7 +1380,7 @@
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 540,
               "cookSecondsMax": 540,
               "flipFraction": 0.5,
@@ -1404,7 +1404,7 @@
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 240,
               "cookSecondsMax": 240,
               "flipFraction": 0.5,
@@ -1416,7 +1416,7 @@
             {
               "thicknessCm": 3,
               "prepLabel": null,
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 360,
               "cookSecondsMax": 360,
               "flipFraction": 0.5,
@@ -1428,7 +1428,7 @@
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 300,
               "cookSecondsMax": 300,
               "flipFraction": 0.5,
@@ -1440,7 +1440,7 @@
             {
               "thicknessCm": 3,
               "prepLabel": null,
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 480,
               "cookSecondsMax": 480,
               "flipFraction": 0.5,
@@ -1452,7 +1452,7 @@
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 390,
               "cookSecondsMax": 390,
               "flipFraction": 0.5,
@@ -1464,7 +1464,7 @@
             {
               "thicknessCm": 3,
               "prepLabel": null,
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 600,
               "cookSecondsMax": 600,
               "flipFraction": 0.5,
@@ -1476,7 +1476,7 @@
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 510,
               "cookSecondsMax": 510,
               "flipFraction": 0.5,
@@ -1488,7 +1488,7 @@
             {
               "thicknessCm": 3,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 750,
               "cookSecondsMax": 750,
               "flipFraction": 0.5,
@@ -1509,7 +1509,7 @@
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 840,
               "cookSecondsMax": 840,
               "flipFraction": 0.5,
@@ -1521,7 +1521,7 @@
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 1080,
               "cookSecondsMax": 1080,
               "flipFraction": 0.5,
@@ -1683,7 +1683,7 @@
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 660,
               "cookSecondsMax": 660,
               "flipFraction": 0.5,
@@ -1695,7 +1695,7 @@
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 1020,
               "cookSecondsMax": 1020,
               "flipFraction": 0.5,
@@ -2167,7 +2167,7 @@
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 360,
               "cookSecondsMax": 360,
               "flipFraction": 0.5,
@@ -2179,7 +2179,7 @@
             {
               "thicknessCm": 3,
               "prepLabel": null,
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 480,
               "cookSecondsMax": 600,
               "flipFraction": 0.5,
@@ -2951,7 +2951,7 @@
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 240,
               "cookSecondsMax": 240,
               "flipFraction": 0.5,
@@ -2963,7 +2963,7 @@
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "englisch",
+              "doneness": "medium-rare",
               "cookSecondsMin": 420,
               "cookSecondsMax": 420,
               "flipFraction": 0.5,
@@ -2975,7 +2975,7 @@
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "rosa",
+              "doneness": "medium",
               "cookSecondsMin": 600,
               "cookSecondsMax": 600,
               "flipFraction": 0.5,
@@ -2987,7 +2987,7 @@
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 960,
               "cookSecondsMax": 960,
               "flipFraction": 0.5,
@@ -2998,7 +2998,7 @@
             }
           ],
           "notes": [
-            "NICHT über englisch hinaus garen, Pferd hat etwa 3 % Fett und wird zum Stein.",
+            "NICHT über medium-rare hinaus garen, Pferd hat etwa 3 % Fett und wird zum Stein.",
             "In Rotwein, Wacholder und Lorbeer für Tiefe marinieren."
           ]
         },
