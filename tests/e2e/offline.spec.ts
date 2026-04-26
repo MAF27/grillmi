@@ -30,7 +30,7 @@ test.describe('offline', () => {
 		await context.setOffline(true)
 		try {
 			await page.reload({ waitUntil: 'load' })
-			await expect(page.getByRole('heading', { name: 'Grillmi', exact: true })).toBeVisible()
+			await expect(page.getByRole('heading', { level: 1 })).toContainText(/Bereit zum/)
 		} finally {
 			await context.setOffline(false)
 		}

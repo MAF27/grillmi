@@ -102,7 +102,7 @@ test.describe('resume', () => {
 		await seedSession(page, makeSession(-5 * 60 * 60 * 1000))
 		await page.goto('/', { waitUntil: 'load' })
 		await expect(page).toHaveURL(/\/$|^[^/]*\/?$/)
-		await expect(page.getByRole('heading', { name: 'Grillmi', exact: true })).toBeVisible()
+		await expect(page.getByRole('heading', { level: 1 })).toContainText(/Bereit zum/)
 
 		// IDB should now be empty for the current session.
 		const remaining = await page.evaluate(async () => {

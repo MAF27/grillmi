@@ -4,12 +4,14 @@ test.describe('tones (settings)', () => {
 	test('test_settings_renders_five_tones', async ({ page }) => {
 		await page.goto('/settings')
 		await page.getByRole('button', { name: /Auflegen/ }).click()
-		// The five tones are: Glut, Funke, Kohle, Klassik, Lautlos.
-		await expect(page.getByText('Glut', { exact: true })).toBeVisible()
-		await expect(page.getByText('Funke', { exact: true })).toBeVisible()
-		await expect(page.getByText('Kohle', { exact: true })).toBeVisible()
-		await expect(page.getByText('Klassik', { exact: true })).toBeVisible()
-		await expect(page.getByText('Lautlos', { exact: true })).toBeVisible()
+		// Scope to the picker's tone-name nodes; the head label also reads the
+		// current tone, which would collide under getByText strict mode.
+		const names = page.locator('.tone-name')
+		await expect(names.filter({ hasText: /^Glut$/ })).toBeVisible()
+		await expect(names.filter({ hasText: /^Funke$/ })).toBeVisible()
+		await expect(names.filter({ hasText: /^Kohle$/ })).toBeVisible()
+		await expect(names.filter({ hasText: /^Klassik$/ })).toBeVisible()
+		await expect(names.filter({ hasText: /^Lautlos$/ })).toBeVisible()
 	})
 
 	test('test_picking_tone_updates_current_label', async ({ page }) => {

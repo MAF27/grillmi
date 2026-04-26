@@ -23,6 +23,7 @@ async function seedMenu(page: import('@playwright/test').Page, name: string) {
 	await page.getByRole('button', { name: /Als Menü speichern/ }).click()
 	await page.getByPlaceholder(/Sonntagsmenü/i).fill(name)
 	await page.getByRole('button', { name: 'Speichern', exact: true }).click()
+	await expect(page.getByRole('button', { name: 'Speichern', exact: true })).toHaveCount(0)
 }
 
 test.describe('home', () => {

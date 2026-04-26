@@ -147,7 +147,7 @@
 				Bereit zum<br />
 				<span class="hero-accent">Grillen</span>?
 			</h1>
-			<p>Plane deine Session — Grillmi sagt dir, wann was auf den Rost muss.</p>
+			<p>Plane deine Session. Grillmi sagt dir, wann was auf den Rost muss.</p>
 		</div>
 
 		{#if recentMenus.length > 0}

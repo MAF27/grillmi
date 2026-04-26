@@ -82,7 +82,7 @@
 
 	const goLabel = $derived.by(() => {
 		if (plan.items.length === 0) return 'Mindestens ein Eintrag nötig'
-		return `Los — fertig um ${formatHHMM(effectiveTarget)}`
+		return `Los, fertig um ${formatHHMM(effectiveTarget)}`
 	})
 
 	onMount(() => {
@@ -212,7 +212,7 @@
 				</div>
 				<div class="eat-hint">
 					{populated
-						? 'Die längste Grillzeit zählt — kürzere starten gestaffelt.'
+						? 'Die längste Grillzeit zählt; kürzere starten gestaffelt.'
 						: 'Füg ein Grillstück hinzu, wir rechnen zurück.'}
 				</div>
 			</button>
@@ -220,7 +220,9 @@
 
 		<section>
 			<div class="section-header">
-				<h2>Grillstücke</h2>
+				<h2>
+					Grillstücke{#if plan.items.length > 0}<span class="count">{plan.items.length} STÜCK</span>{/if}
+				</h2>
 				<div class="section-actions">
 					{#if menusStore.all.length > 0}
 						<Button variant="accentGhost" size="sm" onclick={openMenusSheet}>★ Menü</Button>
@@ -230,7 +232,7 @@
 
 			{#if overdue && !isManual}
 				<div class="warning" role="alert">
-					Zeit ist knapp — folgende Einträge müssen sofort starten: {overdueItems.map(i => i.label).join(', ')}.
+					Zeit ist knapp. Folgende Einträge müssen sofort starten: {overdueItems.map(i => i.label).join(', ')}.
 				</div>
 			{/if}
 
@@ -461,6 +463,17 @@
 		text-transform: uppercase;
 		letter-spacing: 0.02em;
 		margin: 0;
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 12px;
+		flex: 1;
+	}
+	.section-header .count {
+		font-size: 12px;
+		color: var(--color-fg-subtle);
+		letter-spacing: 0.06em;
+		font-variant-numeric: tabular-nums;
 	}
 	.warning {
 		background: var(--color-error-bg);
