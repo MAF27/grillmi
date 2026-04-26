@@ -84,4 +84,58 @@ describe('sessionStore', () => {
 		const aPutOnAfter = sessionStore.session?.items.find(i => i.id === a.id)?.putOnEpoch
 		expect(aPutOnAfter).toBe(aPutOn)
 	})
+
+	it('test_manual_alarm_added_and_dismissed_persist_across_init', async () => {
+		const created = sessionStore.addItem(item)
+		sessionStore.setPlanMode('manual')
+		sessionStore.addManualAlarm({
+			id: `${created.id}-flip`,
+			itemId: created.id,
+			kind: 'flip',
+			itemName: 'Steak',
+			message: 'Steak: jetzt wenden',
+			firedAt: Date.now(),
+		})
+		expect(sessionStore.manualAlarms).toHaveLength(1)
+		sessionStore.dismissManualAlarm(`${created.id}-flip`)
+		expect(sessionStore.manualAlarmDismissed.has(`${created.id}-flip`)).toBe(true)
+
+		sessionStore._reset()
+		await sessionStore.init()
+		expect(sessionStore.manualAlarms).toHaveLength(1)
+		expect(sessionStore.manualAlarmDismissed.has(`${created.id}-flip`)).toBe(true)
+	})
+
+	it('test_remove_item_drops_its_alarms', () => {
+		const created = sessionStore.addItem(item)
+		sessionStore.setPlanMode('manual')
+		sessionStore.addManualAlarm({
+			id: `${created.id}-flip`,
+			itemId: created.id,
+			kind: 'flip',
+			itemName: 'Steak',
+			message: 'Steak: jetzt wenden',
+			firedAt: Date.now(),
+		})
+		expect(sessionStore.manualAlarms).toHaveLength(1)
+		sessionStore.removeItem(created.id)
+		expect(sessionStore.manualAlarms).toHaveLength(0)
+	})
+
+	it('test_dismissed_alarm_cannot_be_re_added', () => {
+		const created = sessionStore.addItem(item)
+		sessionStore.setPlanMode('manual')
+		const alarm = {
+			id: `${created.id}-flip`,
+			itemId: created.id,
+			kind: 'flip' as const,
+			itemName: 'Steak',
+			message: 'Steak: jetzt wenden',
+			firedAt: Date.now(),
+		}
+		sessionStore.addManualAlarm(alarm)
+		sessionStore.dismissManualAlarm(alarm.id)
+		sessionStore.addManualAlarm(alarm)
+		expect(sessionStore.manualAlarms).toHaveLength(1)
+	})
 })

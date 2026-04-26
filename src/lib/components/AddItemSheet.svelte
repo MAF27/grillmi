@@ -276,16 +276,16 @@
 	}
 
 	// Thickness range: snap to 0.5 cm steps, extend 1 cm below documented min
-	// (with a hard floor of 1.5 cm for thin slices), keep documented max as
-	// upper bound.
-	const THICKNESS_FLOOR = 1.5
+	// with a hard floor of 0.5 cm. Floor must never exclude the documented min.
+	const THICKNESS_FLOOR = 0.5
 	const thicknessOptions = $derived.by<number[]>(() => {
 		if (!cut?.hasThickness) return []
 		const ts = cut.rows.map(r => r.thicknessCm).filter((v): v is number => v !== null)
 		if (ts.length === 0) return []
 		const documentedMin = Math.min(...ts)
 		const max = Math.max(...ts)
-		const min = Math.max(THICKNESS_FLOOR, Math.round((documentedMin - 1) * 2) / 2)
+		const extended = Math.round((documentedMin - 1) * 2) / 2
+		const min = Math.min(documentedMin, Math.max(THICKNESS_FLOOR, extended))
 		const out: number[] = []
 		for (let v = min; v <= max + 1e-6; v = Math.round((v + 0.5) * 10) / 10) {
 			out.push(Math.round(v * 10) / 10)

@@ -12,10 +12,11 @@
 		onplate?: (id: string) => void
 		onstart?: (id: string) => void
 		onlongpress?: (id: string) => void
+		onremove?: (id: string) => void
 		status?: TimerCardStatus
 	}
 
-	let { item, alarmFiring = false, onplate, onstart, onlongpress, status }: Props = $props()
+	let { item, alarmFiring = false, onplate, onstart, onlongpress, onremove, status }: Props = $props()
 	let now = $state(Date.now())
 	let touchStartX = 0
 	let dragX = $state(0)
@@ -120,14 +121,22 @@
 	data-testid="timer-card"
 	data-put-on-epoch={item.putOnEpoch}
 	data-done-epoch={item.doneEpoch}>
+	{#if onremove}
+		<button
+			class="remove"
+			type="button"
+			aria-label="Entfernen"
+			onclick={e => {
+				e.stopPropagation()
+				onremove!(item.id)
+			}}>×</button>
+	{/if}
 	<div class="ring-wrap">
 		<ProgressRing
 			progress={cookProgress}
 			state={effectiveStatus}
 			size={92}
 			stroke={6}
-			flipFraction={item.flipEpoch !== null && cookTotalMs > 0 ? (item.flipEpoch - item.putOnEpoch) / cookTotalMs : null}
-			flipFired={item.flipFired}
 			ariaLabel={`${item.label}: ${Math.round(cookProgress * 100)}% gegart`}>
 			<div class="ring-value" data-live-countdown>{ringValue}</div>
 			{#if ringEyebrow}
@@ -275,5 +284,29 @@
 		text-transform: none;
 		letter-spacing: normal;
 		font-weight: 600;
+	}
+	.remove {
+		position: absolute;
+		top: 6px;
+		right: 6px;
+		width: 28px;
+		height: 28px;
+		padding: 0;
+		border-radius: 14px;
+		border: 1px solid var(--color-border-strong);
+		background: var(--color-bg-surface-2);
+		color: var(--color-fg-muted);
+		font-family: var(--font-body);
+		font-size: 18px;
+		line-height: 1;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 1;
+	}
+	.remove:hover {
+		color: var(--color-fg-base);
+		border-color: var(--color-error-default);
 	}
 </style>

@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { goto } from '$app/navigation'
 	import { onMount } from 'svelte'
+	import AlarmBanner, { type AlarmKind } from '$lib/components/AlarmBanner.svelte'
 	import Button from '$lib/components/Button.svelte'
 	import SegmentedControl from '$lib/components/SegmentedControl.svelte'
 	import TimePickerSheet from '$lib/components/TimePickerSheet.svelte'
 	import PlanItemRow from '$lib/components/PlanItemRow.svelte'
 	import TimerCard from '$lib/components/TimerCard.svelte'
 	import AddItemSheet from '$lib/components/AddItemSheet.svelte'
+	import { fireAlarm, messageFor, type AlarmEvent } from '$lib/runtime/alarms'
 	import { sessionStore } from '$lib/stores/sessionStore.svelte'
 	import { favoritesStore } from '$lib/stores/favoritesStore.svelte'
 	import { menusStore } from '$lib/stores/menusStore.svelte'
@@ -28,6 +30,8 @@
 	let menuName = $state('')
 	let menusSheetOpen = $state(false)
 	let timePickerOpen = $state(false)
+
+	const lastSeenStatus = new Map<string, ManualStatus>()
 
 	const plan = $derived(sessionStore.plan)
 	const planMode = $derived(sessionStore.planMode)
@@ -84,6 +88,51 @@
 		if (plan.items.length === 0) return 'Mindestens ein Eintrag nötig'
 		return `Los, fertig um ${formatHHMM(effectiveTarget)}`
 	})
+
+	const visibleAlarms = $derived(sessionStore.manualAlarms.filter(a => !sessionStore.manualAlarmDismissed.has(a.id)))
+	const alarming = $derived(visibleAlarms[0] ?? null)
+
+	$effect(() => {
+		if (!isManual) return
+		for (const item of plan.items) {
+			const next = deriveManualStatus(item, now).status
+			const prev = lastSeenStatus.get(item.id)
+			lastSeenStatus.set(item.id, next)
+			if (prev === next) continue
+			let event: AlarmEvent | null = null
+			let kind: AlarmKind | null = null
+			if (next === 'flip') {
+				event = 'flip'
+				kind = 'flip'
+			} else if (next === 'resting' || next === 'ready') {
+				event = 'done'
+				kind = 'ready'
+			}
+			if (!event || !kind) continue
+			const itemName = item.label || item.cutSlug
+			const key = `${item.id}-${kind}`
+			const exists = sessionStore.manualAlarms.some(a => a.id === key) || sessionStore.manualAlarmDismissed.has(key)
+			if (exists) continue
+			sessionStore.addManualAlarm({
+				id: key,
+				itemId: item.id,
+				kind,
+				itemName,
+				message: messageFor(event, itemName),
+				firedAt: Date.now(),
+			})
+			void fireAlarm(event)
+		}
+		const liveIds = new Set(plan.items.map(i => i.id))
+		for (const id of Array.from(lastSeenStatus.keys())) {
+			if (!liveIds.has(id)) lastSeenStatus.delete(id)
+		}
+	})
+
+	function dismissAlarm() {
+		if (!alarming) return
+		sessionStore.dismissManualAlarm(alarming.id)
+	}
 
 	onMount(() => {
 		const tickId = setInterval(() => (now = Date.now()), 1000)
@@ -247,7 +296,12 @@
 					{#each plan.items as item, i (item.id)}
 						{@const status = deriveManualStatus(item, now).status}
 						<div role="listitem">
-							<TimerCard item={manualSession[i]} status={status as never} onstart={startMatch} onplate={plateMatch} />
+							<TimerCard
+								item={manualSession[i]}
+								status={status as never}
+								onstart={startMatch}
+								onplate={plateMatch}
+								onremove={deleteItem} />
 						</div>
 					{/each}
 					<button class="more-add" type="button" onclick={openAddSheet}>
@@ -280,6 +334,17 @@
 		<div class="bottom">
 			<Button variant="primary" size="lg" fullWidth disabled={plan.items.length === 0} onclick={start}>{goLabel}</Button>
 		</div>
+	{/if}
+
+	{#if isManual && alarming}
+		{#key alarming.id}
+			<AlarmBanner
+				kind={alarming.kind}
+				itemName={alarming.itemName}
+				count={visibleAlarms.length}
+				message={alarming.message}
+				onDismiss={dismissAlarm} />
+		{/key}
 	{/if}
 </main>
 
@@ -530,8 +595,11 @@
 	}
 	.manual-grid {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 		gap: 12px;
+	}
+	.manual-grid > [role='listitem'] {
+		min-width: 0;
 	}
 	.more-add {
 		grid-column: 1 / -1;

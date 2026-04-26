@@ -80,7 +80,6 @@ describe('AddItemSheet', () => {
 		const dec = getByLabelText('Dünner') as HTMLButtonElement
 		const inc = getByLabelText('Dicker') as HTMLButtonElement
 
-		// Click "thicker" until disabled — the stepper must clamp at the documented max.
 		let safety = 50
 		while (!inc.disabled && safety-- > 0) {
 			await fireEvent.click(inc)
@@ -88,13 +87,28 @@ describe('AddItemSheet', () => {
 		expect(inc.disabled).toBe(true)
 		expect(dec.disabled).toBe(false)
 
-		// Click "thinner" all the way down — the stepper must clamp at the floor (1.5 cm).
 		safety = 50
 		while (!dec.disabled && safety-- > 0) {
 			await fireEvent.click(dec)
 		}
 		expect(dec.disabled).toBe(true)
 		expect(inc.disabled).toBe(false)
+	})
+
+	it('test_thickness_minus_never_increases_value', async () => {
+		const { getByText, getByLabelText, container } = open()
+		await fireEvent.click(getByText('Rind'))
+		await fireEvent.click(getByText('Rinds-Filet'))
+
+		const num = () => parseFloat(container.querySelector('.thickness-value .num')!.textContent!.trim())
+		const dec = getByLabelText('Dünner') as HTMLButtonElement
+
+		const initial = num()
+		expect(initial).toBe(1)
+		expect(dec.disabled).toBe(false)
+
+		await fireEvent.click(dec)
+		expect(num()).toBeLessThanOrEqual(initial)
 	})
 
 	it('test_final_step_dispatches_new_item_with_computed_cook_time', async () => {
