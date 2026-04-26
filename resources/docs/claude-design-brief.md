@@ -10,7 +10,7 @@ Screenshots of the current state live in `resources/docs/screenshots/` and are r
 
 ## 1. What Grillmi is
 
-A multi-timer BBQ companion PWA. The user is grilling several different items at once (steaks, sausages, vegetables, etc.) and needs to know **what to put on when** and **when to flip / pull / rest** so everything finishes at the same moment. Migros' "Grilltimer by Migusto" inspired the data model; Grillmi is the better-feeling replacement.
+A multi-timer BBQ companion PWA. The user is grilling several different items at once (steaks, sausages, vegetables, etc.) and needs to know **what to put on when** and **when to flip / pull / rest** so everything finishes at the same moment.
 
 **Form factor**: installable PWA, mobile-first (used outdoors at the grill, one-handed, possibly with greasy fingers), works offline, dark UI by default.
 

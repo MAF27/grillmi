@@ -1,6 +1,6 @@
 # Grillmi
 
-A multi-timer BBQ companion PWA — inspired by Migros' "Grillitarier" / "Grilltimer by Migusto", built to do it better.
+A multi-timer BBQ companion PWA for running many simultaneous grill timers with per-cut accuracy.
 
 ## What it is
 

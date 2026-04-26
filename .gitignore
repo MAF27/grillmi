@@ -52,3 +52,6 @@ playwright-report/
 
 # Design handoff bundles
 *.zip
+
+# Private dev-only docs (raw extractions, scratch). Tracked locally only.
+resources/docs/_private/

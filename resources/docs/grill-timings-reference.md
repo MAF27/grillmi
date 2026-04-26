@@ -14,7 +14,7 @@ Alle Angaben unten setzen voraus:
 - **Kerntemperatur ist die Wahrheit**. Zeitangaben sind Richtwerte; bei Zielkerntemperatur mit Einstech-Thermometer (Thermapen-Klasse) ziehen. Alle Kerntemperaturen unten sind Pull-Temperaturen, das Nachgaren bringt 2–5 °C bei Steaks und 3–7 °C bei Braten während der Ruhezeit dazu. [SE, Meathead]
 - **Wendeanzahl**: "einmal wenden" ist der Serious-Eats-Standard für Steaks ab 3 cm; Weber empfiehlt zunehmend, alle 45–60 s zu wenden für gleichmässigere Kruste und gleichmässigeres Garen (Kenji hat das empirisch gezeigt). Beides funktioniert. Der Grillmi-Standard ist **einmal wenden** für Cuts bis 3 cm und **alle 60 s wenden** für Cuts ab 4 cm oder bei Reverse-Sear-Finish.
 - **Ruhezeit** gilt für jeden Cut, der ab 3 cm Dicke auf medium-rare oder mehr gegart wird. Locker mit Alufolie zelten; nicht straff einwickeln (dämpft die Kruste).
-- **Schweizer/DACH-Cut-Bezeichnungen** folgen Migros Grilltimer und Weber-DE. Wo ein Schweizer Cut keine saubere US-Entsprechung hat (Hohrücken, Huft, Nierstück), ist der deutsche Begriff primär.
+- **Schweizer/DACH-Cut-Bezeichnungen** folgen `[Migros-Grilltimer]` und `[Weber-DE]`. Wo ein Schweizer Cut keine saubere US-Entsprechung hat (Hohrücken, Huft, Nierstück), ist der deutsche Begriff primär.
 
 ## Interne Pull-Temperaturen (°C)
 
@@ -37,32 +37,32 @@ Hinweis Geflügel: Brust ist sicher bei 70 °C Pull plus 3 Min. Ruhezeit (entspr
 
 ### Rinds-Entrecôte (Ribeye steak, boneless)
 
-Fett, gutmütig. Der Migros-App-Standard. Zwei-Zonen-Reverse-Sear bevorzugt ab 4 cm, Einzonen direkt für 2–3 cm in Ordnung.
+Fett, gutmütig. Der DACH-Steakklassiker. Zwei-Zonen-Reverse-Sear bevorzugt ab 4 cm, Einzonen direkt für 2–3 cm in Ordnung.
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 cm | blutig | Direkt, Deckel zu | 230 °C | 1 min | 2 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 2 cm | blutig | Direkt, Deckel zu | 230 °C | 2 min 15 s | 4 min 30 s | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 3 cm | blutig | Direkt, Deckel zu | 230 °C | 3 min 30 s | 7 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 4 cm | blutig | Direkt, Deckel zu | 230 °C | 6 min 30 s | 13 min | Einmal halbzeitig wenden (Migros-Standard) | 5–8 min |
-| 5 cm | blutig | Reverse-Sear (indirekt zu direkt) | 230 °C | 7 min 30 s | 15 min | Einmal halbzeitig wenden (Migros-Standard) | 8–10 min |
-| 1 cm | medium-rare | Direkt, Deckel zu | 230 °C | 1 min 20 s | 2 min 40 s | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 2 cm | medium-rare | Direkt, Deckel zu | 230 °C | 2 min 45 s | 5 min 30 s | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 3 cm | medium-rare | Direkt, Deckel zu | 230 °C | 5 min | 10 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
-| 4 cm | medium-rare | Direkt zu indirekt | 230 °C | 7 min 30 s | 15 min | Einmal halbzeitig wenden (Migros-Standard) | 5–8 min |
-| 5 cm | medium-rare | Reverse-Sear (indirekt zu direkt) | 230 °C | 9 min | 18 min | Einmal halbzeitig wenden (Migros-Standard) | 8–10 min |
-| 1 cm | medium | Direkt, Deckel zu | 230 °C | 2 min | 4 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 2 cm | medium | Direkt, Deckel zu | 230 °C | 3 min 45 s | 7 min 30 s | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 3 cm | medium | Direkt, Deckel zu | 230 °C | 6 min | 12 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
-| 4 cm | medium | Direkt zu indirekt | 230 °C | 9 min | 18 min | Einmal halbzeitig wenden (Migros-Standard) | 5–8 min |
-| 5 cm | medium | Reverse-Sear (indirekt zu direkt) | 230 °C | 10 min | 20 min | Einmal halbzeitig wenden (Migros-Standard) | 8–10 min |
-| 1 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 3 min 30 s | 7 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 2 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 8 min | 16 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
-| 3 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 8 min 30 s | 17 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
+| 1 cm | blutig | Direkt, Deckel zu | 230 °C | 1 min | 2 min | Einmal halbzeitig wenden | 3 min |
+| 2 cm | blutig | Direkt, Deckel zu | 230 °C | 2 min 15 s | 4 min 30 s | Einmal halbzeitig wenden | 3 min |
+| 3 cm | blutig | Direkt, Deckel zu | 230 °C | 3 min 30 s | 7 min | Einmal halbzeitig wenden | 3 min |
+| 4 cm | blutig | Direkt, Deckel zu | 230 °C | 6 min 30 s | 13 min | Einmal halbzeitig wenden | 5–8 min |
+| 5 cm | blutig | Reverse-Sear (indirekt zu direkt) | 230 °C | 7 min 30 s | 15 min | Einmal halbzeitig wenden | 8–10 min |
+| 1 cm | medium-rare | Direkt, Deckel zu | 230 °C | 1 min 20 s | 2 min 40 s | Einmal halbzeitig wenden | 3 min |
+| 2 cm | medium-rare | Direkt, Deckel zu | 230 °C | 2 min 45 s | 5 min 30 s | Einmal halbzeitig wenden | 3 min |
+| 3 cm | medium-rare | Direkt, Deckel zu | 230 °C | 5 min | 10 min | Einmal halbzeitig wenden | 5 min |
+| 4 cm | medium-rare | Direkt zu indirekt | 230 °C | 7 min 30 s | 15 min | Einmal halbzeitig wenden | 5–8 min |
+| 5 cm | medium-rare | Reverse-Sear (indirekt zu direkt) | 230 °C | 9 min | 18 min | Einmal halbzeitig wenden | 8–10 min |
+| 1 cm | medium | Direkt, Deckel zu | 230 °C | 2 min | 4 min | Einmal halbzeitig wenden | 3 min |
+| 2 cm | medium | Direkt, Deckel zu | 230 °C | 3 min 45 s | 7 min 30 s | Einmal halbzeitig wenden | 3 min |
+| 3 cm | medium | Direkt, Deckel zu | 230 °C | 6 min | 12 min | Einmal halbzeitig wenden | 5 min |
+| 4 cm | medium | Direkt zu indirekt | 230 °C | 9 min | 18 min | Einmal halbzeitig wenden | 5–8 min |
+| 5 cm | medium | Reverse-Sear (indirekt zu direkt) | 230 °C | 10 min | 20 min | Einmal halbzeitig wenden | 8–10 min |
+| 1 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 3 min 30 s | 7 min | Einmal halbzeitig wenden | 3 min |
+| 2 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 8 min | 16 min | Einmal halbzeitig wenden | 5 min |
+| 3 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 8 min 30 s | 17 min | Einmal halbzeitig wenden | 5 min |
 | 4 cm | durchgebraten | Direkt zu indirekt | 230 °C | 14 min | 28 min | alle 2–3 min drehen | 5–8 min |
 | 5 cm | durchgebraten | Reverse-Sear (indirekt zu direkt) | 230 °C | 15 min | 30 min | alle 2–3 min drehen | 8–10 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -76,28 +76,28 @@ Mager, weniger fehlerverzeihend als das Entrecôte. 2–3 °C früher ziehen als
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 cm | blutig | Direkt, Deckel zu | 230 °C | 1 min | 2 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 2 cm | blutig | Direkt, Deckel zu | 230 °C | 2 min 30 s | 5 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 3 cm | blutig | Direkt, Deckel zu | 230 °C | 3 min 30 s | 7 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 4 cm | blutig | Direkt, Deckel zu | 230 °C | 6 min 30 s | 13 min | Einmal halbzeitig wenden (Migros-Standard) | 5–8 min |
-| 5 cm | blutig | Reverse-Sear (indirekt zu direkt) | 230 °C | 7 min 30 s | 15 min | Einmal halbzeitig wenden (Migros-Standard) | 8–10 min |
-| 1 cm | medium-rare | Direkt, Deckel zu | 230 °C | 1 min 15 s | 2 min 30 s | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 2 cm | medium-rare | Direkt, Deckel zu | 230 °C | 3 min 30 s | 7 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 3 cm | medium-rare | Direkt, Deckel zu | 230 °C | 5 min | 10 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
-| 4 cm | medium-rare | Direkt zu indirekt | 230 °C | 7 min 30 s | 15 min | Einmal halbzeitig wenden (Migros-Standard) | 5–8 min |
-| 5 cm | medium-rare | Reverse-Sear (indirekt zu direkt) | 230 °C | 8 min 30 s | 17 min | Einmal halbzeitig wenden (Migros-Standard) | 8–10 min |
-| 1 cm | medium | Direkt, Deckel zu | 230 °C | 2 min | 4 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 2 cm | medium | Direkt, Deckel zu | 230 °C | 4 min 30 s | 9 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 3 cm | medium | Direkt, Deckel zu | 230 °C | 6 min | 12 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
-| 4 cm | medium | Direkt zu indirekt | 230 °C | 9 min | 18 min | Einmal halbzeitig wenden (Migros-Standard) | 5–8 min |
-| 5 cm | medium | Reverse-Sear (indirekt zu direkt) | 230 °C | 9 min 30 s | 19 min | Einmal halbzeitig wenden (Migros-Standard) | 8–10 min |
-| 1 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 3 min 30 s | 7 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 2 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 8 min | 16 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
-| 3 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 8 min 30 s | 17 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
+| 1 cm | blutig | Direkt, Deckel zu | 230 °C | 1 min | 2 min | Einmal halbzeitig wenden | 3 min |
+| 2 cm | blutig | Direkt, Deckel zu | 230 °C | 2 min 30 s | 5 min | Einmal halbzeitig wenden | 3 min |
+| 3 cm | blutig | Direkt, Deckel zu | 230 °C | 3 min 30 s | 7 min | Einmal halbzeitig wenden | 3 min |
+| 4 cm | blutig | Direkt, Deckel zu | 230 °C | 6 min 30 s | 13 min | Einmal halbzeitig wenden | 5–8 min |
+| 5 cm | blutig | Reverse-Sear (indirekt zu direkt) | 230 °C | 7 min 30 s | 15 min | Einmal halbzeitig wenden | 8–10 min |
+| 1 cm | medium-rare | Direkt, Deckel zu | 230 °C | 1 min 15 s | 2 min 30 s | Einmal halbzeitig wenden | 3 min |
+| 2 cm | medium-rare | Direkt, Deckel zu | 230 °C | 3 min 30 s | 7 min | Einmal halbzeitig wenden | 3 min |
+| 3 cm | medium-rare | Direkt, Deckel zu | 230 °C | 5 min | 10 min | Einmal halbzeitig wenden | 5 min |
+| 4 cm | medium-rare | Direkt zu indirekt | 230 °C | 7 min 30 s | 15 min | Einmal halbzeitig wenden | 5–8 min |
+| 5 cm | medium-rare | Reverse-Sear (indirekt zu direkt) | 230 °C | 8 min 30 s | 17 min | Einmal halbzeitig wenden | 8–10 min |
+| 1 cm | medium | Direkt, Deckel zu | 230 °C | 2 min | 4 min | Einmal halbzeitig wenden | 3 min |
+| 2 cm | medium | Direkt, Deckel zu | 230 °C | 4 min 30 s | 9 min | Einmal halbzeitig wenden | 3 min |
+| 3 cm | medium | Direkt, Deckel zu | 230 °C | 6 min | 12 min | Einmal halbzeitig wenden | 5 min |
+| 4 cm | medium | Direkt zu indirekt | 230 °C | 9 min | 18 min | Einmal halbzeitig wenden | 5–8 min |
+| 5 cm | medium | Reverse-Sear (indirekt zu direkt) | 230 °C | 9 min 30 s | 19 min | Einmal halbzeitig wenden | 8–10 min |
+| 1 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 3 min 30 s | 7 min | Einmal halbzeitig wenden | 3 min |
+| 2 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 8 min | 16 min | Einmal halbzeitig wenden | 5 min |
+| 3 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 8 min 30 s | 17 min | Einmal halbzeitig wenden | 5 min |
 | 4 cm | durchgebraten | Direkt zu indirekt | 230 °C | 14 min | 28 min | alle 2–3 min drehen | 5–8 min |
 | 5 cm | durchgebraten | Reverse-Sear (indirekt zu direkt) | 230 °C | 14 min | 28 min | alle 2–3 min drehen | 8–10 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -110,12 +110,12 @@ Dicker als entbeintes Entrecôte; der Knochen isoliert eine Seite.
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2 cm | medium | Direkt, Deckel zu | 230 °C | 4 min 30 s | 9 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 4 cm | medium | Direkt zu indirekt | 230 °C | 9 min | 18 min | Einmal halbzeitig wenden (Migros-Standard) | 5–8 min |
-| 2 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 8 min | 16 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
-| 4 cm | durchgebraten | Direkt zu indirekt | 230 °C | 9 min | 18 min | Einmal halbzeitig wenden (Migros-Standard) | 5–8 min |
+| 2 cm | medium | Direkt, Deckel zu | 230 °C | 4 min 30 s | 9 min | Einmal halbzeitig wenden | 3 min |
+| 4 cm | medium | Direkt zu indirekt | 230 °C | 9 min | 18 min | Einmal halbzeitig wenden | 5–8 min |
+| 2 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 8 min | 16 min | Einmal halbzeitig wenden | 5 min |
+| 4 cm | durchgebraten | Direkt zu indirekt | 230 °C | 9 min | 18 min | Einmal halbzeitig wenden | 5–8 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -128,10 +128,10 @@ Zwei Muskeln, zwei Garzeiten: die Striploin-Seite ist schneller fertig als die F
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 4 cm | medium-rare | Direkt, Deckel zu | 240 °C | 4 min | 8 min | Einmal halbzeitig wenden (Migros-Standard) | 5–8 min |
-| 4 cm | medium | Direkt, Deckel zu | 240 °C | 6 min | 12 min | Einmal halbzeitig wenden (Migros-Standard) | 5–8 min |
+| 4 cm | medium-rare | Direkt, Deckel zu | 240 °C | 4 min | 8 min | Einmal halbzeitig wenden | 5–8 min |
+| 4 cm | medium | Direkt, Deckel zu | 240 °C | 6 min | 12 min | Einmal halbzeitig wenden | 5–8 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -226,7 +226,7 @@ Wird separat von Steaks behandelt, es ist ein Braten.
 | -         | medium        | Indirekt, niedrig | 200 °C     | 25 min   | 50 min | alle 2–3 min drehen | 8–10 min |
 | -         | durchgebraten | Indirekt, niedrig | 200 °C     | 30 min   | 60 min | alle 2–3 min drehen | 8–10 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -243,12 +243,12 @@ Hell, delikat. Nie über medium, Kalb wird über 60 °C trocken.
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2 cm | medium | Direkt, Deckel zu | 230 °C | 4 min 30 s | 9 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 4 cm | medium | Direkt zu indirekt | 230 °C | 9 min | 18 min | Einmal halbzeitig wenden (Migros-Standard) | 5–8 min |
-| 2 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 8 min | 16 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
+| 2 cm | medium | Direkt, Deckel zu | 230 °C | 4 min 30 s | 9 min | Einmal halbzeitig wenden | 3 min |
+| 4 cm | medium | Direkt zu indirekt | 230 °C | 9 min | 18 min | Einmal halbzeitig wenden | 5–8 min |
+| 2 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 8 min | 16 min | Einmal halbzeitig wenden | 5 min |
 | 4 cm | durchgebraten | Direkt zu indirekt | 230 °C | 14 min | 28 min | alle 2–3 min drehen | 5–8 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -259,12 +259,12 @@ Notes:
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2 cm | medium | Direkt, Deckel zu | 230 °C | 5 min | 10 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
-| 4 cm | medium | Direkt zu indirekt | 230 °C | 9 min 30 s | 19 min | Einmal halbzeitig wenden (Migros-Standard) | 5–8 min |
-| 2 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 7 min 30 s | 15 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
-| 4 cm | durchgebraten | Direkt zu indirekt | 230 °C | 11 min 30 s | 23 min | Einmal halbzeitig wenden (Migros-Standard) | 5–8 min |
+| 2 cm | medium | Direkt, Deckel zu | 230 °C | 5 min | 10 min | Einmal halbzeitig wenden | 5 min |
+| 4 cm | medium | Direkt zu indirekt | 230 °C | 9 min 30 s | 19 min | Einmal halbzeitig wenden | 5–8 min |
+| 2 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 7 min 30 s | 15 min | Einmal halbzeitig wenden | 5 min |
+| 4 cm | durchgebraten | Direkt zu indirekt | 230 °C | 11 min 30 s | 23 min | Einmal halbzeitig wenden | 5–8 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -281,16 +281,16 @@ Meist Schulter; Budget-Cut, schmeckt am besten medium-well.
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 cm | medium | Direkt, Deckel zu | 230 °C | 1 min 30 s | 3 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 2 cm | medium | Direkt, Deckel zu | 230 °C | 3 min | 6 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 3 cm | medium | Direkt, Deckel zu | 230 °C | 4 min | 8 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 4 cm | medium | Direkt, Deckel zu | 230 °C | 5 min | 10 min | Einmal halbzeitig wenden (Migros-Standard) | 5–8 min |
-| 1 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 2 min | 4 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 2 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 4 min 45 s | 9 min 30 s | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 3 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 6 min | 12 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
-| 4 cm | durchgebraten | Direkt zu indirekt | 230 °C | 7 min 30 s | 15 min | Einmal halbzeitig wenden (Migros-Standard) | 5–8 min |
+| 1 cm | medium | Direkt, Deckel zu | 230 °C | 1 min 30 s | 3 min | Einmal halbzeitig wenden | 3 min |
+| 2 cm | medium | Direkt, Deckel zu | 230 °C | 3 min | 6 min | Einmal halbzeitig wenden | 3 min |
+| 3 cm | medium | Direkt, Deckel zu | 230 °C | 4 min | 8 min | Einmal halbzeitig wenden | 3 min |
+| 4 cm | medium | Direkt, Deckel zu | 230 °C | 5 min | 10 min | Einmal halbzeitig wenden | 5–8 min |
+| 1 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 2 min | 4 min | Einmal halbzeitig wenden | 3 min |
+| 2 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 4 min 45 s | 9 min 30 s | Einmal halbzeitig wenden | 3 min |
+| 3 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 6 min | 12 min | Einmal halbzeitig wenden | 5 min |
+| 4 cm | durchgebraten | Direkt zu indirekt | 230 °C | 7 min 30 s | 15 min | Einmal halbzeitig wenden | 5–8 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -303,10 +303,10 @@ Der Reverse-Sear-Star unter den Schweinecuts. Etwa 500 g pro Stück. NICHT über
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| - | medium | Direkt, Deckel zu | 230 °C | 6 min | 12 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
-| - | durchgebraten | Direkt, Deckel zu | 230 °C | 8 min 30 s | 17 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
+| - | medium | Direkt, Deckel zu | 230 °C | 6 min | 12 min | Einmal halbzeitig wenden | 5 min |
+| - | durchgebraten | Direkt, Deckel zu | 230 °C | 8 min 30 s | 17 min | Einmal halbzeitig wenden | 5 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -315,13 +315,13 @@ Notes:
 
 ### Schweinshals (Pork neck / collar / Schopfbraten steak)
 
-Das Schweizer BBQ-Arbeitstier. Fett, aromatisch, gutmütig. Marinierte Varianten dominieren die Migros-Regale.
+Das Schweizer BBQ-Arbeitstier. Fett, aromatisch, gutmütig. Marinierte Varianten sind im DACH-Handel allgegenwärtig.
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total  | Turns                                      | Rest  |
 | --------- | -------- | ----------------- | ---------- | -------- | ------ | ------------------------------------------ | ----- |
-| -         | -        | Direkt, Deckel zu | 230 °C     | 7 min    | 14 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
+| -         | -        | Direkt, Deckel zu | 230 °C     | 7 min    | 14 min | Einmal halbzeitig wenden | 5 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -336,7 +336,7 @@ Wird als Braten behandelt.
 | --------- | -------- | ----------------- | ---------- | -------- | ------ | ------------------- | -------- |
 | -         | -        | Indirekt, niedrig | 230 °C     | 30 min   | 60 min | alle 2–3 min drehen | 8–10 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ### Schweinskoteletts (Pork chops, bone-in)
 
@@ -344,9 +344,9 @@ Magerer Rücken plus Knochen. Dünne trocknen sofort aus, wenn möglich ab 2.5 c
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total  | Turns                                      | Rest  |
 | --------- | -------- | ----------------- | ---------- | -------- | ------ | ------------------------------------------ | ----- |
-| -         | -        | Direkt, Deckel zu | 220 °C     | 5 min    | 10 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
+| -         | -        | Direkt, Deckel zu | 220 °C     | 5 min    | 10 min | Einmal halbzeitig wenden | 5 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -359,9 +359,9 @@ Nur niedrig und langsam. Buchlanges Thema; hier die 3-2-1-Variante für den Gasg
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total  | Turns                                      | Rest  |
 | --------- | -------- | ----------------- | ---------- | -------- | ------ | ------------------------------------------ | ----- |
-| -         | -        | Direkt, Deckel zu | 230 °C     | 5 min    | 10 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
+| -         | -        | Direkt, Deckel zu | 230 °C     | 5 min    | 10 min | Einmal halbzeitig wenden | 5 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -390,12 +390,12 @@ Schweizer Cut, üblicherweise 2–3 cm dick.
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| - | blutig | Direkt, Deckel zu | 230 °C | 3 min 30 s | 7 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| - | medium-rare | Direkt, Deckel zu | 230 °C | 4 min 30 s | 9 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| - | medium | Direkt, Deckel zu | 230 °C | 6 min 30 s | 13 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
-| - | durchgebraten | Direkt, Deckel zu | 230 °C | 8 min 30 s | 17 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
+| - | blutig | Direkt, Deckel zu | 230 °C | 3 min 30 s | 7 min | Einmal halbzeitig wenden | 3 min |
+| - | medium-rare | Direkt, Deckel zu | 230 °C | 4 min 30 s | 9 min | Einmal halbzeitig wenden | 3 min |
+| - | medium | Direkt, Deckel zu | 230 °C | 6 min 30 s | 13 min | Einmal halbzeitig wenden | 5 min |
+| - | durchgebraten | Direkt, Deckel zu | 230 °C | 8 min 30 s | 17 min | Einmal halbzeitig wenden | 5 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ### Lamm-Koteletts (Lamb chops, bone-in)
 
@@ -403,10 +403,10 @@ Klein, schnell. Klassisch mit Rosmarin.
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| - | medium | Direkt, Deckel zu | 230 °C | 3 min 30 s | 7 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| - | durchgebraten | Direkt, Deckel zu | 230 °C | 4 min 30 s | 9 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
+| - | medium | Direkt, Deckel zu | 230 °C | 3 min 30 s | 7 min | Einmal halbzeitig wenden | 3 min |
+| - | durchgebraten | Direkt, Deckel zu | 230 °C | 4 min 30 s | 9 min | Einmal halbzeitig wenden | 3 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -417,16 +417,16 @@ Notes:
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2 cm | blutig | Direkt, Deckel zu | 230 °C | 2 min | 4 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 3 cm | blutig | Direkt, Deckel zu | 230 °C | 3 min | 6 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 2 cm | medium-rare | Direkt, Deckel zu | 230 °C | 2 min 30 s | 5 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 3 cm | medium-rare | Direkt, Deckel zu | 230 °C | 4 min | 8 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 2 cm | medium | Direkt, Deckel zu | 230 °C | 3 min 15 s | 6 min 30 s | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 3 cm | medium | Direkt, Deckel zu | 230 °C | 5 min | 10 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
-| 2 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 4 min 15 s | 8 min 30 s | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 3 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 6 min 15 s | 12 min 30 s | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
+| 2 cm | blutig | Direkt, Deckel zu | 230 °C | 2 min | 4 min | Einmal halbzeitig wenden | 3 min |
+| 3 cm | blutig | Direkt, Deckel zu | 230 °C | 3 min | 6 min | Einmal halbzeitig wenden | 3 min |
+| 2 cm | medium-rare | Direkt, Deckel zu | 230 °C | 2 min 30 s | 5 min | Einmal halbzeitig wenden | 3 min |
+| 3 cm | medium-rare | Direkt, Deckel zu | 230 °C | 4 min | 8 min | Einmal halbzeitig wenden | 3 min |
+| 2 cm | medium | Direkt, Deckel zu | 230 °C | 3 min 15 s | 6 min 30 s | Einmal halbzeitig wenden | 3 min |
+| 3 cm | medium | Direkt, Deckel zu | 230 °C | 5 min | 10 min | Einmal halbzeitig wenden | 5 min |
+| 2 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 4 min 15 s | 8 min 30 s | Einmal halbzeitig wenden | 3 min |
+| 3 cm | durchgebraten | Direkt, Deckel zu | 230 °C | 6 min 15 s | 12 min 30 s | Einmal halbzeitig wenden | 5 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ### Lamm-Rack (Rack of lamb / Carré d'agneau)
 
@@ -434,10 +434,10 @@ Reverse-Sear ist der Move.
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| - | medium | Direkt, Deckel zu | 230 °C | 7 min | 14 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
-| - | durchgebraten | Direkt, Deckel zu | 230 °C | 9 min | 18 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
+| - | medium | Direkt, Deckel zu | 230 °C | 7 min | 14 min | Einmal halbzeitig wenden | 5 min |
+| - | durchgebraten | Direkt, Deckel zu | 230 °C | 9 min | 18 min | Einmal halbzeitig wenden | 5 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -452,7 +452,7 @@ Klassisches Bratenterritorium.
 | --------- | -------- | ----------------- | ---------- | ----------- | ------ | ------------------- | -------- |
 | -         | -        | Indirekt, niedrig | 200 °C     | 27 min 30 s | 55 min | alle 2–3 min drehen | 8–10 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -469,12 +469,12 @@ Sehr mager, sehr rot, gart SCHNELL, 2–3 °C früher ziehen.
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| - | blutig | Direkt, Deckel zu | 230 °C | 2 min | 4 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| - | medium-rare | Direkt, Deckel zu | 230 °C | 3 min 30 s | 7 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| - | medium | Direkt, Deckel zu | 230 °C | 5 min | 10 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
-| - | durchgebraten | Direkt, Deckel zu | 230 °C | 8 min | 16 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
+| - | blutig | Direkt, Deckel zu | 230 °C | 2 min | 4 min | Einmal halbzeitig wenden | 3 min |
+| - | medium-rare | Direkt, Deckel zu | 230 °C | 3 min 30 s | 7 min | Einmal halbzeitig wenden | 3 min |
+| - | medium | Direkt, Deckel zu | 230 °C | 5 min | 10 min | Einmal halbzeitig wenden | 5 min |
+| - | durchgebraten | Direkt, Deckel zu | 230 °C | 8 min | 16 min | Einmal halbzeitig wenden | 5 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -489,9 +489,9 @@ Notes:
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total  | Turns                                      | Rest  |
 | --------- | -------- | ----------------- | ---------- | -------- | ------ | ------------------------------------------ | ----- |
-| -         | -        | Direkt, Deckel zu | 220 °C     | 6 min    | 12 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
+| -         | -        | Direkt, Deckel zu | 220 °C     | 6 min    | 12 min | Einmal halbzeitig wenden | 5 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -504,9 +504,9 @@ Ohne Knochen ohne Haut, ohne Knochen mit Haut oder mit Knochen und Haut.
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| - | - | Direkt, Deckel zu | 220 °C | 8 min 30 s | 17 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
+| - | - | Direkt, Deckel zu | 220 °C | 8 min 30 s | 17 min | Einmal halbzeitig wenden | 5 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -519,9 +519,9 @@ Knusprige Haut ist das Ziel. Zwei Schulen: indirekt heiss-und-langsam, oder indi
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total  | Turns                                      | Rest  |
 | --------- | -------- | ----------------- | ---------- | -------- | ------ | ------------------------------------------ | ----- |
-| -         | -        | Direkt, Deckel zu | 250 °C     | 10 min   | 20 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
+| -         | -        | Direkt, Deckel zu | 250 °C     | 10 min   | 20 min | Einmal halbzeitig wenden | 5 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -561,10 +561,10 @@ Der Klassiker: Fett einritzen, mit der Hautseite auf einer kühlen Zone starten,
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| - | medium | Direkt, Deckel zu | 230 °C | 5 min 30 s | 11 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
-| - | durchgebraten | Direkt, Deckel zu | 230 °C | 8 min 30 s | 17 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
+| - | medium | Direkt, Deckel zu | 230 °C | 5 min 30 s | 11 min | Einmal halbzeitig wenden | 5 min |
+| - | durchgebraten | Direkt, Deckel zu | 230 °C | 8 min 30 s | 17 min | Einmal halbzeitig wenden | 5 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -578,10 +578,10 @@ Magerer als Pouletbrust, gleiche Regeln, aber gefährlicher, weil schneller troc
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 cm | - | Direkt, Deckel zu | 220 °C | 2 min 45 s | 5 min 30 s | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
-| 2 cm | - | Direkt, Deckel zu | 220 °C | 5 min | 10 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
+| 1 cm | - | Direkt, Deckel zu | 220 °C | 2 min 45 s | 5 min 30 s | Einmal halbzeitig wenden | 3 min |
+| 2 cm | - | Direkt, Deckel zu | 220 °C | 5 min | 10 min | Einmal halbzeitig wenden | 5 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -599,9 +599,9 @@ Rohe grobe Wurst, etwa 30 mm Pelle. Klassisch DACH-Region.
 
 | Thickness | Doneness | Heat zone          | Grate temp | Per side | Total  | Turns                                      | Rest |
 | --------- | -------- | ------------------ | ---------- | -------- | ------ | ------------------------------------------ | ---- |
-| -         | -        | Direkt zu indirekt | 230 °C     | 6 min    | 12 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt zu indirekt | 230 °C     | 6 min    | 12 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ### Cervelat
 
@@ -609,9 +609,9 @@ Vorgegarter Schweizer Klassiker. Vor dem Grillen die Enden kreuzweise einschneid
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| - | - | Direkt zu indirekt | 250 °C | 3 min 30 s | 7 min | Einmal halbzeitig wenden (Migros-Standard) | - |
+| - | - | Direkt zu indirekt | 250 °C | 3 min 30 s | 7 min | Einmal halbzeitig wenden | - |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -624,9 +624,9 @@ Wie Cervelat, nur grösser.
 
 | Thickness | Doneness | Heat zone          | Grate temp | Per side | Total  | Turns                                      | Rest |
 | --------- | -------- | ------------------ | ---------- | -------- | ------ | ------------------------------------------ | ---- |
-| -         | -        | Direkt zu indirekt | 220 °C     | 7 min    | 14 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt zu indirekt | 220 °C     | 7 min    | 14 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ### Grillschnecke / Bratwurstschnecke
 
@@ -634,9 +634,9 @@ Aufgerollte rohe Wurst auf zwei Spiessen.
 
 | Thickness | Doneness | Heat zone          | Grate temp | Per side | Total | Turns                                      | Rest |
 | --------- | -------- | ------------------ | ---------- | -------- | ----- | ------------------------------------------ | ---- |
-| -         | -        | Direkt zu indirekt | 220 °C     | 4 min    | 8 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt zu indirekt | 220 °C     | 4 min    | 8 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -648,9 +648,9 @@ Vorgegart oder halbroh; Schweizer St. Galler Bratwurst wird NIE eingestochen, NI
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| - | - | Direkt zu indirekt | 220 °C | 4 min 30 s | 9 min | Einmal halbzeitig wenden (Migros-Standard) | - |
+| - | - | Direkt zu indirekt | 220 °C | 4 min 30 s | 9 min | Einmal halbzeitig wenden | - |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -663,9 +663,9 @@ Dünn, scharf, Lamm und Rind. Schnell.
 
 | Thickness | Doneness | Heat zone          | Grate temp | Per side | Total | Turns                                      | Rest |
 | --------- | -------- | ------------------ | ---------- | -------- | ----- | ------------------------------------------ | ---- |
-| -         | -        | Direkt zu indirekt | 220 °C     | 4 min    | 8 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt zu indirekt | 220 °C     | 4 min    | 8 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ### Italian sausage (Salsiccia)
 
@@ -713,9 +713,9 @@ Sources: [Weber-DE] Nürnberger 4–5 min. [Grillportal] gleich.
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| - | - | Direkt, Deckel zu | 220 °C | 7 min 30 s | 15 min | Einmal halbzeitig wenden (Migros-Standard) | 5 min |
+| - | - | Direkt, Deckel zu | 220 °C | 7 min 30 s | 15 min | Einmal halbzeitig wenden | 5 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -727,9 +727,9 @@ Das Serious-Eats-Schema: Dicke plus Smash gegen Pub-Style. Alle Temperaturen sin
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| - | - | Direkt, Deckel zu | 220 °C | 4 min 30 s | 9 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
+| - | - | Direkt, Deckel zu | 220 °C | 4 min 30 s | 9 min | Einmal halbzeitig wenden | 3 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -742,9 +742,9 @@ Die langsamste Komponente bestimmt die Zeit; alle Stücke gleich dick halten.
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total | Turns                                      | Rest  |
 | --------- | -------- | ----------------- | ---------- | -------- | ----- | ------------------------------------------ | ----- |
-| -         | -        | Direkt, Deckel zu | 220 °C     | 3 min    | 6 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
+| -         | -        | Direkt, Deckel zu | 220 °C     | 3 min    | 6 min | Einmal halbzeitig wenden | 3 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ### Kaninchenfilets (Kaninchen-Filets)
 
@@ -752,9 +752,9 @@ Mager, delikat, sehr wenig Fett, gart schnell, übergart noch schneller.
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| - | - | Direkt, Deckel zu | 230 °C | 2 min 30 s | 5 min | Einmal halbzeitig wenden (Migros-Standard) | 3 min |
+| - | - | Direkt, Deckel zu | 230 °C | 2 min 30 s | 5 min | Einmal halbzeitig wenden | 3 min |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ---
 
@@ -770,9 +770,9 @@ Allgemeine Regeln:
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total  | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ------ | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 200 °C     | 5 min    | 10 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 200 °C     | 5 min    | 10 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -783,9 +783,9 @@ Notes:
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ----- | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 200 °C     | 3 min    | 6 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 200 °C     | 3 min    | 6 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -796,10 +796,10 @@ Notes:
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 cm | - | Direkt, Deckel zu | 200 °C | 2 min 45 s | 5 min 30 s | Einmal halbzeitig wenden (Migros-Standard) | - |
-| 2 cm | - | Direkt, Deckel zu | 200 °C | 5 min | 10 min | Einmal halbzeitig wenden (Migros-Standard) | - |
+| 1 cm | - | Direkt, Deckel zu | 200 °C | 2 min 45 s | 5 min 30 s | Einmal halbzeitig wenden | - |
+| 2 cm | - | Direkt, Deckel zu | 200 °C | 5 min | 10 min | Einmal halbzeitig wenden | - |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -810,9 +810,9 @@ Notes:
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total  | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ------ | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 200 °C     | 9 min    | 18 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 200 °C     | 9 min    | 18 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -825,9 +825,9 @@ Maximales Anbraten, innen blutig oder höchstens medium, alles darüber ist Tunf
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ----- | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 250 °C     | 2 min    | 4 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 250 °C     | 2 min    | 4 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -850,9 +850,9 @@ Notes:
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ----- | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 200 °C     | 4 min    | 8 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 200 °C     | 4 min    | 8 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -865,9 +865,9 @@ Sehr schnell oder sehr langsam, nichts dazwischen.
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ----- | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 230 °C     | 4 min    | 8 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 230 °C     | 4 min    | 8 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ---
 
@@ -882,9 +882,9 @@ Allgemeine Regeln:
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total  | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ------ | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 220 °C     | 6 min    | 12 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 220 °C     | 6 min    | 12 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -894,9 +894,9 @@ Notes:
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ----- | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 200 °C     | 3 min    | 6 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 200 °C     | 3 min    | 6 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -906,9 +906,9 @@ Notes:
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side   | Total | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | ---------- | ----- | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 200 °C     | 2 min 30 s | 5 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 200 °C     | 2 min 30 s | 5 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -918,9 +918,9 @@ Notes:
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side   | Total | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | ---------- | ----- | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 230 °C     | 2 min 30 s | 5 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 230 °C     | 2 min 30 s | 5 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ### Halloumi
 
@@ -928,9 +928,9 @@ Grillt sich gut, weil er nicht schmilzt; sehr proteinreich, sehr fehlerverzeihen
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ----- | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 220 °C     | 4 min    | 8 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 220 °C     | 4 min    | 8 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ### Paneer
 
@@ -938,9 +938,9 @@ Weniger fehlerverzeihend als Halloumi, wird heiss schnell gummig.
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total  | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ------ | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 220 °C     | 5 min    | 10 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 220 °C     | 5 min    | 10 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ### Knoblauch (Garlic, whole head in foil)
 
@@ -948,7 +948,7 @@ Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-
 | --------- | -------- | ----------------- | ---------- | ----------- | ------ | ------------------- | ---- |
 | -         | -        | Direkt, Deckel zu | 200 °C     | 12 min 30 s | 25 min | alle 2–3 min drehen | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ### Maiskolben (Corn on the cob)
 
@@ -956,17 +956,17 @@ Zwei Methoden: enthülst direkt, oder im Blatt (gewässert) indirekt.
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total  | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ------ | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 200 °C     | 5 min    | 10 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 200 °C     | 5 min    | 10 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ### Pak Choi (halved)
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total  | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ------ | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 200 °C     | 6 min    | 12 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 200 °C     | 6 min    | 12 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -976,17 +976,17 @@ Notes:
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| - | - | Direkt, Deckel zu | 200 °C | 7 min 30 s | 15 min | Einmal halbzeitig wenden (Migros-Standard) | - |
+| - | - | Direkt, Deckel zu | 200 °C | 7 min 30 s | 15 min | Einmal halbzeitig wenden | - |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ### Spargeln (Asparagus, green)
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side   | Total | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | ---------- | ----- | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 200 °C     | 3 min 30 s | 7 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 200 °C     | 3 min 30 s | 7 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -998,7 +998,7 @@ Notes:
 | --------- | -------- | ----------------- | ---------- | ----------- | ------ | ------------------- | ---- |
 | -         | -        | Direkt, Deckel zu | 200 °C     | 17 min 30 s | 35 min | alle 2–3 min drehen | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ### Tofu (fest, gepresst)
 
@@ -1006,9 +1006,9 @@ Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total  | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ------ | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 220 °C     | 5 min    | 10 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 220 °C     | 5 min    | 10 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -1019,41 +1019,41 @@ Notes:
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ----- | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 200 °C     | 4 min    | 8 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 200 °C     | 4 min    | 8 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ### Zucchetti / Zucchini (slices lengthwise)
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ----- | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 200 °C     | 3 min    | 6 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 200 °C     | 3 min    | 6 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ### Fenchel (Fennel, halved or wedges)
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| - | - | Direkt, Deckel zu | 200 °C | 7 min 30 s | 15 min | Einmal halbzeitig wenden (Migros-Standard) | - |
+| - | - | Direkt, Deckel zu | 200 °C | 7 min 30 s | 15 min | Einmal halbzeitig wenden | - |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ### Frühlingszwiebeln (Spring onions, whole)
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side   | Total | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | ---------- | ----- | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 200 °C     | 2 min 30 s | 5 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 200 °C     | 2 min 30 s | 5 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ### Plant-based burger patty (Beyond, Impossible, Cornatur)
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side   | Total | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | ---------- | ----- | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 250 °C     | 4 min 30 s | 9 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 250 °C     | 4 min 30 s | 9 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -1065,9 +1065,9 @@ Notes:
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ----- | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 200 °C     | 4 min    | 8 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 200 °C     | 4 min    | 8 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ---
 
@@ -1079,33 +1079,33 @@ Regeln für gegrilltes Obst: trockene Oberfläche, heisser Rost, leicht ölen, n
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ----- | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 200 °C     | 4 min    | 8 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 200 °C     | 4 min    | 8 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ### Apfel (Apple, halved or rings)
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ----- | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 200 °C     | 4 min    | 8 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 200 °C     | 4 min    | 8 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ### Aprikosen (Apricots, halved)
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ----- | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 200 °C     | 2 min    | 4 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 200 °C     | 2 min    | 4 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ### Avocado (Halved, pit removed)
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ----- | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 200 °C     | 2 min    | 4 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 200 °C     | 2 min    | 4 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -1116,17 +1116,17 @@ Notes:
 
 | Thickness | Doneness | Heat zone | Grate temp | Per side | Total | Turns | Rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| - | - | Direkt, Deckel zu | 200 °C | 7 min 30 s | 15 min | Einmal halbzeitig wenden (Migros-Standard) | - |
+| - | - | Direkt, Deckel zu | 200 °C | 7 min 30 s | 15 min | Einmal halbzeitig wenden | - |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ### Feigen (Figs, halved)
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side   | Total | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | ---------- | ----- | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 200 °C     | 2 min 30 s | 5 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 200 °C     | 2 min 30 s | 5 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -1136,9 +1136,9 @@ Notes:
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ----- | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 200 °C     | 2 min    | 4 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 200 °C     | 2 min    | 4 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ### Marroni (Chestnuts, scored)
 
@@ -1146,7 +1146,7 @@ Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-
 | --------- | -------- | ----------------- | ---------- | -------- | ------ | ------------------- | ---- |
 | -         | -        | Direkt, Deckel zu | 200 °C     | 15 min   | 30 min | alle 2–3 min drehen | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -1157,25 +1157,25 @@ Notes:
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ----- | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 200 °C     | 2 min    | 4 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 200 °C     | 2 min    | 4 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ### Pfirsiche (Peaches, halved)
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ----- | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 200 °C     | 2 min    | 4 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 200 °C     | 2 min    | 4 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 ### Wassermelone (Watermelon, thick slices)
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ----- | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 200 °C     | 2 min    | 4 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 200 °C     | 2 min    | 4 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -1185,9 +1185,9 @@ Notes:
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total | Turns                                      | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ----- | ------------------------------------------ | ---- |
-| -         | -        | Direkt, Deckel zu | 200 °C     | 2 min    | 4 min | Einmal halbzeitig wenden (Migros-Standard) | -    |
+| -         | -        | Direkt, Deckel zu | 200 °C     | 2 min    | 4 min | Einmal halbzeitig wenden | -    |
 
-Sources: [Migros-Grilltimer] aus dem grillitarier.migros.ch App-Bundle (2026-04-25) extrahiert.
+Sources: [Migros-Grilltimer].
 
 Notes:
 
@@ -1218,16 +1218,16 @@ Notes:
 
 Punkte, an denen Quellen materiell auseinandergehen oder Grillmi eine Marco-Entscheidung braucht:
 
-- **Pull-Temperatur für Schwein, 63 °C (USDA / modern) gegen 70 °C (konservativ DACH)**. Migros Grilltimer und neuere Schweizer Quellen nutzen 62–63 °C für ganzes Schweinemuskelfleisch, ältere Schweizer Literatur nennt weiterhin 70 °C. Grillmi-Standard gewählt: **63 °C für ganzes Muskelfleisch, 70 °C für Hackfleisch und Braten**. Bestätigen, dass das für ein Schweiz-zuerst-Publikum passt, oder als benutzerseitige Voreinstellung anbieten.
+- **Pull-Temperatur für Schwein, 63 °C (USDA / modern) gegen 70 °C (konservativ DACH)**. `[Migros-Grilltimer]` und neuere Schweizer Quellen nutzen 62–63 °C für ganzes Schweinemuskelfleisch, ältere Schweizer Literatur nennt weiterhin 70 °C. Grillmi-Standard gewählt: **63 °C für ganzes Muskelfleisch, 70 °C für Hackfleisch und Braten**. Bestätigen, dass das für ein Schweiz-zuerst-Publikum passt, oder als benutzerseitige Voreinstellung anbieten.
 - **Pull-Temperatur für selbstgemachte Burger-Patties**. USDA und BLV nennen 70 °C, weil das Mahlen das Innere kontaminiert. Ein grosser Teil der Schweizer BBQ-Kultur isst Burger trotzdem medium-rare. Grillmi-Standard gewählt: **70 °C Pull**, mit explizitem Override "Nur selbst gemahlen, auf eigenes Risiko". Braucht UX-Überlegung.
 - **Einmal wenden gegen häufig wenden bei Steaks**. Beides funktioniert, die Forschung stützt häufiges Wenden als leicht gleichmässiger. Aktueller Grillmi-Standard: einmal wenden bis 3 cm, alle 60 s wenden bei Reverse-Sear und dicken Cuts. Liesse sich vereinfachen.
 - **Senf-Debatte zur St. Galler Bratwurst**: reine Tradition, keine Lebensmittelsicherheits-Frage; falls Grillmi Tipps zeigt, brauchen wir eine Position. Vorschlag: neutralen Hinweis zeigen, ohne Empfehlung.
-- **Pferdesteak**: nur Schweizer Quellen, keine Weber- oder Serious-Eats-Abdeckung. Werte basieren auf der Migros-Grilltimer-App allein, nicht trianguliert. Als "Schweizer Spezialität, Einzelquelle" markieren, falls wir Quellenvertrauen anzeigen.
-- **Riesencrevetten-Zeiten**: Migros nennt 3 min/Seite, Weber 2 min/Seite. 50 % Diskrepanz. 2 min/Seite gewählt (Weber passt besser zur Crevettengrösse), wer es fester mag, gibt 30 s dazu.
+- **Pferdesteak**: nur Schweizer Quellen, keine Weber- oder Serious-Eats-Abdeckung. Werte basieren auf `[Migros-Grilltimer]` allein, nicht trianguliert. Als "Schweizer Spezialität, Einzelquelle" markieren, falls wir Quellenvertrauen anzeigen.
+- **Riesencrevetten-Zeiten**: `[Migros-Grilltimer]` nennt 3 min/Seite, `[Weber-DE]` 2 min/Seite. 50 % Diskrepanz. 2 min/Seite gewählt (Weber passt besser zur Crevettengrösse), wer es fester mag, gibt 30 s dazu.
 - **Ribs-Methode (3-2-1 gegen ungewickelt)**: massive BBQ-Forum-Debatte, keine einzelne richtige Antwort. Grillmi-Standard gewählt: **2-2-1 für Baby Back, 3-2-1 für St. Louis**, mit ungewickelter Alternative für Puristen.
 - **Chicken Wings**: backpulver-trockenpökeln ist messbar knuspriger [Meathead, SE], aber ein Extra-Schritt. Soll Grillmi standardmässig die einfache Version zeigen und den Backpulver-Tipp dazustellen, oder die optimierte Methode als Standard? Vorschlag: einfacher Standard, Tipp verfügbar.
 - **Ganzer Fisch ohne Korb**: setzt einen gut geölten, heissen, sauberen Rost voraus. In der Praxis zerreissen Nutzer:innen die Haut. Grillmi sollte für Forelle und Dorade einen Fischkorb empfehlen und das deutlich sagen.
 - **Plant-based-Patties Kerntemperatur**: keine offizielle Empfehlung von Beyond oder Impossible. 65–70 °C "durchgewärmt" gewählt, in Analogie zur Hackfleisch-Sicherheit; diese Produkte enthalten aber kein rohes Protein, das pasteurisiert werden müsste, also überdimensioniert. Position bestätigen.
 - **Dicker Spargel**: Zeiten für weissen Spargel sind in Grillquellen schlecht abgedeckt; die meisten Schweizer Quellen kochen und buttern. Falls Grillmi weisse Spargeln zeigt, ist die obige Vorkoch-und-Grill-Methode eine von mehreren plausiblen Varianten.
-- **Feature-Parität mit dem Migros-Grilltimer**: wir haben die volle App-Spezifikation in diesem Dokument noch nicht; ein Side-by-Side-Vergleich der Migros-App-Items mit dieser Referenz fehlt, um fehlende SKUs (z. B. spezifische Migros-Marinaden wie "M-Classic Schweinshals mariniert" mit voreingestellten Zeiten) zu finden.
+- **Abdeckung mariniert / fertig gewürzt**: Werte gelten für unmarinierte Cuts. Marinierte oder fertig gewürzte Handelsprodukte können je nach Zucker- und Salzgehalt schneller bräunen oder festere Krusten bilden; ggf. 30–60 s/Seite kürzen oder indirekt zu Ende garen.
 - **Höhen- und Windkorrekturen**: keine der Quellen liefert einen sauberen Anpassungsfaktor. Im Schweizer Kontext (Alpen) verlängert windiges Grillen im Freien auf Höhe indirekte Garzeiten realistisch um 10–20 %. Out of scope für v1, aber als zukünftiger Punkt notiert.
