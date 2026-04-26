@@ -2,7 +2,7 @@
 
 ## Meta
 
-- Status: Draft
+- Status: Reviewed
 - Branch: feature/gluehen
 
 ---
@@ -11,11 +11,19 @@
 
 ### Goal
 
-Replace the current Grillmi UI with the editorial dark direction codenamed "Glühen". The state machine, data model, scheduler, and feature surface stay where they are. The tokens, typography, layout, motion, and a handful of UX moves change. The result should feel like a confident outdoor companion app rather than an internal tool.
+Replace the current Grillmi UI with a pixel-faithful Svelte implementation of Claude Design's "Glühen" handoff in `Grillmi.zip`. The state machine, data model, scheduler, and feature surface stay where they are. The tokens, typography, layout, motion, and a handful of UX moves change. The result should match the bundled prototype before it is treated as done.
 
 ### Proposal
 
-Adopt the high-fidelity dark "Glühen" direction across every user-facing screen as a single feature-branch cutover. Tokens get rewired to the ember-on-charcoal palette with editorial Barlow Condensed numerals; Home gains a hero glow and recent-Menü strip; Plan grows a unified three-way mode segmented control with manual mode living entirely on Plan; Session moves to a big-rings grid with a pulsing bottom-pinned alarm banner; Settings consolidates eight chimes down to five named tones with bespoke audio. Saved menus get renamed from "Plan-Vorlage" to "Menü" with the route moving from `/plans` to `/menus`.
+Adopt the high-fidelity dark "Glühen" direction across every user-facing screen as a single feature-branch cutover. The canonical reference is the Claude Design bundle at repo root: `Grillmi.zip`, specifically `design_handoff_grillmi_redesign/README.md`, `design_handoff_grillmi_redesign/design/Grillmi Redesign.html`, and `design_handoff_grillmi_redesign/design/direction-a.jsx`. Tokens get rewired to the ember-on-charcoal palette with editorial Barlow Condensed numerals; Home gains a hero glow and recent-Menü strip; Plan grows a unified three-way mode segmented control with manual mode living entirely on Plan; Session moves to a big-rings grid with a pulsing bottom-pinned alarm banner; Settings consolidates eight chimes down to five named tones with bespoke audio. Saved menus get renamed from "Plan-Vorlage" to "Menü" with the route moving from `/plans` to `/menus`.
+
+### Fidelity contract
+
+1. `Grillmi.zip` is the source of truth for color, typography, spacing, radius, motion, and screen composition. If this spec and the bundle disagree on a visual detail, the bundle wins unless this spec explicitly calls out a deliberate product deviation.
+2. The implementation translates the prototype into the existing Svelte/SvelteKit app. Do not port the prototype's React state hooks, mock data, `ios-frame.jsx`, `design-canvas.jsx`, or `tweaks-panel.jsx` into production.
+3. Pixel-perfect means the rebuilt app is visually indistinguishable from the Direction A prototype at the primary 390 px mobile viewport for all covered screens. Acceptable drift is at most 4 px for spacing and alignment, no perceptible color mismatch, no typography weight or family mismatch, and no missing motion on alarm state. Dynamic values such as countdown seconds may differ; those values are masked or frozen during visual comparison.
+4. Before implementation starts, extract the bundle to a deterministic local folder excluded from production code: `rm -rf .tmp/grillmi-design && mkdir -p .tmp/grillmi-design && unzip -q Grillmi.zip -d .tmp/grillmi-design`. Serve `.tmp/grillmi-design/design_handoff_grillmi_redesign/design/` with a local static server when taking prototype screenshots.
+5. Each major screen must be checked against a prototype screenshot before its phase is marked complete: Home, Plan empty, Plan filled, Plan manual, AddItem category, AddItem cut, AddItem specs, Session with alarm, Menüs, and Settings with a tone row expanded.
 
 ### Behaviors
 
@@ -102,9 +110,11 @@ Adopt the high-fidelity dark "Glühen" direction across every user-facing screen
 
 ### Approach
 
-The work is one feature branch (`feature/gluehen`) that lands every screen, the token system, the new components, and the audio swap as a single merge to `main`. The branch lives under `/home/maf/dev/grillmi` since `/opt/grillmi` is hard-reset by the deploy playbook; the deploy playbook picks up `main` on the next run.
+The work is one feature branch (`feature/gluehen`) that lands every screen, the token system, the new components, and the audio swap as a single merge to `main`. Work in the repository root where this spec lives (`/opt/grillmi` in the current environment), and keep the Claude Design bundle available at `Grillmi.zip` until the visual QA pass is complete.
 
-The token migration in `src/app.css` is the foundation. The current OKLCH neutrals are replaced with the Glühen palette converted to OKLCH where the value preserves theming (background ramp, text ramp, status colors) and kept as raw hex where the prototype specifies a brand-tied value (ember, ember-dim, ember-ink). Every existing token name (`--color-bg-base`, `--color-fg-base`, `--color-accent-default`, status colors, etc.) keeps its name; only its value changes. The new `--color-border-strong-translucent` and `--color-border-subtle-translucent` are added for the prototype's `rgba(255,255,255,0.06|0.12)` hairlines; existing solid border tokens stay for places that depend on them. The `--font-mono` token is deleted; every consumer is updated to `--font-display` plus `font-variant-numeric: tabular-nums`. The display font stack swaps Barlow Condensed to the front of `--font-display` and the same family doubles as the condensed-numeral font for cook times and durations. Barlow Condensed and Inter are self-hosted as WOFF2 under `/static/fonts/` with `@font-face` declarations at weights 400, 500, 600, and 700 and `font-display: swap`. The service worker pre-caches them so the PWA stays fully offline after first load.
+The implementation starts by extracting the design bundle to `.tmp/grillmi-design/` and opening `.tmp/grillmi-design/design_handoff_grillmi_redesign/design/Grillmi Redesign.html` in Chromium. Use the prototype as a visual reference, not as source code. The production Svelte code keeps Grillmi's real stores, generated timing data, route files, IndexedDB schema, service worker, and test harness. The prototype's `direction-a.jsx` gives exact styles and component composition; `shared.jsx` only clarifies prototype state shape and must not replace `src/lib/data/timings.generated.json` or the existing store model.
+
+The token migration in `src/app.css` is the foundation. The current OKLCH neutrals are replaced with the Glühen palette converted to OKLCH where the value preserves theming (background ramp, text ramp, status colors) and kept as raw hex where the prototype specifies a brand-tied value (ember, ember-dim, ember-ink). Every existing token name keeps its name, including `--color-bg-base`, `--color-fg-base`, `--color-accent-default`, `--color-state-pending`, `--color-state-cooking`, `--color-state-resting`, `--color-state-ready`, `--color-state-plated`, `--color-error-default`, and the border tokens; only the values change. The new `--color-border-strong-translucent` and `--color-border-subtle-translucent` are added for the prototype's `rgba(255,255,255,0.06|0.12)` hairlines; existing solid border tokens stay for places that depend on them. The `--font-mono` token is deleted; every consumer is updated to `--font-display` plus `font-variant-numeric: tabular-nums`. The display font stack swaps Barlow Condensed to the front of `--font-display` and the same family doubles as the condensed-numeral font for cook times and durations. Barlow Condensed and Inter are self-hosted as WOFF2 under `/static/fonts/` with `@font-face` declarations at weights 400, 500, 600, and 700 and `font-display: swap`. The service worker pre-caches them so the PWA stays fully offline after first load.
 
 The light-theme block under `:where([data-theme='light'])` updates to mirror the new dark token semantics with inverted background and text values; the ember accent stays identical across themes.
 
@@ -124,18 +134,21 @@ The install-app chip on Home reuses the existing `beforeinstallprompt` capture p
 
 ### Approach Validation
 
-1. **Direction-A.jsx is a high-fidelity visual spec, not a state machine.** I read the full file, the README, and the original-brief alongside the current Svelte components. The redesign assumes the data model and feature surface that already exist in Grillmi today; every component in the prototype maps to an existing Svelte component or to a small new atom. No state-machine changes are required, which keeps the scope to tokens, atoms, layouts, and copy.
+1. **Direction-A.jsx is a high-fidelity visual spec, not a state machine.** I read the full file, the README, and the original-brief from `Grillmi.zip` alongside the current Svelte components. The redesign assumes the data model and feature surface that already exist in Grillmi today; every component in the prototype maps to an existing Svelte component or to a small new atom. No state-machine changes are required, which keeps the scope to tokens, atoms, layouts, and copy.
 2. **The redesign predates the favorit-plan-vorlage split.** The prototype does not show the Favoriten tab inside AddItemSheet or the "★ Plan-Vorlage" append button on Plan, both of which shipped 2026-04-25. Dropping them would be a feature regression. Preserving both is the right call: the Favoriten tab keeps its tab-pivot pattern in the rebuilt sheet, and the append button stays on Plan with copy renamed from "Plan-Vorlage" to "Menü". This is a deliberate deviation from the literal prototype.
-3. **CSS scroll-snap is the right tool for the eating-time picker.** Native vertical `scroll-snap-type: y mandatory` plus `scroll-snap-align: center` on each row gives a wheel-feel without a third-party picker library, retains keyboard arrow navigation, and avoids a `<input type="time">` which would not match the editorial typography. The pattern is well-documented and widely shipped on iOS Safari and Chrome for Android. Reference: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_scroll_snap.
-4. **Self-hosting Barlow Condensed plus Inter is required for offline.** The PWA's offline-after-first-load requirement breaks if fonts load from `fonts.googleapis.com`. Self-hosted WOFF2 with `font-display: swap` and a service-worker pre-cache is the standard approach; this matches how Grillmi already handles its sound files and icons. Bundle size impact is roughly 280 kB across the four weights of two families.
-5. **Mixkit Free License is workable for this scope.** Mixkit's Free License permits commercial use of their SFX files without attribution, and explicitly allows bundling inside an app (only pure redistribution as-is is forbidden). The candidates were curated and previewed via a temporary `/test-chimes` route under `pnpm dev`; Marco picked one per tone in a single round (Glut → #930, Funke → #3109, Kohle → #578, Klassik → #938). Freesound.org was tried first but anonymous direct-download is unreliable without API auth, so Mixkit's CDN was used instead. Four short tones at 96 kbps mono come to under 100 kB total, an acceptable PWA payload. References: https://mixkit.co/license/ and https://mixkit.co/free-sound-effects/.
-6. **Auto-end removal is safe.** The 60-second auto-end was a convenience, not a hard contract. Removing it leaves the user in a stable session state (all items plated) and gives them an explicit "Beenden" path. No tests beyond the auto-end test itself depend on the timer firing.
-7. **Route deletion without a redirect is a deliberate hard break.** The user explicitly chose this in the grilling round. The blast radius is small: `/plans` is two days old in production, the only persistent reference is in the PWA shell which the service worker will refresh on next load, and bookmarks are unlikely.
+3. **Pixel-perfect work needs an automated visual gate.** Design handoff guidance consistently warns that missing spacing, typography, interaction-state, and breakpoint specs cause developers to guess; this bundle avoids that by shipping runnable HTML and JSX. Playwright's screenshot assertions compare pixel output against committed baselines and support masking dynamic content, disabling animations, and setting explicit tolerances. This spec therefore requires prototype baselines plus app screenshots at 390 px before sign-off, not only manual eyeballing. References: https://miro.com/prototyping/design-hand-off/ and https://playwright.dev/docs/test-snapshots.
+4. **CSS scroll-snap is the right tool for the eating-time picker.** Native vertical `scroll-snap-type: y mandatory` plus `scroll-snap-align: center` on each row gives a wheel-feel without a third-party picker library, retains keyboard arrow navigation, and avoids a `<input type="time">` which would not match the editorial typography. The pattern is well-documented and widely shipped on iOS Safari and Chrome for Android. Reference: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_scroll_snap.
+5. **Self-hosting Barlow Condensed plus Inter is required for offline.** The PWA's offline-after-first-load requirement breaks if fonts load from `fonts.googleapis.com`. Self-hosted WOFF2 with `font-display: swap` and a service-worker pre-cache is the established approach; this matches how Grillmi already handles its sound files and icons. Bundle size impact is roughly 280 kB across the four weights of two families.
+6. **Mixkit Free License is workable for this scope.** Mixkit's Free License permits commercial use of their SFX files without attribution, and explicitly allows bundling inside an app (only pure redistribution as-is is forbidden). The candidates were curated and previewed via a temporary `/test-chimes` route under `pnpm dev`; Marco picked one per tone in a single round (Glut → #930, Funke → #3109, Kohle → #578, Klassik → #938). Freesound.org was tried first but anonymous direct-download is unreliable without API auth, so Mixkit's CDN was used instead. Four short tones at 96 kbps mono come to under 100 kB total, an acceptable PWA payload. References: https://mixkit.co/license/ and https://mixkit.co/free-sound-effects/.
+7. **Auto-end removal is safe.** The 60-second auto-end was a convenience, not a hard contract. Removing it leaves the user in a stable session state (all items plated) and gives them an explicit "Beenden" path. No tests beyond the auto-end test itself depend on the timer firing.
+8. **Route deletion without a redirect is a deliberate hard break.** The user explicitly chose this in the grilling round. The blast radius is small: `/plans` is two days old in production, the only persistent reference is in the PWA shell which the service worker will refresh on next load, and bookmarks are unlikely.
 
 ### Risks
 
 | Risk | Mitigation |
 | --- | --- |
+| Implementer treats this as an approximate redesign instead of a rendition of Claude Design's bundle | The Fidelity contract makes `Grillmi.zip` the visual source of truth, and Phase 0 plus Phase 9 require prototype screenshots, app screenshots, and explicit visual-drift reconciliation before merge. |
+| Prototype bundle is not extracted or the wrong file is used | Phase 0 extracts `Grillmi.zip` to `.tmp/grillmi-design/` and serves the exact `design_handoff_grillmi_redesign/design/Grillmi Redesign.html` file. The zip stays at repo root until QA completes. |
 | Token rename or value change breaks an existing component's color | Every screen is re-rendered and visually compared against the prototype at 390 wide before merge; existing component tests catch contrast regressions via visible-text assertions. |
 | Self-hosted fonts fail to load offline | The service worker `precacheManifest` includes the four Barlow Condensed and four Inter WOFF2 files; an offline e2e test asserts the Plan screen renders the condensed display font after going offline. |
 | Mixkit Free License forbids redistribution-as-is | Bundling inside the PWA app is permitted by the license; the files ride alongside the app code and are not exposed as a standalone redistributable. License page URL, Mixkit file ID, and source page URL are recorded per tone in `static/sounds/README.md`. No attribution is required by the license, but the README discloses the source for transparency. |
@@ -147,6 +160,15 @@ The install-app chip on Home reuses the existing `beforeinstallprompt` capture p
 | `/plans` route deletion 404s on bookmarks | The user explicitly chose the hard break. The Home screen and AddItemSheet are the only entry points to saved Menüs in the new design; both are updated. |
 
 ### Implementation Plan
+
+#### Phase 0: Design bundle setup and visual baselines
+
+1. [ ] Confirm `Grillmi.zip` exists at repo root and contains `design_handoff_grillmi_redesign/README.md`, `design/Grillmi Redesign.html`, `design/direction-a.jsx`, and `design/shared.jsx`.
+2. [ ] Extract the bundle with `rm -rf .tmp/grillmi-design && mkdir -p .tmp/grillmi-design && unzip -q Grillmi.zip -d .tmp/grillmi-design`. Do not commit `.tmp/grillmi-design/`.
+3. [ ] Serve `.tmp/grillmi-design/design_handoff_grillmi_redesign/design/` with `python3 -m http.server 8000` and open `http://localhost:8000/Grillmi%20Redesign.html` in Chromium.
+4. [ ] Capture prototype baseline screenshots at a 390 px wide viewport for Home, Plan empty, Plan filled, Plan manual, AddItem category, AddItem cut, AddItem specs, Session with alarm, Menüs, and Settings with one signal row expanded. Store the baselines under `tests/e2e/visual-baselines/gluehen/` with filenames matching the screen states.
+5. [ ] Add `tests/e2e/gluehen-visual.spec.ts` that drives the rebuilt Svelte app into the same states, freezes or masks dynamic countdown text, disables non-alarm animations during capture, and compares against the baselines with Playwright screenshot assertions. Alarm banner capture keeps the pulse disabled for the still image and verifies the `aAlarm` animation separately via computed style.
+6. [ ] Add a `test:e2e:visual` package script that runs only `gluehen-visual.spec.ts` in Chromium at the 390 px viewport. After the baselines are committed, update the existing full `test:e2e` command so visual regression runs with the rest of the E2E suite.
 
 #### Phase 1: Tokens, fonts, and theming foundation
 
@@ -229,10 +251,11 @@ The install-app chip on Home reuses the existing `beforeinstallprompt` capture p
 
 #### Phase 9: QA, tests, and merge
 
-1. [ ] Open the prototype `design/Grillmi Redesign.html` at 390 wide in Chrome. For each screen (Home, Plan empty, Plan filled, Plan manual, AddItem step 1, AddItem step 2, AddItem step 3, Session mid-cook with alarm, Menüs, Settings expanded), open the rebuilt Svelte page side by side and reconcile any pixel drift greater than 4px in spacing or any color or weight mismatch.
-2. [ ] Run `pnpm test:unit && pnpm test:components && pnpm test:e2e && pnpm lint && pnpm build`. All green before merge.
-3. [ ] Walk Marco through the Manual Verification checklist below.
-4. [ ] Push `feature/gluehen` to the remote, open a PR, request Marco's review, merge to `main`. Deploy via `~/dev/ansible/playbooks/applications/grillmi-deploy.yml` after merge.
+1. [ ] Re-open the extracted prototype at `.tmp/grillmi-design/design_handoff_grillmi_redesign/design/Grillmi Redesign.html` at 390 px wide in Chromium. For each required state (Home, Plan empty, Plan filled, Plan manual, AddItem category, AddItem cut, AddItem specs, Session mid-cook with alarm, Menüs, Settings expanded), compare the rebuilt Svelte page side by side and reconcile every spacing or alignment drift greater than 4 px, every color mismatch, every type-family or weight mismatch, and every missing icon, glow, radius, or motion detail.
+2. [ ] Run `pnpm test:e2e:visual`. Update visual baselines only when the prototype source changed; do not update baselines to bless an implementation mismatch.
+3. [ ] Run `pnpm test:unit && pnpm test:components && pnpm test:e2e && pnpm lint && pnpm build`. All green before merge.
+4. [ ] Walk Marco through the Manual Verification checklist below.
+5. [ ] Push `feature/gluehen` to the remote, open a PR, request Marco's review, merge to `main`. Deploy via `~/dev/ansible/playbooks/applications/grillmi-deploy.yml` after merge.
 
 ---
 
@@ -303,10 +326,20 @@ Tests are implementation tasks. Every checkbox below is part of Phase 1 through 
    - `test_settings_renders_five_tones` opens `/settings`, expands the Auflegen accordion, asserts five tone rows render with names Glut, Funke, Kohle, Klassik, Lautlos.
    - `test_play_preview_loads_audio_for_named_tone` taps the play button on the Glut row, asserts an `audio` element with src ending `/sounds/glut.mp3` was instantiated.
    - `test_lautlos_play_preview_is_noop` taps the play button on the Lautlos row, asserts no audio element was created and no error was thrown.
+7. [ ] `gluehen-visual.spec.ts` (new):
+   - `test_home_matches_claude_design` compares the Home screen to `tests/e2e/visual-baselines/gluehen/home.png`.
+   - `test_plan_empty_matches_claude_design` compares the empty Plan screen to `tests/e2e/visual-baselines/gluehen/plan-empty.png`.
+   - `test_plan_filled_matches_claude_design` compares Plan with four seeded items to `tests/e2e/visual-baselines/gluehen/plan-filled.png`.
+   - `test_plan_manual_matches_claude_design` compares manual-mode Plan to `tests/e2e/visual-baselines/gluehen/plan-manual.png`.
+   - `test_add_item_steps_match_claude_design` compares the Kategorie, Sorte, and Spezifikationen sheet states to their three baselines.
+   - `test_session_alarm_matches_claude_design` freezes the session timeline at a mid-cook alarm, masks live countdown digits, and compares to `tests/e2e/visual-baselines/gluehen/session-alarm.png`.
+   - `test_menus_matches_claude_design` compares the Menüs list to `tests/e2e/visual-baselines/gluehen/menus.png`.
+   - `test_settings_expanded_matches_claude_design` compares Settings with the Auflegen tone row expanded to `tests/e2e/visual-baselines/gluehen/settings-expanded.png`.
+   - Each screenshot assertion uses the 390 px viewport, committed baselines, dynamic-content masks for live timer digits, and a max 4 px layout-drift review gate. Any color, font-family, font-weight, icon, radius, glow, or motion mismatch fails manual review even when the pixel threshold passes.
 
 ### Manual Verification (Marco)
 
-Walks the redesigned PWA on `pnpm dev` (or the deployed PWA) before sign-off.
+Walks the redesigned PWA on `pnpm dev` before PR approval and repeats the same checklist on the deployed PWA after merge.
 
 1. Open the deployed PWA on a clean device. The Home screen renders with the dark charcoal background and an ember radial glow concentrated in the lower portion. The "GRILLMI" wordmark, the "Bereit zum Grillen?" hero, the "Neue Session" primary button, and the two secondary buttons all read in the new editorial typography.
 2. Tap "Neue Session". The Plan screen opens with the three-way segmented control reading "Jetzt", "Auf Zeit", "Manuell" and the eating-time card showing the empty "––:––" state. The active segment carries an ember background.
