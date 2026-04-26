@@ -80,11 +80,11 @@ describe('PlanItemRow', () => {
 		})
 
 		// "+" emits a +30 delta.
-		await fireEvent.click(getByLabelText('Garzeit erhöhen'))
+		await fireEvent.click(getByLabelText('Mehr'))
 		expect(onadjustcook).toHaveBeenLastCalledWith(makeItem().id, 30)
 
 		// "−" at 60s emits a -30 delta (clamped to 30s floor).
-		await fireEvent.click(getByLabelText('Garzeit reduzieren'))
+		await fireEvent.click(getByLabelText('Weniger'))
 		expect(onadjustcook).toHaveBeenLastCalledWith(makeItem().id, -30)
 	})
 })

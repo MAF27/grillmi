@@ -1,7 +1,8 @@
-import { userSettingsSchema, type UserSettings } from '$lib/schemas'
+import { userSettingsSchema, TONE_IDS, type UserSettings, type ToneId } from '$lib/schemas'
 import { getSettings, putSettings } from './db'
 
 const DEFAULTS: UserSettings = userSettingsSchema.parse({})
+const VALID_TONES = new Set<string>(TONE_IDS)
 
 function applyTheme(theme: UserSettings['theme']): void {
 	if (typeof document === 'undefined') return
@@ -11,6 +12,19 @@ function applyTheme(theme: UserSettings['theme']): void {
 	} else {
 		document.documentElement.dataset.theme = theme
 	}
+}
+
+// Migrate any persisted sound id outside the new five-tone set to the new
+// default for that event. Existing users who had `chime-1..8` end up with the
+// Glühen defaults on next launch; the next setSound() persists the migration.
+function migrateSounds(stored: Record<string, unknown>): UserSettings['sounds'] {
+	const fallback = DEFAULTS.sounds
+	const out: Record<string, ToneId> = {}
+	for (const key of ['putOn', 'flip', 'done'] as const) {
+		const raw = stored[key]
+		out[key] = typeof raw === 'string' && VALID_TONES.has(raw) ? (raw as ToneId) : fallback[key]
+	}
+	return out as UserSettings['sounds']
 }
 
 function createSettingsStore() {
@@ -24,7 +38,7 @@ function createSettingsStore() {
 	}
 
 	function subscribeSystem() {
-		if (typeof window === 'undefined') return
+		if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return
 		if (mediaListener && media) {
 			media.removeEventListener('change', mediaListener)
 		}
@@ -48,12 +62,25 @@ function createSettingsStore() {
 		get firstRunSeen() {
 			return value.firstRunSeen
 		},
+		get vibrate() {
+			return value.vibrate
+		},
 
 		async init() {
 			if (initialized) return
 			initialized = true
-			const stored = await getSettings()
-			value = stored ?? DEFAULTS
+			const stored = (await getSettings()) as (UserSettings & { sounds?: Record<string, unknown> }) | null
+			if (stored) {
+				const migrated: UserSettings = {
+					theme: stored.theme ?? DEFAULTS.theme,
+					sounds: migrateSounds((stored.sounds ?? {}) as Record<string, unknown>),
+					firstRunSeen: stored.firstRunSeen ?? DEFAULTS.firstRunSeen,
+					vibrate: typeof stored.vibrate === 'boolean' ? stored.vibrate : DEFAULTS.vibrate,
+				}
+				value = migrated
+			} else {
+				value = DEFAULTS
+			}
 			applyTheme(value.theme)
 			subscribeSystem()
 		},
@@ -64,8 +91,13 @@ function createSettingsStore() {
 			await persist()
 		},
 
-		async setSound(event: keyof UserSettings['sounds'], soundId: string) {
+		async setSound(event: keyof UserSettings['sounds'], soundId: ToneId) {
 			value = { ...value, sounds: { ...value.sounds, [event]: soundId } }
+			await persist()
+		},
+
+		async setVibrate(on: boolean) {
+			value = { ...value, vibrate: on }
 			await persist()
 		},
 

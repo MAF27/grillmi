@@ -93,9 +93,9 @@ test.describe('migration', () => {
 			await dismissFirstRun(page)
 		}
 
-		// Plan-Vorlagen page now lists the migrated record.
-		await page.getByRole('button', { name: /Plan-Vorlagen/ }).click()
-		await expect(page).toHaveURL(/\/plans/)
+		// Menüs page now lists the migrated record.
+		await page.getByRole('button', { name: /Menüs/ }).click()
+		await expect(page).toHaveURL(/\/menus/)
 		await expect(page.getByText('Migrierter Plan')).toBeVisible()
 		await context.close()
 	})

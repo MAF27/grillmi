@@ -53,5 +53,8 @@ playwright-report/
 # Design handoff bundles
 *.zip
 
+# Local scratch (extracted bundles, prototype servers, etc.)
+.tmp/
+
 # Private dev-only docs (raw extractions, scratch). Tracked locally only.
 resources/docs/_private/

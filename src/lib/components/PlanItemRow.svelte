@@ -52,6 +52,7 @@
 		if (item.thicknessCm !== null) parts.push(`${item.thicknessCm} cm`)
 		else if (item.prepLabel && item.prepLabel !== '—' && item.prepLabel !== '-') parts.push(item.prepLabel)
 		if (item.doneness) parts.push(item.doneness)
+		if (parts.length === 0 && item.prepLabel) parts.push(item.prepLabel)
 		return parts.join(' · ')
 	}
 
@@ -93,11 +94,12 @@
 
 	const atCookMin = $derived(item.cookSeconds <= COOK_MIN)
 	const atCookMax = $derived(item.cookSeconds >= COOK_MAX)
+	const meta = $derived(describe())
 </script>
 
 <div class="row" role="listitem">
 	<div class="content" role="group" style="transform: translateX({dragX}px)" {ontouchstart} {ontouchmove} {ontouchend}>
-		<div class="main">
+		<div class="body">
 			{#if renaming}
 				<input
 					bind:this={renameInput}
@@ -112,25 +114,28 @@
 					{item.label || item.cutSlug}
 				</button>
 			{/if}
-			<button class="meta" onclick={() => onedit(item.id)} aria-label={`Spezifikation bearbeiten: ${item.label || item.cutSlug}`}
-				>{describe() || 'Anpassen'}</button>
+			{#if meta}
+				<button
+					class="meta"
+					onclick={() => onedit(item.id)}
+					aria-label={`Spezifikation bearbeiten: ${item.label || item.cutSlug}`}>{meta}</button>
+			{/if}
 		</div>
 
-		<div class="cook" role="group" aria-label="Garzeit anpassen">
-			<button
-				type="button"
-				class="cook-btn"
-				disabled={atCookMin}
-				onclick={e => adjustCook(-COOK_STEP, e)}
-				aria-label="Garzeit reduzieren">−</button>
-			<span class="cook-value">{formatDuration(item.cookSeconds)}</span>
-			<button
-				type="button"
-				class="cook-btn"
-				disabled={atCookMax}
-				onclick={e => adjustCook(COOK_STEP, e)}
-				aria-label="Garzeit erhöhen">+</button>
+		<div class="stepper" role="group" aria-label="Garzeit anpassen">
+			<button type="button" class="step-btn" disabled={atCookMin} onclick={e => adjustCook(-COOK_STEP, e)} aria-label="Weniger"
+				>−</button>
+			<span class="step-value">{formatDuration(item.cookSeconds)}</span>
+			<button type="button" class="step-btn" disabled={atCookMax} onclick={e => adjustCook(COOK_STEP, e)} aria-label="Mehr"
+				>+</button>
 		</div>
+
+		<button class="remove" onclick={() => ondelete(item.id)} aria-label="Entfernen">
+			<svg width="24" height="24" viewBox="0 0 22 22" aria-hidden="true">
+				<circle cx="11" cy="11" r="11" fill="var(--color-bg-surface-2)" stroke="var(--color-border-strong)" />
+				<rect x="5.5" y="10" width="11" height="2" rx="1" fill="var(--color-fg-muted)" />
+			</svg>
+		</button>
 	</div>
 	{#if confirming}
 		<div class="confirm">
@@ -143,107 +148,124 @@
 <style>
 	.row {
 		position: relative;
-		margin-bottom: var(--space-2);
-		border-radius: var(--radius-lg);
+		margin-bottom: 8px;
+		border-radius: 14px;
 		overflow: hidden;
 		background: var(--color-error-default);
 	}
 	.content {
 		display: flex;
-		align-items: center;
-		gap: var(--space-3);
-		padding: var(--space-3) var(--space-4);
+		align-items: stretch;
+		gap: 0;
 		background: var(--color-bg-surface);
 		border: 1px solid var(--color-border-subtle);
-		border-radius: var(--radius-lg);
+		border-radius: 14px;
+		overflow: hidden;
 		transition: transform var(--duration-fast) var(--ease-default);
 	}
-	.main {
+	.body {
 		flex: 1;
-		min-width: 0;
+		padding: 12px 14px 12px 16px;
 		display: flex;
 		flex-direction: column;
-		align-items: stretch;
+		gap: 1px;
+		min-width: 0;
+		justify-content: center;
 	}
 	.title {
-		font-size: var(--font-size-lg);
-		font-weight: var(--font-weight-semibold);
+		font-family: var(--font-body);
+		font-size: 15px;
+		font-weight: 600;
+		line-height: 1.25;
 		background: transparent;
 		border: none;
 		padding: 0;
 		text-align: left;
-		color: inherit;
-		cursor: text;
-		font-family: inherit;
-	}
-	.title:hover {
-		text-decoration: underline dashed;
-		text-underline-offset: 4px;
-		text-decoration-color: var(--color-fg-muted);
+		color: var(--color-fg-base);
+		cursor: pointer;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 	.rename-input {
-		font-size: var(--font-size-lg);
-		font-weight: var(--font-weight-semibold);
-		font-family: inherit;
-		background: var(--color-bg-input);
-		border: 1px solid var(--color-accent-default);
-		border-radius: var(--radius-sm);
-		padding: 2px 6px;
+		background: transparent;
+		border: none;
+		border-bottom: 1px solid var(--color-ember);
 		color: var(--color-fg-base);
-		width: 100%;
-		min-height: 32px;
+		font-family: var(--font-body);
+		font-weight: 600;
+		font-size: 15px;
+		padding: 2px 0;
+		outline: none;
 	}
 	.meta {
-		font-size: var(--font-size-sm);
+		font-family: var(--font-body);
+		font-size: 13px;
 		color: var(--color-fg-muted);
-		margin-top: var(--space-1);
+		letter-spacing: 0.02em;
+		line-height: 1.3;
 		background: transparent;
 		border: none;
 		padding: 0;
 		text-align: left;
-		font-family: inherit;
 		cursor: pointer;
 	}
 	.meta:hover {
 		color: var(--color-fg-base);
 	}
-	.cook {
-		display: flex;
-		align-items: center;
-		gap: var(--space-1);
-		flex-shrink: 0;
-	}
-	.cook-btn {
-		min-width: 36px;
-		min-height: 36px;
-		border-radius: var(--radius-full);
-		background: var(--color-bg-elevated);
+	.stepper {
+		display: inline-flex;
+		align-items: stretch;
+		align-self: center;
+		margin: 0 6px 0 8px;
+		background: var(--color-bg-surface-2);
 		border: 1px solid var(--color-border-subtle);
-		color: var(--color-fg-base);
-		font-size: var(--font-size-lg);
-		font-weight: 600;
+		border-radius: 999px;
+		overflow: hidden;
+		height: 44px;
+	}
+	.step-btn {
+		width: 36px;
+		background: transparent;
+		border: none;
+		color: var(--color-fg-muted);
 		cursor: pointer;
+		font-size: 18px;
+		font-weight: 500;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		line-height: 1;
-		padding: 0;
 	}
-	.cook-btn:disabled {
+	.step-btn:disabled {
 		opacity: 0.35;
 		cursor: not-allowed;
 	}
-	.cook-btn:not(:disabled):active {
-		background: var(--color-accent-default);
-		color: var(--color-fg-on-accent);
-		border-color: var(--color-accent-default);
-	}
-	.cook-value {
-		font-family: var(--font-mono);
-		font-size: var(--font-size-md);
-		font-variant-numeric: tabular-nums;
-		min-width: 4.5ch;
+	.step-value {
+		min-width: 56px;
+		padding: 0 4px;
 		text-align: center;
+		font-family: var(--font-display);
+		font-size: 19px;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		letter-spacing: -0.01em;
+		color: var(--color-fg-base);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-left: 1px solid var(--color-border-subtle);
+		border-right: 1px solid var(--color-border-subtle);
+	}
+	.remove {
+		flex-shrink: 0;
+		width: 44px;
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		padding: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 	.confirm {
 		position: absolute;
@@ -251,23 +273,25 @@
 		display: flex;
 		align-items: center;
 		justify-content: flex-end;
-		gap: var(--space-2);
-		padding: var(--space-3);
+		gap: 8px;
+		padding: 12px;
 	}
 	.del {
 		background: var(--color-error-default);
-		color: var(--color-fg-on-status);
+		color: #fff;
 		border: none;
-		border-radius: var(--radius-md);
-		padding: var(--space-2) var(--space-4);
+		border-radius: 10px;
+		padding: 8px 16px;
 		min-height: 44px;
+		cursor: pointer;
 	}
 	.cancel {
 		background: var(--color-bg-elevated);
 		color: var(--color-fg-base);
 		border: 1px solid var(--color-border-default);
-		border-radius: var(--radius-md);
+		border-radius: 10px;
 		min-width: 44px;
 		min-height: 44px;
+		cursor: pointer;
 	}
 </style>

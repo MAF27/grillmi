@@ -2,7 +2,9 @@ import { savedPlanSchema, type SavedPlan, type PlannedItem } from '$lib/schemas'
 import { listSavedPlans, putSavedPlan, deleteSavedPlan } from './db'
 import { uuid } from '$lib/util/uuid'
 
-function createSavedPlansStore() {
+// User-facing name: "Menü". Schema/IDB still use the legacy `SavedPlan`
+// type and `plans` object store to avoid an IDB migration this round.
+function createMenusStore() {
 	let items = $state<SavedPlan[]>([])
 	let initialized = false
 
@@ -17,18 +19,18 @@ function createSavedPlansStore() {
 			items = await listSavedPlans()
 		},
 
-		async save(name: string, planItems: PlannedItem[]): Promise<SavedPlan> {
+		async save(name: string, menuItems: PlannedItem[]): Promise<SavedPlan> {
 			const now = Date.now()
-			const plan: SavedPlan = savedPlanSchema.parse({
+			const menu: SavedPlan = savedPlanSchema.parse({
 				id: uuid(),
 				name,
-				items: planItems,
+				items: menuItems,
 				createdAtEpoch: now,
 				lastUsedEpoch: now,
 			})
-			await putSavedPlan(plan)
-			items = [plan, ...items]
-			return plan
+			await putSavedPlan(menu)
+			items = [menu, ...items]
+			return menu
 		},
 
 		async rename(id: string, name: string): Promise<void> {
@@ -59,4 +61,4 @@ function createSavedPlansStore() {
 	}
 }
 
-export const savedPlansStore = createSavedPlansStore()
+export const menusStore = createMenusStore()

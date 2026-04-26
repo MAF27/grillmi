@@ -20,6 +20,7 @@ registerRoute(new NavigationRoute(createHandlerBoundToURL('/')))
 
 registerRoute(({ url }) => url.pathname.startsWith('/sounds/'), new CacheFirst({ cacheName: `grillmi-sounds-${version}` }))
 registerRoute(({ url }) => url.pathname.startsWith('/icons/'), new CacheFirst({ cacheName: `grillmi-icons-${version}` }))
+registerRoute(({ url }) => url.pathname.startsWith('/fonts/'), new CacheFirst({ cacheName: `grillmi-fonts-${version}` }))
 registerRoute(
 	({ url }) => url.pathname === '/manifest.webmanifest',
 	new StaleWhileRevalidate({ cacheName: `grillmi-manifest-${version}` }),
@@ -33,7 +34,12 @@ self.addEventListener('install', () => {
 // is not one this build produced. This handles the case where a previous
 // deploy poisoned the precache (e.g. with HTML returned for a missing chunk
 // URL) — we cannot trust the prior precache contents at all, so we wipe.
-const VALID_CACHE_NAMES = new Set([`grillmi-sounds-${version}`, `grillmi-icons-${version}`, `grillmi-manifest-${version}`])
+const VALID_CACHE_NAMES = new Set([
+	`grillmi-sounds-${version}`,
+	`grillmi-icons-${version}`,
+	`grillmi-fonts-${version}`,
+	`grillmi-manifest-${version}`,
+])
 
 self.addEventListener('activate', event => {
 	event.waitUntil(

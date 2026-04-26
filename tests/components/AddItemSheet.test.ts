@@ -181,7 +181,7 @@ describe('AddItemSheet', () => {
 
 		await fireEvent.click(getByText('Rind'))
 		await fireEvent.click(getByText('Rinds-Entrecôte'))
-		await fireEvent.click(getByText('Als Favorit speichern'))
+		await fireEvent.click(getByText(/Als Favorit speichern/))
 
 		const input = getByLabelText('Favorit-Name') as HTMLInputElement
 		await fireEvent.input(input, { target: { value: 'Mein Steak' } })

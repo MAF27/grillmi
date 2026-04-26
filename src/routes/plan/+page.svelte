@@ -2,51 +2,105 @@
 	import { goto } from '$app/navigation'
 	import { onMount } from 'svelte'
 	import Button from '$lib/components/Button.svelte'
-	import TargetTimePicker from '$lib/components/TargetTimePicker.svelte'
+	import SegmentedControl from '$lib/components/SegmentedControl.svelte'
+	import TimePickerSheet from '$lib/components/TimePickerSheet.svelte'
 	import PlanItemRow from '$lib/components/PlanItemRow.svelte'
+	import TimerCard from '$lib/components/TimerCard.svelte'
 	import AddItemSheet from '$lib/components/AddItemSheet.svelte'
 	import { sessionStore } from '$lib/stores/sessionStore.svelte'
 	import { favoritesStore } from '$lib/stores/favoritesStore.svelte'
-	import { savedPlansStore } from '$lib/stores/savedPlansStore.svelte'
-	import { schedule } from '$lib/scheduler/schedule'
+	import { menusStore } from '$lib/stores/menusStore.svelte'
+	import { schedule, buildSessionItem } from '$lib/scheduler/schedule'
 	import { formatHHMM } from '$lib/util/format'
-	import type { PlannedItem } from '$lib/models'
+	import type { PlannedItem, SessionItem } from '$lib/models'
+
+	type SegmentId = 'now' | 'target' | 'manual'
+
+	const segments: Array<{ id: SegmentId; label: string }> = [
+		{ id: 'now', label: 'Jetzt' },
+		{ id: 'target', label: 'Auf Zeit' },
+		{ id: 'manual', label: 'Manuell' },
+	]
 
 	let sheetOpen = $state(false)
 	let editing = $state<PlannedItem | null>(null)
-	let savePlanOpen = $state(false)
-	let planName = $state('')
-	let savedPlansSheetOpen = $state(false)
+	let saveMenuOpen = $state(false)
+	let menuName = $state('')
+	let menusSheetOpen = $state(false)
+	let timePickerOpen = $state(false)
 
 	const plan = $derived(sessionStore.plan)
+	const planMode = $derived(sessionStore.planMode)
+	const isManual = $derived(planMode === 'manual')
 	let now = $state(Date.now())
 	const effectiveTarget = $derived(sessionStore.effectiveTargetEpoch(now))
 
+	const segmentValue = $derived<SegmentId>(planMode === 'manual' ? 'manual' : plan.mode === 'now' ? 'now' : 'target')
+
 	const scheduleResult = $derived.by(() => {
-		if (plan.items.length === 0) return null
+		if (plan.items.length === 0 || isManual) return null
 		return schedule({ targetEpoch: effectiveTarget, items: plan.items, now })
 	})
 
 	const overdueItems = $derived(scheduleResult?.items.filter(s => s.overdue).map(s => s.item) ?? [])
 	const overdue = $derived(scheduleResult?.overdue ?? false)
+	const startEpoch = $derived(effectiveTarget - sessionStore.longestCookSeconds * 1000)
+	const populated = $derived(plan.items.length > 0)
+
+	type ManualStatus = 'unstarted' | 'cooking' | 'flip' | 'resting' | 'ready' | 'plated'
+
+	function deriveManualStatus(item: PlannedItem, n: number): { status: ManualStatus; etaSec: number } {
+		const start = sessionStore.manualStarts[item.id]
+		if (start === undefined || start === null) return { status: 'unstarted', etaSec: item.cookSeconds }
+		if (sessionStore.manualPlated.has(item.id)) return { status: 'plated', etaSec: 0 }
+		const cookEnd = start + item.cookSeconds * 1000
+		const restEnd = cookEnd + (item.restSeconds || 0) * 1000
+		if (n >= restEnd) return { status: 'ready', etaSec: 0 }
+		if (n >= cookEnd) return { status: 'resting', etaSec: Math.round((restEnd - n) / 1000) }
+		const half = start + (item.cookSeconds * 1000) / 2
+		const status: ManualStatus = Math.abs(n - half) < 5000 ? 'flip' : 'cooking'
+		return { status, etaSec: Math.round((cookEnd - n) / 1000) }
+	}
+
+	const manualSession: SessionItem[] = $derived.by(() =>
+		plan.items.map(item => {
+			const start = sessionStore.manualStarts[item.id] ?? Date.now()
+			return buildSessionItem(
+				item,
+				{
+					item,
+					putOnEpoch: start,
+					flipEpoch: item.flipFraction > 0 ? start + (item.cookSeconds * 1000) / 2 : null,
+					doneEpoch: start + item.cookSeconds * 1000,
+					restingUntilEpoch: start + (item.cookSeconds + item.restSeconds) * 1000,
+					overdue: false,
+				},
+				start,
+			)
+		}),
+	)
 
 	const goLabel = $derived.by(() => {
 		if (plan.items.length === 0) return 'Mindestens ein Eintrag nötig'
-		if (plan.mode === 'now') return `Los — fertig um ${formatHHMM(effectiveTarget)}`
-		if (overdue) return 'Los — jetzt starten'
-		return `Los — Essen um ${formatHHMM(plan.targetEpoch)}`
+		return `Los — fertig um ${formatHHMM(effectiveTarget)}`
 	})
 
 	onMount(() => {
-		const tickId = setInterval(() => (now = Date.now()), 30_000)
+		const tickId = setInterval(() => (now = Date.now()), 1000)
 		;(async () => {
 			await sessionStore.init()
 			await favoritesStore.init()
-			await savedPlansStore.init()
+			await menusStore.init()
 			if (sessionStore.session) goto('/session')
 		})()
 		return () => clearInterval(tickId)
 	})
+
+	function pickSegment(id: string) {
+		const seg = id as SegmentId
+		if (seg === 'manual') sessionStore.setPlanMode('manual')
+		else sessionStore.setAutoMode(seg === 'now' ? 'now' : 'time')
+	}
 
 	function openAddSheet() {
 		editing = null
@@ -89,28 +143,40 @@
 		await goto('/session')
 	}
 
-	function openSavePlan() {
-		planName = ''
-		savePlanOpen = true
+	function openSaveMenu() {
+		menuName = ''
+		saveMenuOpen = true
 	}
 
-	async function savePlan() {
-		const name = planName.trim()
+	async function saveMenu() {
+		const name = menuName.trim()
 		if (!name) return
-		await savedPlansStore.save(name, plan.items)
-		savePlanOpen = false
+		await menusStore.save(name, plan.items)
+		saveMenuOpen = false
 	}
 
-	function openSavedPlansSheet() {
-		savedPlansSheetOpen = true
+	function openMenusSheet() {
+		menusSheetOpen = true
 	}
 
-	function appendSavedPlan(id: string) {
-		const sp = savedPlansStore.all.find(p => p.id === id)
-		if (!sp) return
-		void savedPlansStore.touch(id)
-		sessionStore.appendFromSavedPlan(sp.items)
-		savedPlansSheetOpen = false
+	function appendMenu(id: string) {
+		const m = menusStore.all.find(p => p.id === id)
+		if (!m) return
+		void menusStore.touch(id)
+		sessionStore.appendFromMenu(m.items)
+		menusSheetOpen = false
+	}
+
+	function startMatch(id: string) {
+		sessionStore.startManualItem(id)
+	}
+	function plateMatch(id: string) {
+		sessionStore.plateManualItem(id)
+	}
+
+	function commitTime(epoch: number) {
+		sessionStore.setTargetTime(epoch)
+		timePickerOpen = false
 	}
 </script>
 
@@ -124,76 +190,95 @@
 		<h1>Session planen</h1>
 	</header>
 
-	<section class="schedule">
-		<div class="mode-toggle" role="tablist" aria-label="Planungsmodus">
-			<button
-				type="button"
-				role="tab"
-				aria-selected={plan.mode === 'now'}
-				class:active={plan.mode === 'now'}
-				onclick={() => sessionStore.setPlanMode('now')}>Jetzt starten</button>
-			<button
-				type="button"
-				role="tab"
-				aria-selected={plan.mode === 'time'}
-				class:active={plan.mode === 'time'}
-				onclick={() => sessionStore.setPlanMode('time')}>Auf Uhrzeit</button>
-		</div>
+	<div class="scroll">
+		<SegmentedControl {segments} value={segmentValue} ariaLabel="Planungsmodus" onchange={pickSegment} />
 
-		{#if plan.mode === 'now'}
-			<div class="now-card">
-				<span class="label">Fertig um</span>
-				<span class="time">{plan.items.length > 0 ? formatHHMM(effectiveTarget) : '—'}</span>
-				<span class="hint">
-					{#if plan.items.length === 0}
-						Plane Gerichte, dann starten wir sofort.
+		{#if !isManual}
+			<button
+				type="button"
+				class="eatcard"
+				class:populated
+				onclick={() => populated && (timePickerOpen = true)}
+				disabled={!populated}>
+				<div class="eat-glow" aria-hidden="true"></div>
+				<div class="eat-eyebrow">{populated ? 'Fertig um' : 'Noch keine Zielzeit'}</div>
+				<div class="eat-row">
+					{#if populated}
+						<span class="eat-time" data-mask-time>{formatHHMM(effectiveTarget)}</span>
+						<span class="eat-meta" data-mask-time>Start {formatHHMM(startEpoch)}</span>
 					{:else}
-						Längstes Gericht zählt — kürzere starten gestaffelt.
+						<span class="eat-time empty">––:––</span>
 					{/if}
-				</span>
-			</div>
-		{:else}
-			<TargetTimePicker value={plan.targetEpoch} onchange={epoch => sessionStore.setTargetTime(epoch)} />
-		{/if}
-	</section>
-
-	<section>
-		<div class="section-header">
-			<h2>Auf den Grill</h2>
-			<div class="section-actions">
-				{#if savedPlansStore.all.length > 0}
-					<Button variant="ghost" size="sm" onclick={openSavedPlansSheet}>★ Plan-Vorlage</Button>
-				{/if}
-				<Button variant="ghost" size="sm" onclick={openAddSheet}>+ Gericht</Button>
-			</div>
-		</div>
-
-		{#if overdue}
-			<div class="warning" role="alert">
-				Zeit ist knapp — folgende Einträge müssen sofort starten: {overdueItems.map(i => i.label).join(', ')}.
-			</div>
+				</div>
+				<div class="eat-hint">
+					{populated
+						? 'Die längste Grillzeit zählt — kürzere starten gestaffelt.'
+						: 'Füg ein Grillstück hinzu, wir rechnen zurück.'}
+				</div>
+			</button>
 		{/if}
 
-		{#if plan.items.length === 0}
-			<p class="empty">Noch keine Einträge. Tippe auf <strong>+ Gericht</strong> um anzufangen.</p>
-		{:else}
-			<div class="list" role="list">
-				{#each plan.items as item (item.id)}
-					<PlanItemRow {item} onedit={editItem} ondelete={deleteItem} onrename={renameItem} onadjustcook={adjustCook} />
-				{/each}
+		<section>
+			<div class="section-header">
+				<h2>Grillstücke</h2>
+				<div class="section-actions">
+					{#if menusStore.all.length > 0}
+						<Button variant="accentGhost" size="sm" onclick={openMenusSheet}>★ Menü</Button>
+					{/if}
+				</div>
 			</div>
-		{/if}
-	</section>
 
-	{#if plan.items.length > 0}
-		<div class="favorite-row">
-			<Button variant="ghost" size="sm" onclick={openSavePlan}>Plan speichern</Button>
+			{#if overdue && !isManual}
+				<div class="warning" role="alert">
+					Zeit ist knapp — folgende Einträge müssen sofort starten: {overdueItems.map(i => i.label).join(', ')}.
+				</div>
+			{/if}
+
+			{#if plan.items.length === 0}
+				<button class="empty-add" type="button" onclick={openAddSheet}>
+					<div class="plus-icon">+</div>
+					<div class="empty-title">Grillstück hinzufügen</div>
+					<div class="empty-hint">Steak, Würstchen, Maiskolben, alles was auf den Rost kommt.</div>
+				</button>
+			{:else if isManual}
+				<div class="manual-grid" role="list">
+					{#each plan.items as item, i (item.id)}
+						{@const status = deriveManualStatus(item, now).status}
+						<div role="listitem">
+							<TimerCard item={manualSession[i]} status={status as never} onstart={startMatch} onplate={plateMatch} />
+						</div>
+					{/each}
+					<button class="more-add" type="button" onclick={openAddSheet}>
+						<span class="plus-glyph">+</span>
+						<span>Weiteres Grillstück</span>
+					</button>
+				</div>
+			{:else}
+				<div class="list" role="list">
+					{#each plan.items as item (item.id)}
+						<PlanItemRow {item} onedit={editItem} ondelete={deleteItem} onrename={renameItem} onadjustcook={adjustCook} />
+					{/each}
+					<button class="more-add" type="button" onclick={openAddSheet}>
+						<span class="plus-glyph">+</span>
+						<span>Weiteres Grillstück</span>
+					</button>
+				</div>
+			{/if}
+
+			{#if plan.items.length > 0}
+				<button class="save-menu-cta" type="button" onclick={openSaveMenu}>
+					<span class="star" aria-hidden="true">★</span>
+					Als Menü speichern
+				</button>
+			{/if}
+		</section>
+	</div>
+
+	{#if !isManual}
+		<div class="bottom">
+			<Button variant="primary" size="lg" fullWidth disabled={plan.items.length === 0} onclick={start}>{goLabel}</Button>
 		</div>
 	{/if}
-
-	<div class="bottom">
-		<Button variant="primary" size="lg" fullWidth disabled={plan.items.length === 0} onclick={start}>{goLabel}</Button>
-	</div>
 </main>
 
 {#if sheetOpen}
@@ -207,20 +292,20 @@
 		oncommit={commit} />
 {/if}
 
-{#if savedPlansSheetOpen}
-	<div class="scrim" role="presentation" onclick={() => (savedPlansSheetOpen = false)}></div>
-	<div class="fav-sheet" role="dialog" aria-modal="true" aria-label="Plan-Vorlage hinzufügen">
-		<header class="fav-sheet-header">
-			<h2>Plan-Vorlage hinzufügen</h2>
-			<button class="dismiss" onclick={() => (savedPlansSheetOpen = false)} aria-label="Schliessen">×</button>
+{#if menusSheetOpen}
+	<div class="scrim" role="presentation" onclick={() => (menusSheetOpen = false)}></div>
+	<div class="menu-sheet" role="dialog" aria-modal="true" aria-label="Menü hinzufügen">
+		<header class="menu-sheet-header">
+			<h2>Menü hinzufügen</h2>
+			<button class="dismiss" onclick={() => (menusSheetOpen = false)} aria-label="Schliessen">×</button>
 		</header>
-		<p class="fav-sheet-hint">Tippe auf eine Plan-Vorlage. Die Einträge werden an deinen Plan angehängt.</p>
-		<ul class="fav-list">
-			{#each savedPlansStore.all as sp (sp.id)}
+		<p class="menu-sheet-hint">Tippe auf ein Menü. Die Einträge werden an deinen Plan angehängt.</p>
+		<ul class="menu-list">
+			{#each menusStore.all as m (m.id)}
 				<li>
-					<button class="fav-row" onclick={() => appendSavedPlan(sp.id)}>
-						<span class="fav-name">{sp.name}</span>
-						<span class="fav-count">{sp.items.length} Einträge</span>
+					<button class="menu-row" onclick={() => appendMenu(m.id)}>
+						<span class="menu-name">{m.name}</span>
+						<span class="menu-count">{m.items.length} Einträge</span>
 					</button>
 				</li>
 			{/each}
@@ -228,147 +313,262 @@
 	</div>
 {/if}
 
-{#if savePlanOpen}
-	<div class="scrim" role="presentation" onclick={() => (savePlanOpen = false)}></div>
-	<div class="favorite-modal" role="dialog" aria-modal="true" aria-label="Plan speichern">
-		<h3>Plan speichern</h3>
-		<input type="text" bind:value={planName} maxlength="40" placeholder="Name (z.B. Mörgeli-Plausch)" />
+{#if saveMenuOpen}
+	<div class="scrim" role="presentation" onclick={() => (saveMenuOpen = false)}></div>
+	<div class="save-modal" role="dialog" aria-modal="true" aria-label="Als Menü speichern">
+		<h3>Als Menü speichern</h3>
+		<input type="text" bind:value={menuName} maxlength="40" placeholder="z.B. Sonntagsmenü" />
 		<div class="row-buttons">
-			<Button variant="ghost" onclick={() => (savePlanOpen = false)}>Abbrechen</Button>
-			<Button variant="primary" onclick={savePlan}>Speichern</Button>
+			<Button variant="ghost" onclick={() => (saveMenuOpen = false)}>Abbrechen</Button>
+			<Button variant="primary" onclick={saveMenu}>Speichern</Button>
 		</div>
 	</div>
+{/if}
+
+{#if timePickerOpen}
+	<TimePickerSheet value={effectiveTarget} oncommit={commitTime} oncancel={() => (timePickerOpen = false)} />
 {/if}
 
 <style>
 	main {
 		max-width: 600px;
 		margin: 0 auto;
-		padding: env(safe-area-inset-top) var(--space-4) calc(96px + env(safe-area-inset-bottom));
+		padding: env(safe-area-inset-top) 0 calc(96px + env(safe-area-inset-bottom));
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-5);
+		gap: 0;
 		min-height: 100dvh;
+		position: relative;
 	}
 	header {
 		display: flex;
 		align-items: center;
-		gap: var(--space-3);
-		padding-top: var(--space-4);
+		gap: 12px;
+		padding: 60px 24px 16px;
 	}
 	header h1 {
 		font-family: var(--font-display);
-		font-size: var(--font-size-2xl);
+		font-size: 30px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: -0.01em;
 		margin: 0;
 	}
 	.back {
 		background: transparent;
 		border: none;
 		color: var(--color-fg-base);
-		font-size: var(--font-size-2xl);
+		font-size: 22px;
 		min-width: 44px;
 		min-height: 44px;
+		cursor: pointer;
+		padding: 4px;
+	}
+	.scroll {
+		padding: 0 24px;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+	.eatcard {
+		position: relative;
+		text-align: left;
+		background: var(--color-bg-surface);
+		border: 1px solid var(--color-border-subtle);
+		border-radius: 20px;
+		padding: 24px 22px;
+		cursor: pointer;
+		overflow: hidden;
+		color: var(--color-fg-base);
+		font: inherit;
+	}
+	.eatcard.populated {
+		background: linear-gradient(180deg, var(--color-bg-surface-2) 0%, var(--color-bg-surface) 100%);
+		border-color: var(--color-border-strong);
+	}
+	.eatcard:disabled {
+		cursor: default;
+	}
+	.eat-glow {
+		position: absolute;
+		top: -40px;
+		right: -40px;
+		width: 200px;
+		height: 200px;
+		background: radial-gradient(circle, rgba(255, 122, 26, 0.13) 0%, transparent 70%);
+		pointer-events: none;
+		opacity: 0;
+		transition: opacity 0.2s ease;
+	}
+	.eatcard.populated .eat-glow {
+		opacity: 1;
+	}
+	.eat-eyebrow {
+		font-family: var(--font-body);
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.12em;
+		color: var(--color-fg-muted);
+		text-transform: uppercase;
+	}
+	.eat-row {
+		display: flex;
+		align-items: baseline;
+		gap: 16px;
+		margin-top: 8px;
+	}
+	.eat-time {
+		font-family: var(--font-display);
+		font-size: 76px;
+		line-height: 0.85;
+		font-weight: 600;
+		letter-spacing: -0.03em;
+		color: var(--color-fg-base);
+		font-variant-numeric: tabular-nums;
+	}
+	.eat-time.empty {
+		font-size: 56px;
+		color: var(--color-fg-subtle);
+	}
+	.eat-meta {
+		font-family: var(--font-display);
+		font-size: 11px;
+		color: var(--color-fg-muted);
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+	.eat-hint {
+		font-family: var(--font-body);
+		font-size: 13px;
+		color: var(--color-fg-muted);
+		margin-top: 8px;
+		line-height: 1.45;
 	}
 	section {
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-3);
+		gap: 14px;
 	}
 	.section-header {
 		display: flex;
-		align-items: center;
+		align-items: baseline;
 		justify-content: space-between;
 	}
 	.section-header h2 {
 		font-family: var(--font-display);
-		font-size: var(--font-size-lg);
-		margin: 0;
-	}
-	.section-actions {
-		display: flex;
-		gap: var(--space-2);
-	}
-	.empty {
-		color: var(--color-fg-muted);
-		text-align: center;
-		padding: var(--space-6);
-		background: var(--color-bg-surface);
-		border-radius: var(--radius-lg);
-		border: 1px dashed var(--color-border-default);
-	}
-	.schedule {
-		gap: var(--space-3);
-	}
-	.mode-toggle {
-		display: flex;
-		gap: 2px;
-		background: var(--color-bg-surface);
-		border: 1px solid var(--color-border-subtle);
-		border-radius: var(--radius-md);
-		padding: 2px;
-	}
-	.mode-toggle button {
-		flex: 1;
-		min-height: 40px;
-		background: transparent;
-		border: none;
-		color: var(--color-fg-base);
-		font: inherit;
-		border-radius: calc(var(--radius-md) - 2px);
-		cursor: pointer;
-	}
-	.mode-toggle button.active {
-		background: var(--color-accent-default);
-		color: var(--color-fg-on-accent);
-	}
-	.now-card {
-		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-		gap: var(--space-1);
-		background: var(--color-bg-surface);
-		padding: var(--space-4);
-		border-radius: var(--radius-lg);
-		border: 1px solid var(--color-border-subtle);
-	}
-	.now-card .label {
-		font-size: var(--font-size-xs);
+		font-size: 22px;
+		font-weight: 600;
 		text-transform: uppercase;
-		letter-spacing: var(--tracking-widest);
-		color: var(--color-fg-muted);
-	}
-	.now-card .time {
-		font-family: var(--font-mono);
-		font-size: var(--font-size-3xl);
-		font-variant-numeric: tabular-nums;
-		line-height: 1.1;
-	}
-	.now-card .hint {
-		color: var(--color-fg-muted);
-		font-size: var(--font-size-sm);
+		letter-spacing: 0.02em;
+		margin: 0;
 	}
 	.warning {
 		background: var(--color-error-bg);
 		color: var(--color-error-default);
 		border: 1px solid var(--color-error-default);
-		padding: var(--space-3);
-		border-radius: var(--radius-md);
-		font-size: var(--font-size-sm);
+		padding: 12px;
+		border-radius: 10px;
+		font-size: 14px;
+	}
+	.empty-add {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 10px;
+		border: 1.5px dashed var(--color-ember);
+		background: rgba(255, 122, 26, 0.06);
+		border-radius: 18px;
+		padding: 34px 20px;
+		cursor: pointer;
+		text-align: center;
+		color: var(--color-fg-base);
+		font: inherit;
+	}
+	.plus-icon {
+		width: 52px;
+		height: 52px;
+		border-radius: 26px;
+		background: var(--color-ember);
+		color: #fff;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 28px;
+		font-weight: 300;
+		line-height: 1;
+	}
+	.empty-title {
+		font-family: var(--font-body);
+		font-weight: 600;
+		font-size: 16px;
+	}
+	.empty-hint {
+		font-family: var(--font-body);
+		font-size: 13px;
+		color: var(--color-fg-muted);
+		line-height: 1.4;
+		max-width: 240px;
 	}
 	.list {
 		display: flex;
 		flex-direction: column;
 	}
-	.favorite-row {
+	.manual-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 12px;
+	}
+	.more-add {
+		grid-column: 1 / -1;
+		margin-top: 4px;
+		width: 100%;
 		display: flex;
+		align-items: center;
 		justify-content: center;
+		gap: 10px;
+		border: 1.5px dashed var(--color-ember);
+		background: transparent;
+		border-radius: 14px;
+		padding: 14px;
+		color: var(--color-ember);
+		font-family: var(--font-body);
+		font-weight: 600;
+		font-size: 14px;
+		cursor: pointer;
+	}
+	.plus-glyph {
+		font-size: 18px;
+		font-weight: 300;
+		line-height: 1;
+	}
+	.save-menu-cta {
+		margin-top: 12px;
+		width: 100%;
+		background: transparent;
+		border: 1px dashed var(--color-border-strong);
+		color: var(--color-fg-muted);
+		padding: 12px;
+		border-radius: 12px;
+		font-family: var(--font-body);
+		font-weight: 500;
+		font-size: 13px;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+	}
+	.save-menu-cta .star {
+		font-size: 14px;
 	}
 	.bottom {
 		position: fixed;
 		left: 0;
 		right: 0;
 		bottom: 0;
-		padding: var(--space-3) var(--space-4) calc(var(--space-4) + env(safe-area-inset-bottom));
+		padding: 16px 24px calc(16px + env(safe-area-inset-bottom));
 		background: linear-gradient(to top, var(--color-bg-base) 70%, transparent);
 		z-index: var(--z-sticky);
 	}
@@ -378,70 +578,75 @@
 		background: var(--color-bg-overlay);
 		z-index: var(--z-modal);
 	}
-	.favorite-modal {
+	.save-modal {
 		position: fixed;
 		left: 50%;
 		top: 50%;
 		transform: translate(-50%, -50%);
-		background: var(--color-bg-elevated);
+		background: var(--color-bg-surface);
 		color: var(--color-fg-base);
-		border: 1px solid var(--color-border-default);
-		border-radius: var(--radius-lg);
-		padding: var(--space-5);
+		border: 1px solid var(--color-border-strong);
+		border-radius: 18px;
+		padding: 22px;
 		width: min(92vw, 420px);
 		z-index: calc(var(--z-modal) + 1);
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-3);
+		gap: 14px;
 	}
-	.favorite-modal h3 {
+	.save-modal h3 {
 		margin: 0;
 		font-family: var(--font-display);
+		font-size: 22px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: -0.01em;
 	}
-	.favorite-modal input {
-		min-height: 44px;
-		padding: var(--space-3);
-		background: var(--color-bg-input);
-		border: 1px solid var(--color-border-default);
-		border-radius: var(--radius-md);
+	.save-modal input {
+		min-height: 48px;
+		padding: 12px 14px;
+		background: var(--color-bg-surface-2);
+		border: 1px solid var(--color-border-strong);
+		border-radius: 12px;
 		color: var(--color-fg-base);
-		font-size: var(--font-size-md);
+		font-family: var(--font-body);
+		font-size: 16px;
 	}
 	.row-buttons {
 		display: flex;
-		gap: var(--space-2);
+		gap: 8px;
 		justify-content: flex-end;
 	}
-	.fav-sheet {
+	.menu-sheet {
 		position: fixed;
 		left: 0;
 		right: 0;
 		bottom: 0;
 		max-height: 75dvh;
-		background: var(--color-bg-elevated);
+		background: var(--color-bg-surface);
 		color: var(--color-fg-base);
-		border-top-left-radius: var(--radius-xl);
-		border-top-right-radius: var(--radius-xl);
-		padding: var(--space-4);
-		padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+		border-top-left-radius: 24px;
+		border-top-right-radius: 24px;
+		padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
 		z-index: calc(var(--z-modal) + 1);
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-3);
-		width: 100%;
+		gap: 12px;
 		max-width: 600px;
 		margin: 0 auto;
 		overflow: auto;
 	}
-	.fav-sheet-header {
+	.menu-sheet-header {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 	}
-	.fav-sheet-header h2 {
+	.menu-sheet-header h2 {
 		margin: 0;
 		font-family: var(--font-display);
-		font-size: var(--font-size-lg);
+		font-size: 22px;
+		font-weight: 600;
+		text-transform: uppercase;
 	}
 	.dismiss {
 		background: transparent;
@@ -449,42 +654,42 @@
 		color: var(--color-fg-base);
 		min-width: 44px;
 		min-height: 44px;
-		font-size: var(--font-size-2xl);
+		font-size: 22px;
 		cursor: pointer;
 	}
-	.fav-sheet-hint {
-		font-size: var(--font-size-sm);
+	.menu-sheet-hint {
+		font-size: 14px;
 		color: var(--color-fg-muted);
 		margin: 0;
 	}
-	.fav-list {
+	.menu-list {
 		list-style: none;
 		padding: 0;
 		margin: 0;
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-2);
+		gap: 8px;
 	}
-	.fav-row {
+	.menu-row {
 		width: 100%;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: var(--space-3) var(--space-4);
+		padding: 14px 18px;
 		min-height: 56px;
-		background: var(--color-bg-surface);
+		background: var(--color-bg-surface-2);
 		border: 1px solid var(--color-border-subtle);
-		border-radius: var(--radius-md);
+		border-radius: 14px;
 		color: var(--color-fg-base);
 		font: inherit;
 		text-align: left;
 		cursor: pointer;
 	}
-	.fav-name {
-		font-weight: var(--font-weight-semibold);
+	.menu-name {
+		font-weight: 600;
 	}
-	.fav-count {
-		font-size: var(--font-size-sm);
+	.menu-count {
+		font-size: 14px;
 		color: var(--color-fg-muted);
 	}
 </style>
