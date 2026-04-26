@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { uuid } from '$lib/util/uuid'
 
 describe('uuid', () => {
@@ -18,6 +18,7 @@ describe('uuid fallback (no WebCrypto)', () => {
 	const realCrypto = globalThis.crypto
 	afterEach(() => {
 		Object.defineProperty(globalThis, 'crypto', { value: realCrypto, configurable: true, writable: true })
+		vi.resetModules()
 	})
 
 	it('test_uuid_fallback_used_when_crypto_lacks_randomUUID', async () => {
@@ -26,7 +27,8 @@ describe('uuid fallback (no WebCrypto)', () => {
 			configurable: true,
 			writable: true,
 		})
-		const mod = await import('$lib/util/uuid?fallback')
+		vi.resetModules()
+		const mod = await import('$lib/util/uuid')
 		const v = mod.uuid()
 		expect(v).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/)
 	})

@@ -35,12 +35,14 @@ export function findRow(cut: Cut, thicknessCm: number | null, doneness: string |
 		const exact = sorted.find(r => Math.abs(r.thicknessCm - thicknessCm) < 1e-6)
 		if (exact) return exact
 
-		// Off-grid: snap to the closest documented thickness.
+		// Off-grid: snap to the closest documented thickness. On ties (e.g.
+		// 1.5 cm exactly between 1 and 2), prefer the larger row — overcooked
+		// beats undercooked when the user picks a half-step we haven't measured.
 		let nearest = sorted[0]
 		let bestDelta = Math.abs(sorted[0].thicknessCm - thicknessCm)
 		for (const row of sorted) {
 			const delta = Math.abs(row.thicknessCm - thicknessCm)
-			if (delta < bestDelta) {
+			if (delta <= bestDelta) {
 				bestDelta = delta
 				nearest = row
 			}

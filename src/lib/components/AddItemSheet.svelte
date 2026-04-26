@@ -4,6 +4,7 @@
 	import { formatDuration } from '$lib/util/format'
 	import { favoritesStore } from '$lib/stores/favoritesStore.svelte'
 	import Button from './Button.svelte'
+	import CategoryIcon from './CategoryIcon.svelte'
 
 	type Step = 'category' | 'cut' | 'specs'
 	type Tab = 'categories' | 'favorites'
@@ -275,13 +276,20 @@
 		return Number.isInteger(cm) ? String(cm) : cm.toFixed(1)
 	}
 
-	// Thickness options come straight from the documented reference rows;
-	// we never interpolate or extrapolate, so the UI only offers values for
-	// which we have researched cook times.
+	// 0.5 cm increments between the documented min and max thicknesses; the
+	// findRow lookup snaps each half-step to the closest documented row's
+	// cook time so we never invent timings we haven't researched.
 	const thicknessOptions = $derived.by<number[]>(() => {
 		if (!cut?.hasThickness) return []
-		const ts = Array.from(new Set(cut.rows.map(r => r.thicknessCm).filter((v): v is number => v !== null)))
-		return ts.sort((a, b) => a - b)
+		const ts = cut.rows.map(r => r.thicknessCm).filter((v): v is number => v !== null)
+		if (ts.length === 0) return []
+		const min = Math.min(...ts)
+		const max = Math.max(...ts)
+		const out: number[] = []
+		for (let v = min; v <= max + 1e-6; v = Math.round((v + 0.5) * 10) / 10) {
+			out.push(Math.round(v * 10) / 10)
+		}
+		return out
 	})
 
 	function stepThickness(delta: number) {
@@ -381,17 +389,7 @@
 					{#each TIMINGS.categories as c (c.slug)}
 						<button class="tile" onclick={() => pickCategory(c.slug)}>
 							<span class="tile-icon" aria-hidden="true">
-								<svg
-									width="28"
-									height="28"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="1.6"
-									stroke-linecap="round"
-									stroke-linejoin="round">
-									<circle cx="12" cy="12" r="9" />
-								</svg>
+								<CategoryIcon slug={c.slug} />
 							</span>
 							<span class="tile-name">{c.name}</span>
 						</button>

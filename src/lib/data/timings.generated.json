@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-26T18:25:01.640Z",
+  "generatedAt": "2026-04-26T20:05:32.742Z",
   "categories": [
     {
       "slug": "beef",
@@ -645,43 +645,6 @@
           ]
         },
         {
-          "slug": "kronfleisch-nierenzapfen-skirt-steak",
-          "name": "Kronfleisch",
-          "hasThickness": true,
-          "hasDoneness": true,
-          "rows": [
-            {
-              "thicknessCm": 1.25,
-              "prepLabel": null,
-              "doneness": "medium-rare",
-              "cookSecondsMin": 240,
-              "cookSecondsMax": 360,
-              "flipFraction": 0.5,
-              "idealFlipPattern": "once",
-              "restSeconds": 300,
-              "heatZone": "Direkt hoch",
-              "notes": null
-            },
-            {
-              "thicknessCm": 1.75,
-              "prepLabel": null,
-              "doneness": "medium-rare",
-              "cookSecondsMin": 360,
-              "cookSecondsMax": 480,
-              "flipFraction": 0.5,
-              "idealFlipPattern": "once",
-              "restSeconds": 300,
-              "heatZone": "Direkt hoch",
-              "notes": null
-            }
-          ],
-          "notes": [
-            "Äussere Silberhaut entfernen.",
-            "Trocken tupfen, die äussere Kruste ist der ganze Punkt.",
-            "Quer zur Faser, dünne Streifen, gleich wie Bavette."
-          ]
-        },
-        {
           "slug": "burgermeisterstuck-tri-tip",
           "name": "Bürgermeisterstück",
           "hasThickness": true,
@@ -994,6 +957,44 @@
           "notes": [
             "Am Ende 60 s auf den Knochen stellen für Aromaübertragung.",
             "Bei 60 °C ziehen, nach Ruhezeit 63 °C."
+          ]
+        },
+        {
+          "slug": "kalbshaxe-veal-shank-bone-in",
+          "name": "Kalbshaxe",
+          "hasThickness": false,
+          "hasDoneness": true,
+          "rows": [
+            {
+              "thicknessCm": null,
+              "prepLabel": "-",
+              "doneness": "medium",
+              "cookSecondsMin": 9000,
+              "cookSecondsMax": 9000,
+              "flipFraction": 0.5,
+              "idealFlipPattern": "rotate",
+              "restSeconds": 900,
+              "heatZone": "Indirekt, niedrig",
+              "notes": null
+            },
+            {
+              "thicknessCm": null,
+              "prepLabel": "-",
+              "doneness": "well-done",
+              "cookSecondsMin": 12600,
+              "cookSecondsMax": 12600,
+              "flipFraction": 0.5,
+              "idealFlipPattern": "rotate",
+              "restSeconds": 900,
+              "heatZone": "Indirekt, niedrig",
+              "notes": null
+            }
+          ],
+          "notes": [
+            "Kerntemperatur 75 °C für scheibenfähig, 85–90 °C für \"fall off the bone\".",
+            "Mindestens 1 h vorher salzen; mit Rosmarin, Knoblauch und Senf einreiben.",
+            "Letzte 8–10 min direkt für Kruste; aufpassen, dass die Kollagen-Glasur nicht verbrennt.",
+            "Mit etwas Bier oder Bouillon in der Tropfschale unten — der Dampf hält die Haxe saftig."
           ]
         }
       ]

@@ -155,23 +155,6 @@ Notes:
 - In etwa 5 mm dicke Streifen quer zur Faser schneiden; vor dem Garen Faserrichtung identifizieren, sie ist offensichtlich.
 - Niemals über medium hinaus, Kollagen hat in einem dünnen Steak keine Zeit zum Schmelzen.
 
-### Kronfleisch (Nierenzapfen / Skirt steak)
-
-Noch dünner als Bavette, noch beefiger. Heiss und schnell, Punkt.
-
-| Thickness | Doneness    | Heat zone   | Grate temp | Per side | Total   | Turns         | Rest  |
-| --------- | ----------- | ----------- | ---------- | -------- | ------- | ------------- | ----- |
-| 1–1.5 cm  | medium-rare | Direkt hoch | 290 °C+    | 2–3 min  | 4–6 min | Einmal wenden | 5 min |
-| 1.5–2 cm  | medium-rare | Direkt hoch | 290 °C+    | 3–4 min  | 6–8 min | Einmal wenden | 5 min |
-
-Sources: [SE] "heisseste Glut, die du hinkriegst, 3–4 min total für dünnes Skirt". [Meathead] stimmt zu.
-
-Notes:
-
-- Äussere Silberhaut entfernen.
-- Trocken tupfen, die äussere Kruste ist der ganze Punkt.
-- Quer zur Faser, dünne Streifen, gleich wie Bavette.
-
 ### Bürgermeisterstück (Tri-tip)
 
 Dreieckig, Faser wechselt mitten im Cut die Richtung. Reverse-Sear ist am besten.
@@ -270,6 +253,24 @@ Notes:
 
 - Am Ende 60 s auf den Knochen stellen für Aromaübertragung.
 - Bei 60 °C ziehen, nach Ruhezeit 63 °C.
+
+### Kalbshaxe (Veal shank, bone-in)
+
+Klassischer Schmorbraten am Grill. Kollagen schmilzt erst ab ~70 °C, deshalb low-and-slow im indirekten Bereich. ~1.0–1.5 kg ganz, bone-in.
+
+| Thickness | Doneness  | Heat zone         | Grate temp | Per side | Total   | Turns              | Rest      |
+| --------- | --------- | ----------------- | ---------- | -------- | ------- | ------------------ | --------- |
+| -         | medium    | Indirekt, niedrig | 140 °C     | 75 min   | 150 min | alle 30 min drehen | 15 min    |
+| -         | well-done | Indirekt, niedrig | 140 °C     | 105 min  | 210 min | alle 30 min drehen | 15–20 min |
+
+Sources: [Weber-Grill-Academy] "Schulter & Haxe / niedrig & langsam, 130–140 °C". [Meathead] AmazingRibs collagen guide (≥75 °C Kerntemperatur für scheibenfähig, ≥85 °C für fall-off-the-bone).
+
+Notes:
+
+- Kerntemperatur 75 °C für scheibenfähig, 85–90 °C für "fall off the bone".
+- Mindestens 1 h vorher salzen; mit Rosmarin, Knoblauch und Senf einreiben.
+- Letzte 8–10 min direkt für Kruste; aufpassen, dass die Kollagen-Glasur nicht verbrennt.
+- Mit etwas Bier oder Bouillon in der Tropfschale unten — der Dampf hält die Haxe saftig.
 
 ---
 

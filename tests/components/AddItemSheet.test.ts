@@ -107,7 +107,7 @@ describe('AddItemSheet', () => {
 		expect(dec.disabled).toBe(true)
 	})
 
-	it('test_thickness_options_match_documented_only_no_interpolation', async () => {
+	it('test_thickness_steps_in_half_cm_increments_between_documented_min_and_max', async () => {
 		const { getByText, getByLabelText, container } = open()
 		await fireEvent.click(getByText('Rind'))
 		await fireEvent.click(getByText('Rinds-Filet'))
@@ -121,7 +121,7 @@ describe('AddItemSheet', () => {
 			await fireEvent.click(inc)
 			seen.push(num())
 		}
-		expect(seen).toEqual([1, 2, 3, 4, 5])
+		expect(seen).toEqual([1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5])
 	})
 
 	it('test_final_step_dispatches_new_item_with_computed_cook_time', async () => {
