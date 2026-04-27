@@ -91,6 +91,7 @@ function createSessionStore() {
 					flipFraction: s.flipFraction,
 					idealFlipPattern: s.idealFlipPattern,
 					heatZone: s.heatZone,
+					grateTempC: s.grateTempC,
 				}))
 			: []
 		await clearCurrentSession()

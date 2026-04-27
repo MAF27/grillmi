@@ -60,7 +60,7 @@
 			case 'category':
 				return 'Kategorie'
 			case 'cut':
-				return 'Stück'
+				return 'Grillstück'
 			case 'specs':
 				if (needsThickness && needsDoneness) return 'Dicke & Garstufe'
 				if (needsThickness) return 'Dicke'
@@ -401,13 +401,12 @@
 			{:else if step === 'cut' && category}
 				<ul class="cut-list">
 					{#each category.cuts as c (c.slug)}
-						{@const baseSec = Math.round(
-							c.rows.reduce((s, r) => s + (r.cookSecondsMin + r.cookSecondsMax) / 2, 0) / Math.max(1, c.rows.length),
-						)}
+						{@const minMin = Math.max(1, Math.round(Math.min(...c.rows.map(r => r.cookSecondsMin)) / 60))}
+						{@const maxMin = Math.max(1, Math.round(Math.max(...c.rows.map(r => r.cookSecondsMax)) / 60))}
 						<li>
 							<button class="cut-row" onclick={() => pickCut(c.slug)}>
 								<span class="cut-name">{c.name}</span>
-								<span class="cut-time">~{Math.max(1, Math.round(baseSec / 60))} min</span>
+								<span class="cut-time">{minMin === maxMin ? `${minMin}min` : `${minMin} - ${maxMin}min`}</span>
 							</button>
 						</li>
 					{/each}

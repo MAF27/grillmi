@@ -39,7 +39,6 @@ NC='\033[0m'
 
 SYM_OK="●"
 SYM_FAIL="✗"
-SYM_ARROW="→"
 
 # === Logging ===
 log_info()  { echo -e "${DIM}INFO${NC}  $1" >&2; }
@@ -90,7 +89,7 @@ get_base_url() {
         _BASE_URL_CACHE=$(doppler_run printenv PUBLIC_BASE_URL 2>/dev/null || true)
         if [[ -z "$_BASE_URL_CACHE" ]]; then
             if [[ "$APP_ENV" == "prod" ]]; then
-                _BASE_URL_CACHE="https://grillmi.cloud"
+                _BASE_URL_CACHE="https://grillmi.krafted.cc"
             else
                 _BASE_URL_CACHE="http://$(get_ip)"
             fi
@@ -99,10 +98,18 @@ get_base_url() {
     echo "$_BASE_URL_CACHE"
 }
 
+PUBLIC_URL="https://grillmi.krafted.cc"
+
 # === Health checks ===
 check_http() {
     local code
     code=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:$PORT/" 2>/dev/null || echo "000")
+    [[ "$code" =~ ^(200|301|302)$ ]]
+}
+
+check_url() {
+    local code
+    code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 4 "$1" 2>/dev/null || echo "000")
     [[ "$code" =~ ^(200|301|302)$ ]]
 }
 
@@ -217,9 +224,17 @@ cmd_status() {
             fi
             printf "  %b\n" "$svc_line"
 
-            printf "  %s ${CYAN}%s${NC}" "$SYM_ARROW" "$url"
-            if check_http; then printf " ${GREEN}${SYM_OK}${NC}\n"
-            else printf " ${RED}${SYM_FAIL}${NC} (no local HTTP)\n"
+            local url_sym url_color
+            if check_http; then url_sym="$SYM_OK"; url_color="$GREEN"
+            else url_sym="$SYM_FAIL"; url_color="$RED"
+            fi
+            printf "  ${url_color}${url_sym}${NC} ${CYAN}%s${NC}\n" "$url"
+
+            if [[ "$url" != "$PUBLIC_URL" ]]; then
+                if check_url "$PUBLIC_URL"; then url_sym="$SYM_OK"; url_color="$GREEN"
+                else url_sym="$SYM_FAIL"; url_color="$RED"
+                fi
+                printf "  ${url_color}${url_sym}${NC} ${CYAN}%s${NC}\n" "$PUBLIC_URL"
             fi
             ;;
     esac
@@ -313,7 +328,7 @@ cmd_deploy() {
     new_head=$(cd "$APP_DIR" && git rev-parse "origin/$branch")
 
     log_info "[2/5] Pulling $branch ($old_head → $new_head)..."
-    (cd "$APP_DIR" && git checkout "$branch" >/dev/null 2>&1 || true)
+    (cd "$APP_DIR" && (git checkout "$branch" >/dev/null 2>&1 || true))
     (cd "$APP_DIR" && git reset --hard "origin/$branch")
 
     # Install if node_modules is missing OR pnpm-lock is newer than it.

@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-26T20:38:20.398Z",
+  "generatedAt": "2026-04-27T10:07:06.178Z",
   "categories": [
     {
       "slug": "beef",
@@ -553,7 +553,7 @@
         },
         {
           "slug": "hohrucken-rib-steak-bone-in-rinds-ribeye-bone-in",
-          "name": "Hohrücken (Rib steak, bone-in) / Rinds-Ribeye bone-in",
+          "name": "Hohrücken",
           "hasThickness": true,
           "hasDoneness": true,
           "rows": [
@@ -617,7 +617,7 @@
         },
         {
           "slug": "t-bone-porterhouse",
-          "name": "T-Bone / Porterhouse",
+          "name": "T-Bone",
           "hasThickness": true,
           "hasDoneness": true,
           "rows": [
@@ -1389,7 +1389,7 @@
       "cuts": [
         {
           "slug": "lamm-huftli-lamm-huftsteak-lamb-rump-steak",
-          "name": "Lamm-Hüftli / Lamm-Hüftsteak",
+          "name": "Lamm-Hüftli",
           "hasThickness": false,
           "hasDoneness": true,
           "rows": [
@@ -1695,7 +1695,7 @@
         },
         {
           "slug": "pouletschenkel-pouletoberschenkel-chicken-thighs",
-          "name": "Pouletschenkel / Pouletoberschenkel",
+          "name": "Pouletschenkel",
           "hasThickness": false,
           "hasDoneness": false,
           "rows": [
@@ -1779,6 +1779,31 @@
           "notes": [
             "Rückgrat mit Geflügelschere entfernen, flach pressen, halbiert die Garzeit gegenüber dem ganzen Brathuhn.",
             "12–24 h im Kühlschrank trocken pökeln, die letzten 2 h offen für die Haut."
+          ]
+        },
+        {
+          "slug": "pouletspiessli-chicken-skewers",
+          "name": "Pouletspiessli",
+          "hasThickness": false,
+          "hasDoneness": false,
+          "rows": [
+            {
+              "thicknessCm": null,
+              "prepLabel": "3 cm Würfel",
+              "doneness": null,
+              "cookSecondsMin": 600,
+              "cookSecondsMax": 720,
+              "flipFraction": 0.5,
+              "idealFlipPattern": "rotate",
+              "restSeconds": 120,
+              "heatZone": "Direkt mittel",
+              "grateTempC": 200,
+              "notes": null
+            }
+          ],
+          "notes": [
+            "Holzspiesse 30 Min. wässern, sonst kohlen sie.",
+            "Kleinen Spalt zwischen den Würfeln lassen, damit alle Seiten Hitze bekommen."
           ]
         },
         {
@@ -1933,7 +1958,7 @@
         },
         {
           "slug": "grillschnecke-bratwurstschnecke",
-          "name": "Grillschnecke / Bratwurstschnecke",
+          "name": "Grillschnecke",
           "hasThickness": false,
           "hasDoneness": false,
           "rows": [
@@ -2048,7 +2073,7 @@
         },
         {
           "slug": "frankfurter-wienerli",
-          "name": "Frankfurter / Wienerli",
+          "name": "Frankfurter",
           "hasThickness": false,
           "hasDoneness": false,
           "rows": [
@@ -2085,59 +2110,6 @@
               "restSeconds": 0,
               "heatZone": "Direkt mittel",
               "grateTempC": 200,
-              "notes": null
-            }
-          ],
-          "notes": []
-        }
-      ]
-    },
-    {
-      "slug": "skewers",
-      "name": "Spiessli",
-      "cuts": [
-        {
-          "slug": "pouletspiessli-chicken-skewers",
-          "name": "Pouletspiessli",
-          "hasThickness": false,
-          "hasDoneness": false,
-          "rows": [
-            {
-              "thicknessCm": null,
-              "prepLabel": "3 cm Würfel",
-              "doneness": null,
-              "cookSecondsMin": 600,
-              "cookSecondsMax": 720,
-              "flipFraction": 0.5,
-              "idealFlipPattern": "rotate",
-              "restSeconds": 120,
-              "heatZone": "Direkt mittel",
-              "grateTempC": 200,
-              "notes": null
-            }
-          ],
-          "notes": [
-            "Holzspiesse 30 Min. wässern, sonst kohlen sie.",
-            "Kleinen Spalt zwischen den Würfeln lassen, damit alle Seiten Hitze bekommen."
-          ]
-        },
-        {
-          "slug": "mixed-grill-spiessli-gemischte-spiessli",
-          "name": "Mixed-Grill Spiessli",
-          "hasThickness": false,
-          "hasDoneness": false,
-          "rows": [
-            {
-              "thicknessCm": null,
-              "prepLabel": "-",
-              "doneness": null,
-              "cookSecondsMin": 360,
-              "cookSecondsMax": 360,
-              "flipFraction": 0.5,
-              "idealFlipPattern": "once",
-              "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
-              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -2239,7 +2211,7 @@
         },
         {
           "slug": "dorade-branzino-whole-sea-bream-sea-bass-400-g",
-          "name": "Dorade / Branzino",
+          "name": "Dorade",
           "hasThickness": false,
           "hasDoneness": false,
           "rows": [
@@ -2703,7 +2675,7 @@
         },
         {
           "slug": "zucchetti-zucchini-slices-lengthwise",
-          "name": "Zucchetti / Zucchini",
+          "name": "Zucchetti",
           "hasThickness": false,
           "hasDoneness": false,
           "rows": [
@@ -3075,7 +3047,7 @@
         },
         {
           "slug": "zitrone-limette-lemon-lime-halved-for-dressing",
-          "name": "Zitrone / Limette",
+          "name": "Zitrone",
           "hasThickness": false,
           "hasDoneness": false,
           "rows": [
@@ -3183,6 +3155,28 @@
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
               "grateTempC": 230,
+              "notes": null
+            }
+          ],
+          "notes": []
+        },
+        {
+          "slug": "mixed-grill-spiessli-gemischte-spiessli",
+          "name": "Mixed-Grill Spiessli",
+          "hasThickness": false,
+          "hasDoneness": false,
+          "rows": [
+            {
+              "thicknessCm": null,
+              "prepLabel": "-",
+              "doneness": null,
+              "cookSecondsMin": 360,
+              "cookSecondsMax": 360,
+              "flipFraction": 0.5,
+              "idealFlipPattern": "once",
+              "restSeconds": 180,
+              "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
               "notes": null
             }
           ],

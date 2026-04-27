@@ -49,7 +49,6 @@ const HAMBURGER = 'hamburger-hackfleisch-patties'
 const BBQ_SPECK = 'bbq-speck-speckscheiben-vom-grill'
 const MIXED_GRILL = 'mixed-grill-spiessli-gemischte-spiessli'
 const KANINCHEN = 'kaninchenfilets-kaninchen-filets'
-const POULETSPIESSLI = 'pouletspiessli-chicken-skewers'
 const PFERDESTEAK = 'pferdesteak-horse-steak'
 const HALLOUMI = 'halloumi'
 const PANEER = 'paneer'
@@ -75,14 +74,6 @@ const UI_CATEGORIES: ReadonlyArray<UiCategory> = [
 	{ slug: 'lamb', name: 'Lamm', pull: [{ from: 'lamb', cuts: 'all' }] },
 	{ slug: 'poultry', name: 'Geflügel', pull: [{ from: 'poultry', cuts: 'all' }] },
 	{ slug: 'sausage', name: 'Wurst', pull: [{ from: 'sausage', cuts: 'all' }] },
-	{
-		slug: 'skewers',
-		name: 'Spiessli',
-		pull: [
-			{ from: 'poultry', cuts: [POULETSPIESSLI] },
-			{ from: 'various', cuts: [MIXED_GRILL] },
-		],
-	},
 	{ slug: 'fish', name: 'Fisch', pull: [{ from: 'fish', cuts: 'all' }] },
 	{
 		slug: 'cheese',
@@ -96,12 +87,10 @@ const UI_CATEGORIES: ReadonlyArray<UiCategory> = [
 		name: 'Spezial',
 		pull: [
 			{ from: 'horse', cuts: [PFERDESTEAK] },
-			{ from: 'various', cuts: [KANINCHEN] },
+			{ from: 'various', cuts: [KANINCHEN, MIXED_GRILL] },
 		],
 	},
 ]
-
-const POULTRY_TO_SKEWERS = new Set([POULETSPIESSLI])
 
 function regroupCategories(parsed: Category[]): Category[] {
 	const bySlug = new Map(parsed.map(c => [c.slug, c]))
@@ -118,7 +107,6 @@ function regroupCategories(parsed: Category[]): Category[] {
 			if (ref.cuts === 'all') {
 				for (const c of src.cuts) {
 					if (used.has(c.slug)) continue
-					if (ref.from === 'poultry' && POULTRY_TO_SKEWERS.has(c.slug)) continue
 					cuts.push(c)
 					used.add(c.slug)
 				}
@@ -428,7 +416,11 @@ function parseCut(name: string, body: string[], stats: ParseStats): Cut | null {
 	stats.cutsKept += 1
 
 	const slug = slugify(name)
-	const displayName = name.replace(/\s*\(.*?\)\s*$/, '').trim() || name
+	const displayName =
+		name
+			.replace(/\s*\([^)]*\)\s*/g, ' ')
+			.replace(/\s*\/.*$/, '')
+			.trim() || name
 
 	return {
 		slug,

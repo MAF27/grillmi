@@ -27,6 +27,7 @@ const favConfig = {
 	flipFraction: 0.5,
 	idealFlipPattern: 'once' as const,
 	heatZone: 'Direct high',
+	grateTempC: null,
 }
 
 beforeEach(() => {

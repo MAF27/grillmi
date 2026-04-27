@@ -171,7 +171,7 @@
 	main {
 		max-width: 600px;
 		margin: 0 auto;
-		padding: env(safe-area-inset-top) 24px calc(40px + env(safe-area-inset-bottom));
+		padding: 0 24px calc(40px + env(safe-area-inset-bottom));
 		display: flex;
 		flex-direction: column;
 		gap: 28px;
@@ -181,7 +181,7 @@
 		display: flex;
 		align-items: center;
 		gap: 12px;
-		padding: 60px 0 16px;
+		padding: calc(env(safe-area-inset-top) + 12px) 0 16px;
 		margin-bottom: -12px;
 	}
 	header h1 {

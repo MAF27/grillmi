@@ -75,14 +75,13 @@
 		top: 0;
 		z-index: var(--z-sticky);
 		background: var(--color-bg-base);
-		padding-top: env(safe-area-inset-top);
 	}
 	.bar {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		gap: 12px;
-		padding: 60px 20px 12px;
+		padding: calc(env(safe-area-inset-top) + 12px) 20px 12px;
 	}
 	.left {
 		display: flex;

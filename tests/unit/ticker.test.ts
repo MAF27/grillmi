@@ -17,6 +17,7 @@ function makeItem(over: Partial<SessionItem> = {}): SessionItem {
 		flipFraction: 0.5,
 		idealFlipPattern: 'once',
 		heatZone: 'Direct high',
+		grateTempC: null,
 		putOnEpoch: NOW + 1000,
 		flipEpoch: NOW + 1000 + 180_000,
 		doneEpoch: NOW + 1000 + 360_000,

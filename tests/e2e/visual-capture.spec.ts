@@ -27,7 +27,7 @@ const APP_BASE = 'http://localhost:4173'
 test.use({
 	viewport: VIEWPORT,
 	hasTouch: true,
-	reducedMotion: 'reduce',
+	contextOptions: { reducedMotion: 'reduce' },
 	colorScheme: 'dark',
 })
 

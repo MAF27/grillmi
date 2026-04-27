@@ -18,7 +18,25 @@
 					void caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k))))
 				}
 			} else {
-				void navigator.serviceWorker.register('/service-worker.js', { type: 'module' }).catch(() => {})
+				const hadController = !!navigator.serviceWorker.controller
+				let refreshing = false
+				navigator.serviceWorker.addEventListener('controllerchange', () => {
+					if (!hadController || refreshing) return
+					refreshing = true
+					window.location.reload()
+				})
+				void navigator.serviceWorker
+					.register('/service-worker.js', { type: 'module' })
+					.then(reg => {
+						const check = () => {
+							void reg.update()
+						}
+						document.addEventListener('visibilitychange', () => {
+							if (document.visibilityState === 'visible') check()
+						})
+						setInterval(check, 60 * 60 * 1000)
+					})
+					.catch(() => {})
 			}
 		}
 		const handler = (e: Event) => {
