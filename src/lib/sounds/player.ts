@@ -29,6 +29,7 @@ async function load(soundId: string): Promise<AudioBuffer | null> {
 }
 
 export async function play(soundId: string): Promise<void> {
+	if (soundId === 'lautlos') return
 	const c = getContext()
 	const buf = await load(soundId)
 	if (!c || !buf) return
@@ -40,5 +41,5 @@ export async function play(soundId: string): Promise<void> {
 }
 
 export async function preload(soundIds: string[]): Promise<void> {
-	await Promise.all(soundIds.map(id => load(id).catch(() => null)))
+	await Promise.all(soundIds.filter(id => id !== 'lautlos').map(id => load(id).catch(() => null)))
 }

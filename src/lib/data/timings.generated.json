@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-25T17:39:25.041Z",
+  "generatedAt": "2026-04-27T10:07:06.178Z",
   "categories": [
     {
       "slug": "beef",
@@ -15,85 +15,92 @@
             {
               "thicknessCm": 1,
               "prepLabel": null,
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 120,
               "cookSecondsMax": 120,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "blutig",
-              "cookSecondsMin": 240,
-              "cookSecondsMax": 240,
+              "doneness": "rare",
+              "cookSecondsMin": 270,
+              "cookSecondsMax": 270,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 3,
               "prepLabel": null,
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 420,
               "cookSecondsMax": 420,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 780,
               "cookSecondsMax": 780,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 5,
               "prepLabel": null,
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 900,
               "cookSecondsMax": 900,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 480,
               "heatZone": "Reverse-Sear (indirekt zu direkt)",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 1,
               "prepLabel": null,
               "doneness": "medium-rare",
-              "cookSecondsMin": 120,
-              "cookSecondsMax": 120,
+              "cookSecondsMin": 160,
+              "cookSecondsMax": 160,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 2,
               "prepLabel": null,
               "doneness": "medium-rare",
-              "cookSecondsMin": 300,
-              "cookSecondsMax": 300,
+              "cookSecondsMin": 330,
+              "cookSecondsMax": 330,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -106,6 +113,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -118,6 +126,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -130,6 +139,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 480,
               "heatZone": "Reverse-Sear (indirekt zu direkt)",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -142,18 +152,20 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 2,
               "prepLabel": null,
               "doneness": "medium",
-              "cookSecondsMin": 420,
-              "cookSecondsMax": 420,
+              "cookSecondsMin": 450,
+              "cookSecondsMax": 450,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -166,6 +178,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -178,6 +191,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -190,66 +204,72 @@
               "idealFlipPattern": "once",
               "restSeconds": 480,
               "heatZone": "Reverse-Sear (indirekt zu direkt)",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 1,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 420,
               "cookSecondsMax": 420,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 960,
               "cookSecondsMax": 960,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 3,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 1020,
               "cookSecondsMax": 1020,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 1680,
               "cookSecondsMax": 1680,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 5,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 1800,
               "cookSecondsMax": 1800,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 480,
               "heatZone": "Reverse-Sear (indirekt zu direkt)",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -268,73 +288,79 @@
             {
               "thicknessCm": 1,
               "prepLabel": null,
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 120,
               "cookSecondsMax": 120,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 300,
               "cookSecondsMax": 300,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 3,
               "prepLabel": null,
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 420,
               "cookSecondsMax": 420,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 780,
               "cookSecondsMax": 780,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 5,
               "prepLabel": null,
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 900,
               "cookSecondsMax": 900,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 480,
               "heatZone": "Reverse-Sear (indirekt zu direkt)",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 1,
               "prepLabel": null,
               "doneness": "medium-rare",
-              "cookSecondsMin": 120,
-              "cookSecondsMax": 120,
+              "cookSecondsMin": 150,
+              "cookSecondsMax": 150,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -347,6 +373,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -359,6 +386,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -371,6 +399,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -383,6 +412,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 480,
               "heatZone": "Reverse-Sear (indirekt zu direkt)",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -395,6 +425,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -407,6 +438,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -419,6 +451,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -431,6 +464,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -443,66 +477,72 @@
               "idealFlipPattern": "once",
               "restSeconds": 480,
               "heatZone": "Reverse-Sear (indirekt zu direkt)",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 1,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 420,
               "cookSecondsMax": 420,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 960,
               "cookSecondsMax": 960,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 3,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 1020,
               "cookSecondsMax": 1020,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 1680,
               "cookSecondsMax": 1680,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 5,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 1680,
               "cookSecondsMax": 1680,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 480,
               "heatZone": "Reverse-Sear (indirekt zu direkt)",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -513,7 +553,7 @@
         },
         {
           "slug": "hohrucken-rib-steak-bone-in-rinds-ribeye-bone-in",
-          "name": "Hohrücken (Rib steak, bone-in) / Rinds-Ribeye bone-in",
+          "name": "Hohrücken",
           "hasThickness": true,
           "hasDoneness": true,
           "rows": [
@@ -527,6 +567,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -539,30 +580,33 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 960,
               "cookSecondsMax": 960,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 1080,
               "cookSecondsMax": 1080,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -573,7 +617,7 @@
         },
         {
           "slug": "t-bone-porterhouse",
-          "name": "T-Bone / Porterhouse",
+          "name": "T-Bone",
           "hasThickness": true,
           "hasDoneness": true,
           "rows": [
@@ -587,6 +631,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 240,
               "notes": null
             },
             {
@@ -599,6 +644,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 240,
               "notes": null
             }
           ],
@@ -623,6 +669,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt hoch",
+              "grateTempC": 290,
               "notes": null
             },
             {
@@ -635,50 +682,13 @@
               "idealFlipPattern": "once",
               "restSeconds": 480,
               "heatZone": "Direkt hoch",
+              "grateTempC": 290,
               "notes": null
             }
           ],
           "notes": [
-            "Marinaden (Limette, Soja, Chipotle, Chimichurri) lieben diesen Cut.",
             "In etwa 5 mm dicke Streifen quer zur Faser schneiden; vor dem Garen Faserrichtung identifizieren, sie ist offensichtlich.",
             "Niemals über medium hinaus, Kollagen hat in einem dünnen Steak keine Zeit zum Schmelzen."
-          ]
-        },
-        {
-          "slug": "kronfleisch-nierenzapfen-skirt-steak",
-          "name": "Kronfleisch",
-          "hasThickness": true,
-          "hasDoneness": true,
-          "rows": [
-            {
-              "thicknessCm": 1.25,
-              "prepLabel": null,
-              "doneness": "medium-rare",
-              "cookSecondsMin": 240,
-              "cookSecondsMax": 360,
-              "flipFraction": 0.5,
-              "idealFlipPattern": "once",
-              "restSeconds": 300,
-              "heatZone": "Direkt hoch",
-              "notes": null
-            },
-            {
-              "thicknessCm": 1.75,
-              "prepLabel": null,
-              "doneness": "medium-rare",
-              "cookSecondsMin": 360,
-              "cookSecondsMax": 480,
-              "flipFraction": 0.5,
-              "idealFlipPattern": "once",
-              "restSeconds": 300,
-              "heatZone": "Direkt hoch",
-              "notes": null
-            }
-          ],
-          "notes": [
-            "Äussere Silberhaut entfernen.",
-            "Trocken tupfen, die äussere Kruste ist der ganze Punkt.",
-            "Quer zur Faser, dünne Streifen, gleich wie Bavette."
           ]
         },
         {
@@ -697,6 +707,7 @@
               "idealFlipPattern": "every-60s",
               "restSeconds": 600,
               "heatZone": "Reverse-Sear",
+              "grateTempC": 290,
               "notes": null
             },
             {
@@ -709,6 +720,7 @@
               "idealFlipPattern": "every-60s",
               "restSeconds": 600,
               "heatZone": "Reverse-Sear",
+              "grateTempC": 290,
               "notes": null
             }
           ],
@@ -733,6 +745,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt hoch",
+              "grateTempC": 290,
               "notes": null
             },
             {
@@ -745,6 +758,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt hoch",
+              "grateTempC": 290,
               "notes": null
             },
             {
@@ -757,6 +771,7 @@
               "idealFlipPattern": "every-60s",
               "restSeconds": 360,
               "heatZone": "Reverse-Sear",
+              "grateTempC": 290,
               "notes": null
             }
           ],
@@ -778,6 +793,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 240,
               "heatZone": "Direkt hoch",
+              "grateTempC": 290,
               "notes": null
             },
             {
@@ -790,6 +806,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt hoch",
+              "grateTempC": 290,
               "notes": null
             },
             {
@@ -802,6 +819,7 @@
               "idealFlipPattern": "every-60s",
               "restSeconds": 360,
               "heatZone": "Reverse-Sear",
+              "grateTempC": 290,
               "notes": null
             }
           ],
@@ -826,18 +844,20 @@
               "idealFlipPattern": "once",
               "restSeconds": 480,
               "heatZone": "Indirekt, niedrig",
+              "grateTempC": 200,
               "notes": null
             },
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 3600,
               "cookSecondsMax": 3600,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 480,
               "heatZone": "Indirekt, niedrig",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -862,12 +882,12 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
               "notes": null
             }
           ],
           "notes": [
-            "Käse 30 s vor Schluss auflegen, Deckel zu zum Schmelzen.",
-            "USDA und Schweizer Lebensmittelsicherheit empfehlen 70 °C für Hackfleisch, weil das Mahlen Oberflächenkeime im Inneren verteilt. Medium-rare bei zu Hause selbst gemahlenem Vollmuskel ist ein anderes Risikoprofil. Grillmi setzt für jede Hackfleisch-UI standardmässig 70 °C Pull und bietet einen Override \"Nur selbst gemahlen\"."
+            "Käse 30 s vor Schluss auflegen, Deckel zu zum Schmelzen."
           ]
         }
       ]
@@ -892,6 +912,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -904,30 +925,33 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 960,
               "cookSecondsMax": 960,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 1680,
               "cookSecondsMax": 1680,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -952,6 +976,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -964,36 +989,79 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 900,
               "cookSecondsMax": 900,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 1380,
               "cookSecondsMax": 1380,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             }
           ],
           "notes": [
             "Am Ende 60 s auf den Knochen stellen für Aromaübertragung.",
             "Bei 60 °C ziehen, nach Ruhezeit 63 °C."
+          ]
+        },
+        {
+          "slug": "kalbshaxe-veal-shank-cross-cut-beinscheibe-osso-buco",
+          "name": "Kalbshaxe",
+          "hasThickness": true,
+          "hasDoneness": true,
+          "rows": [
+            {
+              "thicknessCm": 2,
+              "prepLabel": null,
+              "doneness": "well-done",
+              "cookSecondsMin": 840,
+              "cookSecondsMax": 840,
+              "flipFraction": 0.5,
+              "idealFlipPattern": "once",
+              "restSeconds": 300,
+              "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
+              "notes": null
+            },
+            {
+              "thicknessCm": 3,
+              "prepLabel": null,
+              "doneness": "well-done",
+              "cookSecondsMin": 1200,
+              "cookSecondsMax": 1200,
+              "flipFraction": 0.5,
+              "idealFlipPattern": "once",
+              "restSeconds": 300,
+              "heatZone": "Direkt zu indirekt",
+              "grateTempC": 220,
+              "notes": null
+            }
+          ],
+          "notes": [
+            "Sehnen rundum mit der Spitze des Messers an 3–4 Stellen einschneiden, sonst zieht sich die Scheibe schüsselförmig zusammen.",
+            "Salzen mindestens 30 min vorher.",
+            "Kerntemperatur 65–70 °C — Beinscheiben sind erst ab dieser Temperatur richtig zart.",
+            "Für die ganze Haxe: niedrig-und-langsam-Schmorbraten im Topf oder Smoker; kein direkter Grill."
           ]
         }
       ]
@@ -1018,6 +1086,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1030,6 +1099,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1042,6 +1112,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1054,54 +1125,59 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 1,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 240,
               "cookSecondsMax": 240,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "durchgebraten",
-              "cookSecondsMin": 540,
-              "cookSecondsMax": 540,
+              "doneness": "well-done",
+              "cookSecondsMin": 570,
+              "cookSecondsMax": 570,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 3,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 720,
               "cookSecondsMax": 720,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 4,
               "prepLabel": null,
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 900,
               "cookSecondsMax": 900,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -1126,18 +1202,20 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 1020,
               "cookSecondsMax": 1020,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -1162,6 +1240,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -1186,6 +1265,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 480,
               "heatZone": "Indirekt, niedrig",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -1207,6 +1287,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -1231,6 +1312,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -1256,6 +1338,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 600,
               "heatZone": "Indirekt",
+              "grateTempC": 120,
               "notes": null
             },
             {
@@ -1268,6 +1351,7 @@
               "idealFlipPattern": "rotate",
               "restSeconds": 600,
               "heatZone": "Indirekt",
+              "grateTempC": 135,
               "notes": null
             }
           ],
@@ -1289,6 +1373,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -1304,20 +1389,21 @@
       "cuts": [
         {
           "slug": "lamm-huftli-lamm-huftsteak-lamb-rump-steak",
-          "name": "Lamm-Hüftli / Lamm-Hüftsteak",
+          "name": "Lamm-Hüftli",
           "hasThickness": false,
           "hasDoneness": true,
           "rows": [
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 420,
               "cookSecondsMax": 420,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1330,6 +1416,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1342,18 +1429,20 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 1020,
               "cookSecondsMax": 1020,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -1375,18 +1464,20 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 540,
               "cookSecondsMax": 540,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -1404,25 +1495,27 @@
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 240,
               "cookSecondsMax": 240,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 3,
               "prepLabel": null,
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 360,
               "cookSecondsMax": 360,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1435,6 +1528,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1447,18 +1541,20 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 2,
               "prepLabel": null,
               "doneness": "medium",
-              "cookSecondsMin": 360,
-              "cookSecondsMax": 360,
+              "cookSecondsMin": 390,
+              "cookSecondsMax": 390,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -1471,30 +1567,33 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 2,
               "prepLabel": null,
-              "doneness": "durchgebraten",
-              "cookSecondsMin": 480,
-              "cookSecondsMax": 480,
+              "doneness": "well-done",
+              "cookSecondsMin": 510,
+              "cookSecondsMax": 510,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": 3,
               "prepLabel": null,
-              "doneness": "durchgebraten",
-              "cookSecondsMin": 720,
-              "cookSecondsMax": 720,
+              "doneness": "well-done",
+              "cookSecondsMin": 750,
+              "cookSecondsMax": 750,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -1516,18 +1615,20 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 1080,
               "cookSecondsMax": 1080,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -1552,6 +1653,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 480,
               "heatZone": "Indirekt, niedrig",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -1582,6 +1684,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -1592,7 +1695,7 @@
         },
         {
           "slug": "pouletschenkel-pouletoberschenkel-chicken-thighs",
-          "name": "Pouletschenkel / Pouletoberschenkel",
+          "name": "Pouletschenkel",
           "hasThickness": false,
           "hasDoneness": false,
           "rows": [
@@ -1606,6 +1709,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -1630,6 +1734,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 250,
               "notes": null
             }
           ],
@@ -1654,6 +1759,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 600,
               "heatZone": "Indirekt, Brustseite oben",
+              "grateTempC": 200,
               "notes": null
             },
             {
@@ -1666,12 +1772,38 @@
               "idealFlipPattern": "once",
               "restSeconds": 900,
               "heatZone": "Indirekt, Brustseite oben",
+              "grateTempC": 200,
               "notes": null
             }
           ],
           "notes": [
             "Rückgrat mit Geflügelschere entfernen, flach pressen, halbiert die Garzeit gegenüber dem ganzen Brathuhn.",
             "12–24 h im Kühlschrank trocken pökeln, die letzten 2 h offen für die Haut."
+          ]
+        },
+        {
+          "slug": "pouletspiessli-chicken-skewers",
+          "name": "Pouletspiessli",
+          "hasThickness": false,
+          "hasDoneness": false,
+          "rows": [
+            {
+              "thicknessCm": null,
+              "prepLabel": "3 cm Würfel",
+              "doneness": null,
+              "cookSecondsMin": 600,
+              "cookSecondsMax": 720,
+              "flipFraction": 0.5,
+              "idealFlipPattern": "rotate",
+              "restSeconds": 120,
+              "heatZone": "Direkt mittel",
+              "grateTempC": 200,
+              "notes": null
+            }
+          ],
+          "notes": [
+            "Holzspiesse 30 Min. wässern, sonst kohlen sie.",
+            "Kleinen Spalt zwischen den Würfeln lassen, damit alle Seiten Hitze bekommen."
           ]
         },
         {
@@ -1690,25 +1822,26 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 1020,
               "cookSecondsMax": 1020,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             }
           ],
           "notes": [
             "Fett rautenförmig einritzen, aber nicht ins Fleisch schneiden.",
-            "Auf einer kühlen Zone starten, damit das Fett ausläuft, bevor die Haut verbrennt.",
-            "Fett für Confit-Kartoffeln aufheben, niemals wegwerfen."
+            "Auf einer kühlen Zone starten, damit das Fett ausläuft, bevor die Haut verbrennt."
           ]
         },
         {
@@ -1721,12 +1854,13 @@
               "thicknessCm": 1,
               "prepLabel": null,
               "doneness": null,
-              "cookSecondsMin": 300,
-              "cookSecondsMax": 300,
+              "cookSecondsMin": 330,
+              "cookSecondsMax": 330,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
               "notes": null
             },
             {
@@ -1739,6 +1873,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -1768,6 +1903,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -1789,6 +1925,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 250,
               "notes": null
             }
           ],
@@ -1813,6 +1950,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -1820,7 +1958,7 @@
         },
         {
           "slug": "grillschnecke-bratwurstschnecke",
-          "name": "Grillschnecke / Bratwurstschnecke",
+          "name": "Grillschnecke",
           "hasThickness": false,
           "hasDoneness": false,
           "rows": [
@@ -1834,6 +1972,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -1857,6 +1996,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -1881,6 +2021,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt zu indirekt",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -1902,6 +2043,7 @@
               "idealFlipPattern": "every-60s",
               "restSeconds": 120,
               "heatZone": "Indirekt + direktes Finish",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -1923,6 +2065,7 @@
               "idealFlipPattern": "every-60s",
               "restSeconds": 0,
               "heatZone": "Indirekt + direktes Finish",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -1930,7 +2073,7 @@
         },
         {
           "slug": "frankfurter-wienerli",
-          "name": "Frankfurter / Wienerli",
+          "name": "Frankfurter",
           "hasThickness": false,
           "hasDoneness": false,
           "rows": [
@@ -1944,6 +2087,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt mittel",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -1965,57 +2109,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt mittel",
-              "notes": null
-            }
-          ],
-          "notes": []
-        }
-      ]
-    },
-    {
-      "slug": "skewers",
-      "name": "Spiessli",
-      "cuts": [
-        {
-          "slug": "pouletspiessli-chicken-skewers",
-          "name": "Pouletspiessli",
-          "hasThickness": false,
-          "hasDoneness": false,
-          "rows": [
-            {
-              "thicknessCm": null,
-              "prepLabel": "3 cm Würfel",
-              "doneness": null,
-              "cookSecondsMin": 600,
-              "cookSecondsMax": 720,
-              "flipFraction": 0.5,
-              "idealFlipPattern": "rotate",
-              "restSeconds": 120,
-              "heatZone": "Direkt mittel",
-              "notes": null
-            }
-          ],
-          "notes": [
-            "Holzspiesse 30 Min. wässern, sonst kohlen sie.",
-            "Kleinen Spalt zwischen den Würfeln lassen, damit alle Seiten Hitze bekommen."
-          ]
-        },
-        {
-          "slug": "mixed-grill-spiessli-gemischte-spiessli",
-          "name": "Mixed-Grill Spiessli",
-          "hasThickness": false,
-          "hasDoneness": false,
-          "rows": [
-            {
-              "thicknessCm": null,
-              "prepLabel": "-",
-              "doneness": null,
-              "cookSecondsMin": 360,
-              "cookSecondsMax": 360,
-              "flipFraction": 0.5,
-              "idealFlipPattern": "once",
-              "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2043,6 +2137,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2067,6 +2162,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2085,12 +2181,13 @@
               "thicknessCm": 1,
               "prepLabel": null,
               "doneness": null,
-              "cookSecondsMin": 300,
-              "cookSecondsMax": 300,
+              "cookSecondsMin": 330,
+              "cookSecondsMax": 330,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             },
             {
@@ -2103,6 +2200,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2113,7 +2211,7 @@
         },
         {
           "slug": "dorade-branzino-whole-sea-bream-sea-bass-400-g",
-          "name": "Dorade / Branzino",
+          "name": "Dorade",
           "hasThickness": false,
           "hasDoneness": false,
           "rows": [
@@ -2127,6 +2225,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2151,6 +2250,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 250,
               "notes": null
             }
           ],
@@ -2174,6 +2274,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 120,
               "heatZone": "Direkt mittelhoch",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -2186,12 +2287,11 @@
               "idealFlipPattern": "once",
               "restSeconds": 120,
               "heatZone": "Direkt mittelhoch",
+              "grateTempC": 230,
               "notes": null
             }
           ],
-          "notes": [
-            "Sehr fehlerverzeihend für einen Fisch, dichte und fleischige Textur."
-          ]
+          "notes": []
         },
         {
           "slug": "riesencrevetten-king-prawns-shell-on",
@@ -2209,6 +2309,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2233,6 +2334,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -2260,6 +2362,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -2281,6 +2384,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -2308,6 +2412,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -2331,6 +2436,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2354,6 +2460,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2377,6 +2484,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             }
           ],
@@ -2398,6 +2506,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2419,6 +2528,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2440,6 +2550,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2463,6 +2574,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2484,6 +2596,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2507,6 +2620,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2528,6 +2642,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
               "notes": null
             }
           ],
@@ -2552,6 +2667,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2559,7 +2675,7 @@
         },
         {
           "slug": "zucchetti-zucchini-slices-lengthwise",
-          "name": "Zucchetti / Zucchini",
+          "name": "Zucchetti",
           "hasThickness": false,
           "hasDoneness": false,
           "rows": [
@@ -2573,6 +2689,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2594,6 +2711,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2615,6 +2733,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2636,6 +2755,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 250,
               "notes": null
             }
           ],
@@ -2661,6 +2781,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2688,6 +2809,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2709,6 +2831,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2730,6 +2853,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2751,6 +2875,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2775,6 +2900,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2796,6 +2922,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2819,6 +2946,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2840,6 +2968,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2864,6 +2993,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2885,6 +3015,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2906,6 +3037,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2915,7 +3047,7 @@
         },
         {
           "slug": "zitrone-limette-lemon-lime-halved-for-dressing",
-          "name": "Zitrone / Limette",
+          "name": "Zitrone",
           "hasThickness": false,
           "hasDoneness": false,
           "rows": [
@@ -2929,6 +3061,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 0,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 200,
               "notes": null
             }
           ],
@@ -2951,13 +3084,14 @@
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "blutig",
+              "doneness": "rare",
               "cookSecondsMin": 240,
               "cookSecondsMax": 240,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -2970,6 +3104,7 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
@@ -2982,24 +3117,25 @@
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             },
             {
               "thicknessCm": null,
               "prepLabel": "-",
-              "doneness": "durchgebraten",
+              "doneness": "well-done",
               "cookSecondsMin": 960,
               "cookSecondsMax": 960,
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
               "notes": null
             }
           ],
           "notes": [
-            "NICHT über medium-rare hinaus garen, Pferd hat etwa 3 % Fett und wird zum Stein.",
-            "In Rotwein, Wacholder und Lorbeer für Tiefe marinieren."
+            "NICHT über medium-rare hinaus garen, Pferd hat etwa 3 % Fett und wird zum Stein."
           ]
         },
         {
@@ -3018,6 +3154,29 @@
               "idealFlipPattern": "once",
               "restSeconds": 180,
               "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 230,
+              "notes": null
+            }
+          ],
+          "notes": []
+        },
+        {
+          "slug": "mixed-grill-spiessli-gemischte-spiessli",
+          "name": "Mixed-Grill Spiessli",
+          "hasThickness": false,
+          "hasDoneness": false,
+          "rows": [
+            {
+              "thicknessCm": null,
+              "prepLabel": "-",
+              "doneness": null,
+              "cookSecondsMin": 360,
+              "cookSecondsMax": 360,
+              "flipFraction": 0.5,
+              "idealFlipPattern": "once",
+              "restSeconds": 180,
+              "heatZone": "Direkt, Deckel zu",
+              "grateTempC": 220,
               "notes": null
             }
           ],

@@ -16,6 +16,7 @@ function item(over: Partial<PlannedItem> = {}): PlannedItem {
 		flipFraction: 0.5,
 		idealFlipPattern: 'once',
 		heatZone: 'Direct high',
+		grateTempC: null,
 		...over,
 	}
 }

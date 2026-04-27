@@ -13,6 +13,7 @@ export const timingRowSchema = z
 		idealFlipPattern: flipPatternSchema,
 		restSeconds: z.number().int().nonnegative(),
 		heatZone: z.string(),
+		grateTempC: z.number().int().positive().nullable(),
 		notes: z.string().nullable(),
 	})
 	.refine(r => r.cookSecondsMax >= r.cookSecondsMin, {

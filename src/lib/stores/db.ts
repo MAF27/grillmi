@@ -1,16 +1,36 @@
 import { openDB, type IDBPDatabase } from 'idb'
-import type { Session, Favorite, SavedPlan, UserSettings } from '$lib/models'
+import type { Plan, Session, Favorite, SavedPlan, UserSettings } from '$lib/models'
+
+export interface PersistedAlarm {
+	id: string
+	itemId: string
+	kind: 'on' | 'flip' | 'ready'
+	itemName: string
+	message: string
+	firedAt: number
+}
+
+export interface PersistedPlanState {
+	plan: Plan
+	planMode: 'auto' | 'manual'
+	manualStarts: Record<string, number>
+	manualPlated: string[]
+	alarms?: PersistedAlarm[]
+	dismissedAlarmKeys?: string[]
+}
 
 interface GrillmiDB {
 	sessions: { key: string; value: Session }
 	favorites: { key: string; value: Favorite }
 	plans: { key: string; value: SavedPlan }
 	settings: { key: string; value: UserSettings }
+	planState: { key: string; value: PersistedPlanState }
 }
 
 const DB_NAME = 'grillmi'
-const DB_VERSION = 2
+const DB_VERSION = 3
 const CURRENT_SESSION_KEY = 'current'
+const CURRENT_PLAN_KEY = 'current'
 const SETTINGS_KEY = 'user'
 
 let dbPromise: Promise<IDBPDatabase<GrillmiDB>> | null = null
@@ -24,9 +44,8 @@ function getDB(): Promise<IDBPDatabase<GrillmiDB>> {
 					db.createObjectStore('favorites')
 					db.createObjectStore('settings')
 					db.createObjectStore('plans')
-					return
 				}
-				if (oldVersion < 2) {
+				if (oldVersion >= 1 && oldVersion < 2) {
 					// v1 stored full plans (name + items[]) in `favorites`. Move them to
 					// the new `plans` store, then drop and recreate `favorites` with the
 					// new single-item Favorit shape.
@@ -43,6 +62,9 @@ function getDB(): Promise<IDBPDatabase<GrillmiDB>> {
 						const key = keys[i] ?? records[i].id
 						await plansStore.put(records[i], key)
 					}
+				}
+				if (oldVersion < 3) {
+					if (!db.objectStoreNames.contains('planState')) db.createObjectStore('planState')
 				}
 			},
 		})
@@ -107,14 +129,30 @@ export async function putSettings(s: UserSettings): Promise<void> {
 	await db.put('settings', JSON.parse(JSON.stringify(s)) as UserSettings, SETTINGS_KEY)
 }
 
+export async function getCurrentPlanState(): Promise<PersistedPlanState | undefined> {
+	const db = await getDB()
+	return db.get('planState', CURRENT_PLAN_KEY)
+}
+
+export async function putCurrentPlanState(state: PersistedPlanState): Promise<void> {
+	const db = await getDB()
+	await db.put('planState', JSON.parse(JSON.stringify(state)) as PersistedPlanState, CURRENT_PLAN_KEY)
+}
+
+export async function clearCurrentPlanState(): Promise<void> {
+	const db = await getDB()
+	await db.delete('planState', CURRENT_PLAN_KEY)
+}
+
 export async function resetAll(): Promise<void> {
 	const db = await getDB()
-	const tx = db.transaction(['sessions', 'favorites', 'plans', 'settings'], 'readwrite')
+	const tx = db.transaction(['sessions', 'favorites', 'plans', 'settings', 'planState'], 'readwrite')
 	await Promise.all([
 		tx.objectStore('sessions').clear(),
 		tx.objectStore('favorites').clear(),
 		tx.objectStore('plans').clear(),
 		tx.objectStore('settings').clear(),
+		tx.objectStore('planState').clear(),
 	])
 	await tx.done
 }

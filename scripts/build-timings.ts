@@ -49,7 +49,6 @@ const HAMBURGER = 'hamburger-hackfleisch-patties'
 const BBQ_SPECK = 'bbq-speck-speckscheiben-vom-grill'
 const MIXED_GRILL = 'mixed-grill-spiessli-gemischte-spiessli'
 const KANINCHEN = 'kaninchenfilets-kaninchen-filets'
-const POULETSPIESSLI = 'pouletspiessli-chicken-skewers'
 const PFERDESTEAK = 'pferdesteak-horse-steak'
 const HALLOUMI = 'halloumi'
 const PANEER = 'paneer'
@@ -75,14 +74,6 @@ const UI_CATEGORIES: ReadonlyArray<UiCategory> = [
 	{ slug: 'lamb', name: 'Lamm', pull: [{ from: 'lamb', cuts: 'all' }] },
 	{ slug: 'poultry', name: 'Geflügel', pull: [{ from: 'poultry', cuts: 'all' }] },
 	{ slug: 'sausage', name: 'Wurst', pull: [{ from: 'sausage', cuts: 'all' }] },
-	{
-		slug: 'skewers',
-		name: 'Spiessli',
-		pull: [
-			{ from: 'poultry', cuts: [POULETSPIESSLI] },
-			{ from: 'various', cuts: [MIXED_GRILL] },
-		],
-	},
 	{ slug: 'fish', name: 'Fisch', pull: [{ from: 'fish', cuts: 'all' }] },
 	{
 		slug: 'cheese',
@@ -96,12 +87,10 @@ const UI_CATEGORIES: ReadonlyArray<UiCategory> = [
 		name: 'Spezial',
 		pull: [
 			{ from: 'horse', cuts: [PFERDESTEAK] },
-			{ from: 'various', cuts: [KANINCHEN] },
+			{ from: 'various', cuts: [KANINCHEN, MIXED_GRILL] },
 		],
 	},
 ]
-
-const POULTRY_TO_SKEWERS = new Set([POULETSPIESSLI])
 
 function regroupCategories(parsed: Category[]): Category[] {
 	const bySlug = new Map(parsed.map(c => [c.slug, c]))
@@ -118,7 +107,6 @@ function regroupCategories(parsed: Category[]): Category[] {
 			if (ref.cuts === 'all') {
 				for (const c of src.cuts) {
 					if (used.has(c.slug)) continue
-					if (ref.from === 'poultry' && POULTRY_TO_SKEWERS.has(c.slug)) continue
 					cuts.push(c)
 					used.add(c.slug)
 				}
@@ -248,9 +236,13 @@ function parseDurationRange(raw: string): [number, number] | null {
 	const hRange = /(\d+(?:\.\d+)?)\s*[–-]\s*(\d+(?:\.\d+)?)\s*h(?!\w)/.exec(cleaned)
 	if (hRange) return [Math.round(parseFloat(hRange[1]) * 3600), Math.round(parseFloat(hRange[2]) * 3600)]
 	const hSingle = /(\d+(?:\.\d+)?)\s*h(?!\w)/.exec(cleaned)
-	if (hSingle) {
-		const v = Math.round(parseFloat(hSingle[1]) * 3600)
-		return [v, v]
+	if (hSingle) return [Math.round(parseFloat(hSingle[1]) * 3600), Math.round(parseFloat(hSingle[1]) * 3600)]
+
+	// Compound "X min Y s" — parse before plain "X min" so trailing seconds aren't dropped.
+	const minSec = /(\d+)\s*min\s*(\d+)\s*s(?!ide)/.exec(cleaned)
+	if (minSec) {
+		const total = parseInt(minSec[1], 10) * 60 + parseInt(minSec[2], 10)
+		return [total, total]
 	}
 
 	// Minute range "8–10 min" / "8-10 min"
@@ -259,21 +251,26 @@ function parseDurationRange(raw: string): [number, number] | null {
 
 	// Single "2 min"
 	const minSingle = /(\d+(?:\.\d+)?)\s*min/.exec(cleaned)
-	if (minSingle) {
-		const v = Math.round(parseFloat(minSingle[1]) * 60)
-		return [v, v]
-	}
+	if (minSingle) return [Math.round(parseFloat(minSingle[1]) * 60), Math.round(parseFloat(minSingle[1]) * 60)]
 
 	// Seconds range "90 s–2 min" already handled by min above; bare seconds:
 	const sRange = /(\d+(?:\.\d+)?)\s*[–-]\s*(\d+(?:\.\d+)?)\s*s(?!ide)/.exec(cleaned)
 	if (sRange) return [Math.round(parseFloat(sRange[1])), Math.round(parseFloat(sRange[2]))]
 	const sSingle = /(\d+(?:\.\d+)?)\s*s(?!ide)/.exec(cleaned)
-	if (sSingle) {
-		const v = Math.round(parseFloat(sSingle[1]))
-		return [v, v]
-	}
+	if (sSingle) return [Math.round(parseFloat(sSingle[1])), Math.round(parseFloat(sSingle[1]))]
 
 	return null
+}
+
+// "230 °C" / "290 °C+" / "120-140 °C". Range -> upper bound (typical target,
+// not the conservative floor).
+function parseGrateTemp(raw: string): number | null {
+	const c = (raw ?? '').replace(/\s+/g, ' ').trim()
+	if (!c || c === '-' || c === '—') return null
+	const range = /(\d+)\s*[–-]\s*(\d+)\s*°?C/.exec(c)
+	if (range) return parseInt(range[2], 10)
+	const single = /(\d+)\s*°?C/.exec(c)
+	return single ? parseInt(single[1], 10) : null
 }
 
 function parseRest(raw: string): number {
@@ -364,6 +361,9 @@ function parseCut(name: string, body: string[], stats: ParseStats): Cut | null {
 
 		const heatZone = pickColumn(row, 'Heat zone', 'Method').trim() || '—'
 
+		const grateTempRaw = pickColumn(row, 'Grate temp', 'Temperature', 'Temp')
+		const grateTempC = parseGrateTemp(grateTempRaw)
+
 		const thicknessRaw = pickColumn(
 			row,
 			'Thickness',
@@ -402,6 +402,7 @@ function parseCut(name: string, body: string[], stats: ParseStats): Cut | null {
 			idealFlipPattern: flip.pattern,
 			restSeconds,
 			heatZone,
+			grateTempC,
 			notes: note || null,
 		})
 	}
@@ -415,7 +416,11 @@ function parseCut(name: string, body: string[], stats: ParseStats): Cut | null {
 	stats.cutsKept += 1
 
 	const slug = slugify(name)
-	const displayName = name.replace(/\s*\(.*?\)\s*$/, '').trim() || name
+	const displayName =
+		name
+			.replace(/\s*\([^)]*\)\s*/g, ' ')
+			.replace(/\s*\/.*$/, '')
+			.trim() || name
 
 	return {
 		slug,

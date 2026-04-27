@@ -4,6 +4,7 @@
 	import { formatDuration } from '$lib/util/format'
 	import { favoritesStore } from '$lib/stores/favoritesStore.svelte'
 	import Button from './Button.svelte'
+	import CategoryIcon from './CategoryIcon.svelte'
 
 	type Step = 'category' | 'cut' | 'specs'
 	type Tab = 'categories' | 'favorites'
@@ -59,7 +60,7 @@
 			case 'category':
 				return 'Kategorie'
 			case 'cut':
-				return 'Stück'
+				return 'Grillstück'
 			case 'specs':
 				if (needsThickness && needsDoneness) return 'Dicke & Garstufe'
 				if (needsThickness) return 'Dicke'
@@ -179,6 +180,7 @@
 			flipFraction: matchedRow.flipFraction,
 			idealFlipPattern: matchedRow.idealFlipPattern,
 			heatZone: matchedRow.heatZone,
+			grateTempC: matchedRow.grateTempC,
 		})
 		reset()
 	}
@@ -196,6 +198,7 @@
 			flipFraction: fav.flipFraction,
 			idealFlipPattern: fav.idealFlipPattern,
 			heatZone: fav.heatZone,
+			grateTempC: fav.grateTempC,
 		})
 		void favoritesStore.touch(fav.id)
 		onclose()
@@ -258,6 +261,7 @@
 			flipFraction: matchedRow.flipFraction,
 			idealFlipPattern: matchedRow.idealFlipPattern,
 			heatZone: matchedRow.heatZone,
+			grateTempC: matchedRow.grateTempC,
 		})
 		saveFavoriteOpen = false
 		favoriteName = ''
@@ -275,17 +279,15 @@
 		return Number.isInteger(cm) ? String(cm) : cm.toFixed(1)
 	}
 
-	// Thickness range: snap to 0.5 cm steps, extend 1 cm below documented min
-	// (with a hard floor of 1.5 cm for thin slices), keep documented max as
-	// upper bound.
-	const THICKNESS_FLOOR = 1.5
+	// 0.5 cm increments between the documented min and max thicknesses; the
+	// findRow lookup snaps each half-step to the closest documented row's
+	// cook time so we never invent timings we haven't researched.
 	const thicknessOptions = $derived.by<number[]>(() => {
 		if (!cut?.hasThickness) return []
 		const ts = cut.rows.map(r => r.thicknessCm).filter((v): v is number => v !== null)
 		if (ts.length === 0) return []
-		const documentedMin = Math.min(...ts)
+		const min = Math.min(...ts)
 		const max = Math.max(...ts)
-		const min = Math.max(THICKNESS_FLOOR, Math.round((documentedMin - 1) * 2) / 2)
 		const out: number[] = []
 		for (let v = min; v <= max + 1e-6; v = Math.round((v + 0.5) * 10) / 10) {
 			out.push(Math.round(v * 10) / 10)
@@ -328,11 +330,14 @@
 {#if open}
 	<div class="scrim" role="presentation" onclick={onclose}></div>
 	<div class="sheet" role="dialog" aria-modal="true" aria-label="Eintrag hinzufügen">
+		<div class="handle" aria-hidden="true"></div>
 		<header>
 			<button class="back" onclick={back} aria-label="Zurück">‹</button>
 			<div class="title-stack">
 				{#if cut && step === 'specs'}
-					<span class="subtitle">{cut.name}</span>
+					<span class="subtitle">{cut.name.toUpperCase()}</span>
+				{:else if category && step === 'cut'}
+					<span class="subtitle">{category.name.toUpperCase()}</span>
 				{/if}
 				<h2>{titleFor(step)}</h2>
 			</div>
@@ -385,14 +390,24 @@
 			{:else if step === 'category'}
 				<div class="grid">
 					{#each TIMINGS.categories as c (c.slug)}
-						<button class="tile" onclick={() => pickCategory(c.slug)}>{c.name}</button>
+						<button class="tile" onclick={() => pickCategory(c.slug)}>
+							<span class="tile-icon" aria-hidden="true">
+								<CategoryIcon slug={c.slug} />
+							</span>
+							<span class="tile-name">{c.name}</span>
+						</button>
 					{/each}
 				</div>
 			{:else if step === 'cut' && category}
-				<ul class="list">
+				<ul class="cut-list">
 					{#each category.cuts as c (c.slug)}
+						{@const minMin = Math.max(1, Math.round(Math.min(...c.rows.map(r => r.cookSecondsMin)) / 60))}
+						{@const maxMin = Math.max(1, Math.round(Math.max(...c.rows.map(r => r.cookSecondsMax)) / 60))}
 						<li>
-							<button class="row" onclick={() => pickCut(c.slug)}>{c.name}</button>
+							<button class="cut-row" onclick={() => pickCut(c.slug)}>
+								<span class="cut-name">{c.name}</span>
+								<span class="cut-time">{minMin === maxMin ? `${minMin}min` : `${minMin} - ${maxMin}min`}</span>
+							</button>
 						</li>
 					{/each}
 				</ul>
@@ -400,24 +415,32 @@
 				{#if needsThickness}
 					<section class="section">
 						<h3>Dicke</h3>
-						<div class="stepper">
-							<button type="button" class="step" disabled={atThicknessMin} onclick={() => stepThickness(-1)} aria-label="Dünner"
-								>−</button>
-							<div class="stepper-value">
+						<div class="thickness-card">
+							<button
+								type="button"
+								class="round-step"
+								disabled={atThicknessMin}
+								onclick={() => stepThickness(-1)}
+								aria-label="Dünner">−</button>
+							<div class="thickness-value">
 								<span class="num">{thicknessCm !== null ? formatThickness(thicknessCm) : '—'}</span>
 								<span class="unit">cm</span>
 							</div>
-							<button type="button" class="step" disabled={atThicknessMax} onclick={() => stepThickness(1)} aria-label="Dicker"
-								>+</button>
+							<button
+								type="button"
+								class="round-step"
+								disabled={atThicknessMax}
+								onclick={() => stepThickness(1)}
+								aria-label="Dicker">+</button>
 						</div>
 					</section>
 				{:else if needsPrep}
 					<section class="section">
 						<h3>Variante</h3>
-						<ul class="list">
+						<ul class="variant-list">
 							{#each prepOptions as opt (opt)}
 								<li>
-									<button type="button" class="row" class:active={prepLabel === opt} onclick={() => (prepLabel = opt)}
+									<button type="button" class="variant-row" class:active={prepLabel === opt} onclick={() => (prepLabel = opt)}
 										>{opt}</button>
 								</li>
 							{/each}
@@ -434,35 +457,72 @@
 						</div>
 					</section>
 				{/if}
+				{#if (cut.notes && cut.notes.length > 0) || matchedRow?.notes}
+					<section class="section">
+						<h3>Tipps</h3>
+						<ul class="tips">
+							{#if matchedRow?.notes}
+								<li>{matchedRow.notes}</li>
+							{/if}
+							{#each cut.notes as note (note)}
+								<li>{note}</li>
+							{/each}
+						</ul>
+					</section>
+				{/if}
 			{/if}
 		</div>
 
 		<footer>
-			<div class="cook-summary">
-				{#if matchedRow && step === 'specs'}
-					Geschätzte Garzeit: <strong>{formatDuration(computedSeconds)}</strong>
-					{#if matchedRow.restSeconds > 0}, Ruhezeit: <strong>{formatDuration(matchedRow.restSeconds)}</strong>{/if}
+			{#if step === 'specs' && matchedRow}
+				<div class="cook-summary">
+					<span class="cook-eyebrow">Garzeit</span>
+					<span class="cook-values">
+						<strong class="cook-cook">{formatDuration(computedSeconds)}</strong>
+						{#if matchedRow.restSeconds > 0}
+							<span class="cook-sep">+ Ruhe</span>
+							<strong class="cook-rest">{formatDuration(matchedRow.restSeconds)}</strong>
+						{/if}
+					</span>
+				</div>
+				{#if matchedRow.grateTempC || (matchedRow.heatZone && matchedRow.heatZone !== '—')}
+					<div class="heat-summary">
+						<span class="cook-eyebrow">Hitze</span>
+						<span class="cook-values">
+							{#if matchedRow.grateTempC}
+								<strong>{matchedRow.grateTempC}&nbsp;°C</strong>
+							{/if}
+							{#if matchedRow.heatZone && matchedRow.heatZone !== '—'}
+								<span class="cook-sep">·</span>
+								<span>{matchedRow.heatZone}</span>
+							{/if}
+						</span>
+					</div>
 				{/if}
-			</div>
+			{/if}
 			{#if step === 'specs'}
-				{#if saveFavoriteOpen}
-					<input
-						type="text"
-						class="favorite-input"
-						bind:value={favoriteName}
-						maxlength="60"
-						placeholder="Name speichern"
-						aria-label="Favorit-Name"
-						onkeydown={e => {
-							if (e.key === 'Enter') {
-								e.preventDefault()
-								void confirmSaveFavorite()
-							}
-						}} />
-				{:else if initial === null}
-					<Button variant="ghost" size="sm" disabled={!specsComplete} onclick={openSaveFavorite}>Als Favorit speichern</Button>
-				{/if}
-				<Button variant="primary" fullWidth disabled={!specsComplete} onclick={commit}>Übernehmen</Button>
+				<div class="footer-actions">
+					{#if saveFavoriteOpen}
+						<input
+							type="text"
+							class="favorite-input"
+							bind:value={favoriteName}
+							maxlength="60"
+							placeholder="Name speichern"
+							aria-label="Favorit-Name"
+							onkeydown={e => {
+								if (e.key === 'Enter') {
+									e.preventDefault()
+									void confirmSaveFavorite()
+								}
+							}} />
+						<Button variant="primary" size="sm" disabled={!favoriteName.trim()} onclick={confirmSaveFavorite}>Speichern</Button>
+					{:else if initial === null}
+						<Button variant="accentGhost" size="sm" disabled={!specsComplete} onclick={openSaveFavorite}
+							>★ Als Favorit speichern</Button>
+					{/if}
+					<Button variant="primary" size="lg" fullWidth disabled={!specsComplete} onclick={commit}>Übernehmen</Button>
+				</div>
 			{/if}
 		</footer>
 	</div>
@@ -473,6 +533,7 @@
 		position: fixed;
 		inset: 0;
 		background: var(--color-bg-overlay);
+		backdrop-filter: blur(4px);
 		z-index: var(--z-modal);
 	}
 	.sheet {
@@ -481,11 +542,11 @@
 		right: 0;
 		bottom: 0;
 		max-height: 85dvh;
-		background: var(--color-bg-elevated);
+		background: var(--color-bg-surface);
 		color: var(--color-fg-base);
 		border: none;
-		border-top-left-radius: var(--radius-xl);
-		border-top-right-radius: var(--radius-xl);
+		border-top-left-radius: 24px;
+		border-top-right-radius: 24px;
 		padding: 0;
 		z-index: calc(var(--z-modal) + 1);
 		display: flex;
@@ -493,24 +554,37 @@
 		width: 100%;
 		max-width: 600px;
 		margin: 0 auto;
-		animation: slideUp var(--duration-slow) var(--ease-spring);
+		box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.5);
+		animation: aSheetIn 0.3s cubic-bezier(0.2, 0.7, 0.3, 1);
 	}
-	@keyframes slideUp {
+	@keyframes aSheetIn {
 		from {
 			transform: translateY(100%);
 		}
+		to {
+			transform: translateY(0);
+		}
+	}
+	.handle {
+		height: 4px;
+		width: 36px;
+		background: var(--color-border-strong);
+		border-radius: 2px;
+		margin: 10px auto 6px;
 	}
 	header {
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
-		padding: var(--space-3) var(--space-4);
+		padding: 8px 16px 14px;
 		border-bottom: 1px solid var(--color-border-subtle);
 	}
 	header h2 {
 		margin: 0;
-		font-size: var(--font-size-lg);
+		font-size: 22px;
 		font-family: var(--font-display);
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.01em;
 	}
 	.title-stack {
 		display: flex;
@@ -518,12 +592,15 @@
 		align-items: center;
 		gap: 2px;
 		min-width: 0;
+		flex: 1;
+		text-align: center;
 	}
 	.subtitle {
-		font-size: var(--font-size-xs);
-		text-transform: uppercase;
-		letter-spacing: var(--tracking-widest);
-		color: var(--color-fg-muted);
+		font-family: var(--font-body);
+		font-size: 10px;
+		font-weight: 600;
+		letter-spacing: 0.12em;
+		color: var(--color-ember);
 		max-width: 100%;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -536,104 +613,139 @@
 		color: var(--color-fg-base);
 		min-width: 44px;
 		min-height: 44px;
-		font-size: var(--font-size-2xl);
+		font-size: 22px;
 		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 	.tabs {
-		display: flex;
-		gap: 2px;
-		margin: var(--space-3) var(--space-4) 0;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 4px;
+		margin: 14px 16px 0;
 		background: var(--color-bg-surface);
 		border: 1px solid var(--color-border-subtle);
-		border-radius: var(--radius-md);
-		padding: 2px;
+		border-radius: 16px;
+		padding: 4px;
 	}
 	.tabs button {
-		flex: 1;
 		min-height: 40px;
 		background: transparent;
 		border: none;
 		color: var(--color-fg-base);
-		font: inherit;
-		border-radius: calc(var(--radius-md) - 2px);
+		font-family: var(--font-body);
+		font-weight: 600;
+		font-size: 14px;
+		border-radius: 12px;
 		cursor: pointer;
+		transition: all 0.15s ease;
 	}
 	.tabs button.active {
-		background: var(--color-accent-default);
-		color: var(--color-fg-on-accent);
+		background: var(--color-ember);
+		color: var(--color-ember-ink);
 	}
 	.body {
 		flex: 1;
 		overflow: auto;
-		padding: var(--space-4);
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-5);
 	}
 	.section {
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-3);
+		gap: 10px;
+		margin-bottom: 24px;
 	}
 	.section h3 {
 		margin: 0;
-		font-size: var(--font-size-sm);
+		font-family: var(--font-body);
+		font-size: 11px;
+		font-weight: 600;
 		text-transform: uppercase;
-		letter-spacing: var(--tracking-widest);
+		letter-spacing: 0.12em;
 		color: var(--color-fg-muted);
 	}
 	.grid {
+		padding: 16px;
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
-		gap: var(--space-3);
+		gap: 8px;
 	}
 	.tile {
-		background: var(--color-bg-surface);
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 10px;
+		background: var(--color-bg-surface-2);
 		color: var(--color-fg-base);
 		border: 1px solid var(--color-border-subtle);
-		border-radius: var(--radius-lg);
-		min-height: 88px;
-		font-size: var(--font-size-md);
+		border-radius: 14px;
+		padding: 18px 12px;
+		font-family: var(--font-body);
+		font-weight: 600;
+		font-size: 14px;
 		cursor: pointer;
+		transition: all 0.15s ease;
+		text-align: left;
 	}
-	.list {
+	.tile:hover {
+		border-color: var(--color-border-strong);
+	}
+	.tile-icon {
+		color: var(--color-ember);
+		opacity: 0.85;
+		display: inline-flex;
+	}
+	.tile-name {
+		font-family: var(--font-body);
+		font-weight: 600;
+		font-size: 14px;
+	}
+	.cut-list {
+		padding: 8px 16px 16px;
 		list-style: none;
-		padding: 0;
 		margin: 0;
 	}
-	.list .row {
+	.cut-row {
 		width: 100%;
-		text-align: left;
-		padding: var(--space-4);
-		min-height: 56px;
-		background: var(--color-bg-surface);
+		background: transparent;
+		border: none;
+		border-bottom: 1px solid var(--color-border-subtle);
+		padding: 14px 0;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
 		color: var(--color-fg-base);
-		border: 1px solid var(--color-border-subtle);
-		border-radius: var(--radius-md);
-		margin-bottom: var(--space-2);
-		font-size: var(--font-size-md);
 		cursor: pointer;
+		text-align: left;
+		font-family: var(--font-body);
 	}
-	.list .row.active {
-		border-color: var(--color-accent-default);
+	.cut-name {
+		font-size: 16px;
+		font-weight: 500;
+	}
+	.cut-time {
+		font-family: var(--font-display);
+		font-size: 13px;
+		color: var(--color-fg-muted);
+		font-variant-numeric: tabular-nums;
 	}
 	.fav-list {
 		list-style: none;
-		padding: 0;
+		padding: 8px 16px 16px;
 		margin: 0;
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-2);
+		gap: 8px;
 	}
 	.fav-row {
 		width: 100%;
 		text-align: left;
-		padding: var(--space-3) var(--space-4);
+		padding: 14px 18px;
 		min-height: 64px;
-		background: var(--color-bg-surface);
+		background: var(--color-bg-surface-2);
 		color: var(--color-fg-base);
 		border: 1px solid var(--color-border-subtle);
-		border-radius: var(--radius-md);
+		border-radius: 14px;
 		font: inherit;
 		cursor: pointer;
 		display: flex;
@@ -641,121 +753,236 @@
 		gap: 2px;
 	}
 	.fav-name {
-		font-size: var(--font-size-md);
-		font-weight: var(--font-weight-semibold);
+		font-size: 16px;
+		font-weight: 600;
 	}
 	.fav-summary {
-		font-size: var(--font-size-sm);
+		font-size: 13px;
 		color: var(--color-fg-muted);
 	}
 	.fav-last {
-		font-size: var(--font-size-xs);
+		font-size: 12px;
 		color: var(--color-fg-subtle);
+		font-family: var(--font-display);
+		font-variant-numeric: tabular-nums;
 	}
 	.empty-state {
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-3);
+		gap: 12px;
 		align-items: center;
 		text-align: center;
-		padding: var(--space-6) var(--space-4);
+		padding: 24px;
 		color: var(--color-fg-muted);
 	}
 	.empty-state p {
 		margin: 0;
 	}
-	.stepper {
+
+	/* Specs step */
+	.section,
+	footer {
+		padding-left: 20px;
+		padding-right: 20px;
+	}
+	.section {
+		padding-top: 0;
+	}
+	.body > .section:first-child {
+		padding-top: 20px;
+	}
+	.thickness-card {
+		background: var(--color-bg-surface-2);
+		border: 1px solid var(--color-border-subtle);
+		border-radius: 14px;
+		padding: 14px 18px;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: var(--space-3);
-		padding: var(--space-3) var(--space-4);
-		background: var(--color-bg-surface);
-		border: 1px solid var(--color-border-subtle);
-		border-radius: var(--radius-lg);
+		gap: 12px;
 	}
-	.step {
-		min-width: 56px;
-		min-height: 56px;
-		border-radius: var(--radius-full);
-		background: var(--color-bg-elevated);
-		border: 1px solid var(--color-border-subtle);
+	.round-step {
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		border: 1px solid var(--color-border-strong);
+		background: transparent;
 		color: var(--color-fg-base);
-		font-size: var(--font-size-2xl);
-		font-weight: 600;
+		font-size: 20px;
 		cursor: pointer;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		line-height: 1;
-		padding: 0;
+		flex-shrink: 0;
 	}
-	.step:disabled {
+	.round-step:disabled {
 		opacity: 0.35;
 		cursor: not-allowed;
 	}
-	.step:not(:disabled):active {
-		background: var(--color-accent-default);
-		color: var(--color-fg-on-accent);
-		border-color: var(--color-accent-default);
-	}
-	.stepper-value {
+	.thickness-value {
 		display: flex;
 		align-items: baseline;
-		gap: var(--space-2);
-		font-family: var(--font-mono);
+		gap: 6px;
 	}
-	.stepper-value .num {
-		font-size: var(--font-size-3xl);
+	.thickness-value .num {
+		font-family: var(--font-display);
+		font-size: 48px;
+		font-weight: 600;
+		line-height: 1;
+		letter-spacing: -0.02em;
 		font-variant-numeric: tabular-nums;
-		min-width: 4ch;
+		min-width: 3ch;
 		text-align: center;
 	}
-	.stepper-value .unit {
-		font-size: var(--font-size-md);
+	.thickness-value .unit {
+		font-family: var(--font-body);
+		font-size: 12px;
 		color: var(--color-fg-muted);
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+	}
+	.variant-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+	.variant-row {
+		width: 100%;
+		text-align: left;
+		padding: 14px 16px;
+		background: var(--color-bg-surface-2);
+		border: 1px solid var(--color-border-subtle);
+		border-radius: 12px;
+		color: var(--color-fg-base);
+		font-family: var(--font-body);
+		font-weight: 500;
+		font-size: 14px;
+		cursor: pointer;
+	}
+	.variant-row.active {
+		background: rgba(255, 122, 26, 0.13);
+		border-color: var(--color-ember);
 	}
 	.chips {
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--space-2);
+		gap: 8px;
 	}
 	.chips button {
-		padding: var(--space-2) var(--space-4);
+		padding: 12px 16px;
 		min-height: 44px;
-		border-radius: var(--radius-md);
-		background: var(--color-bg-surface);
-		border: 1px solid var(--color-border-subtle);
+		border-radius: 10px;
+		background: transparent;
+		border: 1px solid var(--color-border-strong);
 		color: var(--color-fg-base);
+		font-family: var(--font-body);
+		font-weight: 500;
+		font-size: 14px;
+		cursor: pointer;
 	}
 	.chips button.active {
-		background: var(--color-accent-default);
-		color: var(--color-fg-on-accent);
-		border-color: var(--color-accent-default);
+		background: var(--color-ember);
+		color: var(--color-ember-ink);
+		border-color: var(--color-ember);
+	}
+	.tips {
+		list-style: none;
+		padding: 14px 16px;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		background: var(--color-bg-surface-2);
+		border: 1px solid var(--color-border-subtle);
+		border-radius: 12px;
+	}
+	.tips li {
+		position: relative;
+		padding-left: 16px;
+		font-family: var(--font-body);
+		font-size: 13px;
+		line-height: 1.45;
+		color: var(--color-fg-base);
+	}
+	.tips li::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 7px;
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: var(--color-ember);
 	}
 	footer {
-		padding: var(--space-3) var(--space-4) calc(var(--space-4) + env(safe-area-inset-bottom));
+		padding-top: 16px;
+		padding-bottom: calc(16px + env(safe-area-inset-bottom));
 		border-top: 1px solid var(--color-border-subtle);
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-3);
+		gap: 12px;
 	}
-	.cook-summary {
-		font-size: var(--font-size-sm);
-		color: var(--color-fg-muted);
-		min-height: 1.4em;
+	.cook-summary,
+	.heat-summary {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		background: var(--color-bg-surface-2);
+		border: 1px solid var(--color-border-subtle);
+		border-radius: 12px;
+		padding: 12px 16px;
 	}
-	.cook-summary strong {
+	.heat-summary {
+		margin-top: 8px;
+	}
+	.heat-summary .cook-values {
+		font-size: 13px;
+		gap: 8px;
+	}
+	.heat-summary strong {
 		color: var(--color-fg-base);
-		font-family: var(--font-mono);
+		font-weight: 700;
+	}
+	.cook-eyebrow {
+		font-family: var(--font-body);
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--color-fg-muted);
+	}
+	.cook-values {
+		display: flex;
+		gap: 16px;
+		align-items: baseline;
+		font-family: var(--font-display);
+		font-size: 14px;
+		font-variant-numeric: tabular-nums;
+	}
+	.cook-cook {
+		color: var(--color-ember);
+		font-weight: 700;
+	}
+	.cook-sep {
+		color: var(--color-fg-muted);
+		margin-right: 4px;
+	}
+	.cook-rest {
+		color: var(--color-fg-base);
+	}
+	.footer-actions {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
 	}
 	.favorite-input {
 		min-height: 44px;
-		padding: var(--space-3);
-		background: var(--color-bg-input);
-		border: 1px solid var(--color-border-default);
-		border-radius: var(--radius-md);
+		padding: 12px;
+		background: var(--color-bg-surface-2);
+		border: 1px solid var(--color-border-strong);
+		border-radius: 12px;
 		color: var(--color-fg-base);
-		font-size: var(--font-size-md);
+		font-size: 16px;
+		font-family: var(--font-body);
 	}
 </style>

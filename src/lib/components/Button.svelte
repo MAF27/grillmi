@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte'
 
-	type Variant = 'primary' | 'secondary' | 'ghost' | 'destructive'
+	type Variant = 'primary' | 'secondary' | 'ghost' | 'accentGhost' | 'destructive'
 	type Size = 'sm' | 'md' | 'lg'
 
 	interface Props {
@@ -35,6 +35,7 @@
 	class:primary={variant === 'primary'}
 	class:secondary={variant === 'secondary'}
 	class:ghost={variant === 'ghost'}
+	class:accent-ghost={variant === 'accentGhost'}
 	class:destructive={variant === 'destructive'}
 	class:sm={size === 'sm'}
 	class:md={size === 'md'}
@@ -59,14 +60,15 @@
 		gap: var(--space-2);
 		min-height: 44px;
 		min-width: 44px;
-		padding: 0 var(--space-5);
+		padding: 14px 18px;
 		border: 1px solid transparent;
-		border-radius: var(--radius-md);
+		border-radius: 14px;
 		font-family: var(--font-body);
-		font-weight: var(--font-weight-semibold);
+		font-weight: 600;
+		letter-spacing: -0.01em;
 		cursor: pointer;
-		transition: background-color var(--duration-fast) var(--ease-default);
-		font-size: var(--font-size-md);
+		transition: all var(--duration-fast) var(--ease-default);
+		font-size: 15px;
 		line-height: 1;
 	}
 	.btn.full {
@@ -74,13 +76,13 @@
 	}
 	.btn.lg {
 		min-height: 56px;
-		font-size: var(--font-size-lg);
-		padding: 0 var(--space-6);
+		padding: 18px 22px;
+		font-size: 17px;
 	}
 	.btn.sm {
 		min-height: 36px;
-		padding: 0 var(--space-3);
-		font-size: var(--font-size-sm);
+		padding: 10px 14px;
+		font-size: 14px;
 	}
 	.btn:disabled {
 		opacity: 0.5;
@@ -88,21 +90,25 @@
 	}
 
 	.btn.primary {
-		background: var(--color-accent-default);
-		color: var(--color-fg-on-accent);
+		background: var(--color-ember);
+		color: var(--color-ember-ink);
 	}
 	.btn.primary:not(:disabled):hover {
 		background: var(--color-accent-hover);
 	}
 
 	.btn.secondary {
-		background: var(--color-bg-surface);
+		background: transparent;
 		color: var(--color-fg-base);
-		border-color: var(--color-border-default);
+		border-color: var(--color-border-strong);
 	}
 	.btn.ghost {
 		background: transparent;
 		color: var(--color-fg-base);
+	}
+	.btn.accent-ghost {
+		background: transparent;
+		color: var(--color-ember);
 	}
 	.btn.destructive {
 		background: var(--color-error-default);

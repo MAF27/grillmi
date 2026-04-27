@@ -15,6 +15,7 @@ export const plannedItemSchema = z.object({
 	flipFraction: z.number().min(0).max(1),
 	idealFlipPattern: z.enum(['once', 'every-60s', 'rotate']),
 	heatZone: z.string(),
+	grateTempC: z.number().int().positive().nullable().default(null),
 })
 
 export const planSchema = z.object({
@@ -73,20 +74,27 @@ export const favoriteSchema = z.object({
 	flipFraction: z.number().min(0).max(1),
 	idealFlipPattern: z.enum(['once', 'every-60s', 'rotate']),
 	heatZone: z.string(),
+	grateTempC: z.number().int().positive().nullable().default(null),
 	createdAtEpoch: z.number().int(),
 	lastUsedEpoch: z.number().int(),
 })
 
+export const TONE_IDS = ['glut', 'funke', 'kohle', 'klassik', 'lautlos'] as const
+export type ToneId = (typeof TONE_IDS)[number]
+
+const toneIdSchema = z.enum(TONE_IDS)
+
 export const soundAssignmentSchema = z.object({
-	putOn: z.string(),
-	flip: z.string(),
-	done: z.string(),
+	putOn: toneIdSchema,
+	flip: toneIdSchema,
+	done: toneIdSchema,
 })
 
 export const userSettingsSchema = z.object({
 	theme: z.enum(['system', 'light', 'dark']).default('system'),
-	sounds: soundAssignmentSchema.default({ putOn: 'chime-1', flip: 'chime-2', done: 'chime-3' }),
+	sounds: soundAssignmentSchema.default({ putOn: 'glut', flip: 'funke', done: 'klassik' }),
 	firstRunSeen: z.boolean().default(false),
+	vibrate: z.boolean().default(true),
 })
 
 export type ItemStatus = z.infer<typeof itemStatusSchema>

@@ -1,11 +1,21 @@
 import type { Plan, PlannedItem, Session, SessionItem } from '$lib/models'
-import { sessionSchema } from '$lib/schemas'
+import { planSchema, sessionSchema } from '$lib/schemas'
 import { schedule, buildSessionItem } from '$lib/scheduler/schedule'
 import { uuid } from '$lib/util/uuid'
-import { clearCurrentSession, getCurrentSession, putCurrentSession } from './db'
+import {
+	clearCurrentPlanState,
+	clearCurrentSession,
+	getCurrentPlanState,
+	getCurrentSession,
+	putCurrentPlanState,
+	putCurrentSession,
+	type PersistedAlarm,
+} from './db'
 
-const AUTO_END_MS = 60_000
 const STALE_AFTER_MS = 4 * 60 * 60 * 1000
+
+export type PlanMode = 'auto' | 'manual'
+export type AutoMode = 'now' | 'time'
 
 function defaultTarget(now = Date.now()): number {
 	return now + 60 * 60 * 1000
@@ -32,8 +42,14 @@ function createSessionStore() {
 	let plan = $state<Plan>(defaultPlan())
 	let session = $state<Session | null>(null)
 	let initialized = false
-	let autoEndTimer: ReturnType<typeof setTimeout> | null = null
-	let autoEndDeadline = $state<number | null>(null)
+	// Manual-mode in-memory state. Lives only on Plan; spec calls this out as
+	// non-persistent so a fresh app start always begins with an empty manual
+	// timeline.
+	let planMode = $state<PlanMode>('auto')
+	let manualStarts = $state<Record<string, number>>({})
+	let manualPlated = $state<Set<string>>(new Set())
+	let manualAlarms = $state<PersistedAlarm[]>([])
+	let manualAlarmDismissed = $state<Set<string>>(new Set())
 
 	const cookingItems = $derived(session ? session.items.filter(i => i.status === 'cooking') : [])
 	const restingItems = $derived(session ? session.items.filter(i => i.status === 'resting') : [])
@@ -41,28 +57,26 @@ function createSessionStore() {
 	const pendingItems = $derived(session ? session.items.filter(i => i.status === 'pending') : [])
 	const platedItems = $derived(session ? session.items.filter(i => i.status === 'plated') : [])
 	const allPlated = $derived(session ? session.items.length > 0 && session.items.every(i => i.status === 'plated') : false)
+	const longestCookSeconds = $derived(
+		plan.items.length === 0 ? 0 : Math.max(...plan.items.map(i => i.cookSeconds + i.restSeconds)),
+	)
 
 	async function persist() {
 		if (session) await putCurrentSession(session)
 	}
 
-	function clearAutoEnd() {
-		if (autoEndTimer !== null) clearTimeout(autoEndTimer)
-		autoEndTimer = null
-		autoEndDeadline = null
-	}
-
-	function maybeArmAutoEnd() {
-		if (!session || autoEndTimer !== null) return
-		if (!session.items.every(i => i.status === 'plated') || session.items.length === 0) return
-		autoEndDeadline = Date.now() + AUTO_END_MS
-		autoEndTimer = setTimeout(() => {
-			void endSession()
-		}, AUTO_END_MS)
+	function persistPlan() {
+		void putCurrentPlanState({
+			plan,
+			planMode,
+			manualStarts,
+			manualPlated: Array.from(manualPlated),
+			alarms: manualAlarms,
+			dismissedAlarmKeys: Array.from(manualAlarmDismissed),
+		})
 	}
 
 	async function endSession() {
-		clearAutoEnd()
 		const replayItems: PlannedItem[] = session
 			? session.items.map(s => ({
 					id: uuid(),
@@ -77,11 +91,18 @@ function createSessionStore() {
 					flipFraction: s.flipFraction,
 					idealFlipPattern: s.idealFlipPattern,
 					heatZone: s.heatZone,
+					grateTempC: s.grateTempC,
 				}))
 			: []
 		await clearCurrentSession()
 		session = null
 		plan = replayItems.length > 0 ? { targetEpoch: defaultTarget(), items: replayItems, mode: 'now' } : defaultPlan()
+		planMode = 'auto'
+		manualStarts = {}
+		manualPlated = new Set()
+		manualAlarms = []
+		manualAlarmDismissed = new Set()
+		persistPlan()
 	}
 
 	return {
@@ -110,30 +131,106 @@ function createSessionStore() {
 		get allPlated() {
 			return allPlated
 		},
-		get autoEndDeadline() {
-			return autoEndDeadline
+		get longestCookSeconds() {
+			return longestCookSeconds
+		},
+		get planMode() {
+			return planMode
+		},
+		get mode() {
+			return plan.mode
+		},
+		get manualStarts() {
+			return manualStarts
+		},
+		get manualPlated() {
+			return manualPlated
+		},
+		get manualAlarms() {
+			return manualAlarms
+		},
+		get manualAlarmDismissed() {
+			return manualAlarmDismissed
 		},
 
 		async init() {
 			if (initialized) return
 			initialized = true
 			const stored = await getCurrentSession()
-			if (!stored) return
-			const stale = stored.targetEpoch < Date.now() - STALE_AFTER_MS
-			if (stale) {
-				await clearCurrentSession()
-				return
+			if (stored) {
+				const stale = stored.targetEpoch < Date.now() - STALE_AFTER_MS
+				if (stale) {
+					await clearCurrentSession()
+				} else {
+					session = stored
+				}
 			}
-			session = stored
+			const storedPlan = await getCurrentPlanState()
+			if (storedPlan) {
+				const parsed = planSchema.safeParse(storedPlan.plan)
+				if (parsed.success) {
+					// Drop manual sessions that are clearly stale (oldest start older
+					// than the staleness window): leftover state from a prior testing
+					// run is more confusing than helpful when the user comes back hours
+					// later expecting a clean slate.
+					const starts = Object.values(storedPlan.manualStarts ?? {})
+					const oldestStart = starts.length > 0 ? Math.min(...starts) : null
+					const stalePlan = oldestStart !== null && oldestStart < Date.now() - STALE_AFTER_MS
+					if (stalePlan) {
+						await clearCurrentPlanState()
+					} else {
+						plan = parsed.data
+						planMode = storedPlan.planMode === 'manual' ? 'manual' : 'auto'
+						manualStarts = storedPlan.manualStarts ?? {}
+						manualPlated = new Set(storedPlan.manualPlated ?? [])
+						manualAlarms = storedPlan.alarms ?? []
+						manualAlarmDismissed = new Set(storedPlan.dismissedAlarmKeys ?? [])
+					}
+				}
+			}
+		},
+
+		addManualAlarm(alarm: PersistedAlarm) {
+			if (manualAlarms.some(a => a.id === alarm.id) || manualAlarmDismissed.has(alarm.id)) return
+			manualAlarms = [...manualAlarms, alarm]
+			persistPlan()
+		},
+
+		dismissManualAlarm(alarmId: string) {
+			const next = new Set(manualAlarmDismissed)
+			next.add(alarmId)
+			manualAlarmDismissed = next
+			persistPlan()
+		},
+
+		clearManualAlarms() {
+			manualAlarms = []
+			manualAlarmDismissed = new Set()
+			persistPlan()
 		},
 
 		setTargetTime(epoch: number) {
-			// Setting an explicit time switches the plan into 'time' mode.
 			plan = { ...plan, targetEpoch: epoch, mode: 'time' }
+			planMode = 'auto'
+			persistPlan()
 		},
 
-		setPlanMode(mode: 'now' | 'time') {
+		setPlanMode(mode: PlanMode) {
+			const switching = planMode !== mode
+			planMode = mode
+			if (mode === 'manual' && switching) {
+				manualStarts = {}
+				manualPlated = new Set()
+				manualAlarms = []
+				manualAlarmDismissed = new Set()
+			}
+			persistPlan()
+		},
+
+		setAutoMode(mode: AutoMode) {
 			plan = { ...plan, mode }
+			planMode = 'auto'
+			persistPlan()
 		},
 
 		effectiveTargetEpoch(now: number = Date.now()) {
@@ -143,30 +240,59 @@ function createSessionStore() {
 		addItem(item: Omit<PlannedItem, 'id'>): PlannedItem {
 			const created: PlannedItem = { ...item, id: uuid() }
 			plan = { ...plan, items: [...plan.items, created] }
+			persistPlan()
 			return created
 		},
 
 		updateItem(id: string, patch: Partial<Omit<PlannedItem, 'id'>>) {
 			plan = { ...plan, items: plan.items.map(i => (i.id === id ? { ...i, ...patch } : i)) }
+			persistPlan()
 		},
 
 		removeItem(id: string) {
 			plan = { ...plan, items: plan.items.filter(i => i.id !== id) }
+			if (manualStarts[id] !== undefined) {
+				const next = { ...manualStarts }
+				delete next[id]
+				manualStarts = next
+			}
+			if (manualPlated.has(id)) {
+				const next = new Set(manualPlated)
+				next.delete(id)
+				manualPlated = next
+			}
+			manualAlarms = manualAlarms.filter(a => a.itemId !== id)
+			persistPlan()
 		},
 
 		reorderItems(ids: string[]) {
 			const map = new Map(plan.items.map(i => [i.id, i]))
 			const reordered = ids.map(id => map.get(id)).filter((i): i is PlannedItem => Boolean(i))
 			if (reordered.length === plan.items.length) plan = { ...plan, items: reordered }
+			persistPlan()
 		},
 
-		loadFromSavedPlan(items: PlannedItem[]) {
+		loadFromMenu(items: PlannedItem[]) {
 			plan = { targetEpoch: defaultTarget(), items: items.map(i => ({ ...i, id: uuid() })), mode: 'now' }
+			persistPlan()
 		},
 
-		appendFromSavedPlan(items: PlannedItem[]) {
+		appendFromMenu(items: PlannedItem[]) {
 			const fresh = items.map(i => ({ ...i, id: uuid() }))
 			plan = { ...plan, items: [...plan.items, ...fresh] }
+			persistPlan()
+		},
+
+		startManualItem(id: string) {
+			manualStarts = { ...manualStarts, [id]: Date.now() }
+			persistPlan()
+		},
+
+		plateManualItem(id: string) {
+			const next = new Set(manualPlated)
+			next.add(id)
+			manualPlated = next
+			persistPlan()
 		},
 
 		async startSession(): Promise<Session> {
@@ -184,6 +310,7 @@ function createSessionStore() {
 			})
 			session = newSession
 			plan = defaultPlan()
+			persistPlan()
 			await persist()
 			return newSession
 		},
@@ -201,7 +328,6 @@ function createSessionStore() {
 				items: session.items.map(i => (i.id === id ? { ...i, status: 'plated', platedEpoch: Date.now() } : i)),
 			}
 			await persist()
-			maybeArmAutoEnd()
 		},
 
 		async unplateItem(id: string) {
@@ -211,7 +337,6 @@ function createSessionStore() {
 				items: session.items.map(i => (i.id === id ? { ...i, status: 'ready', platedEpoch: null } : i)),
 			}
 			await persist()
-			clearAutoEnd()
 		},
 
 		async forceReady(id: string) {
@@ -226,18 +351,16 @@ function createSessionStore() {
 			await persist()
 		},
 
-		cancelAutoEnd() {
-			clearAutoEnd()
-		},
-
 		async endSession() {
 			await endSession()
 		},
 
 		_reset() {
-			clearAutoEnd()
 			plan = defaultPlan()
 			session = null
+			planMode = 'auto'
+			manualStarts = {}
+			manualPlated = new Set()
 			initialized = false
 		},
 	}

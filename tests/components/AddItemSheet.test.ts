@@ -27,6 +27,7 @@ const favConfig = {
 	flipFraction: 0.5,
 	idealFlipPattern: 'once' as const,
 	heatZone: 'Direct high',
+	grateTempC: null,
 }
 
 beforeEach(() => {
@@ -80,7 +81,6 @@ describe('AddItemSheet', () => {
 		const dec = getByLabelText('Dünner') as HTMLButtonElement
 		const inc = getByLabelText('Dicker') as HTMLButtonElement
 
-		// Click "thicker" until disabled — the stepper must clamp at the documented max.
 		let safety = 50
 		while (!inc.disabled && safety-- > 0) {
 			await fireEvent.click(inc)
@@ -88,13 +88,41 @@ describe('AddItemSheet', () => {
 		expect(inc.disabled).toBe(true)
 		expect(dec.disabled).toBe(false)
 
-		// Click "thinner" all the way down — the stepper must clamp at the floor (1.5 cm).
 		safety = 50
 		while (!dec.disabled && safety-- > 0) {
 			await fireEvent.click(dec)
 		}
 		expect(dec.disabled).toBe(true)
 		expect(inc.disabled).toBe(false)
+	})
+
+	it('test_thickness_minus_disabled_at_documented_min', async () => {
+		const { getByText, getByLabelText, container } = open()
+		await fireEvent.click(getByText('Rind'))
+		await fireEvent.click(getByText('Rinds-Filet'))
+
+		const num = () => parseFloat(container.querySelector('.thickness-value .num')!.textContent!.trim())
+		const dec = getByLabelText('Dünner') as HTMLButtonElement
+
+		expect(num()).toBe(1)
+		expect(dec.disabled).toBe(true)
+	})
+
+	it('test_thickness_steps_in_half_cm_increments_between_documented_min_and_max', async () => {
+		const { getByText, getByLabelText, container } = open()
+		await fireEvent.click(getByText('Rind'))
+		await fireEvent.click(getByText('Rinds-Filet'))
+
+		const num = () => parseFloat(container.querySelector('.thickness-value .num')!.textContent!.trim())
+		const inc = getByLabelText('Dicker') as HTMLButtonElement
+
+		const seen = [num()]
+		let safety = 20
+		while (!inc.disabled && safety-- > 0) {
+			await fireEvent.click(inc)
+			seen.push(num())
+		}
+		expect(seen).toEqual([1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5])
 	})
 
 	it('test_final_step_dispatches_new_item_with_computed_cook_time', async () => {
@@ -181,7 +209,7 @@ describe('AddItemSheet', () => {
 
 		await fireEvent.click(getByText('Rind'))
 		await fireEvent.click(getByText('Rinds-Entrecôte'))
-		await fireEvent.click(getByText('Als Favorit speichern'))
+		await fireEvent.click(getByText(/Als Favorit speichern/))
 
 		const input = getByLabelText('Favorit-Name') as HTMLInputElement
 		await fireEvent.input(input, { target: { value: 'Mein Steak' } })

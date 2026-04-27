@@ -13,7 +13,10 @@ const config = {
 			strict: true,
 		}),
 		serviceWorker: {
-			register: true,
+			// SvelteKit auto-registers in production; we register manually from
+			// the layout so we can no-op in dev (where vite serves a raw module
+			// import that crashes the classic-worker loader).
+			register: false,
 		},
 		prerender: {
 			handleHttpError: ({ path, message }) => {

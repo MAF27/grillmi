@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createTicker, type TickerEvent } from '$lib/runtime/ticker'
+import { createTicker, eventsFor, type TickerEvent } from '$lib/runtime/ticker'
 import type { SessionItem } from '$lib/models'
 
 function makeItem(over: Partial<SessionItem> = {}): SessionItem {
@@ -17,6 +17,7 @@ function makeItem(over: Partial<SessionItem> = {}): SessionItem {
 		flipFraction: 0.5,
 		idealFlipPattern: 'once',
 		heatZone: 'Direct high',
+		grateTempC: null,
 		putOnEpoch: NOW + 1000,
 		flipEpoch: NOW + 1000 + 180_000,
 		doneEpoch: NOW + 1000 + 360_000,
@@ -107,5 +108,35 @@ describe('ticker', () => {
 		t.tickOnce()
 		expect(item.status).toBe('ready')
 		expect(events.find(e => e.type === 'resting-complete')).toBeTruthy()
+	})
+
+	it('test_ticker_skips_plated_items', () => {
+		const item = makeItem({ status: 'plated' })
+		const events: TickerEvent[] = []
+		const t = createTicker({
+			getItems: () => [item],
+			updateItem: (_, patch) => Object.assign(item, patch),
+			emit: e => events.push(e),
+			now: () => item.restingUntilEpoch + 1_000_000,
+		})
+		t.tickOnce()
+		expect(item.status).toBe('plated')
+		expect(events).toEqual([])
+	})
+
+	it('test_eventsFor_returns_full_event_list_in_chronological_order', () => {
+		const item = makeItem()
+		const list = eventsFor(item)
+		const types = list.map(e => e.type)
+		expect(types).toEqual(['put-on', 'flip', 'done', 'resting-complete'])
+		expect(list.every(e => e.itemId === item.id)).toBe(true)
+		for (let i = 1; i < list.length; i++) expect(list[i].at).toBeGreaterThanOrEqual(list[i - 1].at)
+	})
+
+	it('test_eventsFor_omits_flip_when_flipEpoch_null_and_resting_when_no_rest', () => {
+		const item = makeItem({ flipEpoch: null, restSeconds: 0 })
+		item.restingUntilEpoch = item.doneEpoch
+		const types = eventsFor(item).map(e => e.type)
+		expect(types).toEqual(['put-on', 'done'])
 	})
 })

@@ -42,7 +42,7 @@ test.describe('favorites', () => {
 
 		await page.getByRole('button', { name: /Neue Session/ }).click()
 		await expect(page).toHaveURL(/\/plan/)
-		await page.getByRole('button', { name: /\+ Gericht/ }).click()
+		await page.getByRole('button', { name: /Grillstück hinzufügen/ }).click()
 		await page.getByRole('button', { name: 'Rind' }).click()
 		await page
 			.getByRole('button', { name: /Rinds-Entrecôte/ })
@@ -73,7 +73,7 @@ test.describe('favorites', () => {
 
 		// Sheet stays open — close it, then reopen the sheet, switch to Favoriten tab, see the entry.
 		await page.getByRole('button', { name: 'Schliessen' }).click()
-		await page.getByRole('button', { name: /\+ Gericht/ }).click()
+		await page.getByRole('button', { name: /Grillstück hinzufügen/ }).click()
 		await page.getByRole('tab', { name: 'Favoriten' }).click()
 		await expect(page.getByText('Lieblings-Steak')).toBeVisible()
 	})
@@ -138,7 +138,7 @@ test.describe('favorites', () => {
 
 		await page.getByRole('button', { name: /Neue Session/ }).click()
 		await expect(page).toHaveURL(/\/plan/)
-		await page.getByRole('button', { name: /\+ Gericht/ }).click()
+		await page.getByRole('button', { name: /Grillstück hinzufügen/ }).click()
 		await page.getByRole('tab', { name: 'Favoriten' }).click()
 		await page.getByText('Geseedeter Favorit').click()
 
