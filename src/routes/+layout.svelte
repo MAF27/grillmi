@@ -39,12 +39,6 @@
 					.catch(() => {})
 			}
 		}
-		const handler = (e: Event) => {
-			e.preventDefault()
-			window.installPromptEvent = e as unknown as Window['installPromptEvent']
-		}
-		window.addEventListener('beforeinstallprompt', handler)
-		return () => window.removeEventListener('beforeinstallprompt', handler)
 	})
 </script>
 
