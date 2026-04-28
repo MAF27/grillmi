@@ -492,7 +492,7 @@ cmd_backup() {
     # Single-quoted on purpose: doppler injects DB env vars into the bash child,
     # which then expands them. Expanding here would pull values from this shell.
     # shellcheck disable=SC2016
-    doppler_run bash -c 'pg_dump --format=plain --no-owner --dbname "postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}"' \
+    doppler_run bash -c 'pg_dump --format=plain --clean --if-exists --no-owner --no-acl --exclude-extension=citext --dbname "postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}"' \
         | gzip -9 > "$file"
     chmod 0640 "$file"
     if [[ "$bucket" == "daily" ]]; then
@@ -518,7 +518,7 @@ cmd_restore() {
     read -r -p "Type 'restore' to confirm: " ans
     [[ "$ans" == "restore" ]] || fail "Aborted"
     # shellcheck disable=SC2016
-    gunzip -c "$file" | doppler_run bash -c 'psql "postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}"'
+    gunzip -c "$file" | doppler_run bash -c 'psql -v ON_ERROR_STOP=1 "postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}"'
     log_ok "Restore complete"
 }
 
