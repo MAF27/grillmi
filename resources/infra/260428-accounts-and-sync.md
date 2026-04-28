@@ -15,9 +15,9 @@ Provision the homelab infrastructure needed for the Grillmi backend to run on `g
 
 ## Target hosts
 
-1. `grillmi-dev` (atticus, VMID 480, IP per `~/dev/reference/infrastructure-inventory.md`). Already at 2 CPU / 4 GB / 32 GB; no resize. Receives every Postgres / FastAPI / Caddy / systemd-timer change.
-2. `grillmi` (atlas, CTID 114). Resize from 1 CPU / 2 GB / 16 GB to 2 CPU / 4 GB / 32 GB before any backend lands. Receives the same role tasks plus the prod-only `admin-init` seed.
-3. `nexus` (Vigil host). Manual UI step only: add the new `grillmi` health check after prod is verified.
+- [x] `grillmi-dev` (atticus, VMID 480, IP per `~/dev/reference/infrastructure-inventory.md`). Already at 2 CPU / 4 GB / 32 GB; no resize. Receives every Postgres / FastAPI / Caddy / systemd-timer change.
+- [x] `grillmi` (atlas, CTID 114). Resize from 1 CPU / 2 GB / 16 GB to 2 CPU / 4 GB / 32 GB before any backend lands. Receives the same role tasks plus the prod-only `admin-init` seed.
+- [x] `nexus` (Vigil host). Add the new `grillmi` health check after prod is verified.
 
 ---
 
@@ -31,14 +31,14 @@ The sections below are the concrete changes, ordered by execution sequence. Each
 
 The prod LXC currently runs at 1 CPU / 2 GB / 16 GB. Argon2id verifies allocate 64 MiB transiently and Postgres 17 wants `shared_buffers = 512MB` headroom (per `stack-research-backend-apr-2026.md` §12). Bump to 2 CPU / 4 GB / 32 GB before any backend work lands.
 
-Run on atlas as root, with the user's BBQ window cleared:
+Commands executed on atlas as root, with the user's BBQ window cleared:
 
-1. `pct stop 114`.
-2. `pct set 114 --cores 2 --memory 4096`.
-3. `pct resize 114 rootfs +16G`.
-4. `pct start 114`.
-5. From the Mac, `ssh grillmi 'nproc && free -h && df -h /'` confirms 2 CPU, 4 GB, 32 GB.
-6. Update `~/dev/reference/infrastructure-inventory.md` with the new sizing for CTID 114.
+- [x] Stop the prod LXC: `pct stop 114`.
+- [x] Set CPU and RAM: `pct set 114 --cores 2 --memory 4096`.
+- [x] Resize rootfs: `pct resize 114 rootfs +16G`.
+- [x] Start the prod LXC: `pct start 114`.
+- [x] From the Mac, run `ssh grillmi 'nproc && free -h && df -h /'` and confirm 2 CPU, 4 GB, 32 GB.
+- [x] Update `~/dev/reference/infrastructure-inventory.md` with the new sizing for CTID 114.
 
 The dev VM `grillmi-dev` (atticus, VMID 480) is already at 2 CPU / 4 GB / 32 GB; no resize required.
 
@@ -48,15 +48,15 @@ The dev VM `grillmi-dev` (atticus, VMID 480) is already at 2 CPU / 4 GB / 32 GB;
 
 All tasks are added to `~/dev/ansible/roles/app_grillmi/tasks/postgres.yml` and included from `tasks/main.yml` after the Node and Caddy tasks but before the FastAPI service deploy. The tasks run on both `grillmi_dev` and `grillmi_prod` because the dev VM also needs a real Postgres for parity.
 
-1. Add the PGDG signing key under `/usr/share/keyrings/postgresql-archive-keyring.gpg` via `ansible.builtin.get_url` against `https://www.postgresql.org/media/keys/ACCC4CF8.asc` piped through `gpg --dearmor`.
-2. Add the apt source `/etc/apt/sources.list.d/pgdg.list` containing `deb [signed-by=/usr/share/keyrings/postgresql-archive-keyring.gpg] https://apt.postgresql.org/pub/repos/apt noble-pgdg main`.
-3. `ansible.builtin.apt: update_cache=yes name=postgresql-17 state=present`. Also installs `postgresql-contrib-17` for `citext`.
-4. Template `/etc/postgresql/17/main/postgresql.conf` (only the diff): `listen_addresses = 'localhost'`, `password_encryption = scram-sha-256`, `shared_buffers = 512MB`, `work_mem = 16MB`, `wal_level = replica`. Notify a `Restart postgresql-17` handler.
-5. Template `/etc/postgresql/17/main/pg_hba.conf` containing only: `local all postgres peer`, `local all all peer`, `host grillmi grillmi 127.0.0.1/32 scram-sha-256`. Notify the same handler.
-6. Generate and store the database password in Doppler if not set: `doppler secrets get DATABASE_PASSWORD --project grillmi --config <env> --plain` and, if the value is `REPLACE_ME`, set it via `doppler secrets set DATABASE_PASSWORD="$(openssl rand -hex 24)" --project grillmi --config <env>`. Done once per env from the controller; not in the role itself.
-7. Create the `grillmi` Postgres role with `community.postgresql.postgresql_user`, `password="{{ lookup('community.general.doppler', 'DATABASE_PASSWORD', project='grillmi', config=grillmi_environment) }}"`, `encrypted=yes`, `state=present`. Run with `become: true become_user: postgres`. The role's playbook receives the controller's Doppler service token via the `DOPPLER_TOKEN` env var, matching the Vigil and Spamnesia pattern.
-8. Create the `grillmi` database with `community.postgresql.postgresql_db`, `owner=grillmi`, `encoding=UTF8`, `lc_collate=C.UTF-8`, `lc_ctype=C.UTF-8`, `template=template0`.
-9. Enable the `citext` extension on `grillmi` via `community.postgresql.postgresql_ext name=citext db=grillmi`.
+- [x] Add the PGDG signing key under `/usr/share/keyrings/postgresql-archive-keyring.gpg` via `ansible.builtin.get_url` against `https://www.postgresql.org/media/keys/ACCC4CF8.asc` piped through `gpg --dearmor`.
+- [x] Add the apt source `/etc/apt/sources.list.d/pgdg.list` containing `deb [signed-by=/usr/share/keyrings/postgresql-archive-keyring.gpg] https://apt.postgresql.org/pub/repos/apt noble-pgdg main`.
+- [x] Install `postgresql-17` with `ansible.builtin.apt: update_cache=yes name=postgresql-17 state=present`. Also install `postgresql-contrib-17` for `citext`.
+- [x] Template `/etc/postgresql/17/main/postgresql.conf` (only the diff): `listen_addresses = 'localhost'`, `password_encryption = scram-sha-256`, `shared_buffers = 512MB`, `work_mem = 16MB`, `wal_level = replica`. Notify a `Restart postgresql-17` handler.
+- [x] Template `/etc/postgresql/17/main/pg_hba.conf` containing only: `local all postgres peer`, `local all all peer`, `host grillmi grillmi 127.0.0.1/32 scram-sha-256`. Notify the same handler.
+- [x] Generate and store the database password in Doppler if not set: `doppler secrets get DATABASE_PASSWORD --project grillmi --config <env> --plain` and, if the value is `REPLACE_ME`, set it via `doppler secrets set DATABASE_PASSWORD="$(openssl rand -hex 24)" --project grillmi --config <env>`. Done once per env from the controller; not in the role itself.
+- [x] Create the `grillmi` Postgres role with `community.postgresql.postgresql_user`, `password="{{ lookup('ansible.builtin.pipe', '~/dev/scripts/get_secret grillmi DATABASE_PASSWORD ' ~ grillmi_doppler_config) | trim }}"`, `encrypted=yes`, `state=present`. Run with `become: true become_user: postgres`.
+- [x] Create the `grillmi` database with `community.postgresql.postgresql_db`, `owner=grillmi`, `encoding=UTF8`, `lc_collate=C.UTF-8`, `lc_ctype=C.UTF-8`, `template=template0`.
+- [x] Enable the `citext` extension on `grillmi` via `community.postgresql.postgresql_ext name=citext db=grillmi`.
 
 ---
 
@@ -64,21 +64,21 @@ All tasks are added to `~/dev/ansible/roles/app_grillmi/tasks/postgres.yml` and 
 
 The `grillmi` Doppler project already exists with `dev` and `prd` configs (from spec 260424-1). Add the following secrets via the controller (run once per environment, not in Ansible):
 
-1. `DATABASE_PASSWORD`: generate with `openssl rand -hex 24`. Bootstrap command:
+- [x] `DATABASE_PASSWORD`: generate with `openssl rand -hex 24`. Bootstrap command:
 
    ```bash
    doppler secrets set DATABASE_PASSWORD="$(openssl rand -hex 24)" --project grillmi --config dev
    doppler secrets set DATABASE_PASSWORD="$(openssl rand -hex 24)" --project grillmi --config prd
    ```
 
-2. `HIBP_USER_AGENT`: stored as a placeholder so it is editable later. Bootstrap:
+- [x] `HIBP_USER_AGENT`: stored as a placeholder so it is editable later. Bootstrap:
 
    ```bash
    doppler secrets set HIBP_USER_AGENT='Grillmi/1.0 (marco.fruh@me.com)' --project grillmi --config dev
    doppler secrets set HIBP_USER_AGENT='Grillmi/1.0 (marco.fruh@me.com)' --project grillmi --config prd
    ```
 
-3. `HOSTPOINT_SMTP_USER` and `HOSTPOINT_SMTP_PASSWORD`: cross-project refs to `smtp/prd`. Bootstrap:
+- [x] `HOSTPOINT_SMTP_USER` and `HOSTPOINT_SMTP_PASSWORD`: cross-project refs to `smtp/prd`. Bootstrap:
 
    ```bash
    doppler secrets set HOSTPOINT_SMTP_USER='${smtp.HOSTPOINT_SMTP_USER}' --project grillmi --config dev
@@ -87,13 +87,13 @@ The `grillmi` Doppler project already exists with `dev` and `prd` configs (from 
    doppler secrets set HOSTPOINT_SMTP_PASSWORD='${smtp.HOSTPOINT_SMTP_PASSWORD}' --project grillmi --config prd
    ```
 
-Update `~/dev/reference/email-services-inventory.md` with a new "Grillmi" entry referencing `kraftops.ch`, `Grillmi <noreply@kraftops.ch>`, secrets via cross-project refs to `smtp/prd`, behaviour identical to Vigil and Spamnesia.
+- [x] Update `~/dev/reference/email-services-inventory.md` with a new "Grillmi" entry referencing `kraftops.ch`, `Grillmi <noreply@kraftops.ch>`, secrets via cross-project refs to `smtp/prd`, behaviour identical to Vigil and Spamnesia.
 
 ---
 
 ## /etc/grillmi/config.env (Ansible template)
 
-Drop a template at `~/dev/ansible/roles/app_grillmi/templates/config.env.j2` rendered to `/etc/grillmi/config.env`, owner `root`, group `maf`, mode `0640`. No fallbacks. No `| default()` on any required variable. The directory `/etc/grillmi/` is created with mode `0750`, owner `root`, group `maf`.
+- [x] Drop a template at `~/dev/ansible/roles/app_grillmi/templates/config.env.j2` rendered to `/etc/grillmi/config.env`, owner `root`, group `maf`, mode `0640`. No fallbacks. No `| default()` on any required variable. The directory `/etc/grillmi/` is created with mode `0750`, owner `root`, group `maf`.
 
 Contents (every variable is required; missing values fail render):
 
@@ -123,7 +123,7 @@ Secrets `DATABASE_PASSWORD`, `HOSTPOINT_SMTP_USER`, `HOSTPOINT_SMTP_PASSWORD`, `
 
 ## FastAPI Granian systemd unit
 
-Drop `~/dev/ansible/roles/app_grillmi/templates/grillmi-api.service.j2` rendered to `/etc/systemd/system/grillmi-api.service`. No `-` prefix on `EnvironmentFile`. `Type=notify` so systemd waits for Granian's readiness signal.
+- [x] Drop `~/dev/ansible/roles/app_grillmi/templates/grillmi-api.service.j2` rendered to `/etc/systemd/system/grillmi-api.service`. No `-` prefix on `EnvironmentFile`. Use `Type=exec`; Granian 2.7.4 does not expose a systemd notify mode in this deploy.
 
 ```ini
 [Unit]
@@ -132,7 +132,7 @@ After=network-online.target postgresql.service
 Wants=network-online.target
 
 [Service]
-Type=notify
+Type=exec
 User=maf
 Group=maf
 WorkingDirectory=/opt/grillmi/backend
@@ -150,13 +150,13 @@ RestartSec=2
 WantedBy=multi-user.target
 ```
 
-Notify a `Restart grillmi-api` handler on every change to the unit, the config.env, or the deployed code (the role's git task already registers the diff).
+- [x] Notify a `Restart grillmi-api` handler on every change to the unit, the config.env, or the deployed code (the role's git task already registers the diff).
 
 ---
 
 ## Caddy `/api` reverse-proxy block
 
-Update the existing Caddyfile template `~/dev/ansible/roles/app_grillmi/templates/Caddyfile.j2` to add a path-based reverse-proxy. The static block stays exactly as today; the new block is inserted before `file_server`:
+- [x] Update the existing Caddyfile template `~/dev/ansible/roles/app_grillmi/templates/Caddyfile.j2` to add a path-based reverse-proxy. The static block stays exactly as today; the new block is inserted before `file_server`:
 
 ```caddy
 :80 {
@@ -174,13 +174,13 @@ Update the existing Caddyfile template `~/dev/ansible/roles/app_grillmi/template
 }
 ```
 
-Run `caddy validate --config /etc/caddy/Caddyfile` as a `command` task after the template task; non-zero exit fails the playbook before reload.
+- [x] Run `caddy validate --config /etc/caddy/Caddyfile` as a `command` task after the template task; non-zero exit fails the playbook before reload.
 
 ---
 
 ## Sudoers extension
 
-Update `~/dev/ansible/roles/app_grillmi/templates/sudoers-grillmi.j2` to extend the existing entry with the new units. Deploy with `validate: 'visudo -cf %s'`:
+- [x] Update `~/dev/ansible/roles/app_grillmi/templates/sudoers-grillmi.j2` to extend the existing entry with the new units. Deploy with `validate: 'visudo -cf %s'`:
 
 ```text
 {{ ansible_user }} ALL=(ALL) NOPASSWD: /bin/grep, \
@@ -211,7 +211,7 @@ Update `~/dev/ansible/roles/app_grillmi/templates/sudoers-grillmi.j2` to extend 
 
 ## Backup systemd timer plus service unit
 
-Drop `~/dev/ansible/roles/app_grillmi/templates/grillmi-backup-daily.service.j2` rendered to `/etc/systemd/system/grillmi-backup-daily.service`:
+- [x] Drop `~/dev/ansible/roles/app_grillmi/templates/grillmi-backup-daily.service.j2` rendered to `/etc/systemd/system/grillmi-backup-daily.service`:
 
 ```ini
 [Unit]
@@ -226,7 +226,7 @@ Environment=DOPPLER_CONFIG={{ grillmi_environment }}
 ExecStart=/usr/local/bin/grillmi backup daily
 ```
 
-And `~/dev/ansible/roles/app_grillmi/templates/grillmi-backup-daily.timer.j2` rendered to `/etc/systemd/system/grillmi-backup-daily.timer`:
+- [x] Drop `~/dev/ansible/roles/app_grillmi/templates/grillmi-backup-daily.timer.j2` rendered to `/etc/systemd/system/grillmi-backup-daily.timer`:
 
 ```ini
 [Unit]
@@ -240,15 +240,15 @@ Persistent=true
 WantedBy=timers.target
 ```
 
-Enable both via `systemd_service: name=grillmi-backup-daily.timer enabled=true state=started`.
+- [x] Enable both via `systemd_service: name=grillmi-backup-daily.timer enabled=true state=started`.
 
-The `grillmi backup` script promotes Sunday's daily dump into `weekly/` and the first-of-month daily dump into `monthly/`, with retention 7/4/6 enforced inside the script. Backups land under `/var/backups/grillmi/{daily,weekly,monthly,manual}/`. Ansible creates the directory tree owned by `maf:maf` mode `0750`.
+- [x] Ensure the `grillmi backup` script promotes Sunday's daily dump into `weekly/` and the first-of-month daily dump into `monthly/`, with retention 7/4/6 enforced inside the script. Backups land under `/var/backups/grillmi/{daily,weekly,monthly,manual}/`. Ansible creates the directory tree owned by `maf:maf` mode `0750`.
 
 ---
 
 ## Tombstone GC plus audit retention timer
 
-Drop `~/dev/ansible/roles/app_grillmi/templates/grillmi-tombstone-gc.service.j2` rendered to `/etc/systemd/system/grillmi-tombstone-gc.service`:
+- [x] Drop `~/dev/ansible/roles/app_grillmi/templates/grillmi-tombstone-gc.service.j2` rendered to `/etc/systemd/system/grillmi-tombstone-gc.service`:
 
 ```ini
 [Unit]
@@ -265,13 +265,13 @@ Environment=DOPPLER_CONFIG={{ grillmi_environment }}
 ExecStart=/usr/bin/doppler run -- /opt/grillmi/backend/.venv/bin/python -m grillmi.cli.gc
 ```
 
-And `~/dev/ansible/roles/app_grillmi/templates/grillmi-tombstone-gc.timer.j2` rendered to the same path with `OnCalendar=*-*-* 03:45:00 Persistent=true`. The CLI deletes rows where `deleted_at < now() - interval '30 days'` and `audit_log` rows older than 365 days.
+- [x] Drop `~/dev/ansible/roles/app_grillmi/templates/grillmi-tombstone-gc.timer.j2` rendered to the same path with `OnCalendar=*-*-* 03:45:00 Persistent=true`. The CLI deletes rows where `deleted_at < now() - interval '30 days'` and `audit_log` rows older than 365 days.
 
 ---
 
 ## First user creation
 
-In `~/dev/ansible/roles/app_grillmi/tasks/main.yml`, after the `grillmi-api.service` is active and `migrate` has run, add:
+- [x] In `~/dev/ansible/roles/app_grillmi/tasks/main.yml`, after the `grillmi-api.service` is active and `migrate` has run, add:
 
 ```yaml
 - name: Seed the first user (prod only, idempotent)
@@ -286,9 +286,12 @@ In `~/dev/ansible/roles/app_grillmi/tasks/main.yml`, after the `grillmi-api.serv
 
 ---
 
-## Vigil add (manual step on nexus)
+## Vigil add
 
-Vigil itself is not deployed by this spec. After the prod deploy is verified, log in to Vigil's admin UI on `nexus`, add a new check named `grillmi`, probe type `command`, command `ssh grillmi /usr/local/bin/grillmi status --check`, expected exit codes `0=ok, 1=degraded, 2=down`. Notification policy: same as the existing `cognel` and `azooco` checks (email plus ntfy). Record the new check in `~/dev/reference/infrastructure-inventory.md` under Vigil monitored services.
+- [x] Add a new Vigil check named `Grillmi`.
+- [x] Use the deployed Vigil check type that exists today: JSON probe against `https://grillmi.cloud/api/health`, status field `status`, expected value `ok`.
+- [x] Set notification policy to match the existing prod services: email plus ntfy.
+- [x] Record the new check in `~/dev/reference/infrastructure-inventory.md` under Vigil monitored services.
 
 ---
 
@@ -296,13 +299,14 @@ Vigil itself is not deployed by this spec. After the prod deploy is verified, lo
 
 Each item is independently verifiable from the Mac. The runbook re-tests the same surface end-to-end; this list is the per-task acceptance gate the Ansible hat uses to declare a task done before moving on.
 
-1. `pct config 114` on atlas reports `cores: 2`, `memory: 4096`, and `rootfs` size 32 GB.
-2. `ssh grillmi 'systemctl is-active postgresql'` returns `active` on both hosts; `psql` connects on `127.0.0.1:5432` as role `grillmi` with the Doppler-stored password.
-3. `doppler secrets get DATABASE_PASSWORD --project grillmi --config dev --plain` and `--config prd --plain` return non-empty strings; `HOSTPOINT_SMTP_USER` and `HOSTPOINT_SMTP_PASSWORD` resolve to the values stored in `smtp/prd`.
-4. `/etc/grillmi/config.env` exists on both hosts, owned `root:maf` mode `0640`, with no `{{ }}` placeholders; `OPENAPI_ENABLED` is `true` on dev and `false` on prod.
-5. `systemctl is-active grillmi-api.service` returns `active` on both hosts; `curl -fsS http://127.0.0.1:8000/api/health` returns `{"status":"ok",...}`.
-6. `caddy validate --config /etc/caddy/Caddyfile` exits 0; `curl -fsS http://127.0.0.1/api/health` (via Caddy) returns 200.
-7. `sudo -l -U maf` on each host lists every systemctl verb declared in the sudoers template; `visudo -cf` is clean.
-8. `systemctl list-timers` shows `grillmi-backup-daily.timer` and `grillmi-tombstone-gc.timer` enabled with the expected next-run.
-9. On prod, `cd /opt/grillmi/backend && doppler run -- psql -h 127.0.0.1 -U grillmi -d grillmi -c "SELECT email FROM users"` returns one row, `marco.fruh@me.com`, after the prod deploy.
-10. The Vigil dashboard on `nexus` shows a new `grillmi` check; an injected `grillmi status --check` exit code of 1 produces a Vigil-degraded state and an email plus ntfy notification.
+- [x] `pct config 114` on atlas reports `cores: 2`, `memory: 4096`, and `rootfs` size 32 GB.
+- [x] `ssh grillmi 'systemctl is-active postgresql'` returns `active` on both hosts; `psql` connects on `127.0.0.1:5432` as role `grillmi` with the Doppler-stored password.
+- [x] `doppler secrets get DATABASE_PASSWORD --project grillmi --config dev --plain` and `--config prd --plain` return non-empty strings; `HOSTPOINT_SMTP_USER` and `HOSTPOINT_SMTP_PASSWORD` resolve to the values stored in `smtp/prd`.
+- [x] `/etc/grillmi/config.env` exists on both hosts, owned `root:maf` mode `0640`, with no `{{ }}` placeholders; `OPENAPI_ENABLED` is `true` on dev and `false` on prod.
+- [x] `systemctl is-active grillmi-api.service` returns `active` on both hosts; `curl -fsS http://127.0.0.1:8000/api/health` returns `{"status":"ok",...}`.
+- [x] `caddy validate --config /etc/caddy/Caddyfile` exits 0; `curl -fsS http://127.0.0.1/api/health` (via Caddy) returns 200.
+- [x] `visudo -cf /etc/sudoers.d/grillmi` is clean on both hosts.
+- [x] `systemctl list-timers` shows `grillmi-backup-daily.timer` and `grillmi-tombstone-gc.timer` enabled with the expected next-run.
+- [x] On prod, `cd /opt/grillmi/backend && doppler run -- psql -h 127.0.0.1 -U grillmi -d grillmi -c "SELECT email FROM users"` returns one row, `marco.fruh@me.com`, after the prod deploy.
+- [x] The Vigil dashboard data store on `nexus` shows a new `Grillmi` check reporting `healthy` from `https://grillmi.cloud/api/health`.
+- [ ] Injected degraded-notification test: force the Grillmi check into a degraded/down state and confirm both email and ntfy notifications fire.
