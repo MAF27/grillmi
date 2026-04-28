@@ -11,6 +11,7 @@ APP_DIR="/opt/grillmi"
 BACKEND_DIR="$APP_DIR/backend"
 BUILD_DIR="$APP_DIR/build"
 BACKUP_ROOT="/var/backups/grillmi"
+CONFIG_ENV="/etc/grillmi/config.env"
 PORT=80
 SERVICE_TIMEOUT=30
 HTTP_TIMEOUT=20
@@ -58,7 +59,16 @@ fail()      { log_error "$1"; exit 1; }
 # No runtime secrets today, but build-time PUBLIC_* and any future user-account
 # secrets (auth tokens, DB URLs) flow through this same path.
 doppler_run() {
-    (cd "$APP_DIR" && doppler run -- "$@")
+    (
+        cd "$APP_DIR"
+        if [[ -f "$CONFIG_ENV" ]]; then
+            set -a
+            # shellcheck source=/etc/grillmi/config.env
+            . "$CONFIG_ENV"
+            set +a
+        fi
+        doppler run -- "$@"
+    )
 }
 
 # === Status helpers ===
