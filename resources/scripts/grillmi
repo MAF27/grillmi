@@ -58,15 +58,19 @@ fail()      { log_error "$1"; exit 1; }
 # Every secret-aware operation goes through doppler run, scoped to APP_DIR.
 # No runtime secrets today, but build-time PUBLIC_* and any future user-account
 # secrets (auth tokens, DB URLs) flow through this same path.
+load_config_env() {
+    if [[ -f "$CONFIG_ENV" ]]; then
+        set -a
+        # shellcheck source=/etc/grillmi/config.env
+        . "$CONFIG_ENV"
+        set +a
+    fi
+}
+
 doppler_run() {
     (
         cd "$APP_DIR"
-        if [[ -f "$CONFIG_ENV" ]]; then
-            set -a
-            # shellcheck source=/etc/grillmi/config.env
-            . "$CONFIG_ENV"
-            set +a
-        fi
+        load_config_env
         doppler run -- "$@"
     )
 }
@@ -429,7 +433,7 @@ cmd_build() {
 cmd_migrate() {
     [[ -d "$BACKEND_DIR" ]] || fail "$BACKEND_DIR missing"
     log_info "Running alembic upgrade head..."
-    (cd "$BACKEND_DIR" && doppler run -- uv run alembic upgrade head)
+    (cd "$BACKEND_DIR" && load_config_env && doppler run -- uv run alembic upgrade head)
     log_ok "Migrations applied"
 }
 
@@ -451,13 +455,13 @@ cmd_admin_init() {
     esac
     [[ $# -eq 0 ]] || fail "usage: grillmi admin-init --email <email>"
     [[ -n "$email" ]] || fail "usage: grillmi admin-init --email <email>"
-    (cd "$BACKEND_DIR" && doppler run -- uv run grillmi-admin-init --email "$email")
+    (cd "$BACKEND_DIR" && load_config_env && doppler run -- uv run grillmi-admin-init --email "$email")
 }
 
 cmd_admin_reset() {
     local email="${1:-}"
     [[ -n "$email" ]] || fail "usage: grillmi admin-reset <email>"
-    (cd "$BACKEND_DIR" && doppler run -- bash grillmi/cli/_admin_reset_wrapper.sh --email "$email")
+    (cd "$BACKEND_DIR" && load_config_env && doppler run -- bash grillmi/cli/_admin_reset_wrapper.sh --email "$email")
 }
 
 # === Backups ===
