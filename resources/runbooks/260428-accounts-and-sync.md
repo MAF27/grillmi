@@ -4,7 +4,7 @@
 
 - Spec: 260428-accounts-and-sync.md
 - Owner: Marco
-- Last-validated: pending first run
+- Last-validated: 2026-04-28 automated dev/prod infrastructure checks completed. Manual inbox, Safari, and iPhone account-flow checks remain for Marco. Divergence: Vigil currently supports JSON/HTTP checks, not command probes, so Grillmi was added as a JSON check against `https://grillmi.cloud/api/health`.
 
 ---
 
