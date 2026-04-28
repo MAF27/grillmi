@@ -424,8 +424,23 @@ cmd_migrate() {
 }
 
 cmd_admin_init() {
-    local email="${1:-}"
-    [[ -n "$email" ]] || fail "usage: grillmi admin-init <email>"
+    local email=""
+    case "${1:-}" in
+        --email)
+            email="${2:-}"
+            shift 2 || true
+            ;;
+        --email=*)
+            email="${1#--email=}"
+            shift
+            ;;
+        *)
+            email="${1:-}"
+            [[ $# -gt 0 ]] && shift
+            ;;
+    esac
+    [[ $# -eq 0 ]] || fail "usage: grillmi admin-init --email <email>"
+    [[ -n "$email" ]] || fail "usage: grillmi admin-init --email <email>"
     (cd "$BACKEND_DIR" && doppler run -- uv run grillmi-admin-init --email "$email")
 }
 
@@ -514,7 +529,8 @@ Commands:
   migrate                  Run `alembic upgrade head` against the backend database.
   backup [bucket]          Run pg_dump into /var/backups/grillmi/<bucket>; default daily.
   restore <file>           Restore the database from a gzipped pg_dump file (interactive confirm).
-  admin-init <email>       Create a user account and email an activation link (idempotent).
+  admin-init --email <email>
+                           Create a user account and email an activation link (idempotent).
   admin-reset <email>      Reset a user's password (interactive prompt).
   help                     Show this message.
 
