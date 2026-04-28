@@ -5,6 +5,7 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
 const config = {
 	preprocess: vitePreprocess({ style: false }),
 	kit: {
+		appDir: '_grillmi',
 		adapter: adapter({
 			pages: 'build',
 			assets: 'build',
