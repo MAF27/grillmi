@@ -8,6 +8,19 @@
 
 ---
 
+## Pre-requisites
+
+Confirm before running staging checks:
+
+1. The infra side file `260428-accounts-and-sync.md` has been executed end-to-end on `grillmi-dev` and (for prod tests) on `grillmi`. Every Acceptance item is green.
+2. `feature/accounts-and-sync` is pushed to GitHub and the dev deploy playbook (`grillmi-deploy.yml --limit grillmi_dev`) has completed without unhandled errors. Hard-reset of `/opt/grillmi` to the branch tip is expected as part of the playbook.
+3. Test SMTP capture for the dev staging walk-through is the developer's own Hostpoint webmail mailbox; choose a `<test-email>` value the Mac can read. For prod, the email is `marco.fruh@me.com`.
+4. The Mac has SSH aliases `grillmi` and `grillmi-dev` in `~/.ssh/config`.
+5. The Doppler CLI on the Mac is logged in to a token with read access to `grillmi/dev`, `grillmi/prd`, and `smtp/prd`.
+6. The current date and time on both hosts matches the Mac within 60 seconds (`ssh <host> date`); audit-log and session-expiry checks rely on accurate clocks.
+
+---
+
 ## Staging checks (run on grillmi-dev)
 
 Run these from the Mac after the dev deploy completes. Each step prints what to expect; stop and investigate on the first divergence.
@@ -47,7 +60,7 @@ Run these from the Mac after the prod deploy completes. The first user (Marco) i
 11. `ssh grillmi 'ss -tlnp | awk "/:80\\b/ || /:8000\\b/"'` shows Caddy on `127.0.0.1:80` and Granian on `127.0.0.1:8000`. Neither binds to `0.0.0.0`.
 12. `ssh grillmi 'sudo ufw status'` shows the default-deny inbound policy with only `22/tcp` open.
 13. Vigil dashboard on nexus shows the `grillmi` check green.
-14. Hold "Konto löschen" for 500ms on the Mac. Confirm the redirect to `/login`. Re-run `ssh grillmi '/usr/local/bin/grillmi admin-init --email marco.fruh@me.com'` to re-seed.
+14. First-prod-deploy only (skip on subsequent deploys, since this destroys live data): hold "Konto löschen" for 500ms on the Mac. Confirm the redirect to `/login` and that the `users` table has no rows. Re-run `ssh grillmi '/usr/local/bin/grillmi admin-init --email marco.fruh@me.com'` to re-seed and validate the seed path end-to-end. Skip this step on later prod deploys; the diagnostic commands cover steady-state account verification.
 
 ---
 
@@ -101,6 +114,7 @@ These do not change state and are safe to run any time the system feels off.
 5. Caddy access for `/api`: `ssh grillmi 'sudo journalctl -u caddy -n 200 --no-pager | grep "/api"'`.
 6. Backup timer next-run: `ssh grillmi 'systemctl list-timers grillmi-backup-daily.timer'`.
 7. SMTP probe (matches the `/api/health` check): `ssh grillmi 'nc -zv asmtp.mail.hostpoint.ch 587'`. Connection refused means the Hostpoint endpoint is down or the LXC has lost outbound 587.
+8. Last successful timer runs (Vigil does not cover these): `ssh grillmi 'systemctl is-failed grillmi-backup-daily.service grillmi-tombstone-gc.service'`. Anything other than `inactive` (oneshot units idle between runs) means the last run failed; check the journal for that unit.
 
 ---
 
