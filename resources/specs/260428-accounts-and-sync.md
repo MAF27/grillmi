@@ -2,7 +2,7 @@
 
 ## Meta
 
-- Status: Implementation and tests complete. Backend unit + integration suite (119 tests, 94% coverage), frontend unit suite (93 tests), and the spec's Playwright E2E suite (`tests/e2e/auth.spec.ts`, `sync.spec.ts`, `account.spec.ts`) all green via the local hermetic harness in `tests/e2e/_setup/`. Marco's physical-device manual verification still outstanding. Pre-existing e2e tests under `tests/e2e/*.spec.ts` (home, favorites, plan, alarms, etc.) regress because the new `+layout.ts` auth gate redirects unauthenticated users to `/login`; those need a per-suite pre-auth fixture as a separate cleanup, not part of this spec.
+- Status: Implementation and tests complete; ready for operator hand-off. Backend unit + integration suite (119 tests, 94% coverage), frontend unit suite (93 tests), and the full Playwright E2E suite all green: 59 passed, 20 intentionally skipped (visual-capture self-skips, prod-only OPENAPI gate covered by integration test, prod-only service-worker test covered by manual iPhone verification), 0 failed. The spec's three new spec files (`auth.spec.ts`, `sync.spec.ts`, `account.spec.ts`) run against a local hermetic harness in `tests/e2e/_setup/`; pre-existing specs run via a setup project that activates a default user once and saves storageState. Marco's physical-device manual verification still outstanding (the operator runs the dev/prod deploy first; Marco walks through the runbook after).
 - Branch: feature/accounts-and-sync
 - Infra: 260428-accounts-and-sync.md
 - Runbook: 260428-accounts-and-sync.md
