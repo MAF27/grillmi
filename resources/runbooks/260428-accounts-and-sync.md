@@ -4,7 +4,7 @@
 
 - Spec: 260428-accounts-and-sync.md
 - Owner: Marco
-- Last-validated: 2026-04-28 automated dev/prod infrastructure checks completed. Prod account activation link now renders and works after the asset-cache fix. Dev manual account walk-through and iPhone-specific checks remain manual. Divergence: Vigil currently supports JSON/HTTP checks, not command probes, so Grillmi was added as a JSON check against `https://grillmi.cloud/api/health`.
+- Last-validated: 2026-04-28 automated dev/prod infrastructure checks completed. Prod account activation link now renders and works after the asset-cache fix. Remaining manual checks are grouped under Manual verification. Divergence: Vigil currently supports JSON/HTTP checks, not command probes, so Grillmi was added as a JSON check against `https://grillmi.cloud/api/health`.
 
 ---
 
@@ -14,7 +14,6 @@ Confirm before running staging checks:
 
 - [x] The infra side file `260428-accounts-and-sync.md` has been executed end-to-end on `grillmi-dev` and (for prod tests) on `grillmi`. Every Acceptance item is green.
 - [x] `feature/accounts-and-sync` is pushed to GitHub and the dev deploy playbook (`grillmi-deploy.yml --limit grillmi_dev`) has completed without unhandled errors. Hard-reset of `/opt/grillmi` to the branch tip is expected as part of the playbook.
-- [ ] Test SMTP capture for the dev staging walk-through is the developer's own Hostpoint webmail mailbox; choose a `<test-email>` value the Mac can read. For prod, the email is `marco.fruh@me.com`.
 - [x] The Mac has SSH aliases `grillmi` and `grillmi-dev` in `~/.ssh/config`.
 - [x] The Doppler CLI on the Mac is logged in to a token with read access to `grillmi/dev`, `grillmi/prd`, and `smtp/prd`.
 - [x] The current date and time on both hosts matches the Mac within 60 seconds (`ssh <host> date`); audit-log and session-expiry checks rely on accurate clocks.
@@ -32,12 +31,6 @@ Run these from the Mac after the dev deploy completes. Each step prints what to 
 - [x] `ssh grillmi-dev 'systemctl is-active grillmi-api.service'` returns `active`. FastAPI is up.
 - [x] `curl -fsS https://grillmi.krafted.cc/api/health` returns `{"status":"ok","db":true,"smtp_reachable":true}` with HTTP 200.
 - [x] `ssh grillmi-dev '/usr/local/bin/grillmi status --check'` prints `ok` and exits 0.
-- [ ] `ssh grillmi-dev '/usr/local/bin/grillmi admin-init --email <test-email>'` sends an invitation email. Verify the email arrives in Hostpoint webmail or local Mail.app within thirty seconds. The link points to `https://grillmi.krafted.cc/set-password?token=...`.
-- [ ] Open the link in Safari. The set-password page loads, the form accepts a strong password, and on submit lands on Home logged-in.
-- [ ] Log out from the account chip. The login page renders. `indexedDB.databases()` (DevTools console) shows the Grillmi DB but its stores are empty.
-- [ ] Log back in. `GET /api/auth/me` (DevTools Network tab) returns 200 with the user object and `csrfToken`.
-- [ ] `ssh grillmi-dev 'sudo -u postgres psql -d grillmi -c "SELECT action, success FROM audit_log ORDER BY occurred_at DESC LIMIT 5"'` shows recent entries: `password_set, true`, `login, true`, `logout, true`, `login, true`. The audit log is wired.
-- [ ] Create a Grillade in Safari. In a second Safari profile (or Firefox) on the same Mac, log in with the same credentials, foreground the app. The Grillade appears within five seconds. Sync round-trip works.
 - [x] `ssh grillmi-dev '/usr/local/bin/grillmi backup manual'` writes a dump to `/var/backups/grillmi/manual/<timestamp>.dump.gz`. `ssh grillmi-dev '/usr/local/bin/grillmi restore /var/backups/grillmi/manual/<timestamp>.dump.gz'` restores cleanly. Backup and restore round-trip works.
 - [x] `ssh grillmi-dev '/usr/local/bin/grillmi status --check'` still returns `ok` after restore.
 
@@ -54,13 +47,32 @@ Run these from the Mac after the prod deploy completes. The first user (Marco) i
 - [x] Open the link on the Mac in Safari. The set-password page loads, the form accepts a strong password, and the emailed link works.
 - [x] `ssh grillmi 'cd /opt/grillmi/backend && sudo -u postgres psql -d grillmi -c "SELECT email, password_hash IS NOT NULL FROM users"'` shows one row, `marco.fruh@me.com`, with a password hash present.
 - [x] `ssh grillmi 'cd /opt/grillmi/backend && sudo -u postgres psql -d grillmi -c "SELECT action, success, occurred_at FROM audit_log ORDER BY occurred_at DESC LIMIT 10"'` shows the `set_password, true` activation entry.
-- [ ] On the iPhone, open `/account`. The session list shows two entries (Mac and iPhone). Tap "Abmelden" on the Mac row. Foreground Safari on the Mac; within ten seconds it bounces to `/login`.
-- [ ] Log back in on the Mac. Create a Grillade. On the iPhone, foreground; the Grillade appears.
 - [x] `ssh grillmi 'ls -la /var/backups/grillmi/daily/'` shows at least one dump after the first scheduled backup window (03:15 local). Otherwise run `ssh grillmi '/usr/local/bin/grillmi backup daily'` manually and confirm.
 - [x] `ssh grillmi 'ss -tlnp | awk "/:80\\b/ || /:8000\\b/"'` shows Caddy on `127.0.0.1:80` and Granian on `127.0.0.1:8000`. Neither binds to `0.0.0.0`.
 - [x] `ssh grillmi 'sudo ufw status'` shows the default-deny inbound policy with only `22/tcp` open.
 - [x] Vigil dashboard on nexus shows the `grillmi` check green.
 - [x] First-prod-deploy only destructive deletion test skipped on this run because it destroys live account data. Steady-state account verification passed via the seeded user row, password hash, audit entry, health check, backup check, bind check, UFW check, and Vigil check.
+
+---
+
+## Manual verification
+
+These checks require a human-readable inbox, Safari profile state, or an iPhone. They are intentionally grouped here and are the only remaining unchecked work items.
+
+### Dev account walk-through
+
+- [ ] Choose a `<test-email>` value the Mac can read in Hostpoint webmail or local Mail.app.
+- [ ] `ssh grillmi-dev '/usr/local/bin/grillmi admin-init --email <test-email>'` sends an invitation email. Verify the email arrives within thirty seconds and points to `https://grillmi.krafted.cc/set-password?token=...`.
+- [ ] Open the dev link in Safari. The set-password page loads, the form accepts a strong password, and on submit lands on Home logged-in.
+- [ ] Log out from the account chip. The login page renders. `indexedDB.databases()` (DevTools console) shows the Grillmi DB but its stores are empty.
+- [ ] Log back in. `GET /api/auth/me` (DevTools Network tab) returns 200 with the user object and `csrfToken`.
+- [ ] `ssh grillmi-dev 'sudo -u postgres psql -d grillmi -c "SELECT action, success FROM audit_log ORDER BY occurred_at DESC LIMIT 5"'` shows recent entries: `password_set, true`, `login, true`, `logout, true`, `login, true`. The audit log is wired.
+- [ ] Create a Grillade in Safari. In a second Safari profile (or Firefox) on the same Mac, log in with the same credentials, foreground the app. The Grillade appears within five seconds. Sync round-trip works.
+
+### Prod iPhone walk-through
+
+- [ ] On the iPhone, open `/account`. The session list shows two entries (Mac and iPhone). Tap "Abmelden" on the Mac row. Foreground Safari on the Mac; within ten seconds it bounces to `/login`.
+- [ ] Log back in on the Mac. Create a Grillade. On the iPhone, foreground; the Grillade appears.
 
 ---
 
