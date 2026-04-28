@@ -66,15 +66,23 @@ function createGrilladeStore() {
 	}
 
 	function persistPlan() {
-		void putCurrentPlanState({
-			plan,
-			planMode,
-			manualStarts,
-			manualPlated: Array.from(manualPlated),
-			alarms: manualAlarms,
-			dismissedAlarmKeys: Array.from(manualAlarmDismissed),
-		})
+		// Chain each write so _persistFlush() awaits *all* in-flight persists
+		// in order. Without chaining, fire-and-forget calls in tests race past
+		// the awaiter and leave half-committed IDB state.
+		_pendingPersist = _pendingPersist.then(() =>
+			putCurrentPlanState({
+				plan,
+				planMode,
+				manualStarts,
+				manualPlated: Array.from(manualPlated),
+				alarms: manualAlarms,
+				dismissedAlarmKeys: Array.from(manualAlarmDismissed),
+			}),
+		)
+		return _pendingPersist
 	}
+
+	let _pendingPersist: Promise<void> = Promise.resolve()
 
 	async function endSession() {
 		const replayItems: PlannedItem[] = session
@@ -361,7 +369,13 @@ function createGrilladeStore() {
 			planMode = 'auto'
 			manualStarts = {}
 			manualPlated = new Set()
+			manualAlarms = []
+			manualAlarmDismissed = new Set()
 			initialized = false
+		},
+
+		_persistFlush(): Promise<void> {
+			return _pendingPersist
 		},
 	}
 }

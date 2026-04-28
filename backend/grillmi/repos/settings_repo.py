@@ -29,4 +29,5 @@ async def upsert(
     else:
         row.value = value
     await session.flush()
+    await session.refresh(row, ["updated_at"])
     return row

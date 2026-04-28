@@ -108,6 +108,7 @@ async def update(
             else None
         )
     await session.flush()
+    await session.refresh(row, ["updated_at"])
     return row
 
 

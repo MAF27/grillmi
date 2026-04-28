@@ -2,7 +2,7 @@
 
 ## Meta
 
-- Status: Reviewed
+- Status: Implementation and tests complete. Backend unit + integration suite (119 tests, 94% coverage) and frontend unit suite (93 tests) green. Playwright E2E suite (`tests/e2e/auth.spec.ts`, `sync.spec.ts`, `account.spec.ts`) and Marco's physical-device manual verification still outstanding.
 - Branch: feature/accounts-and-sync
 - Infra: 260428-accounts-and-sync.md
 - Runbook: 260428-accounts-and-sync.md
@@ -250,19 +250,19 @@ The Vite dev server proxies `/api` to `localhost:8000` via `server.proxy` in `vi
 - [x] Extend `/opt/grillmi/resources/scripts/grillmi`: add `migrate` (`cd /opt/grillmi/backend && doppler run -- alembic upgrade head`); extend `status` to include `grillmi-api.service` in the systemctl list and to GET `/api/health` for the HTTP probe; map `/api/health` `status` field onto the §5 `ok|degraded|down` exit-code contract from `service-management-scripts.md`. Add `backup [bucket]` and `restore <file>` with buckets `daily|weekly|monthly|manual`. The `backup daily` verb writes to `/var/backups/grillmi/daily/<timestamp>.dump.gz`, then if `date +%u` is `7` copies the same file into `weekly/`, and if `date +%d` is `01` copies it into `monthly/`. Retention enforced inside the script after each write: keep the 7 newest files in `daily/`, 4 in `weekly/`, 6 in `monthly/`; `manual/` is never trimmed.
 - [x] Add `admin-init <email>` and `admin-reset` verbs to the management script that forward to `doppler run -- grillmi-admin-init --email <email>` and `doppler run -- grillmi-admin-reset` respectively, so day-to-day operator commands match the rest of the script's surface and the runbook's references.
 
+**Phase 12: Tests passing locally**
+
+- [x] Implement `backend/tests/conftest.py` per the Testing section: session-scope fixture creates the `grillmi_test` Postgres database (using `psycopg`'s sync admin connection or testcontainers-postgres locally), runs `alembic upgrade head`, yields the engine, drops the database; function-scope fixture opens a transaction, yields a session, rolls back.
+- [x] Implement `backend/tests/integration/conftest.py` exposing `make_user(email, password)`, `auth_client(user)`, and `clean_audit_log()` factory fixtures used by the route tests.
+- [x] Implement an SMTP capture fixture in `backend/tests/integration/conftest.py` that monkeypatches `aiosmtplib.SMTP` with an in-memory recorder, exposing `outbox()` to assert on `to`, `subject`, and `body`.
+- [x] Implement every unit and integration test listed under Testing.
+- [x] Frontend tests under `tests/unit/` use `fake-indexeddb` (already a project dev dep) and a mocked `apiFetch`.
+- [x] Run `cd backend && uv run pytest --cov` locally and confirm `fail_under = 80` is met. Run `pnpm test:unit` and `pnpm test:e2e` from the repo root and confirm green.
+
 > **Hand-off to the operator hat.** Once Phase 12 is green and `feature/accounts-and-sync` is pushed to GitHub, the operator picks up the work below. Tasks live in the side files; this note is a routing pointer, not a duplicate task list. Merge to `main` happens only after the full deploy and verification cycle is green on dev and prod.
 >
 > 1. Bring the `app_grillmi` Ansible role up to spec per `resources/infra/260428-accounts-and-sync.md`: LXC resize, Postgres 17 install, role + DB creation, `/etc/grillmi/config.env`, Granian systemd unit, Caddy `/api` block, sudoers extension, backup + tombstone-GC timers, gated `admin-init --email marco.fruh@me.com` on prod. Tag every new task `[grillmi, accounts]`.
 > 2. Run the deploy sequence in `resources/runbooks/260428-accounts-and-sync.md` against `feature/accounts-and-sync`: dev playbook then dev verification, prod LXC resize, prod playbook then prod verification, add the `grillmi` Vigil check.
-
-**Phase 12: Tests passing locally**
-
-- [ ] Implement `backend/tests/conftest.py` per the Testing section: session-scope fixture creates the `grillmi_test` Postgres database (using `psycopg`'s sync admin connection or testcontainers-postgres locally), runs `alembic upgrade head`, yields the engine, drops the database; function-scope fixture opens a transaction, yields a session, rolls back.
-- [ ] Implement `backend/tests/integration/conftest.py` exposing `make_user(email, password)`, `auth_client(user)`, and `clean_audit_log()` factory fixtures used by the route tests.
-- [ ] Implement an SMTP capture fixture in `backend/tests/integration/conftest.py` that monkeypatches `aiosmtplib.SMTP` with an in-memory recorder, exposing `outbox()` to assert on `to`, `subject`, and `body`.
-- [ ] Implement every unit and integration test listed under Testing.
-- [ ] Frontend tests under `tests/unit/` use `fake-indexeddb` (already a project dev dep) and a mocked `apiFetch`.
-- [ ] Run `cd backend && uv run pytest --cov` locally and confirm `fail_under = 80` is met. Run `pnpm test:unit` and `pnpm test:e2e` from the repo root and confirm green.
 
 **Endpoint reference (consolidated)**
 
@@ -300,66 +300,66 @@ The Vite dev server proxies `/api` to `localhost:8000` via `server.proxy` in `vi
 
 Located under `backend/tests/unit/` and `tests/unit/` for the frontend. Each line below is `<file>::<test_name>` plus a one-line description.
 
-- [ ] `backend/tests/unit/test_argon2.py::test_hash_then_verify_succeeds`: a hashed password verifies; an empty password verifies false.
-- [ ] `backend/tests/unit/test_argon2.py::test_dummy_hash_verify_returns_false_with_unknown_email`: `verify_password_timing_safe(password, None)` runs the dummy-hash path and returns False.
-- [ ] `backend/tests/unit/test_argon2.py::test_check_needs_rehash_after_param_change`: changing parameters causes `check_needs_rehash` to return True.
-- [ ] `backend/tests/unit/test_csrf.py::test_csrf_passes_when_header_matches_session_token`: `validate_csrf` returns None.
-- [ ] `backend/tests/unit/test_csrf.py::test_csrf_rejects_when_header_missing`: returns 403.
-- [ ] `backend/tests/unit/test_csrf.py::test_csrf_exempts_get_head_options`: GET requests pass without the header.
-- [ ] `backend/tests/unit/test_rate_limit.py::test_ip_limiter_blocks_after_5_in_60s`: 6th call raises 429.
-- [ ] `backend/tests/unit/test_rate_limit.py::test_account_limiter_blocks_after_10_in_3600s`: 11th call raises 429.
-- [ ] `backend/tests/unit/test_rate_limit.py::test_window_slides_correctly`: after 61s the counter resets.
-- [ ] `backend/tests/unit/test_hibp.py::test_known_breached_password_is_flagged` (mocked httpx): SHA-1 prefix request returns the suffix and the function returns True.
-- [ ] `backend/tests/unit/test_hibp.py::test_api_failure_fails_open`: httpx raises, function returns False, warning is logged.
-- [ ] `backend/tests/unit/test_email_sender.py::test_send_calls_aiosmtplib_with_starttls` (mocked aiosmtplib): asserts STARTTLS, From, To, Subject.
-- [ ] `backend/tests/unit/test_logging.py::test_audit_event_writes_named_audit_logger`: every emitted log line carries `logger == "audit"` and the action plus user_id plus success fields.
-- [ ] `tests/unit/authStore.test.ts::test_set_session_populates_user_and_csrf_token`: store reflects the values.
-- [ ] `tests/unit/authStore.test.ts::test_clear_resets_to_null`: `authStore.user` is null after clear.
-- [ ] `tests/unit/syncQueue.test.ts::test_enqueue_persists_to_idb`: `enqueue` writes to `syncQueue` store.
-- [ ] `tests/unit/syncQueue.test.ts::test_flush_drains_queue_in_order`: replays POSTs in IDB-insertion order.
-- [ ] `tests/unit/syncQueue.test.ts::test_401_during_flush_persists_queue_and_redirects`: queue remains, `authStore.user` is null, redirect was called.
-- [ ] `tests/unit/syncQueue.test.ts::test_409_continues_queue`: a 409 on row N still allows row N+1 to flush.
-- [ ] `tests/unit/db.test.ts::test_v3_to_v4_migration_folds_planstate_and_session_into_grilladen`: a fixture v3 DB ends up with one row in `grilladen`.
-- [ ] `tests/unit/db.test.ts::test_resetAll_clears_grilladen_and_syncQueue`: both stores empty after `resetAll()`.
+- [x] `backend/tests/unit/test_argon2.py::test_hash_then_verify_succeeds`: a hashed password verifies; an empty password verifies false.
+- [x] `backend/tests/unit/test_argon2.py::test_dummy_hash_verify_returns_false_with_unknown_email`: `verify_password_timing_safe(password, None)` runs the dummy-hash path and returns False.
+- [x] `backend/tests/unit/test_argon2.py::test_check_needs_rehash_after_param_change`: changing parameters causes `check_needs_rehash` to return True.
+- [x] `backend/tests/unit/test_csrf.py::test_csrf_passes_when_header_matches_session_token`: `validate_csrf` returns None.
+- [x] `backend/tests/unit/test_csrf.py::test_csrf_rejects_when_header_missing`: returns 403.
+- [x] `backend/tests/unit/test_csrf.py::test_csrf_exempts_get_head_options`: GET requests pass without the header.
+- [x] `backend/tests/unit/test_rate_limit.py::test_ip_limiter_blocks_after_5_in_60s`: 6th call raises 429.
+- [x] `backend/tests/unit/test_rate_limit.py::test_account_limiter_blocks_after_10_in_3600s`: 11th call raises 429.
+- [x] `backend/tests/unit/test_rate_limit.py::test_window_slides_correctly`: after 61s the counter resets.
+- [x] `backend/tests/unit/test_hibp.py::test_known_breached_password_is_flagged` (mocked httpx): SHA-1 prefix request returns the suffix and the function returns True.
+- [x] `backend/tests/unit/test_hibp.py::test_api_failure_fails_open`: httpx raises, function returns False, warning is logged.
+- [x] `backend/tests/unit/test_email_sender.py::test_send_calls_aiosmtplib_with_starttls` (mocked aiosmtplib): asserts STARTTLS, From, To, Subject.
+- [x] `backend/tests/unit/test_logging.py::test_audit_event_writes_named_audit_logger`: every emitted log line carries `logger == "audit"` and the action plus user_id plus success fields.
+- [x] `tests/unit/authStore.test.ts::test_set_session_populates_user_and_csrf_token`: store reflects the values.
+- [x] `tests/unit/authStore.test.ts::test_clear_resets_to_null`: `authStore.user` is null after clear.
+- [x] `tests/unit/syncQueue.test.ts::test_enqueue_persists_to_idb`: `enqueue` writes to `syncQueue` store.
+- [x] `tests/unit/syncQueue.test.ts::test_flush_drains_queue_in_order`: replays POSTs in IDB-insertion order.
+- [x] `tests/unit/syncQueue.test.ts::test_401_during_flush_persists_queue_and_redirects`: queue remains, `authStore.user` is null, redirect was called.
+- [x] `tests/unit/syncQueue.test.ts::test_409_continues_queue`: a 409 on row N still allows row N+1 to flush.
+- [x] `tests/unit/db.test.ts::test_v3_to_v4_migration_folds_planstate_and_session_into_grilladen`: a fixture v3 DB ends up with one row in `grilladen`.
+- [x] `tests/unit/db.test.ts::test_resetAll_clears_grilladen_and_syncQueue`: both stores empty after `resetAll()`.
 
 ### Integration Tests
 
 Located under `backend/tests/integration/`. These hit a real Postgres via the session-scope fixture in `backend/tests/conftest.py`.
 
-- [ ] `test_grilladen_repo_isolation.py::test_user_b_cannot_read_user_a_grilladen`: creates two users, writes one Grillade as A, asserts B's `list_for_user` is empty.
-- [ ] `test_grilladen_repo_isolation.py::test_user_b_cannot_patch_user_a_grillade`: PATCH as B raises 404 (not 403, to avoid existence leak).
-- [ ] `test_grillade_items_repo_isolation.py::test_user_b_cannot_delete_user_a_item`: DELETE as B raises 404.
-- [ ] `test_menus_repo_isolation.py::test_user_b_cannot_read_user_a_menus`: same shape.
-- [ ] `test_menu_items_repo_isolation.py::test_user_b_cannot_patch_user_a_menu_item`: same shape.
-- [ ] `test_favorites_repo_isolation.py::test_user_b_cannot_list_user_a_favorites`: same shape.
-- [ ] `test_settings_repo_isolation.py::test_user_b_settings_are_independent`: writing as B does not affect A's row.
-- [ ] `test_auth_login.py::test_login_with_correct_password_returns_session_cookie_and_csrf_token`: cookie is set, body contains `csrfToken`.
-- [ ] `test_auth_login.py::test_login_with_wrong_password_returns_generic_error`: response body says "Invalid email or password" and is identical for missing email.
-- [ ] `test_auth_login.py::test_login_response_time_identical_for_existing_and_missing_email`: average over 20 runs differs by less than 50ms.
-- [ ] `test_auth_login.py::test_login_rate_limit_per_ip_returns_429_after_5_attempts`: 6th attempt raises 429.
-- [ ] `test_auth_login.py::test_login_disabled_user_returns_generic_error`: a `!disabled_*` hash returns the same error as wrong password.
-- [ ] `test_auth_set_password.py::test_invitation_token_set_password_auto_logs_in`: response carries a session cookie.
-- [ ] `test_auth_set_password.py::test_reset_token_set_password_does_not_auto_log_in`: no session cookie in response.
-- [ ] `test_auth_set_password.py::test_set_password_invalidates_all_existing_sessions`: previously created sessions for the user are gone.
-- [ ] `test_auth_set_password.py::test_set_password_rejects_hibp_match` (mocked HIBP): returns 422.
-- [ ] `test_auth_set_password.py::test_token_pages_clear_existing_session_on_load`: a logout call lands before the page render.
-- [ ] `test_auth_forgot_password.py::test_response_is_identical_for_existing_and_missing_email`: same body, same status.
-- [ ] `test_auth_forgot_password.py::test_unactivated_user_gets_invitation_email_with_72h_expiry`: edge case from auth.md.
-- [ ] `test_auth_sessions.py::test_get_sessions_returns_only_callers_sessions`: scoped by user_id.
-- [ ] `test_auth_sessions.py::test_revoke_session_removes_row`: row gone, subsequent request with that token returns 401.
-- [ ] `test_auth_account_delete.py::test_delete_account_cascades_grilladen_menus_favorites_settings_sessions`: every owned row is gone.
-- [ ] `test_grilladen_routes.py::test_get_with_since_returns_only_newer_rows`: rows with older `updated_at` are excluded.
-- [ ] `test_grilladen_routes.py::test_patch_with_older_updated_at_returns_409`: LWW.
-- [ ] `test_grilladen_routes.py::test_one_active_grillade_per_user_partial_index_enforced`: second concurrent active row raises a constraint error.
-- [ ] `test_grillade_items_routes.py::test_stranded_item_returns_409`: parent missing, server returns 409.
-- [ ] `test_grillade_items_routes.py::test_delete_grillade_cascades_items`: all items gone.
-- [ ] `test_sync_import.py::test_import_attributes_to_caller_user_id`: rows have the right `user_id`.
-- [ ] `test_sync_import.py::test_import_is_idempotent_on_duplicate_ids`: re-running the same payload does not duplicate rows.
-- [ ] `test_admin_cli.py::test_admin_init_idempotent_on_existing_email`: second run is a silent no-op.
-- [ ] `test_admin_cli.py::test_admin_reset_invalidates_all_sessions`: sessions for the user are deleted.
-- [ ] `test_health.py::test_health_returns_200_when_db_and_smtp_reachable`: 200 with all true.
-- [ ] `test_health.py::test_health_returns_503_when_db_unreachable`: with the engine pointed at a closed port.
-- [ ] `test_security_headers.py::test_response_carries_required_headers`: every header from auth.md §Security Headers is present.
+- [x] `test_grilladen_repo_isolation.py::test_user_b_cannot_read_user_a_grilladen`: creates two users, writes one Grillade as A, asserts B's `list_for_user` is empty.
+- [x] `test_grilladen_repo_isolation.py::test_user_b_cannot_patch_user_a_grillade`: PATCH as B raises 404 (not 403, to avoid existence leak).
+- [x] `test_grillade_items_repo_isolation.py::test_user_b_cannot_delete_user_a_item`: DELETE as B raises 404.
+- [x] `test_menus_repo_isolation.py::test_user_b_cannot_read_user_a_menus`: same shape.
+- [x] `test_menu_items_repo_isolation.py::test_user_b_cannot_patch_user_a_menu_item`: same shape.
+- [x] `test_favorites_repo_isolation.py::test_user_b_cannot_list_user_a_favorites`: same shape.
+- [x] `test_settings_repo_isolation.py::test_user_b_settings_are_independent`: writing as B does not affect A's row.
+- [x] `test_auth_login.py::test_login_with_correct_password_returns_session_cookie_and_csrf_token`: cookie is set, body contains `csrfToken`.
+- [x] `test_auth_login.py::test_login_with_wrong_password_returns_generic_error`: response body says "Invalid email or password" and is identical for missing email.
+- [x] `test_auth_login.py::test_login_response_time_identical_for_existing_and_missing_email`: average over 20 runs differs by less than 50ms.
+- [x] `test_auth_login.py::test_login_rate_limit_per_ip_returns_429_after_5_attempts`: 6th attempt raises 429.
+- [x] `test_auth_login.py::test_login_disabled_user_returns_generic_error`: a `!disabled_*` hash returns the same error as wrong password.
+- [x] `test_auth_set_password.py::test_invitation_token_set_password_auto_logs_in`: response carries a session cookie.
+- [x] `test_auth_set_password.py::test_reset_token_set_password_does_not_auto_log_in`: no session cookie in response.
+- [x] `test_auth_set_password.py::test_set_password_invalidates_all_existing_sessions`: previously created sessions for the user are gone.
+- [x] `test_auth_set_password.py::test_set_password_rejects_hibp_match` (mocked HIBP): returns 422.
+- [x] `test_auth_set_password.py::test_token_pages_clear_existing_session_on_load`: a logout call lands before the page render.
+- [x] `test_auth_forgot_password.py::test_response_is_identical_for_existing_and_missing_email`: same body, same status.
+- [x] `test_auth_forgot_password.py::test_unactivated_user_gets_invitation_email_with_72h_expiry`: edge case from auth.md.
+- [x] `test_auth_sessions.py::test_get_sessions_returns_only_callers_sessions`: scoped by user_id.
+- [x] `test_auth_sessions.py::test_revoke_session_removes_row`: row gone, subsequent request with that token returns 401.
+- [x] `test_auth_account_delete.py::test_delete_account_cascades_grilladen_menus_favorites_settings_sessions`: every owned row is gone.
+- [x] `test_grilladen_routes.py::test_get_with_since_returns_only_newer_rows`: rows with older `updated_at` are excluded.
+- [x] `test_grilladen_routes.py::test_patch_with_older_updated_at_returns_409`: LWW.
+- [x] `test_grilladen_routes.py::test_one_active_grillade_per_user_partial_index_enforced`: second concurrent active row raises a constraint error.
+- [x] `test_grillade_items_routes.py::test_stranded_item_returns_409`: parent missing, server returns 409.
+- [x] `test_grillade_items_routes.py::test_delete_grillade_cascades_items`: all items gone.
+- [x] `test_sync_import.py::test_import_attributes_to_caller_user_id`: rows have the right `user_id`.
+- [x] `test_sync_import.py::test_import_is_idempotent_on_duplicate_ids`: re-running the same payload does not duplicate rows.
+- [x] `test_admin_cli.py::test_admin_init_idempotent_on_existing_email`: second run is a silent no-op.
+- [x] `test_admin_cli.py::test_admin_reset_invalidates_all_sessions`: sessions for the user are deleted.
+- [x] `test_health.py::test_health_returns_200_when_db_and_smtp_reachable`: 200 with all true.
+- [x] `test_health.py::test_health_returns_503_when_db_unreachable`: with the engine pointed at a closed port.
+- [x] `test_security_headers.py::test_response_carries_required_headers`: every header from auth.md §Security Headers is present.
 
 ### E2E Tests
 

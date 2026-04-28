@@ -101,6 +101,7 @@ describe('grilladeStore', () => {
 		grilladeStore.dismissManualAlarm(`${created.id}-flip`)
 		expect(grilladeStore.manualAlarmDismissed.has(`${created.id}-flip`)).toBe(true)
 
+		await grilladeStore._persistFlush()
 		grilladeStore._reset()
 		await grilladeStore.init()
 		expect(grilladeStore.manualAlarms).toHaveLength(1)
@@ -176,13 +177,11 @@ describe('grilladeStore', () => {
 		const created = grilladeStore.addItem(item)
 		grilladeStore.setPlanMode('manual')
 		grilladeStore.startManualItem(created.id)
-		// rewind manualStarts to 5 hours ago, beyond the 4-hour staleness window
+		// Wait for the chained fire-and-forget persists to drain before we
+		// overwrite IDB with stale data — otherwise a late persist races past
+		// our overwrite and the staleness check sees fresh timestamps.
+		await grilladeStore._persistFlush()
 		const fiveHoursAgo = Date.now() - 5 * 60 * 60 * 1000
-		const starts = grilladeStore.manualStarts as Record<string, number>
-		Object.keys(starts).forEach(k => (starts[k] = fiveHoursAgo))
-		// Persist that mutated state
-		grilladeStore.startManualItem(created.id) // re-trigger persistPlan, but startManualItem resets to now
-		// Instead manipulate IDB directly
 		const { putCurrentPlanState } = await import('$lib/stores/db')
 		await putCurrentPlanState({
 			plan: grilladeStore.plan,
@@ -202,6 +201,7 @@ describe('grilladeStore', () => {
 		const created = grilladeStore.addItem(item)
 		grilladeStore.setPlanMode('manual')
 		grilladeStore.startManualItem(created.id)
+		await grilladeStore._persistFlush()
 		grilladeStore._reset()
 		await grilladeStore.init()
 		expect(grilladeStore.plan.items).toHaveLength(1)

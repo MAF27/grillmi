@@ -35,8 +35,12 @@ class Settings(BaseSettings):
 
     OPENAPI_ENABLED: bool = False
 
+    DATABASE_URL_OVERRIDE: str | None = None
+
     @property
     def DATABASE_URL(self) -> str:
+        if self.DATABASE_URL_OVERRIDE:
+            return self.DATABASE_URL_OVERRIDE
         return (
             f"postgresql+asyncpg://{self.DATABASE_USER}:{self.DATABASE_PASSWORD}"
             f"@{self.DATABASE_HOST}:{self.DATABASE_PORT}/{self.DATABASE_NAME}"

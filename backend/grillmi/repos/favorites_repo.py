@@ -88,6 +88,7 @@ async def update(
             datetime.fromisoformat(str(v).replace("Z", "+00:00")) if v else datetime.now(timezone.utc)
         )
     await session.flush()
+    await session.refresh(row, ["updated_at"])
     return row
 
 

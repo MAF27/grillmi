@@ -28,6 +28,7 @@ dev = [
     "pytest-cov",
     "testcontainers[postgres]>=4.8",
     "psycopg[binary]>=3.2",
+    "pgserver>=0.1,<1",
 ]
 
 [project.scripts]
@@ -43,12 +44,15 @@ packages = ["grillmi"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
 testpaths = ["tests"]
 addopts = "--strict-markers"
 
 [tool.coverage.run]
 source = ["grillmi"]
 branch = true
+concurrency = ["thread", "greenlet"]
 omit = ["grillmi/cli/_admin_reset_wrapper.sh"]
 
 [tool.coverage.report]

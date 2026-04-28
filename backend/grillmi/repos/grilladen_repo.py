@@ -75,6 +75,7 @@ async def update(
         if k in payload:
             setattr(row, k, _dt(payload[k]))
     await session.flush()
+    await session.refresh(row, ["updated_at"])
     return row
 
 

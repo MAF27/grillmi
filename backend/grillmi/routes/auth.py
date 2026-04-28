@@ -13,7 +13,7 @@ from grillmi.config import get_settings
 from grillmi.db import get_session
 from grillmi.deps import CurrentUser, current_user, require_csrf
 from grillmi.email import sender as email_sender
-from grillmi.email.templates import render_activation, render_reset
+from grillmi.email.templates import render_reset
 from grillmi.models import PasswordResetToken, User
 from grillmi.repos import audit_log_repo
 from grillmi.repos.sessions_repo import (
@@ -89,7 +89,6 @@ async def login(
     response: Response,
     db: AsyncSession = Depends(get_session),
 ) -> dict:
-    settings = get_settings()
     ip = _client_ip(request)
     login_ip_limiter.check_and_record(ip or "unknown")
     login_account_limiter.check_and_record(payload.email.lower())
@@ -296,8 +295,6 @@ async def revoke_session(
     current: Annotated[CurrentUser, Depends(require_csrf)],
     db: AsyncSession = Depends(get_session),
 ) -> Response:
-    settings = get_settings()
-    cookie_token = request.cookies.get(settings.SESSION_COOKIE_NAME)
     deleted = await delete_session_by_id(db, current.user.id, session_id)
     if deleted == 0:
         raise HTTPException(status_code=404, detail="not_found")

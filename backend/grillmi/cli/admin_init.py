@@ -43,21 +43,21 @@ async def _run(email: str) -> int:
             print(f"send failed; aborting before any DB writes: {exc}", file=sys.stderr)
             return 2
 
-        async with session.begin():
-            user = User(
-                email=email,
-                password_hash="!disabled_" + secrets.token_hex(8),
+        user = User(
+            email=email,
+            password_hash="!disabled_" + secrets.token_hex(8),
+        )
+        session.add(user)
+        await session.flush()
+        session.add(
+            PasswordResetToken(
+                user_id=user.id,
+                token_hash=token_hash,
+                kind="invitation",
+                expires_at=expires_at,
             )
-            session.add(user)
-            await session.flush()
-            session.add(
-                PasswordResetToken(
-                    user_id=user.id,
-                    token_hash=token_hash,
-                    kind="invitation",
-                    expires_at=expires_at,
-                )
-            )
+        )
+        await session.commit()
 
     print(f"invitation sent to {email}; expires in {INVITATION_EXPIRY_HOURS}h")
     return 0
