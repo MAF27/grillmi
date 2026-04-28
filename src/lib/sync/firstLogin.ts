@@ -24,7 +24,7 @@ export async function runFirstLoginImport(): Promise<void> {
 		favorites: favorites.map((f, i) => ({
 			id: f.id,
 			label: f.name,
-			cut_id: f.cutId,
+			cut_id: f.cutSlug,
 			thickness_cm: f.thicknessCm ?? null,
 			doneness: f.doneness ?? null,
 			prep_label: f.prepLabel ?? null,

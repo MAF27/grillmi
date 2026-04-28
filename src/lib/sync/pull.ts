@@ -8,6 +8,8 @@ import {
 	setSyncMeta,
 	type GrilladeRow,
 } from '$lib/stores/db'
+import { findCutBySlug, findRow } from '$lib/data/timings'
+import type { Favorite } from '$lib/schemas'
 
 const LAST_PULL_KEY = 'lastPullEpoch'
 
@@ -64,16 +66,8 @@ export async function pull(): Promise<void> {
 			serverTime = favorites.server_time
 			for (const r of favorites.rows) {
 				if (r.deleted_at) continue
-				await putFavorite({
-					id: String(r.id),
-					name: String(r.label ?? ''),
-					cutId: String(r.cut_id ?? ''),
-					thicknessCm: r.thickness_cm == null ? undefined : Number(r.thickness_cm),
-					doneness: (r.doneness as never) ?? undefined,
-					prepLabel: (r.prep_label as string) ?? undefined,
-					createdAtEpoch: Date.parse(String(r.created_at ?? '')) || Date.now(),
-					lastUsedEpoch: Date.parse(String(r.last_used_at ?? '')) || Date.now(),
-				})
+				const fav = favoriteFromServer(r)
+				if (fav) await putFavorite(fav)
 			}
 		}
 	} catch {
@@ -105,6 +99,37 @@ async function fetchJson<T>(path: string): Promise<T | null> {
 	}
 	if (!response.ok) return null
 	return (await response.json()) as T
+}
+
+function favoriteFromServer(r: Record<string, unknown>): Favorite | null {
+	const cutSlug = String(r.cut_id ?? '')
+	const found = findCutBySlug(cutSlug)
+	// Server cut_id must resolve to a known cut in the bundled timings data;
+	// otherwise we can't reconstruct the rich Favorite shape the client uses.
+	if (!found) return null
+	const thicknessCm = r.thickness_cm == null ? null : Number(r.thickness_cm)
+	const doneness = (r.doneness as string | null) ?? null
+	const row = findRow(found.cut, thicknessCm, doneness)
+	if (!row) return null
+	const cookSeconds = Math.round((row.cookSecondsMin + row.cookSecondsMax) / 2)
+	return {
+		id: String(r.id),
+		name: String(r.label ?? ''),
+		categorySlug: found.category.slug,
+		cutSlug: found.cut.slug,
+		thicknessCm,
+		prepLabel: (r.prep_label as string | null) ?? null,
+		doneness,
+		label: (r.label as string | null) ?? null,
+		cookSeconds,
+		restSeconds: row.restSeconds,
+		flipFraction: row.flipFraction,
+		idealFlipPattern: row.idealFlipPattern,
+		heatZone: row.heatZone,
+		grateTempC: row.grateTempC,
+		createdAtEpoch: Date.parse(String(r.created_at ?? '')) || Date.now(),
+		lastUsedEpoch: Date.parse(String(r.last_used_at ?? '')) || Date.now(),
+	}
 }
 
 function toGrilladeRow(r: Record<string, unknown>): GrilladeRow {

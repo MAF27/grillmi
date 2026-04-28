@@ -62,6 +62,7 @@ load_config_env() {
     if [[ -f "$CONFIG_ENV" ]]; then
         set -a
         # shellcheck source=/etc/grillmi/config.env
+        # shellcheck disable=SC1091
         . "$CONFIG_ENV"
         set +a
     fi

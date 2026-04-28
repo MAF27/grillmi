@@ -150,15 +150,15 @@ test.describe('sync', () => {
 		const id = crypto.randomUUID()
 		await ctx.setOffline(true)
 		await page.evaluate(async grillade => {
-			const { putGrillade } = await import('/src/lib/stores/db.ts')
-			await putGrillade(grillade)
-			const { enqueueSync } = await import('/src/lib/sync/queue.ts')
+			const { putGrillade } = await (import('/src/lib/stores/db.ts' as string) as Promise<typeof import('$lib/stores/db')>)
+			await putGrillade(grillade as unknown as import('$lib/stores/db').GrilladeRow)
+			const { enqueueSync } = await (import('/src/lib/sync/queue.ts' as string) as Promise<typeof import('$lib/sync/queue')>)
 			await enqueueSync({
 				method: 'POST',
 				path: '/api/grilladen',
 				body: JSON.stringify(grillade),
 			})
-			const { flush } = await import('/src/lib/sync/queue.ts')
+			const { flush } = await (import('/src/lib/sync/queue.ts' as string) as Promise<typeof import('$lib/sync/queue')>)
 			try {
 				await flush()
 			} catch {
@@ -168,7 +168,7 @@ test.describe('sync', () => {
 
 		await ctx.setOffline(false)
 		await page.evaluate(async () => {
-			const { flush } = await import('/src/lib/sync/queue.ts')
+			const { flush } = await (import('/src/lib/sync/queue.ts' as string) as Promise<typeof import('$lib/sync/queue')>)
 			await flush()
 		})
 
@@ -187,16 +187,24 @@ test.describe('sync', () => {
 		await page.goto(url.pathname + url.search)
 
 		await page.evaluate(async () => {
-			const { putFavorite } = await import('/src/lib/stores/db.ts')
+			const { putFavorite } = await (import('/src/lib/stores/db.ts' as string) as Promise<typeof import('$lib/stores/db')>)
 			const now = Date.now()
 			for (let i = 0; i < 5; i++) {
 				await putFavorite({
 					id: crypto.randomUUID(),
 					name: `Fav ${i}`,
-					cutId: 'rinder-entrecote',
+					categorySlug: 'beef',
+					cutSlug: 'rinds-entrecote-ribeye-steak-boneless',
 					thicknessCm: 2.5,
 					doneness: 'medium',
-					prepLabel: undefined,
+					prepLabel: null,
+					label: null,
+					cookSeconds: 480,
+					restSeconds: 300,
+					flipFraction: 0.5,
+					idealFlipPattern: 'once',
+					heatZone: 'Direkt, Deckel zu',
+					grateTempC: null,
 					createdAtEpoch: now,
 					lastUsedEpoch: now,
 				})
@@ -257,7 +265,7 @@ test.describe('sync', () => {
 
 		await pageB.waitForFunction(
 			async expectedId => {
-				const { listGrilladen } = await import('/src/lib/stores/db.ts')
+				const { listGrilladen } = await (import('/src/lib/stores/db.ts' as string) as Promise<typeof import('$lib/stores/db')>)
 				const rows = await listGrilladen()
 				return rows.some((r: { id: string }) => r.id === expectedId)
 			},
@@ -286,7 +294,7 @@ test.describe('sync', () => {
 		// Make sure B sees it before we delete.
 		await pageB.waitForFunction(
 			async id => {
-				const { listGrilladen } = await import('/src/lib/stores/db.ts')
+				const { listGrilladen } = await (import('/src/lib/stores/db.ts' as string) as Promise<typeof import('$lib/stores/db')>)
 				const rows = await listGrilladen()
 				return rows.some((r: { id: string }) => r.id === id)
 			},
@@ -305,10 +313,10 @@ test.describe('sync', () => {
 
 		await pageB.waitForFunction(
 			async id => {
-				const { listGrilladen } = await import('/src/lib/stores/db.ts')
+				const { listGrilladen } = await (import('/src/lib/stores/db.ts' as string) as Promise<typeof import('$lib/stores/db')>)
 				const rows = await listGrilladen()
 				const row = rows.find((r: { id: string }) => r.id === id)
-				return !row || row.deleted_at != null
+				return !row || row.deletedEpoch != null
 			},
 			created.id,
 			{ timeout: 10_000 }
@@ -365,17 +373,25 @@ test.describe('sync', () => {
 			idb: {
 				id,
 				name: `Offline Fav ${i}`,
-				cutId: 'rinder-entrecote',
+				categorySlug: 'beef',
+				cutSlug: 'rinds-entrecote-ribeye-steak-boneless',
 				thicknessCm: 2.5,
 				doneness: 'medium',
-				prepLabel: undefined,
+				prepLabel: null,
+				label: null,
+				cookSeconds: 480,
+				restSeconds: 300,
+				flipFraction: 0.5,
+				idealFlipPattern: 'once' as const,
+				heatZone: 'Direkt, Deckel zu',
+				grateTempC: null,
 				createdAtEpoch: Date.now(),
 				lastUsedEpoch: Date.now(),
 			},
 			wire: {
 				id,
 				label: `Offline Fav ${i}`,
-				cut_id: 'rinder-entrecote',
+				cut_id: 'rinds-entrecote-ribeye-steak-boneless',
 				thickness_cm: 2.5,
 				doneness: 'medium',
 				prep_label: null,
@@ -387,14 +403,14 @@ test.describe('sync', () => {
 		}))
 
 		await page.evaluate(async () => {
-			await import('/src/lib/stores/db.ts')
-			await import('/src/lib/sync/queue.ts')
+			await (import('/src/lib/stores/db.ts' as string) as Promise<typeof import('$lib/stores/db')>)
+			await (import('/src/lib/sync/queue.ts' as string) as Promise<typeof import('$lib/sync/queue')>)
 		})
 
 		await ctx.setOffline(true)
 		const idbCount = await page.evaluate(async items => {
-			const { putFavorite, listFavorites } = await import('/src/lib/stores/db.ts')
-			const { enqueueSync } = await import('/src/lib/sync/queue.ts')
+			const { putFavorite, listFavorites } = await (import('/src/lib/stores/db.ts' as string) as Promise<typeof import('$lib/stores/db')>)
+			const { enqueueSync } = await (import('/src/lib/sync/queue.ts' as string) as Promise<typeof import('$lib/sync/queue')>)
 			for (const item of items) {
 				await putFavorite(item.idb)
 				await enqueueSync({
@@ -409,7 +425,7 @@ test.describe('sync', () => {
 
 		await ctx.setOffline(false)
 		await page.evaluate(async () => {
-			const { flush } = await import('/src/lib/sync/queue.ts')
+			const { flush } = await (import('/src/lib/sync/queue.ts' as string) as Promise<typeof import('$lib/sync/queue')>)
 			await flush()
 		})
 

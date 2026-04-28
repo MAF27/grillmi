@@ -41,8 +41,8 @@ export async function loginViaApi(context: BrowserContext, email: string, passwo
 
 export async function markFirstLoginComplete(page: Page): Promise<void> {
 	await page.evaluate(async () => {
-		const { setSyncMeta } = await import('/src/lib/stores/db.ts')
-		await setSyncMeta('firstLoginMigrationComplete', true)
+		const dbMod = (await import(/* @vite-ignore */ '/src/lib/stores/db.ts' as string)) as typeof import('$lib/stores/db')
+		await dbMod.setSyncMeta('firstLoginMigrationComplete', true)
 	})
 }
 
