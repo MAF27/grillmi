@@ -11,6 +11,14 @@ export function findCut(categorySlug: string, cutSlug: string): Cut | undefined 
 	return findCategory(categorySlug)?.cuts.find(c => c.slug === cutSlug)
 }
 
+export function findCutBySlug(cutSlug: string): { category: Category; cut: Cut } | undefined {
+	for (const category of TIMINGS.categories) {
+		const cut = category.cuts.find(c => c.slug === cutSlug)
+		if (cut) return { category, cut }
+	}
+	return undefined
+}
+
 /**
  * Pick the timing row that best matches the given thickness and doneness.
  *

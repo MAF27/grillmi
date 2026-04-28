@@ -9,7 +9,7 @@
 	import TimerCard from '$lib/components/TimerCard.svelte'
 	import AddItemSheet from '$lib/components/AddItemSheet.svelte'
 	import { fireAlarm, messageFor, type AlarmEvent } from '$lib/runtime/alarms'
-	import { sessionStore } from '$lib/stores/sessionStore.svelte'
+	import { grilladeStore } from '$lib/stores/grilladeStore.svelte'
 	import { favoritesStore } from '$lib/stores/favoritesStore.svelte'
 	import { menusStore } from '$lib/stores/menusStore.svelte'
 	import { schedule, buildSessionItem } from '$lib/scheduler/schedule'
@@ -33,11 +33,11 @@
 
 	const lastSeenStatus = new Map<string, ManualStatus>()
 
-	const plan = $derived(sessionStore.plan)
-	const planMode = $derived(sessionStore.planMode)
+	const plan = $derived(grilladeStore.plan)
+	const planMode = $derived(grilladeStore.planMode)
 	const isManual = $derived(planMode === 'manual')
 	let now = $state(Date.now())
-	const effectiveTarget = $derived(sessionStore.effectiveTargetEpoch(now))
+	const effectiveTarget = $derived(grilladeStore.effectiveTargetEpoch(now))
 
 	const segmentValue = $derived<SegmentId>(planMode === 'manual' ? 'manual' : plan.mode === 'now' ? 'now' : 'target')
 
@@ -48,15 +48,15 @@
 
 	const overdueItems = $derived(scheduleResult?.items.filter(s => s.overdue).map(s => s.item) ?? [])
 	const overdue = $derived(scheduleResult?.overdue ?? false)
-	const startEpoch = $derived(effectiveTarget - sessionStore.longestCookSeconds * 1000)
+	const startEpoch = $derived(effectiveTarget - grilladeStore.longestCookSeconds * 1000)
 	const populated = $derived(plan.items.length > 0)
 
 	type ManualStatus = 'unstarted' | 'cooking' | 'flip' | 'resting' | 'ready' | 'plated'
 
 	function deriveManualStatus(item: PlannedItem, n: number): { status: ManualStatus; etaSec: number } {
-		const start = sessionStore.manualStarts[item.id]
+		const start = grilladeStore.manualStarts[item.id]
 		if (start === undefined || start === null) return { status: 'unstarted', etaSec: item.cookSeconds }
-		if (sessionStore.manualPlated.has(item.id)) return { status: 'plated', etaSec: 0 }
+		if (grilladeStore.manualPlated.has(item.id)) return { status: 'plated', etaSec: 0 }
 		const cookEnd = start + item.cookSeconds * 1000
 		const restEnd = cookEnd + (item.restSeconds || 0) * 1000
 		if (n >= restEnd) return { status: 'ready', etaSec: 0 }
@@ -68,7 +68,7 @@
 
 	const manualSession: SessionItem[] = $derived.by(() =>
 		plan.items.map(item => {
-			const start = sessionStore.manualStarts[item.id] ?? Date.now()
+			const start = grilladeStore.manualStarts[item.id] ?? Date.now()
 			return buildSessionItem(
 				item,
 				{
@@ -90,8 +90,8 @@
 	})
 
 	const visibleAlarms = $derived(
-		sessionStore.manualAlarms
-			.filter(a => !sessionStore.manualAlarmDismissed.has(a.id))
+		grilladeStore.manualAlarms
+			.filter(a => !grilladeStore.manualAlarmDismissed.has(a.id))
 			.slice()
 			.reverse(),
 	)
@@ -116,9 +116,9 @@
 			if (!event || !kind) continue
 			const itemName = item.label || item.cutSlug
 			const key = `${item.id}-${kind}`
-			const exists = sessionStore.manualAlarms.some(a => a.id === key) || sessionStore.manualAlarmDismissed.has(key)
+			const exists = grilladeStore.manualAlarms.some(a => a.id === key) || grilladeStore.manualAlarmDismissed.has(key)
 			if (exists) continue
-			sessionStore.addManualAlarm({
+			grilladeStore.addManualAlarm({
 				id: key,
 				itemId: item.id,
 				kind,
@@ -136,24 +136,24 @@
 
 	function dismissAlarm() {
 		if (!alarming) return
-		sessionStore.dismissManualAlarm(alarming.id)
+		grilladeStore.dismissManualAlarm(alarming.id)
 	}
 
 	onMount(() => {
 		const tickId = setInterval(() => (now = Date.now()), 1000)
 		;(async () => {
-			await sessionStore.init()
+			await grilladeStore.init()
 			await favoritesStore.init()
 			await menusStore.init()
-			if (sessionStore.session) goto('/session')
+			if (grilladeStore.session) goto('/session')
 		})()
 		return () => clearInterval(tickId)
 	})
 
 	function pickSegment(id: string) {
 		const seg = id as SegmentId
-		if (seg === 'manual') sessionStore.setPlanMode('manual')
-		else sessionStore.setAutoMode(seg === 'now' ? 'now' : 'time')
+		if (seg === 'manual') grilladeStore.setPlanMode('manual')
+		else grilladeStore.setAutoMode(seg === 'now' ? 'now' : 'time')
 	}
 
 	function openAddSheet() {
@@ -170,30 +170,30 @@
 
 	function commit(item: Omit<PlannedItem, 'id'>) {
 		if (editing) {
-			sessionStore.updateItem(editing.id, item)
+			grilladeStore.updateItem(editing.id, item)
 		} else {
-			sessionStore.addItem(item)
+			grilladeStore.addItem(item)
 		}
 		sheetOpen = false
 		editing = null
 	}
 
 	function deleteItem(id: string) {
-		sessionStore.removeItem(id)
+		grilladeStore.removeItem(id)
 	}
 
 	function renameItem(id: string, label: string) {
-		sessionStore.updateItem(id, { label })
+		grilladeStore.updateItem(id, { label })
 	}
 
 	function adjustCook(id: string, deltaSeconds: number) {
 		const current = plan.items.find(i => i.id === id)
 		if (!current) return
-		sessionStore.updateItem(id, { cookSeconds: current.cookSeconds + deltaSeconds })
+		grilladeStore.updateItem(id, { cookSeconds: current.cookSeconds + deltaSeconds })
 	}
 
 	async function start() {
-		await sessionStore.startSession()
+		await grilladeStore.startSession()
 		await goto('/session')
 	}
 
@@ -217,19 +217,19 @@
 		const m = menusStore.all.find(p => p.id === id)
 		if (!m) return
 		void menusStore.touch(id)
-		sessionStore.appendFromMenu(m.items)
+		grilladeStore.appendFromMenu(m.items)
 		menusSheetOpen = false
 	}
 
 	function startMatch(id: string) {
-		sessionStore.startManualItem(id)
+		grilladeStore.startManualItem(id)
 	}
 	function plateMatch(id: string) {
-		sessionStore.plateManualItem(id)
+		grilladeStore.plateManualItem(id)
 	}
 
 	function commitTime(epoch: number) {
-		sessionStore.setTargetTime(epoch)
+		grilladeStore.setTargetTime(epoch)
 		timePickerOpen = false
 	}
 </script>

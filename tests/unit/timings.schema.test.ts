@@ -33,7 +33,6 @@ describe('timings schema', () => {
 			'lamb',
 			'poultry',
 			'sausage',
-			'skewers',
 			'fish',
 			'cheese',
 			'vegetables',

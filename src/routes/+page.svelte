@@ -3,24 +3,24 @@
 	import { onMount } from 'svelte'
 	import Button from '$lib/components/Button.svelte'
 	import GlowGrates from '$lib/components/GlowGrates.svelte'
-	import { sessionStore } from '$lib/stores/sessionStore.svelte'
+	import { grilladeStore } from '$lib/stores/grilladeStore.svelte'
 	import { settingsStore } from '$lib/stores/settingsStore.svelte'
 	import { menusStore } from '$lib/stores/menusStore.svelte'
 
 	const recentMenus = $derived(menusStore.all.slice(0, 6))
 
 	onMount(async () => {
-		await sessionStore.init()
+		await grilladeStore.init()
 		await menusStore.init()
 		await settingsStore.init()
-		if (sessionStore.session) goto('/session')
+		if (grilladeStore.session) goto('/session')
 	})
 
 	function loadMenu(id: string) {
 		const menu = menusStore.all.find(m => m.id === id)
 		if (!menu) return
 		void menusStore.touch(id)
-		sessionStore.loadFromMenu(menu.items)
+		grilladeStore.loadFromMenu(menu.items)
 		goto('/plan')
 	}
 

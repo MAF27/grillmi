@@ -4,7 +4,7 @@
 	import Button from '$lib/components/Button.svelte'
 	import MenuCard from '$lib/components/MenuCard.svelte'
 	import { menusStore } from '$lib/stores/menusStore.svelte'
-	import { sessionStore } from '$lib/stores/sessionStore.svelte'
+	import { grilladeStore } from '$lib/stores/grilladeStore.svelte'
 
 	onMount(async () => {
 		await menusStore.init()
@@ -14,7 +14,7 @@
 		const menu = menusStore.all.find(p => p.id === id)
 		if (!menu) return
 		void menusStore.touch(id)
-		sessionStore.loadFromMenu(menu.items)
+		grilladeStore.loadFromMenu(menu.items)
 		goto('/plan')
 	}
 

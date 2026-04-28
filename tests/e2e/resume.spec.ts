@@ -104,19 +104,36 @@ test.describe('resume', () => {
 		await expect(page).toHaveURL(/\/$|^[^/]*\/?$/)
 		await expect(page.getByRole('heading', { level: 1 })).toContainText(/Bereit zum/)
 
-		// IDB should now be empty for the current session.
-		const remaining = await page.evaluate(async () => {
-			return await new Promise<unknown>(resolve => {
+		// After the v3->v4 migration the stale session lands in `grilladen`;
+		// the staleness sweep marks any non-finished row past the threshold as
+		// finished/ended so Home is the resume target.
+		const activeCount = await page.evaluate(async () => {
+			return await new Promise<number>(resolve => {
 				const open = indexedDB.open('grillmi')
 				open.onsuccess = () => {
-					const tx = open.result.transaction('sessions', 'readonly')
-					const req = tx.objectStore('sessions').get('current')
-					req.onsuccess = () => resolve(req.result ?? null)
-					req.onerror = () => resolve(null)
+					if (!open.result.objectStoreNames.contains('grilladen')) {
+						open.result.close()
+						resolve(0)
+						return
+					}
+					const tx = open.result.transaction('grilladen', 'readonly')
+					const req = tx.objectStore('grilladen').getAll()
+					req.onsuccess = () => {
+						const rows = (req.result ?? []) as Array<{ status?: string; deletedEpoch?: number | null }>
+						const active = rows.filter(
+							r => r.status !== 'finished' && (r.deletedEpoch == null)
+						).length
+						open.result.close()
+						resolve(active)
+					}
+					req.onerror = () => {
+						open.result.close()
+						resolve(0)
+					}
 				}
-				open.onerror = () => resolve(null)
+				open.onerror = () => resolve(0)
 			})
 		})
-		expect(remaining).toBeNull()
+		expect(activeCount).toBe(0)
 	})
 })

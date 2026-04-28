@@ -1,0 +1,14 @@
+Hallo,
+
+dein Grillmi-Konto ist bereit. Aktiviere es ueber den folgenden Link:
+
+{{ link }}
+
+Der Link ist {{ expires_hours }} Stunden gueltig.
+
+Grillmi ist deine BBQ-Begleiter-App: viele Timer auf einmal, Wende-Erinnerungen, alles offline-faehig.
+
+Solltest du dieses Konto nicht angefragt haben, kannst du diese Mail ignorieren.
+
+Bis bald am Grill,
+Grillmi

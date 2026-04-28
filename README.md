@@ -85,7 +85,7 @@ tests/
 ```bash
 pnpm test:unit          # vitest, no DOM
 pnpm test:components    # vitest + jsdom + @testing-library/svelte
-pnpm test:e2e           # Playwright (boots build + preview)
+pnpm test:e2e           # Playwright (boots vite dev + hermetic FastAPI on :8001 via tests/e2e/_setup/server.py)
 pnpm lint               # prettier --check then eslint
 pnpm check              # svelte-check (type errors)
 ```
