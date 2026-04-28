@@ -8,7 +8,7 @@
 	import { fireAlarm, messageFor, type AlarmEvent } from '$lib/runtime/alarms'
 	import { createTicker, type TickerEvent } from '$lib/runtime/ticker'
 	import { onWakeLockChange, releaseWakeLock, requestWakeLock, getWakeLockState } from '$lib/runtime/wakeLock'
-	import { sessionStore } from '$lib/stores/sessionStore.svelte'
+	import { grilladeStore } from '$lib/stores/grilladeStore.svelte'
 	import { settingsStore } from '$lib/stores/settingsStore.svelte'
 	import { preload } from '$lib/sounds/player'
 
@@ -18,7 +18,7 @@
 	let dismissedKeys = $state<Set<string>>(new Set())
 	let firingItemId = $state<string | null>(null)
 
-	const session = $derived(sessionStore.session)
+	const session = $derived(grilladeStore.session)
 	const visibleAlarms = $derived(
 		stickyAlarms
 			.filter(a => !dismissedKeys.has(a.id))
@@ -26,19 +26,19 @@
 			.reverse(),
 	)
 	const alarming = $derived(visibleAlarms[0] ?? null)
-	const planMode = $derived(sessionStore.planMode)
+	const planMode = $derived(grilladeStore.planMode)
 
 	let ticker: ReturnType<typeof createTicker> | null = null
 	let unsubWakeLock: (() => void) | null = null
 
 	onMount(async () => {
-		await sessionStore.init()
+		await grilladeStore.init()
 		await settingsStore.init()
-		if (sessionStore.planMode === 'manual') {
+		if (grilladeStore.planMode === 'manual') {
 			goto('/plan', { replaceState: true })
 			return
 		}
-		if (!sessionStore.session) {
+		if (!grilladeStore.session) {
 			goto('/plan')
 			return
 		}
@@ -46,13 +46,13 @@
 		unsubWakeLock = onWakeLockChange(s => (wakeLockState = s))
 		await requestWakeLock()
 		ticker = createTicker({
-			getItems: () => sessionStore.session?.items ?? [],
+			getItems: () => grilladeStore.session?.items ?? [],
 			updateItem: (id, patch) => {
-				void sessionStore.patchItem(id, patch)
+				void grilladeStore.patchItem(id, patch)
 			},
 			emit: (e: TickerEvent) => {
 				if (e.type === 'resting-complete') return
-				const item = sessionStore.session?.items.find(i => i.id === e.itemId)
+				const item = grilladeStore.session?.items.find(i => i.id === e.itemId)
 				if (!item) return
 				const event = e.type as AlarmEvent
 				const kind: AlarmKind = event === 'flip' ? 'flip' : event === 'done' ? 'ready' : 'on'
@@ -93,12 +93,12 @@
 	}
 
 	async function endSession() {
-		await sessionStore.endSession()
+		await grilladeStore.endSession()
 		await goto('/')
 	}
 
 	function plateItem(id: string) {
-		void sessionStore.plateItem(id)
+		void grilladeStore.plateItem(id)
 	}
 </script>
 

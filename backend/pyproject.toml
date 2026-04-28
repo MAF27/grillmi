@@ -1,0 +1,56 @@
+[project]
+name = "grillmi"
+version = "0.1.0"
+description = "Grillmi backend: accounts, sync, and admin CLIs"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    "fastapi[standard]>=0.136,<0.137",
+    "granian>=2.0,<3",
+    "uvicorn>=0.34",
+    "asyncpg>=0.31,<0.32",
+    "sqlalchemy[asyncio]>=2.0.49,<2.1",
+    "alembic>=1.18,<2",
+    "pydantic-settings>=2.14,<3",
+    "structlog>=25,<26",
+    "orjson>=3.10",
+    "argon2-cffi>=23.1",
+    "aiosmtplib",
+    "httpx>=0.28",
+    "jinja2",
+    "ua-parser>=1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.25",
+    "pytest-mock",
+    "pytest-cov",
+    "testcontainers[postgres]>=4.8",
+    "psycopg[binary]>=3.2",
+]
+
+[project.scripts]
+grillmi-admin-init = "grillmi.cli.admin_init:main"
+grillmi-admin-reset = "grillmi.cli.admin_reset:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["grillmi"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "--strict-markers"
+
+[tool.coverage.run]
+source = ["grillmi"]
+branch = true
+omit = ["grillmi/cli/_admin_reset_wrapper.sh"]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true

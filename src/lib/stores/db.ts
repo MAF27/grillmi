@@ -19,16 +19,46 @@ export interface PersistedPlanState {
 	dismissedAlarmKeys?: string[]
 }
 
+export interface GrilladeRow {
+	id: string
+	name: string | null
+	status: 'planned' | 'running' | 'finished'
+	targetEpoch: number | null
+	startedEpoch: number | null
+	endedEpoch: number | null
+	position: number
+	updatedEpoch: number
+	deletedEpoch: number | null
+	planState?: PersistedPlanState
+	session?: Session
+}
+
+export interface SyncQueueRow {
+	id?: number
+	method: string
+	path: string
+	body?: string
+	createdEpoch: number
+}
+
+export interface SyncMetaRow {
+	key: string
+	value: string | number | boolean | null
+}
+
 interface GrillmiDB {
 	sessions: { key: string; value: Session }
 	favorites: { key: string; value: Favorite }
 	plans: { key: string; value: SavedPlan }
 	settings: { key: string; value: UserSettings }
 	planState: { key: string; value: PersistedPlanState }
+	grilladen: { key: string; value: GrilladeRow }
+	syncQueue: { key: number; value: SyncQueueRow }
+	syncMeta: { key: string; value: SyncMetaRow }
 }
 
 const DB_NAME = 'grillmi'
-const DB_VERSION = 3
+const DB_VERSION = 4
 const CURRENT_SESSION_KEY = 'current'
 const CURRENT_PLAN_KEY = 'current'
 const SETTINGS_KEY = 'user'
@@ -46,9 +76,6 @@ function getDB(): Promise<IDBPDatabase<GrillmiDB>> {
 					db.createObjectStore('plans')
 				}
 				if (oldVersion >= 1 && oldVersion < 2) {
-					// v1 stored full plans (name + items[]) in `favorites`. Move them to
-					// the new `plans` store, then drop and recreate `favorites` with the
-					// new single-item Favorit shape.
 					const oldStore = tx.objectStore('favorites')
 					const records = (await oldStore.getAll()) as unknown as SavedPlan[]
 					const keys = (await oldStore.getAllKeys()) as string[]
@@ -66,25 +93,74 @@ function getDB(): Promise<IDBPDatabase<GrillmiDB>> {
 				if (oldVersion < 3) {
 					if (!db.objectStoreNames.contains('planState')) db.createObjectStore('planState')
 				}
+				if (oldVersion < 4) {
+					db.createObjectStore('grilladen', { keyPath: 'id' })
+					db.createObjectStore('syncQueue', { keyPath: 'id', autoIncrement: true })
+					db.createObjectStore('syncMeta', { keyPath: 'key' })
+
+					let legacySession: Session | undefined
+					let legacyPlanState: PersistedPlanState | undefined
+					if (db.objectStoreNames.contains('sessions')) {
+						legacySession = (await tx.objectStore('sessions').get(CURRENT_SESSION_KEY)) as Session | undefined
+					}
+					if (db.objectStoreNames.contains('planState')) {
+						legacyPlanState = (await tx
+							.objectStore('planState')
+							.get(CURRENT_PLAN_KEY)) as PersistedPlanState | undefined
+					}
+					if (legacySession || legacyPlanState) {
+						const grillade: GrilladeRow = {
+							id: crypto.randomUUID(),
+							name: null,
+							status: legacySession ? 'running' : 'planned',
+							targetEpoch: (legacyPlanState?.plan as { targetEpoch?: number } | undefined)?.targetEpoch ?? null,
+							startedEpoch: legacySession ? Date.now() : null,
+							endedEpoch: null,
+							position: 0,
+							updatedEpoch: Date.now(),
+							deletedEpoch: null,
+							session: legacySession,
+							planState: legacyPlanState,
+						}
+						await tx.objectStore('grilladen').put(grillade)
+					}
+					if (db.objectStoreNames.contains('sessions')) db.deleteObjectStore('sessions')
+					if (db.objectStoreNames.contains('planState')) db.deleteObjectStore('planState')
+				}
 			},
 		})
 	}
 	return dbPromise
 }
 
-export async function getCurrentSession(): Promise<Session | undefined> {
+export async function listGrilladen(): Promise<GrilladeRow[]> {
 	const db = await getDB()
-	return db.get('sessions', CURRENT_SESSION_KEY)
+	const all = await db.getAll('grilladen')
+	return all.filter(g => g.deletedEpoch === null).sort((a, b) => a.position - b.position)
 }
 
-export async function putCurrentSession(s: Session): Promise<void> {
+export async function getGrillade(id: string): Promise<GrilladeRow | undefined> {
 	const db = await getDB()
-	await db.put('sessions', JSON.parse(JSON.stringify(s)) as Session, CURRENT_SESSION_KEY)
+	return db.get('grilladen', id)
 }
 
-export async function clearCurrentSession(): Promise<void> {
+export async function putGrillade(g: GrilladeRow): Promise<void> {
 	const db = await getDB()
-	await db.delete('sessions', CURRENT_SESSION_KEY)
+	await db.put('grilladen', JSON.parse(JSON.stringify(g)) as GrilladeRow)
+}
+
+export async function deleteGrillade(id: string): Promise<void> {
+	const db = await getDB()
+	const existing = await db.get('grilladen', id)
+	if (!existing) return
+	existing.deletedEpoch = Date.now()
+	existing.updatedEpoch = Date.now()
+	await db.put('grilladen', existing)
+}
+
+export async function getActiveGrillade(): Promise<GrilladeRow | undefined> {
+	const all = await listGrilladen()
+	return all.find(g => g.status === 'running' || g.status === 'planned')
 }
 
 export async function listFavorites(): Promise<Favorite[]> {
@@ -129,31 +205,97 @@ export async function putSettings(s: UserSettings): Promise<void> {
 	await db.put('settings', JSON.parse(JSON.stringify(s)) as UserSettings, SETTINGS_KEY)
 }
 
+// Compatibility shims: the legacy session/planState helpers now read and write
+// the active Grillade row so existing callers do not need to migrate at once.
+export async function getCurrentSession(): Promise<Session | undefined> {
+	const active = await getActiveGrillade()
+	return active?.session
+}
+
+export async function putCurrentSession(s: Session): Promise<void> {
+	const active = (await getActiveGrillade()) ?? newDefaultGrillade()
+	active.session = JSON.parse(JSON.stringify(s)) as Session
+	active.status = 'running'
+	active.startedEpoch = active.startedEpoch ?? Date.now()
+	active.updatedEpoch = Date.now()
+	await putGrillade(active)
+}
+
+export async function clearCurrentSession(): Promise<void> {
+	const active = await getActiveGrillade()
+	if (!active) return
+	active.session = undefined
+	active.status = 'finished'
+	active.endedEpoch = Date.now()
+	active.updatedEpoch = Date.now()
+	await putGrillade(active)
+}
+
 export async function getCurrentPlanState(): Promise<PersistedPlanState | undefined> {
-	const db = await getDB()
-	return db.get('planState', CURRENT_PLAN_KEY)
+	const active = await getActiveGrillade()
+	return active?.planState
 }
 
 export async function putCurrentPlanState(state: PersistedPlanState): Promise<void> {
-	const db = await getDB()
-	await db.put('planState', JSON.parse(JSON.stringify(state)) as PersistedPlanState, CURRENT_PLAN_KEY)
+	const active = (await getActiveGrillade()) ?? newDefaultGrillade()
+	active.planState = JSON.parse(JSON.stringify(state)) as PersistedPlanState
+	active.updatedEpoch = Date.now()
+	await putGrillade(active)
 }
 
 export async function clearCurrentPlanState(): Promise<void> {
+	const active = await getActiveGrillade()
+	if (!active) return
+	active.planState = undefined
+	active.updatedEpoch = Date.now()
+	await putGrillade(active)
+}
+
+function newDefaultGrillade(): GrilladeRow {
+	return {
+		id: crypto.randomUUID(),
+		name: null,
+		status: 'planned',
+		targetEpoch: null,
+		startedEpoch: null,
+		endedEpoch: null,
+		position: 0,
+		updatedEpoch: Date.now(),
+		deletedEpoch: null,
+	}
+}
+
+export async function listSyncQueue(): Promise<SyncQueueRow[]> {
 	const db = await getDB()
-	await db.delete('planState', CURRENT_PLAN_KEY)
+	return db.getAll('syncQueue')
+}
+
+export async function enqueueSyncRow(row: Omit<SyncQueueRow, 'id'>): Promise<number> {
+	const db = await getDB()
+	return (await db.add('syncQueue', row as SyncQueueRow)) as number
+}
+
+export async function popSyncRow(id: number): Promise<void> {
+	const db = await getDB()
+	await db.delete('syncQueue', id)
+}
+
+export async function getSyncMeta(key: string): Promise<SyncMetaRow['value'] | undefined> {
+	const db = await getDB()
+	const row = await db.get('syncMeta', key)
+	return row?.value
+}
+
+export async function setSyncMeta(key: string, value: SyncMetaRow['value']): Promise<void> {
+	const db = await getDB()
+	await db.put('syncMeta', { key, value })
 }
 
 export async function resetAll(): Promise<void> {
 	const db = await getDB()
-	const tx = db.transaction(['sessions', 'favorites', 'plans', 'settings', 'planState'], 'readwrite')
-	await Promise.all([
-		tx.objectStore('sessions').clear(),
-		tx.objectStore('favorites').clear(),
-		tx.objectStore('plans').clear(),
-		tx.objectStore('settings').clear(),
-		tx.objectStore('planState').clear(),
-	])
+	const stores: (keyof GrillmiDB)[] = ['favorites', 'plans', 'settings', 'grilladen', 'syncQueue', 'syncMeta']
+	const tx = db.transaction(stores, 'readwrite')
+	await Promise.all(stores.map(name => tx.objectStore(name).clear()))
 	await tx.done
 }
 

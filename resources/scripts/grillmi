@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
+# lint-ignore: max-lines -- single cohesive operator script: command verbs share env, helpers, and Doppler wrapper; splitting into sourced files would create a leaky bash seam.
 set -euo pipefail
 
-# grillmi: management script for the grillmi SvelteKit static site.
-# Stack: SvelteKit (adapter-static) → Caddy → cloudflared (prod only).
+# grillmi: management script for the grillmi SvelteKit + FastAPI app.
+# Stack: SvelteKit (adapter-static) plus FastAPI/Granian backend → Caddy → cloudflared (prod only).
 # Per ~/dev/reference/service-management-scripts.md.
 
 # === Configuration ===
 APP_DIR="/opt/grillmi"
+BACKEND_DIR="$APP_DIR/backend"
 BUILD_DIR="$APP_DIR/build"
+BACKUP_ROOT="/var/backups/grillmi"
 PORT=80
 SERVICE_TIMEOUT=30
 HTTP_TIMEOUT=20
@@ -26,6 +29,9 @@ APP_ENV="$(detect_env)"
 
 # Services we manage. Caddy serves the build; cloudflared exposes it on prod.
 SERVICES=(caddy)
+if systemctl list-unit-files grillmi-api.service --no-legend 2>/dev/null | grep -q grillmi-api.service; then
+    SERVICES+=(grillmi-api)
+fi
 [[ "$APP_ENV" == "prod" ]] && SERVICES+=(cloudflared)
 
 # === Colors and Symbols ===
@@ -117,6 +123,21 @@ check_build() {
     [[ -f "$BUILD_DIR/index.html" ]]
 }
 
+# /api/health drives the API health rollup. Returns 0 when api status is "ok",
+# 1 when "degraded", 2 when down/unreachable.
+check_api_health() {
+    local body
+    body=$(curl -s --max-time 4 "http://127.0.0.1:$PORT/api/health" 2>/dev/null || true)
+    [[ -z "$body" ]] && return 2
+    local status
+    status=$(printf '%s' "$body" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("status","unknown"))' 2>/dev/null || echo "unknown")
+    case "$status" in
+        ok)       return 0 ;;
+        degraded) return 1 ;;
+        *)        return 2 ;;
+    esac
+}
+
 # Cloudflared "healthy" = at least one registered tunnel connection in recent log.
 check_cloudflared() {
     journalctl -u cloudflared -n 50 --no-pager 2>/dev/null \
@@ -157,9 +178,22 @@ overall_status() {
     if ! check_build; then
         echo "down"; return
     fi
-    if [[ $up -eq 0 ]]; then echo "down"
-    elif [[ $up -eq $total ]] && check_http; then echo "ok"
-    else echo "degraded"
+    if [[ $up -eq 0 ]]; then echo "down"; return; fi
+    if [[ $up -eq $total ]] && check_http; then
+        # When grillmi-api is part of the rollup, the /api/health field decides
+        # ok vs degraded. Without grillmi-api the static-only state stays "ok".
+        if printf '%s\n' "${SERVICES[@]}" | grep -qx grillmi-api; then
+            check_api_health
+            local rc=$?
+            case "$rc" in
+                0) echo "ok"; return ;;
+                1) echo "degraded"; return ;;
+                *) echo "degraded"; return ;;
+            esac
+        fi
+        echo "ok"
+    else
+        echo "degraded"
     fi
 }
 
@@ -381,6 +415,84 @@ cmd_build() {
     log_ok "Build complete: $BUILD_DIR/index.html"
 }
 
+# === Backend operations ===
+cmd_migrate() {
+    [[ -d "$BACKEND_DIR" ]] || fail "$BACKEND_DIR missing"
+    log_info "Running alembic upgrade head..."
+    (cd "$BACKEND_DIR" && doppler run -- uv run alembic upgrade head)
+    log_ok "Migrations applied"
+}
+
+cmd_admin_init() {
+    local email="${1:-}"
+    [[ -n "$email" ]] || fail "usage: grillmi admin-init <email>"
+    (cd "$BACKEND_DIR" && doppler run -- uv run grillmi-admin-init --email "$email")
+}
+
+cmd_admin_reset() {
+    local email="${1:-}"
+    [[ -n "$email" ]] || fail "usage: grillmi admin-reset <email>"
+    (cd "$BACKEND_DIR" && doppler run -- bash grillmi/cli/_admin_reset_wrapper.sh --email "$email")
+}
+
+# === Backups ===
+trim_bucket() {
+    local bucket="$1" keep="$2"
+    local dir="$BACKUP_ROOT/$bucket"
+    [[ -d "$dir" ]] || return 0
+    [[ "$bucket" == "manual" ]] && return 0
+    local files
+    mapfile -t files < <(ls -1t "$dir"/*.dump.gz 2>/dev/null || true)
+    local i
+    for ((i = keep; i < ${#files[@]}; i++)); do
+        rm -f -- "${files[i]}"
+    done
+}
+
+cmd_backup() {
+    local bucket="${1:-daily}"
+    case "$bucket" in
+        daily|weekly|monthly|manual) ;;
+        *) fail "unknown bucket: $bucket (expected daily|weekly|monthly|manual)" ;;
+    esac
+    sudo install -d -o "$USER" -g "$USER" -m 0750 "$BACKUP_ROOT/$bucket"
+    local ts file
+    ts="$(date -u +%Y%m%dT%H%M%SZ)"
+    file="$BACKUP_ROOT/$bucket/${ts}.dump.gz"
+    log_info "pg_dump → $file"
+    # Single-quoted on purpose: doppler injects DB env vars into the bash child,
+    # which then expands them. Expanding here would pull values from this shell.
+    # shellcheck disable=SC2016
+    doppler_run bash -c 'pg_dump --format=plain --no-owner --dbname "postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}"' \
+        | gzip -9 > "$file"
+    chmod 0640 "$file"
+    if [[ "$bucket" == "daily" ]]; then
+        if [[ "$(date -u +%u)" == "7" ]]; then
+            sudo install -d -o "$USER" -g "$USER" -m 0750 "$BACKUP_ROOT/weekly"
+            cp -- "$file" "$BACKUP_ROOT/weekly/${ts}.dump.gz"
+        fi
+        if [[ "$(date -u +%d)" == "01" ]]; then
+            sudo install -d -o "$USER" -g "$USER" -m 0750 "$BACKUP_ROOT/monthly"
+            cp -- "$file" "$BACKUP_ROOT/monthly/${ts}.dump.gz"
+        fi
+    fi
+    trim_bucket daily 7
+    trim_bucket weekly 4
+    trim_bucket monthly 6
+    log_ok "Backup written and pruned: $file"
+}
+
+cmd_restore() {
+    local file="${1:-}"
+    [[ -n "$file" && -f "$file" ]] || fail "usage: grillmi restore <path-to-dump.gz>"
+    log_warn "About to restore $file into database — this overwrites existing data."
+    read -r -p "Type 'restore' to confirm: " ans
+    [[ "$ans" == "restore" ]] || fail "Aborted"
+    # shellcheck disable=SC2016
+    gunzip -c "$file" | doppler_run bash -c 'psql "postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}"'
+    log_ok "Restore complete"
+}
+
 # === Help ===
 cmd_help() {
     cat <<'EOF'
@@ -399,6 +511,11 @@ Commands:
   health                   One-shot probe. Exits 0/1/2.
   deploy [branch]          git pull → install (if lock changed) → build (if src changed) → reload caddy.
   build                    Run `doppler run -- pnpm build`.
+  migrate                  Run `alembic upgrade head` against the backend database.
+  backup [bucket]          Run pg_dump into /var/backups/grillmi/<bucket>; default daily.
+  restore <file>           Restore the database from a gzipped pg_dump file (interactive confirm).
+  admin-init <email>       Create a user account and email an activation link (idempotent).
+  admin-reset <email>      Reset a user's password (interactive prompt).
   help                     Show this message.
 
 Status formats:
@@ -426,6 +543,11 @@ main() {
         health)               cmd_health ;;
         deploy)               cmd_deploy "$@" ;;
         build)                cmd_build ;;
+        migrate)              cmd_migrate ;;
+        backup)               cmd_backup "$@" ;;
+        restore)              cmd_restore "$@" ;;
+        admin-init)           cmd_admin_init "$@" ;;
+        admin-reset)          cmd_admin_reset "$@" ;;
         -h|--help|help)       cmd_help ;;
         *)                    log_error "Unknown command: $cmd"; cmd_help; exit 1 ;;
     esac

@@ -2,11 +2,21 @@
 	import '../app.css'
 	import { onMount } from 'svelte'
 	import { settingsStore } from '$lib/stores/settingsStore.svelte'
+	import { authStore } from '$lib/stores/authStore.svelte'
+	import { attachSync, pull } from '$lib/sync'
 
-	let { children } = $props()
+	let { data, children } = $props<{ data: { auth: { user: { id: string; email: string }; csrfToken: string } | null }; children: any }>()
+
+	$effect(() => {
+		authStore.init(data.auth)
+	})
 
 	onMount(() => {
 		void settingsStore.init()
+		if (authStore.isAuthenticated) {
+			attachSync()
+			void pull()
+		}
 		if ('serviceWorker' in navigator) {
 			if (import.meta.env.DEV) {
 				// Strip any service worker the user picked up from a prior prod
@@ -41,5 +51,11 @@
 		}
 	})
 </script>
+
+{#if authStore.csrfToken}
+	<svelte:head>
+		<meta name="csrf-token" content={authStore.csrfToken} />
+	</svelte:head>
+{/if}
 
 {@render children()}

@@ -10,6 +10,13 @@ export default defineConfig({
 		strictPort: true,
 		port: 5173,
 		allowedHosts: ['grillmi.krafted.cc'],
+		proxy: {
+			'/api': {
+				target: 'http://localhost:8000',
+				changeOrigin: false,
+				secure: false,
+			},
+		},
 	},
 	test: {
 		environment: 'jsdom',

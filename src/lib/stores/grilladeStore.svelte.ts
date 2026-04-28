@@ -38,7 +38,7 @@ function effectiveTargetEpoch(p: Plan, now: number): number {
 	return now + longestMs
 }
 
-function createSessionStore() {
+function createGrilladeStore() {
 	let plan = $state<Plan>(defaultPlan())
 	let session = $state<Session | null>(null)
 	let initialized = false
@@ -366,4 +366,4 @@ function createSessionStore() {
 	}
 }
 
-export const sessionStore = createSessionStore()
+export const grilladeStore = createGrilladeStore()
