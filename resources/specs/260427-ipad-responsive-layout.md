@@ -2,7 +2,7 @@
 
 ## Meta
 
-- Status: Reviewed
+- Status: Superseded by 260428-desktop-cockpit-and-mobile-refinements.md
 - Branch: feature/ipad-responsive-layout
 - Infra: none
 - Runbook: none
