@@ -111,7 +111,7 @@ def _install_test_routes(app, outbox: list[dict]) -> None:
     from datetime import datetime, timedelta, timezone
 
     from fastapi import APIRouter, Body, Response
-    from sqlalchemy import delete, select, text, update
+    from sqlalchemy import select, text
 
     router = APIRouter(tags=["_test"])
 

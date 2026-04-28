@@ -46,6 +46,9 @@ htmlcov/
 .nyc_output/
 test-results/
 playwright-report/
+tests/e2e/_setup/.backend.pid
+tests/e2e/_setup/.backend.log
+tests/e2e/_setup/.default-user-storage.json
 
 # MCP cache (per global CLAUDE.md)
 .mcp/

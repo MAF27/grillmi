@@ -11,8 +11,18 @@ export async function api(): Promise<APIRequestContext> {
 
 export async function resetBackend(): Promise<void> {
 	const c = await api()
-	const r = await c.post('/api/_test/reset')
-	if (!r.ok()) throw new Error(`reset failed: ${r.status()}`)
+	let lastError: unknown = null
+	for (let i = 0; i < 10; i++) {
+		try {
+			const r = await c.post('/api/_test/reset')
+			if (r.ok()) return
+			lastError = new Error(`reset returned ${r.status()}`)
+		} catch (err) {
+			lastError = err
+		}
+		await new Promise(r => setTimeout(r, 250))
+	}
+	throw new Error(`reset failed after retries: ${String(lastError)}`)
 }
 
 export async function clearRateLimits(): Promise<void> {
