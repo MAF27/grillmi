@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import pytest
 
 from grillmi.repos import grilladen_repo
 

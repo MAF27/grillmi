@@ -12,7 +12,7 @@ export default defineConfig({
 		allowedHosts: ['grillmi.krafted.cc'],
 		proxy: {
 			'/api': {
-				target: 'http://localhost:8000',
+				target: `http://127.0.0.1:${process.env.BACKEND_PORT ?? 8000}`,
 				changeOrigin: false,
 				secure: false,
 			},

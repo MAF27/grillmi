@@ -6,7 +6,6 @@ from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 
 from grillmi.models import PasswordResetToken
-from grillmi.security.argon2 import hash_password
 from grillmi.security.rate_limit import login_account_limiter, login_ip_limiter
 
 

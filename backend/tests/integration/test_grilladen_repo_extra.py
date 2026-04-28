@@ -15,7 +15,7 @@ async def test_list_for_user_with_since_filter(db_session, make_user) -> None:
     cutoff = g_old.updated_at + timedelta(milliseconds=1)
     await asyncio.sleep(0.05)
     # Bump cutoff above old, then create a new row in a fresh transaction.
-    g_new = await grilladen_repo.create(
+    await grilladen_repo.create(
         db_session, user.id, {"name": "new", "status": "planned"}
     )
     await db_session.commit()

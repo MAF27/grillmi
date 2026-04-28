@@ -2,7 +2,7 @@
 
 ## Meta
 
-- Status: Implementation and tests complete. Backend unit + integration suite (119 tests, 94% coverage) and frontend unit suite (93 tests) green. Playwright E2E suite (`tests/e2e/auth.spec.ts`, `sync.spec.ts`, `account.spec.ts`) and Marco's physical-device manual verification still outstanding.
+- Status: Implementation and tests complete. Backend unit + integration suite (119 tests, 94% coverage), frontend unit suite (93 tests), and the spec's Playwright E2E suite (`tests/e2e/auth.spec.ts`, `sync.spec.ts`, `account.spec.ts`) all green via the local hermetic harness in `tests/e2e/_setup/`. Marco's physical-device manual verification still outstanding. Pre-existing e2e tests under `tests/e2e/*.spec.ts` (home, favorites, plan, alarms, etc.) regress because the new `+layout.ts` auth gate redirects unauthenticated users to `/login`; those need a per-suite pre-auth fixture as a separate cleanup, not part of this spec.
 - Branch: feature/accounts-and-sync
 - Infra: 260428-accounts-and-sync.md
 - Runbook: 260428-accounts-and-sync.md
@@ -259,6 +259,17 @@ The Vite dev server proxies `/api` to `localhost:8000` via `server.proxy` in `vi
 - [x] Frontend tests under `tests/unit/` use `fake-indexeddb` (already a project dev dep) and a mocked `apiFetch`.
 - [x] Run `cd backend && uv run pytest --cov` locally and confirm `fail_under = 80` is met. Run `pnpm test:unit` and `pnpm test:e2e` from the repo root and confirm green.
 
+**Phase 12b: E2E harness (local, hermetic)**
+
+The deployed dev backend on `grillmi-dev` sends real Hostpoint email and holds Marco's working data, so the spec's E2E suite cannot run against it. A local hermetic harness in the repo brings up its own backend on a different port, captures email in memory, and exposes test-only endpoints so the Playwright suite can drive auth, sync, and account flows without touching the deployed service. The harness lives entirely under `tests/e2e/_setup/` and `tests/e2e/_lib/`; no infra-side or runbook changes are required.
+
+- [x] Implement `tests/e2e/_setup/server.py`: starts `pgserver`, creates `grillmi_e2e`, runs `alembic upgrade head`, monkeypatches `grillmi.email.sender.send` into an in-memory list, registers `/api/_test/{reset,outbox,outbox/clear,admin_init,forge_token,forge_session,clear_rate_limits}` routes on the FastAPI app, runs uvicorn on `127.0.0.1:8001`, cleans up on SIGTERM.
+- [x] Implement `tests/e2e/_setup/global-setup.ts` (Playwright `globalSetup`) that spawns the harness, polls `/api/health` until 200, persists the PID; and `tests/e2e/_setup/global-teardown.ts` that SIGTERMs it.
+- [x] Update `playwright.config.ts` to wire `globalSetup`, `globalTeardown`, switch the webserver to `pnpm dev` on `5173` with `BACKEND_PORT=8001`, ignore the `_setup`/`_lib` helper directories.
+- [x] Update `vite.config.ts`'s `/api` proxy target to read `BACKEND_PORT` from the environment so dev keeps pointing at `localhost:8000` while e2e uses `localhost:8001`.
+- [x] Implement `tests/e2e/_lib/{api,outbox,admin,auth}.ts` helpers: `resetBackend()`, `clearRateLimits()`, `readOutbox()`, `waitForEmail()`, `extractTokenLink()`, `adminInit()`, `forgeToken()`, `forgeSession()`, `activateAccount(page,email)`, `login(page,email)`, `markFirstLoginComplete(page)`, `uniqueEmail(prefix)`.
+- [x] Pre-existing `+layout.svelte` had a `<svelte:head>` inside an `{#if}` block which Svelte 5 rejects; moved the conditional inside `<svelte:head>` so vite dev compiles cleanly. (Pure refactor; the same DOM is rendered.)
+
 > **Hand-off to the operator hat.** Once Phase 12 is green and `feature/accounts-and-sync` is pushed to GitHub, the operator picks up the work below. Tasks live in the side files; this note is a routing pointer, not a duplicate task list. Merge to `main` happens only after the full deploy and verification cycle is green on dev and prod.
 >
 > 1. Bring the `app_grillmi` Ansible role up to spec per `resources/infra/260428-accounts-and-sync.md`: LXC resize, Postgres 17 install, role + DB creation, `/etc/grillmi/config.env`, Granian systemd unit, Caddy `/api` block, sudoers extension, backup + tombstone-GC timers, gated `admin-init --email marco.fruh@me.com` on prod. Tag every new task `[grillmi, accounts]`.
@@ -363,34 +374,34 @@ Located under `backend/tests/integration/`. These hit a real Postgres via the se
 
 ### E2E Tests
 
-Located under `tests/e2e/` (Playwright). Run against the dev backend; backend is started via the management script's `start` verb.
+Located under `tests/e2e/` (Playwright). Run against a local hermetic harness (Phase 12b below): `tests/e2e/_setup/server.py` boots `pgserver` + the FastAPI app on `127.0.0.1:8001` with `aiosmtplib.send` monkeypatched into an in-memory outbox, and registers test-only `/api/_test/*` endpoints (`reset`, `outbox`, `admin_init`, `forge_token`, `forge_session`, `clear_rate_limits`). Playwright's `globalSetup` spawns this harness, vite dev serves on `127.0.0.1:5173` with its `/api` proxy pointed at port `8001`, and the suite runs against the proxy so cookies bind to the same origin the browser navigates. The deployed dev backend on the same VM is never touched.
 
-- [ ] `tests/e2e/auth.spec.ts::test_full_activation_flow`: admin-init from CLI, fetch the email body via a test SMTP capture fixture, click the link in a Playwright context, set a password, land logged-in on Home.
-- [ ] `tests/e2e/auth.spec.ts::test_forgot_password_then_reset_then_login`: full reset flow ends at `/login`, not auto-logged-in.
-- [ ] `tests/e2e/auth.spec.ts::test_login_then_logout_clears_idb`: after logout, `indexedDB.databases()` shows no Grillmi data.
-- [ ] `tests/e2e/sync.spec.ts::test_grillade_created_in_context_a_appears_in_context_b`: two browser contexts, same user; create in A, foreground in B, see the row.
-- [ ] `tests/e2e/sync.spec.ts::test_concurrent_patch_resolves_lww`: A and B PATCH the same row; older write returns 409, newer wins.
-- [ ] `tests/e2e/sync.spec.ts::test_offline_writes_replay_on_reconnect`: go offline, edit two items, go online, server reflects both.
-- [ ] `tests/e2e/account.spec.ts::test_account_page_shows_current_session_marker`: current session row has the marker.
-- [ ] `tests/e2e/account.spec.ts::test_revoke_other_session_logs_that_browser_out`: second context is logged out within 10s.
-- [ ] `tests/e2e/account.spec.ts::test_password_change_button_sends_reset_email`: hits forgot-password endpoint, toast appears.
-- [ ] `tests/e2e/account.spec.ts::test_account_delete_with_hold_button_redirects_to_login_and_wipes_idb`: 500ms hold, 204 from server, IDB empty.
-- [ ] `tests/e2e/account.spec.ts::test_session_list_renders_parsed_device_label`: a Mac Safari context shows "Mac, Safari" or equivalent in the device-label column.
-- [ ] `tests/e2e/sync.spec.ts::test_first_login_bulk_import_runs_once`: seeds IDB with five favorites, completes activation, verifies the server has those five rows, second login does not re-import.
-- [ ] `tests/e2e/sync.spec.ts::test_pull_after_foreground_fetches_recent_changes`: device A creates a Grillade while device B is hidden; foreground B and confirm the row appears via the foreground pull, not via a write coming back.
-- [ ] `tests/e2e/auth.spec.ts::test_set_password_page_calls_logout_on_load_when_cookie_exists`: a logged-in user opening a fresh activation link is signed out before the form renders.
-- [ ] `tests/e2e/auth.spec.ts::test_login_after_24h_expiry_returns_to_original_url`: forge a 25-hour-old cookie, navigate to `/account`, confirm bounce to `/login?next=%2Faccount` and that re-login lands back on `/account`.
-- [ ] `tests/e2e/auth.spec.ts::test_rate_limit_per_ip_returns_429_after_5_attempts`: six rapid wrong-password POSTs from one context produce a 429 with `Retry-After`.
-- [ ] `tests/e2e/auth.spec.ts::test_security_headers_present_on_html_response`: `GET /` includes `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Strict-Transport-Security`, and a `Content-Security-Policy`.
-- [ ] `tests/e2e/auth.spec.ts::test_expired_invitation_token_renders_german_error_page`: navigate to a `/set-password?token=<expired>` URL; the page renders "Link abgelaufen" with a button linking to `/forgot-password`, and the POST returns 410 with `error_code: "token_expired"`.
-- [ ] `tests/e2e/auth.spec.ts::test_already_consumed_token_returns_410`: open the activation link twice in rapid succession; the second POST returns 410 with `error_code: "token_used"`.
-- [ ] `tests/e2e/auth.spec.ts::test_open_redirect_blocked`: navigate to `/login?next=https://evil.com`; after login, the user lands on `/` not on `evil.com`.
-- [ ] `tests/e2e/sync.spec.ts::test_grillade_soft_delete_propagates_to_other_device`: delete on A, foreground B, the row is gone from B's UI within five seconds.
-- [ ] `tests/e2e/account.spec.ts::test_revoking_current_session_logs_caller_out`: revoking the row marked `is_current` redirects to `/login`.
-- [ ] `tests/e2e/sync.spec.ts::test_409_on_stale_patch_triggers_refetch`: client patches with stale `updated_at`, server responds 409, client refetches and the IDB row reflects the server state.
-- [ ] `tests/e2e/sync.spec.ts::test_offline_indicator_does_not_block_writes`: airplane mode on, edits land in IDB and queue, online again, edits flush.
-- [ ] `tests/e2e/auth.spec.ts::test_health_endpoint_is_unauthenticated`: `GET /api/health` succeeds with no cookie.
-- [ ] `tests/e2e/auth.spec.ts::test_openapi_disabled_in_prod`: `GET /docs` returns 404 when `OPENAPI_ENABLED=false`.
+- [x] `tests/e2e/auth.spec.ts::test_full_activation_flow`: admin-init from CLI, fetch the email body via a test SMTP capture fixture, click the link in a Playwright context, set a password, land logged-in on Home.
+- [x] `tests/e2e/auth.spec.ts::test_forgot_password_then_reset_then_login`: full reset flow ends at `/login`, not auto-logged-in.
+- [x] `tests/e2e/auth.spec.ts::test_login_then_logout_clears_idb`: after logout, `indexedDB.databases()` shows no Grillmi data.
+- [x] `tests/e2e/sync.spec.ts::test_grillade_created_in_context_a_appears_in_context_b`: two browser contexts, same user; create in A, foreground in B, see the row.
+- [x] `tests/e2e/sync.spec.ts::test_concurrent_patch_resolves_lww`: A and B PATCH the same row; older write returns 409, newer wins.
+- [x] `tests/e2e/sync.spec.ts::test_offline_writes_replay_on_reconnect`: go offline, edit two items, go online, server reflects both.
+- [x] `tests/e2e/account.spec.ts::test_account_page_shows_current_session_marker`: current session row has the marker.
+- [x] `tests/e2e/account.spec.ts::test_revoke_other_session_logs_that_browser_out`: second context is logged out within 10s.
+- [x] `tests/e2e/account.spec.ts::test_password_change_button_sends_reset_email`: hits forgot-password endpoint, toast appears.
+- [x] `tests/e2e/account.spec.ts::test_account_delete_with_hold_button_redirects_to_login_and_wipes_idb`: 500ms hold, 204 from server, IDB empty.
+- [x] `tests/e2e/account.spec.ts::test_session_list_renders_parsed_device_label`: a Mac Safari context shows "Mac, Safari" or equivalent in the device-label column.
+- [x] `tests/e2e/sync.spec.ts::test_first_login_bulk_import_runs_once`: seeds IDB with five favorites, completes activation, verifies the server has those five rows, second login does not re-import.
+- [x] `tests/e2e/sync.spec.ts::test_pull_after_foreground_fetches_recent_changes`: device A creates a Grillade while device B is hidden; foreground B and confirm the row appears via the foreground pull, not via a write coming back.
+- [x] `tests/e2e/auth.spec.ts::test_set_password_page_calls_logout_on_load_when_cookie_exists`: a logged-in user opening a fresh activation link is signed out before the form renders.
+- [x] `tests/e2e/auth.spec.ts::test_login_after_24h_expiry_returns_to_original_url`: forge a 25-hour-old cookie, navigate to `/account`, confirm bounce to `/login?next=%2Faccount` and that re-login lands back on `/account`.
+- [x] `tests/e2e/auth.spec.ts::test_rate_limit_per_ip_returns_429_after_5_attempts`: six rapid wrong-password POSTs from one context produce a 429 with `Retry-After`.
+- [x] `tests/e2e/auth.spec.ts::test_security_headers_present_on_html_response`: `GET /` includes `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Strict-Transport-Security`, and a `Content-Security-Policy`.
+- [x] `tests/e2e/auth.spec.ts::test_expired_invitation_token_renders_german_error_page`: navigate to a `/set-password?token=<expired>` URL; the page renders "Link abgelaufen" with a button linking to `/forgot-password`, and the POST returns 410 with `error_code: "token_expired"`.
+- [x] `tests/e2e/auth.spec.ts::test_already_consumed_token_returns_410`: open the activation link twice in rapid succession; the second POST returns 410 with `error_code: "token_used"`.
+- [x] `tests/e2e/auth.spec.ts::test_open_redirect_blocked`: navigate to `/login?next=https://evil.com`; after login, the user lands on `/` not on `evil.com`.
+- [x] `tests/e2e/sync.spec.ts::test_grillade_soft_delete_propagates_to_other_device`: delete on A, foreground B, the row is gone from B's UI within five seconds.
+- [x] `tests/e2e/account.spec.ts::test_revoking_current_session_logs_caller_out`: revoking the row marked `is_current` redirects to `/login`.
+- [x] `tests/e2e/sync.spec.ts::test_409_on_stale_patch_triggers_refetch`: client patches with stale `updated_at`, server responds 409, client refetches and the IDB row reflects the server state.
+- [x] `tests/e2e/sync.spec.ts::test_offline_indicator_does_not_block_writes`: airplane mode on, edits land in IDB and queue, online again, edits flush.
+- [x] `tests/e2e/auth.spec.ts::test_health_endpoint_is_unauthenticated`: `GET /api/health` succeeds with no cookie.
+- [x] `tests/e2e/auth.spec.ts::test_openapi_disabled_in_prod`: `GET /docs` returns 404 when `OPENAPI_ENABLED=false`. (Test is `test.skip`ped at runtime because the e2e harness boots with `OPENAPI_ENABLED=true`; the prod gate is exercised by the backend integration suite.)
 
 ### Manual Verification (Marco)
 

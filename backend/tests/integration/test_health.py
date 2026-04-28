@@ -17,8 +17,6 @@ async def test_health_returns_503_when_db_unreachable(app_client) -> None:
     """Force the SELECT 1 to raise; the route catches it and returns 503."""
     from grillmi.routes import health as health_module
 
-    real = health_module.text
-
     def boom(_):
         raise RuntimeError("simulated db outage")
 

@@ -52,10 +52,10 @@
 	})
 </script>
 
-{#if authStore.csrfToken}
-	<svelte:head>
+<svelte:head>
+	{#if authStore.csrfToken}
 		<meta name="csrf-token" content={authStore.csrfToken} />
-	</svelte:head>
-{/if}
+	{/if}
+</svelte:head>
 
 {@render children()}

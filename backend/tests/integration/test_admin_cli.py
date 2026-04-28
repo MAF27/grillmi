@@ -10,7 +10,7 @@ from grillmi.repos.sessions_repo import create_session
 async def test_admin_init_idempotent_on_existing_email(
     db_session, make_user, smtp_outbox, monkeypatch
 ) -> None:
-    user = await make_user(email="adminit@example.com")
+    await make_user(email="adminit@example.com")
 
     # The CLI uses its own session_maker; route fixtures rolled-back transactions
     # don't affect what the CLI sees. We instead point the CLI at the existing

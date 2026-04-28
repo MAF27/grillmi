@@ -45,7 +45,7 @@ async def test_delete_account_cascades_grilladen_menus_favorites_settings_sessio
             "rest_seconds": 60,
         },
     )
-    menu = await menus_repo.create(db_session, user_id, {"name": "M"})
+    await menus_repo.create(db_session, user_id, {"name": "M"})
     await db_session.flush()
     await favorites_repo.create(db_session, user_id, {"label": "F", "cut_id": "ribeye"})
     await settings_repo.upsert(db_session, user_id, {"theme": "dark"})
