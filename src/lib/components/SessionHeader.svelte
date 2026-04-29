@@ -5,10 +5,11 @@
 		targetEpoch: number
 		wakeLockState: 'idle' | 'held' | 'denied' | 'unsupported'
 		planMode?: 'auto' | 'manual'
+		placement?: 'mobile' | 'desktop'
 		onEnd: () => void
 	}
 
-	let { targetEpoch, wakeLockState, planMode = 'auto', onEnd }: Props = $props()
+	let { targetEpoch, wakeLockState, planMode = 'auto', placement = 'mobile', onEnd }: Props = $props()
 	let confirmOpen = $state(false)
 	const wakeLockGreen = $derived(wakeLockState === 'held')
 	const wakeLockLabel = $derived.by(() => {
@@ -52,7 +53,9 @@
 					<div class="badge-value" data-mask-time>{formatHHMM(targetEpoch)}</div>
 				</div>
 			{/if}
-			<button type="button" class="end-btn" onclick={() => (confirmOpen = true)}>Beenden</button>
+			{#if placement !== 'desktop'}
+				<button type="button" class="end-btn" onclick={() => (confirmOpen = true)}>Beenden</button>
+			{/if}
 		</div>
 	</div>
 </header>

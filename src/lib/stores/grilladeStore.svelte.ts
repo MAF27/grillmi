@@ -3,13 +3,16 @@ import { planSchema, sessionSchema } from '$lib/schemas'
 import { schedule, buildSessionItem } from '$lib/scheduler/schedule'
 import { uuid } from '$lib/util/uuid'
 import {
+	appendTimelineEvent,
 	clearCurrentPlanState,
 	clearCurrentSession,
 	getCurrentPlanState,
 	getCurrentSession,
+	getCurrentTimeline,
 	putCurrentPlanState,
 	putCurrentSession,
 	type PersistedAlarm,
+	type TimelineEvent,
 } from './db'
 
 const STALE_AFTER_MS = 4 * 60 * 60 * 1000
@@ -50,6 +53,7 @@ function createGrilladeStore() {
 	let manualPlated = $state<Set<string>>(new Set())
 	let manualAlarms = $state<PersistedAlarm[]>([])
 	let manualAlarmDismissed = $state<Set<string>>(new Set())
+	let sessionTimeline = $state<TimelineEvent[]>([])
 
 	const cookingItems = $derived(session ? session.items.filter(i => i.status === 'cooking') : [])
 	const restingItems = $derived(session ? session.items.filter(i => i.status === 'resting') : [])
@@ -104,6 +108,7 @@ function createGrilladeStore() {
 			: []
 		await clearCurrentSession()
 		session = null
+		sessionTimeline = []
 		plan = replayItems.length > 0 ? { targetEpoch: defaultTarget(), items: replayItems, mode: 'now' } : defaultPlan()
 		planMode = 'auto'
 		manualStarts = {}
@@ -160,6 +165,9 @@ function createGrilladeStore() {
 		get manualAlarmDismissed() {
 			return manualAlarmDismissed
 		},
+		get sessionTimeline() {
+			return sessionTimeline
+		},
 
 		async init() {
 			if (initialized) return
@@ -171,6 +179,7 @@ function createGrilladeStore() {
 					await clearCurrentSession()
 				} else {
 					session = stored
+					sessionTimeline = await getCurrentTimeline()
 				}
 			}
 			const storedPlan = await getCurrentPlanState()
@@ -369,6 +378,13 @@ function createGrilladeStore() {
 			await persist()
 		},
 
+		async appendTimelineEvent(event: TimelineEvent) {
+			if (sessionTimeline.some(e => e.kind === event.kind && e.itemName === event.itemName && e.at === event.at)) {
+				return
+			}
+			sessionTimeline = await appendTimelineEvent(event)
+		},
+
 		async endSession() {
 			await endSession()
 		},
@@ -376,6 +392,7 @@ function createGrilladeStore() {
 		_reset() {
 			plan = defaultPlan()
 			session = null
+			sessionTimeline = []
 			planMode = 'auto'
 			manualStarts = {}
 			manualPlated = new Set()

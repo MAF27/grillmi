@@ -19,6 +19,12 @@ export interface PersistedPlanState {
 	dismissedAlarmKeys?: string[]
 }
 
+export interface TimelineEvent {
+	kind: 'on' | 'flip' | 'resting' | 'ready' | 'plated'
+	itemName: string
+	at: number
+}
+
 export interface GrilladeRow {
 	id: string
 	name: string | null
@@ -31,6 +37,7 @@ export interface GrilladeRow {
 	deletedEpoch: number | null
 	planState?: PersistedPlanState
 	session?: Session
+	timeline?: TimelineEvent[]
 }
 
 export interface SyncQueueRow {
@@ -225,10 +232,25 @@ export async function clearCurrentSession(): Promise<void> {
 	const active = await getActiveGrillade()
 	if (!active) return
 	active.session = undefined
+	active.timeline = undefined
 	active.status = 'finished'
 	active.endedEpoch = Date.now()
 	active.updatedEpoch = Date.now()
 	await putGrillade(active)
+}
+
+export async function getCurrentTimeline(): Promise<TimelineEvent[]> {
+	const active = await getActiveGrillade()
+	return active?.timeline ?? []
+}
+
+export async function appendTimelineEvent(event: TimelineEvent): Promise<TimelineEvent[]> {
+	const active = (await getActiveGrillade()) ?? newDefaultGrillade()
+	const next = [event, ...(active.timeline ?? [])].slice(0, 60)
+	active.timeline = next
+	active.updatedEpoch = Date.now()
+	await putGrillade(active)
+	return next
 }
 
 export async function getCurrentPlanState(): Promise<PersistedPlanState | undefined> {

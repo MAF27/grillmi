@@ -72,9 +72,6 @@
 	}
 
 	let selected = $state<GroupId>((page.url.searchParams.get('group') as GroupId) || 'signals')
-	let leadPutOn = $state(15)
-	let leadFlip = $state(15)
-	let leadDone = $state(15)
 	let measurement = $state<string>('metric')
 	let temperature = $state<string>('celsius')
 	let language = $state<string>('de')
@@ -117,9 +114,13 @@
 	}
 
 	function adjustLead(which: 'putOn' | 'flip' | 'done', delta: number) {
-		if (which === 'putOn') leadPutOn = Math.max(0, Math.min(300, leadPutOn + delta))
-		else if (which === 'flip') leadFlip = Math.max(0, Math.min(300, leadFlip + delta))
-		else leadDone = Math.max(0, Math.min(600, leadDone + delta))
+		const current =
+			which === 'putOn'
+				? settingsStore.leadPutOnSeconds
+				: which === 'flip'
+					? settingsStore.leadFlipSeconds
+					: settingsStore.leadDoneSeconds
+		void settingsStore.setLead(which, current + delta)
 	}
 
 	async function revoke(id: string) {
@@ -295,7 +296,7 @@
 					</div>
 					<div class="stepper">
 						<button type="button" onclick={() => adjustLead('putOn', -15)} aria-label="weniger">−</button>
-						<span>{fmtLead(leadPutOn)}</span>
+						<span>{fmtLead(settingsStore.leadPutOnSeconds)}</span>
 						<button type="button" onclick={() => adjustLead('putOn', 15)} aria-label="mehr">+</button>
 					</div>
 				</div>
@@ -306,7 +307,7 @@
 					</div>
 					<div class="stepper">
 						<button type="button" onclick={() => adjustLead('flip', -15)} aria-label="weniger">−</button>
-						<span>{fmtLead(leadFlip)}</span>
+						<span>{fmtLead(settingsStore.leadFlipSeconds)}</span>
 						<button type="button" onclick={() => adjustLead('flip', 15)} aria-label="mehr">+</button>
 					</div>
 				</div>
@@ -317,7 +318,7 @@
 					</div>
 					<div class="stepper">
 						<button type="button" onclick={() => adjustLead('done', -15)} aria-label="weniger">−</button>
-						<span>{fmtLead(leadDone)}</span>
+						<span>{fmtLead(settingsStore.leadDoneSeconds)}</span>
 						<button type="button" onclick={() => adjustLead('done', 15)} aria-label="mehr">+</button>
 					</div>
 				</div>

@@ -22,7 +22,7 @@
 						<span class="dot" data-state={statusByItem[item.id] ?? 'pending'} aria-hidden="true"></span>
 					{/if}
 					<span class="name">{item.label || item.cutSlug}</span>
-					<span class="time">{formatDuration(item.cookSeconds + item.restSeconds)}</span>
+					<span class="time">{formatDuration(item.cookSeconds)}{#if item.restSeconds > 0} <span class="rest">+{Math.round(item.restSeconds / 60)} min Ruhe</span>{/if}</span>
 				</li>
 			{/each}
 		</ul>
@@ -96,5 +96,15 @@
 		font-size: 13px;
 		color: var(--color-fg-muted);
 		font-variant-numeric: tabular-nums;
+		display: inline-flex;
+		align-items: baseline;
+		gap: 6px;
+	}
+	.rest {
+		font-family: var(--font-body);
+		font-size: 10px;
+		font-weight: 500;
+		text-transform: lowercase;
+		color: var(--color-fg-subtle);
 	}
 </style>

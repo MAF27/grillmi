@@ -104,6 +104,9 @@ export const userSettingsSchema = z.object({
 	accent: z.enum(ACCENT_IDS).default('ember'),
 	density: z.enum(DENSITY_IDS).default('comfortable'),
 	showProgressRings: z.boolean().default(true),
+	leadPutOnSeconds: z.number().int().min(0).max(600).default(15),
+	leadFlipSeconds: z.number().int().min(0).max(600).default(15),
+	leadDoneSeconds: z.number().int().min(0).max(600).default(15),
 })
 
 export type ItemStatus = z.infer<typeof itemStatusSchema>

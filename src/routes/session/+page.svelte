@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation'
 	import { onMount, onDestroy } from 'svelte'
 	import AlarmBanner, { type AlarmKind } from '$lib/components/AlarmBanner.svelte'
-	import ActivityLog, { type ActivityEvent } from '$lib/components/desktop/ActivityLog.svelte'
+	import ActivityLog from '$lib/components/desktop/ActivityLog.svelte'
 	import BigTimerCard from '$lib/components/BigTimerCard.svelte'
 	import MasterClock from '$lib/components/MasterClock.svelte'
 	import PlanSummaryList from '$lib/components/desktop/PlanSummaryList.svelte'
@@ -21,9 +21,10 @@
 	let stickyAlarms = $state<StickyAlarm[]>([])
 	let dismissedKeys = $state<Set<string>>(new Set())
 	let firingItemId = $state<string | null>(null)
-	let activity = $state<ActivityEvent[]>([])
+	let endingForAllPlated = false
 
 	const session = $derived(grilladeStore.session)
+	const activity = $derived(grilladeStore.sessionTimeline)
 	const visibleAlarms = $derived(
 		stickyAlarms
 			.filter(a => !dismissedKeys.has(a.id))
@@ -55,6 +56,11 @@
 			updateItem: (id, patch) => {
 				void grilladeStore.patchItem(id, patch)
 			},
+			getLeads: () => ({
+				putOn: settingsStore.leadPutOnSeconds,
+				flip: settingsStore.leadFlipSeconds,
+				done: settingsStore.leadDoneSeconds,
+			}),
 			emit: (e: TickerEvent) => {
 				if (e.type === 'resting-complete') return
 				const item = grilladeStore.session?.items.find(i => i.id === e.itemId)
@@ -65,7 +71,7 @@
 				const key = `${item.id}-${kind}`
 				if (stickyAlarms.some(a => a.id === key) || dismissedKeys.has(key)) return
 				firingItemId = item.id
-				activity = [{ kind, itemName: item.label || item.cutSlug, at: Date.now() }, ...activity].slice(0, 30) as ActivityEvent[]
+				void grilladeStore.appendTimelineEvent({ kind, itemName: item.label || item.cutSlug, at: Date.now() })
 				stickyAlarms = [
 					...stickyAlarms,
 					{
@@ -103,6 +109,12 @@
 		await goto('/')
 	}
 
+	$effect(() => {
+		if (!grilladeStore.allPlated || endingForAllPlated) return
+		endingForAllPlated = true
+		void endSession()
+	})
+
 	function plateItem(id: string) {
 		void grilladeStore.plateItem(id)
 	}
@@ -122,7 +134,7 @@
 			<PlanSummaryList items={session.items} statusByItem={Object.fromEntries(session.items.map(item => [item.id, item.status]))} />
 			<section class="cockpit-centre">
 				<div class="desktop-top">
-					<SessionHeader targetEpoch={session.targetEpoch} {wakeLockState} {planMode} onEnd={endSession} />
+					<SessionHeader targetEpoch={session.targetEpoch} {wakeLockState} {planMode} placement="desktop" onEnd={endSession} />
 				</div>
 				<MasterClock targetEpoch={session.targetEpoch} size="desktop" />
 				<div class="big-grid">

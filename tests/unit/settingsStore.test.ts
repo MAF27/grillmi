@@ -36,6 +36,9 @@ describe('settingsStore', () => {
 			accent: 'ember',
 			density: 'comfortable',
 			showProgressRings: true,
+			leadPutOnSeconds: 15,
+			leadFlipSeconds: 15,
+			leadDoneSeconds: 15,
 		})
 		settingsStore._reset()
 		await settingsStore.init()

@@ -103,6 +103,15 @@ function createSettingsStore() {
 		get showProgressRings() {
 			return value.showProgressRings
 		},
+		get leadPutOnSeconds() {
+			return value.leadPutOnSeconds
+		},
+		get leadFlipSeconds() {
+			return value.leadFlipSeconds
+		},
+		get leadDoneSeconds() {
+			return value.leadDoneSeconds
+		},
 
 		async init() {
 			if (initialized) return
@@ -121,6 +130,12 @@ function createSettingsStore() {
 					density,
 					showProgressRings:
 						typeof stored.showProgressRings === 'boolean' ? stored.showProgressRings : DEFAULTS.showProgressRings,
+					leadPutOnSeconds:
+						typeof stored.leadPutOnSeconds === 'number' ? stored.leadPutOnSeconds : DEFAULTS.leadPutOnSeconds,
+					leadFlipSeconds:
+						typeof stored.leadFlipSeconds === 'number' ? stored.leadFlipSeconds : DEFAULTS.leadFlipSeconds,
+					leadDoneSeconds:
+						typeof stored.leadDoneSeconds === 'number' ? stored.leadDoneSeconds : DEFAULTS.leadDoneSeconds,
 				}
 				value = migrated
 			} else {
@@ -164,6 +179,14 @@ function createSettingsStore() {
 		async setShowProgressRings(on: boolean) {
 			value = { ...value, showProgressRings: on }
 			applyRings(on)
+			await persist()
+		},
+
+		async setLead(which: 'putOn' | 'flip' | 'done', seconds: number) {
+			const clamped = Math.max(0, Math.min(600, seconds))
+			if (which === 'putOn') value = { ...value, leadPutOnSeconds: clamped }
+			else if (which === 'flip') value = { ...value, leadFlipSeconds: clamped }
+			else value = { ...value, leadDoneSeconds: clamped }
 			await persist()
 		},
 

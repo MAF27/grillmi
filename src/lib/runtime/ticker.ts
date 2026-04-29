@@ -6,10 +6,17 @@ export type TickerEvent =
 	| { type: 'done'; itemId: string }
 	| { type: 'resting-complete'; itemId: string }
 
+export interface TickerLeads {
+	putOn: number
+	flip: number
+	done: number
+}
+
 export interface TickerHooks {
 	getItems(): SessionItem[]
 	updateItem(id: string, patch: Partial<SessionItem>): void
 	emit(event: TickerEvent): void
+	getLeads?: () => TickerLeads
 	now?: () => number
 }
 
@@ -28,22 +35,12 @@ export function createTicker(hooks: TickerHooks) {
 
 	function tick() {
 		const t = now()
+		const leads = hooks.getLeads ? hooks.getLeads() : { putOn: 0, flip: 0, done: 0 }
 		for (const item of hooks.getItems()) {
 			const prevStatus = item.status
 			const target = computeStatus(item, t)
 			if (target.status !== prevStatus) {
 				hooks.updateItem(item.id, { status: target.status })
-				const justEnteredCooking = prevStatus === 'pending' && target.status === 'cooking'
-				if (justEnteredCooking && !fired.has(`${item.id}:put-on`)) {
-					fired.add(`${item.id}:put-on`)
-					hooks.emit({ type: 'put-on', itemId: item.id })
-				}
-				if (prevStatus === 'cooking' && (target.status === 'resting' || target.status === 'ready')) {
-					if (!fired.has(`${item.id}:done`)) {
-						fired.add(`${item.id}:done`)
-						hooks.emit({ type: 'done', itemId: item.id })
-					}
-				}
 				if (prevStatus === 'resting' && target.status === 'ready') {
 					if (!fired.has(`${item.id}:resting-complete`)) {
 						fired.add(`${item.id}:resting-complete`)
@@ -51,18 +48,29 @@ export function createTicker(hooks: TickerHooks) {
 					}
 				}
 			}
-			// Flip event fires once per item, independent of state transitions.
+			if (target.status === 'plated') continue
+			// Pre-warning alarms fire on absolute wall-clock thresholds so the
+			// Vorlauf settings are respected; status transitions stay anchored to
+			// the canonical putOn / done epochs.
+			if (!fired.has(`${item.id}:put-on`) && t >= item.putOnEpoch - leads.putOn * 1000) {
+				fired.add(`${item.id}:put-on`)
+				hooks.emit({ type: 'put-on', itemId: item.id })
+			}
 			if (
 				!item.flipFired &&
 				item.flipEpoch !== null &&
-				t >= item.flipEpoch &&
-				(target.status === 'cooking' || prevStatus === 'cooking')
+				t >= item.flipEpoch - leads.flip * 1000 &&
+				target.status !== 'pending'
 			) {
 				hooks.updateItem(item.id, { flipFired: true })
 				if (!fired.has(`${item.id}:flip`)) {
 					fired.add(`${item.id}:flip`)
 					hooks.emit({ type: 'flip', itemId: item.id })
 				}
+			}
+			if (!fired.has(`${item.id}:done`) && t >= item.doneEpoch - leads.done * 1000) {
+				fired.add(`${item.id}:done`)
+				hooks.emit({ type: 'done', itemId: item.id })
 			}
 		}
 	}
