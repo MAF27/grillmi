@@ -4,14 +4,12 @@ import { schedule, buildSessionItem } from '$lib/scheduler/schedule'
 import { uuid } from '$lib/util/uuid'
 import {
 	appendTimelineEvent,
-	clearCurrentPlanState,
 	clearCurrentSession,
 	getCurrentPlanState,
 	getCurrentSession,
 	getCurrentTimeline,
 	putCurrentPlanState,
 	putCurrentSession,
-	type PersistedAlarm,
 	type TimelineEvent,
 } from './db'
 
@@ -45,14 +43,7 @@ function createGrilladeStore() {
 	let plan = $state<Plan>(defaultPlan())
 	let session = $state<Session | null>(null)
 	let initialized = false
-	// Manual-mode in-memory state. Lives only on Plan; spec calls this out as
-	// non-persistent so a fresh app start always begins with an empty manual
-	// timeline.
 	let planMode = $state<PlanMode>('auto')
-	let manualStarts = $state<Record<string, number>>({})
-	let manualPlated = $state<Set<string>>(new Set())
-	let manualAlarms = $state<PersistedAlarm[]>([])
-	let manualAlarmDismissed = $state<Set<string>>(new Set())
 	let sessionTimeline = $state<TimelineEvent[]>([])
 
 	const cookingItems = $derived(session ? session.items.filter(i => i.status === 'cooking') : [])
@@ -73,16 +64,7 @@ function createGrilladeStore() {
 		// Chain each write so _persistFlush() awaits *all* in-flight persists
 		// in order. Without chaining, fire-and-forget calls in tests race past
 		// the awaiter and leave half-committed IDB state.
-		_pendingPersist = _pendingPersist.then(() =>
-			putCurrentPlanState({
-				plan,
-				planMode,
-				manualStarts,
-				manualPlated: Array.from(manualPlated),
-				alarms: manualAlarms,
-				dismissedAlarmKeys: Array.from(manualAlarmDismissed),
-			}),
-		)
+		_pendingPersist = _pendingPersist.then(() => putCurrentPlanState({ plan, planMode }))
 		return _pendingPersist
 	}
 
@@ -111,10 +93,6 @@ function createGrilladeStore() {
 		sessionTimeline = []
 		plan = replayItems.length > 0 ? { targetEpoch: defaultTarget(), items: replayItems, mode: 'now' } : defaultPlan()
 		planMode = 'auto'
-		manualStarts = {}
-		manualPlated = new Set()
-		manualAlarms = []
-		manualAlarmDismissed = new Set()
 		persistPlan()
 	}
 
@@ -153,18 +131,6 @@ function createGrilladeStore() {
 		get mode() {
 			return plan.mode
 		},
-		get manualStarts() {
-			return manualStarts
-		},
-		get manualPlated() {
-			return manualPlated
-		},
-		get manualAlarms() {
-			return manualAlarms
-		},
-		get manualAlarmDismissed() {
-			return manualAlarmDismissed
-		},
 		get sessionTimeline() {
 			return sessionTimeline
 		},
@@ -186,44 +152,10 @@ function createGrilladeStore() {
 			if (storedPlan) {
 				const parsed = planSchema.safeParse(storedPlan.plan)
 				if (parsed.success) {
-					// Drop manual sessions that are clearly stale (oldest start older
-					// than the staleness window): leftover state from a prior testing
-					// run is more confusing than helpful when the user comes back hours
-					// later expecting a clean slate.
-					const starts = Object.values(storedPlan.manualStarts ?? {})
-					const oldestStart = starts.length > 0 ? Math.min(...starts) : null
-					const stalePlan = oldestStart !== null && oldestStart < Date.now() - STALE_AFTER_MS
-					if (stalePlan) {
-						await clearCurrentPlanState()
-					} else {
-						plan = parsed.data
-						planMode = storedPlan.planMode === 'manual' ? 'manual' : 'auto'
-						manualStarts = storedPlan.manualStarts ?? {}
-						manualPlated = new Set(storedPlan.manualPlated ?? [])
-						manualAlarms = storedPlan.alarms ?? []
-						manualAlarmDismissed = new Set(storedPlan.dismissedAlarmKeys ?? [])
-					}
+					plan = parsed.data
+					planMode = storedPlan.planMode === 'manual' ? 'manual' : 'auto'
 				}
 			}
-		},
-
-		addManualAlarm(alarm: PersistedAlarm) {
-			if (manualAlarms.some(a => a.id === alarm.id) || manualAlarmDismissed.has(alarm.id)) return
-			manualAlarms = [...manualAlarms, alarm]
-			persistPlan()
-		},
-
-		dismissManualAlarm(alarmId: string) {
-			const next = new Set(manualAlarmDismissed)
-			next.add(alarmId)
-			manualAlarmDismissed = next
-			persistPlan()
-		},
-
-		clearManualAlarms() {
-			manualAlarms = []
-			manualAlarmDismissed = new Set()
-			persistPlan()
 		},
 
 		setTargetTime(epoch: number) {
@@ -233,14 +165,7 @@ function createGrilladeStore() {
 		},
 
 		setPlanMode(mode: PlanMode) {
-			const switching = planMode !== mode
 			planMode = mode
-			if (mode === 'manual' && switching) {
-				manualStarts = {}
-				manualPlated = new Set()
-				manualAlarms = []
-				manualAlarmDismissed = new Set()
-			}
 			persistPlan()
 		},
 
@@ -268,17 +193,6 @@ function createGrilladeStore() {
 
 		removeItem(id: string) {
 			plan = { ...plan, items: plan.items.filter(i => i.id !== id) }
-			if (manualStarts[id] !== undefined) {
-				const next = { ...manualStarts }
-				delete next[id]
-				manualStarts = next
-			}
-			if (manualPlated.has(id)) {
-				const next = new Set(manualPlated)
-				next.delete(id)
-				manualPlated = next
-			}
-			manualAlarms = manualAlarms.filter(a => a.itemId !== id)
 			persistPlan()
 		},
 
@@ -303,22 +217,6 @@ function createGrilladeStore() {
 		resetDraft() {
 			plan = defaultPlan()
 			planMode = 'auto'
-			manualStarts = {}
-			manualPlated = new Set()
-			manualAlarms = []
-			manualAlarmDismissed = new Set()
-			persistPlan()
-		},
-
-		startManualItem(id: string) {
-			manualStarts = { ...manualStarts, [id]: Date.now() }
-			persistPlan()
-		},
-
-		plateManualItem(id: string) {
-			const next = new Set(manualPlated)
-			next.add(id)
-			manualPlated = next
 			persistPlan()
 		},
 
@@ -340,6 +238,65 @@ function createGrilladeStore() {
 			persistPlan()
 			await persist()
 			return newSession
+		},
+
+		// Manual mode = a Session whose items are pinned at a far-future
+		// putOnEpoch sentinel until the user clicks Los on each card. The ticker
+		// then drives them through cooking/resting/ready as wall-clock advances.
+		async startManualSession(): Promise<Session> {
+			if (plan.items.length === 0) throw new Error('cannot start: no items in plan')
+			const now = Date.now()
+			const farFuture = now + 365 * 24 * 60 * 60 * 1000
+			const sessionItems: SessionItem[] = plan.items.map(p => ({
+				...p,
+				putOnEpoch: farFuture,
+				flipEpoch: null,
+				doneEpoch: farFuture,
+				restingUntilEpoch: farFuture,
+				status: 'pending',
+				overdue: false,
+				flipFired: false,
+				platedEpoch: null,
+			}))
+			const newSession = sessionSchema.parse({
+				id: uuid(),
+				createdAtEpoch: now,
+				targetEpoch: now + 60 * 60 * 1000,
+				endedAtEpoch: null,
+				items: sessionItems,
+			})
+			session = newSession
+			plan = defaultPlan()
+			planMode = 'auto'
+			persistPlan()
+			await persist()
+			return newSession
+		},
+
+		async startSessionItem(id: string) {
+			if (!session) return
+			const target = session.items.find(i => i.id === id)
+			if (!target) return
+			const now = Date.now()
+			const flipEpoch = target.flipFraction > 0 ? now + (target.cookSeconds * 1000) / 2 : null
+			const doneEpoch = now + target.cookSeconds * 1000
+			const restingUntilEpoch = doneEpoch + target.restSeconds * 1000
+			const updated: SessionItem = {
+				...target,
+				putOnEpoch: now,
+				flipEpoch,
+				doneEpoch,
+				restingUntilEpoch,
+				status: 'cooking',
+				flipFired: false,
+			}
+			const items = session.items.map(i => (i.id === id ? updated : i))
+			session = {
+				...session,
+				items,
+				targetEpoch: Math.max(session.targetEpoch, restingUntilEpoch),
+			}
+			await persist()
 		},
 
 		async patchItem(id: string, patch: Partial<SessionItem>) {
@@ -394,10 +351,6 @@ function createGrilladeStore() {
 			session = null
 			sessionTimeline = []
 			planMode = 'auto'
-			manualStarts = {}
-			manualPlated = new Set()
-			manualAlarms = []
-			manualAlarmDismissed = new Set()
 			initialized = false
 		},
 

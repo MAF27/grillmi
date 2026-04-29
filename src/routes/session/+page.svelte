@@ -3,11 +3,10 @@
 	import { onMount, onDestroy } from 'svelte'
 	import AlarmBanner, { type AlarmKind } from '$lib/components/AlarmBanner.svelte'
 	import ActivityLog from '$lib/components/desktop/ActivityLog.svelte'
-	import BigTimerCard from '$lib/components/BigTimerCard.svelte'
 	import MasterClock from '$lib/components/MasterClock.svelte'
 	import PlanSummaryList from '$lib/components/desktop/PlanSummaryList.svelte'
 	import SessionHeader from '$lib/components/SessionHeader.svelte'
-	import TimerCard from '$lib/components/TimerCard.svelte'
+	import TimerCard, { type TimerCardStatus } from '$lib/components/TimerCard.svelte'
 	import { viewport } from '$lib/runtime/viewport.svelte'
 	import { fireAlarm, messageFor, type AlarmEvent } from '$lib/runtime/alarms'
 	import { createTicker, type TickerEvent } from '$lib/runtime/ticker'
@@ -40,10 +39,6 @@
 	onMount(async () => {
 		await grilladeStore.init()
 		await settingsStore.init()
-		if (grilladeStore.planMode === 'manual') {
-			goto('/plan', { replaceState: true })
-			return
-		}
 		if (!grilladeStore.session) {
 			goto('/plan')
 			return
@@ -126,6 +121,19 @@
 	function removeItem(id: string) {
 		void grilladeStore.removeSessionItem(id)
 	}
+
+	function startItem(id: string) {
+		void grilladeStore.startSessionItem(id)
+	}
+
+	// Items in a manual session are pinned at a far-future putOnEpoch until the
+	// user clicks Los; surface that as 'unstarted' so the card paints the start
+	// affordance instead of a misleading countdown.
+	const UNSTARTED_HORIZON_MS = 30 * 24 * 60 * 60 * 1000
+	function statusFor(item: { status: string; putOnEpoch: number }): TimerCardStatus | undefined {
+		if (item.status === 'pending' && item.putOnEpoch > Date.now() + UNSTARTED_HORIZON_MS) return 'unstarted'
+		return undefined
+	}
 </script>
 
 <svelte:head>
@@ -143,7 +151,14 @@
 				<MasterClock targetEpoch={session.targetEpoch} size="desktop" />
 				<div class="big-grid">
 					{#each session.items as item (item.id)}
-						<BigTimerCard {item} alarmFiring={firingItemId === item.id} onplate={plateItem} onremove={removeItem} />
+						<TimerCard
+							{item}
+							size="lg"
+							status={statusFor(item)}
+							alarmFiring={firingItemId === item.id}
+							onplate={plateItem}
+							onstart={startItem}
+							onremove={removeItem} />
 					{/each}
 				</div>
 			</section>
@@ -171,7 +186,13 @@
 		<div class="grid-wrap">
 			<div class="grid">
 				{#each session.items as item (item.id)}
-					<TimerCard {item} alarmFiring={firingItemId === item.id} onplate={plateItem} />
+					<TimerCard
+						{item}
+						status={statusFor(item)}
+						alarmFiring={firingItemId === item.id}
+						onplate={plateItem}
+						onstart={startItem}
+						onremove={removeItem} />
 				{/each}
 			</div>
 		</div>

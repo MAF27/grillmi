@@ -1,24 +1,20 @@
 <script lang="ts">
 	import { goto } from '$app/navigation'
 	import { onMount } from 'svelte'
-	import AlarmBanner, { type AlarmKind } from '$lib/components/AlarmBanner.svelte'
 	import Button from '$lib/components/Button.svelte'
 	import SegmentedControl from '$lib/components/SegmentedControl.svelte'
 	import TimePickerSheet from '$lib/components/TimePickerSheet.svelte'
 	import TimePickerPopover from '$lib/components/TimePickerPopover.svelte'
 	import PlanItemRow from '$lib/components/PlanItemRow.svelte'
-	import TimerCard from '$lib/components/TimerCard.svelte'
-	import BigTimerCard from '$lib/components/BigTimerCard.svelte'
 	import PlanSummaryList from '$lib/components/desktop/PlanSummaryList.svelte'
 	import AddItemSheet from '$lib/components/AddItemSheet.svelte'
 	import { viewport } from '$lib/runtime/viewport.svelte'
-	import { fireAlarm, messageFor, type AlarmEvent } from '$lib/runtime/alarms'
 	import { grilladeStore } from '$lib/stores/grilladeStore.svelte'
 	import { favoritesStore } from '$lib/stores/favoritesStore.svelte'
 	import { menusStore } from '$lib/stores/menusStore.svelte'
-	import { schedule, buildSessionItem } from '$lib/scheduler/schedule'
+	import { schedule } from '$lib/scheduler/schedule'
 	import { formatHHMM } from '$lib/util/format'
-	import type { PlannedItem, SessionItem } from '$lib/models'
+	import type { PlannedItem } from '$lib/models'
 
 	type SegmentId = 'now' | 'target' | 'manual'
 
@@ -35,7 +31,6 @@
 	let menusSheetOpen = $state(false)
 	let timePickerOpen = $state(false)
 
-	const lastSeenStatus = new Map<string, ManualStatus>()
 
 	const plan = $derived(grilladeStore.plan)
 	const planMode = $derived(grilladeStore.planMode)
@@ -55,93 +50,11 @@
 	const startEpoch = $derived(effectiveTarget - grilladeStore.longestCookSeconds * 1000)
 	const populated = $derived(plan.items.length > 0)
 
-	type ManualStatus = 'unstarted' | 'cooking' | 'flip' | 'resting' | 'ready' | 'plated'
-
-	function deriveManualStatus(item: PlannedItem, n: number): { status: ManualStatus; etaSec: number } {
-		const start = grilladeStore.manualStarts[item.id]
-		if (start === undefined || start === null) return { status: 'unstarted', etaSec: item.cookSeconds }
-		if (grilladeStore.manualPlated.has(item.id)) return { status: 'plated', etaSec: 0 }
-		const cookEnd = start + item.cookSeconds * 1000
-		const restEnd = cookEnd + (item.restSeconds || 0) * 1000
-		if (n >= restEnd) return { status: 'ready', etaSec: 0 }
-		if (n >= cookEnd) return { status: 'resting', etaSec: Math.round((restEnd - n) / 1000) }
-		const half = start + (item.cookSeconds * 1000) / 2
-		const status: ManualStatus = Math.abs(n - half) < 5000 ? 'flip' : 'cooking'
-		return { status, etaSec: Math.round((cookEnd - n) / 1000) }
-	}
-
-	const manualSession: SessionItem[] = $derived.by(() =>
-		plan.items.map(item => {
-			const start = grilladeStore.manualStarts[item.id] ?? Date.now()
-			return buildSessionItem(
-				item,
-				{
-					item,
-					putOnEpoch: start,
-					flipEpoch: item.flipFraction > 0 ? start + (item.cookSeconds * 1000) / 2 : null,
-					doneEpoch: start + item.cookSeconds * 1000,
-					restingUntilEpoch: start + (item.cookSeconds + item.restSeconds) * 1000,
-					overdue: false,
-				},
-				start,
-			)
-		}),
-	)
-
 	const goLabel = $derived.by(() => {
 		if (plan.items.length === 0) return 'Mindestens ein Eintrag nötig'
+		if (isManual) return 'Manuelle Grillade starten'
 		return `Los, fertig um ${formatHHMM(effectiveTarget)}`
 	})
-
-	const visibleAlarms = $derived(
-		grilladeStore.manualAlarms
-			.filter(a => !grilladeStore.manualAlarmDismissed.has(a.id))
-			.slice()
-			.reverse(),
-	)
-	const alarming = $derived(visibleAlarms[0] ?? null)
-
-	$effect(() => {
-		if (!isManual) return
-		for (const item of plan.items) {
-			const next = deriveManualStatus(item, now).status
-			const prev = lastSeenStatus.get(item.id)
-			lastSeenStatus.set(item.id, next)
-			if (prev === next) continue
-			let event: AlarmEvent | null = null
-			let kind: AlarmKind | null = null
-			if (next === 'flip') {
-				event = 'flip'
-				kind = 'flip'
-			} else if (next === 'resting' || next === 'ready') {
-				event = 'done'
-				kind = 'ready'
-			}
-			if (!event || !kind) continue
-			const itemName = item.label || item.cutSlug
-			const key = `${item.id}-${kind}`
-			const exists = grilladeStore.manualAlarms.some(a => a.id === key) || grilladeStore.manualAlarmDismissed.has(key)
-			if (exists) continue
-			grilladeStore.addManualAlarm({
-				id: key,
-				itemId: item.id,
-				kind,
-				itemName,
-				message: messageFor(event, itemName),
-				firedAt: Date.now(),
-			})
-			void fireAlarm(event)
-		}
-		const liveIds = new Set(plan.items.map(i => i.id))
-		for (const id of Array.from(lastSeenStatus.keys())) {
-			if (!liveIds.has(id)) lastSeenStatus.delete(id)
-		}
-	})
-
-	function dismissAlarm() {
-		if (!alarming) return
-		grilladeStore.dismissManualAlarm(alarming.id)
-	}
 
 	onMount(() => {
 		const tickId = setInterval(() => (now = Date.now()), 1000)
@@ -197,7 +110,8 @@
 	}
 
 	async function start() {
-		await grilladeStore.startSession()
+		if (isManual) await grilladeStore.startManualSession()
+		else await grilladeStore.startSession()
 		await goto('/session')
 	}
 
@@ -223,13 +137,6 @@
 		void menusStore.touch(id)
 		grilladeStore.appendFromMenu(m.items)
 		menusSheetOpen = false
-	}
-
-	function startMatch(id: string) {
-		grilladeStore.startManualItem(id)
-	}
-	function plateMatch(id: string) {
-		grilladeStore.plateManualItem(id)
 	}
 
 	function commitTime(epoch: number) {
@@ -304,30 +211,6 @@
 					<div class="empty-title">Grillstück hinzufügen</div>
 					<div class="empty-hint">Steak, Würstchen, Maiskolben, alles was auf den Rost kommt.</div>
 				</button>
-			{:else if isManual}
-				<div class="manual-grid" class:single={plan.items.length === 1} role="list">
-					{#each plan.items as item, i (item.id)}
-						{@const status = deriveManualStatus(item, now).status}
-						{#if status !== 'plated'}
-							<div role="listitem">
-								{#if viewport.isDesktop}
-									<BigTimerCard item={manualSession[i]} status={status as never} onstart={startMatch} onplate={plateMatch} />
-								{:else}
-									<TimerCard
-										item={manualSession[i]}
-										status={status as never}
-										onstart={startMatch}
-										onplate={plateMatch}
-										onremove={deleteItem} />
-								{/if}
-							</div>
-						{/if}
-					{/each}
-					<button class="more-add" type="button" onclick={openAddSheet}>
-						<span class="plus-glyph">+</span>
-						<span>Weiteres Grillstück</span>
-					</button>
-				</div>
 			{:else}
 				<div class="list" role="list">
 					{#each plan.items as item (item.id)}
@@ -347,7 +230,7 @@
 				</button>
 			{/if}
 		</section>
-		{#if viewport.isDesktop && !isManual}
+		{#if viewport.isDesktop}
 			<div class="desktop-start">
 				<Button variant="primary" size="lg" fullWidth disabled={plan.items.length === 0} onclick={start}>{goLabel}</Button>
 			</div>
@@ -355,21 +238,10 @@
 	</div>
 	</div>
 
-	{#if !isManual && !viewport.isDesktop}
+	{#if !viewport.isDesktop}
 		<div class="bottom">
 			<Button variant="primary" size="lg" fullWidth disabled={plan.items.length === 0} onclick={start}>{goLabel}</Button>
 		</div>
-	{/if}
-
-	{#if isManual && alarming}
-		{#key alarming.id}
-			<AlarmBanner
-				kind={alarming.kind}
-				itemName={alarming.itemName}
-				count={visibleAlarms.length}
-				message={alarming.message}
-				onDismiss={dismissAlarm} />
-		{/key}
 	{/if}
 </main>
 
@@ -644,14 +516,6 @@
 		display: flex;
 		flex-direction: column;
 	}
-	.manual-grid {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-		gap: 12px;
-	}
-	.manual-grid > [role='listitem'] {
-		min-width: 0;
-	}
 	.more-add {
 		grid-column: 1 / -1;
 		margin-top: 4px;
@@ -836,11 +700,5 @@
 		.bottom {
 			display: none;
 		}
-		.manual-grid {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-		}
-	}
-	.manual-grid.single {
-		grid-template-columns: 1fr;
 	}
 </style>

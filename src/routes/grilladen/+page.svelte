@@ -18,6 +18,7 @@
 	let editingNote = $state(false)
 	let toast = $state<string | null>(null)
 	let deleteConfirm = $state(false)
+	let pendingDeleteId = $state<string | null>(null)
 	let itemsState = $state<{ loading: boolean; labels: string[]; unavailable: boolean }>({ loading: false, labels: [], unavailable: false })
 
 	onMount(async () => {
@@ -68,6 +69,13 @@
 		if (!selected) return
 		await grilladenHistoryStore.softDelete(selected.id)
 		selectedId = null
+		toast = 'Grillade gelöscht'
+	}
+
+	async function removeFromList(id: string) {
+		await grilladenHistoryStore.softDelete(id)
+		await refreshSaved()
+		pendingDeleteId = null
 		toast = 'Grillade gelöscht'
 	}
 
@@ -140,9 +148,27 @@
 		{:else}
 			<div class="grid">
 				{#each grilladenHistoryStore.finished as row (row.id)}
-					<GrilladeCard grillade={row} saved={saved[row.id]} onClick={() => select(row)} />
+					<GrilladeCard
+						grillade={row}
+						saved={saved[row.id]}
+						onClick={() => select(row)}
+						onDelete={() => (pendingDeleteId = row.id)} />
 				{/each}
 			</div>
+			{#if pendingDeleteId}
+				{@const target = grilladenHistoryStore.finished.find(row => row.id === pendingDeleteId)}
+				<div class="scrim" role="presentation" onclick={() => (pendingDeleteId = null)}></div>
+				<div class="confirm-modal" role="dialog" aria-modal="true" aria-label="Grillade löschen">
+					<h3>Wirklich löschen?</h3>
+					{#if target}
+						<p>{target.name || `Grillade vom ${new Date(target.endedEpoch ?? target.updatedEpoch).toLocaleDateString('de-CH')}`}</p>
+					{/if}
+					<div class="confirm-actions">
+						<Button variant="ghost" onclick={() => (pendingDeleteId = null)}>Abbrechen</Button>
+						<Button variant="destructive" onclick={() => removeFromList(pendingDeleteId!)}>Ja, löschen</Button>
+					</div>
+				</div>
+			{/if}
 		{/if}
 	{/if}
 </main>
@@ -274,6 +300,45 @@
 		padding: 12px;
 		border-radius: 12px;
 		background: var(--color-bg-surface);
+	}
+	.scrim {
+		position: fixed;
+		inset: 0;
+		background: var(--color-bg-overlay);
+		z-index: var(--z-modal);
+	}
+	.confirm-modal {
+		position: fixed;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		width: min(92vw, 380px);
+		padding: 22px;
+		border-radius: 16px;
+		border: 1px solid var(--color-border-default);
+		background: var(--color-bg-surface);
+		color: var(--color-fg-base);
+		z-index: calc(var(--z-modal) + 1);
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+	}
+	.confirm-modal h3 {
+		margin: 0;
+		font-family: var(--font-display);
+		font-size: 22px;
+		font-weight: 600;
+		text-transform: uppercase;
+	}
+	.confirm-modal p {
+		margin: 0;
+		color: var(--color-fg-muted);
+		font-size: 14px;
+	}
+	.confirm-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: 8px;
 	}
 	@media (max-width: 1023px) {
 		.history {

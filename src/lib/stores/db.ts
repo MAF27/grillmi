@@ -1,22 +1,9 @@
 import { openDB, type IDBPDatabase } from 'idb'
 import type { Plan, Session, Favorite, SavedPlan, UserSettings } from '$lib/models'
 
-export interface PersistedAlarm {
-	id: string
-	itemId: string
-	kind: 'on' | 'flip' | 'ready'
-	itemName: string
-	message: string
-	firedAt: number
-}
-
 export interface PersistedPlanState {
 	plan: Plan
 	planMode: 'auto' | 'manual'
-	manualStarts: Record<string, number>
-	manualPlated: string[]
-	alarms?: PersistedAlarm[]
-	dismissedAlarmKeys?: string[]
 }
 
 export interface TimelineEvent {

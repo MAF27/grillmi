@@ -6,9 +6,10 @@
 		grillade: GrilladeRow
 		saved?: boolean
 		onClick: () => void
+		onDelete?: () => void
 	}
 
-	let { grillade, saved = false, onClick }: Props = $props()
+	let { grillade, saved = false, onClick, onDelete }: Props = $props()
 
 	const title = $derived(grillade.name || `Grillade vom ${new Date(grillade.endedEpoch ?? grillade.updatedEpoch).toLocaleDateString('de-CH')}`)
 	const itemCount = $derived(grillade.session?.items.length ?? grillade.planState?.plan.items.length ?? 0)
@@ -17,16 +18,35 @@
 	)
 </script>
 
-<button class="card" class:saved type="button" onclick={onClick} data-testid="grillade-card">
-	<span class="top">
-		<span>{new Date(grillade.endedEpoch ?? grillade.updatedEpoch).toLocaleDateString('de-CH')}</span>
-		<span class="star">{saved ? '★' : '☆'}</span>
-	</span>
-	<strong>{title}</strong>
-	<span class="meta">{itemCount} Stück · {duration}</span>
-</button>
+<div class="card-wrap">
+	<button class="card" class:saved type="button" onclick={onClick} data-testid="grillade-card">
+		<span class="top">
+			<span>{new Date(grillade.endedEpoch ?? grillade.updatedEpoch).toLocaleDateString('de-CH')}</span>
+			<span class="star">{saved ? '★' : '☆'}</span>
+		</span>
+		<strong>{title}</strong>
+		<span class="meta">{itemCount} Stück · {duration}</span>
+	</button>
+	{#if onDelete}
+		<button
+			type="button"
+			class="delete"
+			aria-label="Grillade löschen"
+			onclick={e => {
+				e.stopPropagation()
+				onDelete!()
+			}}>×</button>
+	{/if}
+</div>
 
 <style>
+	.card-wrap {
+		position: relative;
+	}
+	.card-wrap:hover .delete,
+	.card-wrap:focus-within .delete {
+		opacity: 1;
+	}
 	.card {
 		display: flex;
 		flex-direction: column;
@@ -39,6 +59,29 @@
 		color: var(--color-fg-base);
 		text-align: left;
 		cursor: pointer;
+	}
+	.delete {
+		position: absolute;
+		top: 8px;
+		right: 8px;
+		width: 28px;
+		height: 28px;
+		border-radius: 14px;
+		border: 1px solid var(--color-border-strong);
+		background: var(--color-bg-surface);
+		color: var(--color-fg-muted);
+		font: inherit;
+		font-size: 18px;
+		line-height: 1;
+		cursor: pointer;
+		opacity: 0.4;
+		transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+	}
+	.delete:hover,
+	.delete:focus-visible {
+		opacity: 1;
+		color: var(--color-error-default);
+		border-color: var(--color-error-default);
 	}
 	.card.saved {
 		border-color: var(--color-ember);

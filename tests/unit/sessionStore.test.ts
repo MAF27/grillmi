@@ -86,77 +86,6 @@ describe('grilladeStore', () => {
 		expect(aPutOnAfter).toBe(aPutOn)
 	})
 
-	it('test_manual_alarm_added_and_dismissed_persist_across_init', async () => {
-		const created = grilladeStore.addItem(item)
-		grilladeStore.setPlanMode('manual')
-		grilladeStore.addManualAlarm({
-			id: `${created.id}-flip`,
-			itemId: created.id,
-			kind: 'flip',
-			itemName: 'Steak',
-			message: 'Steak: jetzt wenden',
-			firedAt: Date.now(),
-		})
-		expect(grilladeStore.manualAlarms).toHaveLength(1)
-		grilladeStore.dismissManualAlarm(`${created.id}-flip`)
-		expect(grilladeStore.manualAlarmDismissed.has(`${created.id}-flip`)).toBe(true)
-
-		await grilladeStore._persistFlush()
-		grilladeStore._reset()
-		await grilladeStore.init()
-		expect(grilladeStore.manualAlarms).toHaveLength(1)
-		expect(grilladeStore.manualAlarmDismissed.has(`${created.id}-flip`)).toBe(true)
-	})
-
-	it('test_remove_item_drops_its_alarms', () => {
-		const created = grilladeStore.addItem(item)
-		grilladeStore.setPlanMode('manual')
-		grilladeStore.addManualAlarm({
-			id: `${created.id}-flip`,
-			itemId: created.id,
-			kind: 'flip',
-			itemName: 'Steak',
-			message: 'Steak: jetzt wenden',
-			firedAt: Date.now(),
-		})
-		expect(grilladeStore.manualAlarms).toHaveLength(1)
-		grilladeStore.removeItem(created.id)
-		expect(grilladeStore.manualAlarms).toHaveLength(0)
-	})
-
-	it('test_dismissed_alarm_cannot_be_re_added', () => {
-		const created = grilladeStore.addItem(item)
-		grilladeStore.setPlanMode('manual')
-		const alarm = {
-			id: `${created.id}-flip`,
-			itemId: created.id,
-			kind: 'flip' as const,
-			itemName: 'Steak',
-			message: 'Steak: jetzt wenden',
-			firedAt: Date.now(),
-		}
-		grilladeStore.addManualAlarm(alarm)
-		grilladeStore.dismissManualAlarm(alarm.id)
-		grilladeStore.addManualAlarm(alarm)
-		expect(grilladeStore.manualAlarms).toHaveLength(1)
-	})
-
-	it('test_clearManualAlarms_removes_all_state', () => {
-		grilladeStore.setPlanMode('manual')
-		grilladeStore.addManualAlarm({
-			id: 'a',
-			itemId: 'i',
-			kind: 'flip',
-			itemName: 'x',
-			message: 'm',
-			firedAt: 1,
-		})
-		grilladeStore.dismissManualAlarm('a')
-		grilladeStore.clearManualAlarms()
-		expect(grilladeStore.manualAlarms).toEqual([])
-		expect(grilladeStore.manualAlarmDismissed.size).toBe(0)
-	})
-
 	it('test_session_lifecycle_plate_unplate_force_ready_remove', async () => {
 		grilladeStore.setTargetTime(Date.now() + 60 * 60_000)
 		const a = grilladeStore.addItem({ ...item, label: 'A' })
@@ -173,34 +102,33 @@ describe('grilladeStore', () => {
 		expect(grilladeStore.session?.items.find(i => i.id === aItem.id)).toBeUndefined()
 	})
 
-	it('test_init_drops_stale_manual_plan_older_than_window', async () => {
-		const created = grilladeStore.addItem(item)
-		grilladeStore.setPlanMode('manual')
-		grilladeStore.startManualItem(created.id)
-		// Wait for the chained fire-and-forget persists to drain before we
-		// overwrite IDB with stale data — otherwise a late persist races past
-		// our overwrite and the staleness check sees fresh timestamps.
-		await grilladeStore._persistFlush()
-		const fiveHoursAgo = Date.now() - 5 * 60 * 60 * 1000
-		const { putCurrentPlanState } = await import('$lib/stores/db')
-		await putCurrentPlanState({
-			plan: grilladeStore.plan,
-			planMode: 'manual',
-			manualStarts: { [created.id]: fiveHoursAgo },
-			manualPlated: [],
-			alarms: [],
-			dismissedAlarmKeys: [],
-		})
+	it('test_start_manual_session_pins_items_at_far_future_epochs', async () => {
+		grilladeStore.addItem(item)
+		const session = await grilladeStore.startManualSession()
+		expect(session.items).toHaveLength(1)
+		const horizon = Date.now() + 30 * 24 * 60 * 60 * 1000
+		expect(session.items[0].putOnEpoch).toBeGreaterThan(horizon)
+		expect(session.items[0].status).toBe('pending')
+	})
 
-		grilladeStore._reset()
-		await grilladeStore.init()
-		expect(grilladeStore.plan.items).toHaveLength(0)
+	it('test_start_session_item_sets_real_epochs_and_marks_cooking', async () => {
+		grilladeStore.addItem(item)
+		const session = await grilladeStore.startManualSession()
+		const id = session.items[0].id
+		const before = Date.now()
+		await grilladeStore.startSessionItem(id)
+		const after = Date.now()
+		const updated = grilladeStore.session?.items[0]
+		expect(updated?.status).toBe('cooking')
+		expect(updated?.putOnEpoch).toBeGreaterThanOrEqual(before)
+		expect(updated?.putOnEpoch).toBeLessThanOrEqual(after)
+		expect(updated?.doneEpoch).toBe((updated?.putOnEpoch ?? 0) + item.cookSeconds * 1000)
+		expect(updated?.flipEpoch).toBe((updated?.putOnEpoch ?? 0) + (item.cookSeconds * 1000) / 2)
 	})
 
 	it('test_init_keeps_recent_manual_plan', async () => {
-		const created = grilladeStore.addItem(item)
+		grilladeStore.addItem(item)
 		grilladeStore.setPlanMode('manual')
-		grilladeStore.startManualItem(created.id)
 		await grilladeStore._persistFlush()
 		grilladeStore._reset()
 		await grilladeStore.init()
