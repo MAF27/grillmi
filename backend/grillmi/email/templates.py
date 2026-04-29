@@ -24,7 +24,9 @@ def _render(text_template: str, html_template: str, subject: str, **ctx: object)
     return Rendered(subject=subject, text=text, html=html)
 
 
-def render_activation(link: str, expires_hours: int, recipient: str) -> Rendered:
+def render_activation(
+    link: str, expires_hours: int, recipient: str, first_name: str | None = None
+) -> Rendered:
     return _render(
         "activation.de.txt",
         "activation.de.html",
@@ -32,10 +34,13 @@ def render_activation(link: str, expires_hours: int, recipient: str) -> Rendered
         link=link,
         expires_hours=expires_hours,
         recipient_email=recipient,
+        first_name=first_name or "",
     )
 
 
-def render_reset(link: str, expires_minutes: int, recipient: str) -> Rendered:
+def render_reset(
+    link: str, expires_minutes: int, recipient: str, first_name: str | None = None
+) -> Rendered:
     return _render(
         "password-reset.de.txt",
         "password-reset.de.html",
@@ -43,4 +48,5 @@ def render_reset(link: str, expires_minutes: int, recipient: str) -> Rendered:
         link=link,
         expires_minutes=expires_minutes,
         recipient_email=recipient,
+        first_name=first_name or "",
     )

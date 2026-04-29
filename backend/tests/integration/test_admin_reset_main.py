@@ -13,8 +13,9 @@ async def test_admin_reset_no_user_returns_2(db_session) -> None:
 def test_admin_init_main_invokes_run(monkeypatch) -> None:
     called: dict = {}
 
-    async def fake_run(email: str) -> int:
+    async def fake_run(email: str, first_name: str | None = None) -> int:
         called["email"] = email
+        called["first_name"] = first_name
         return 0
 
     def fake_asyncio_run(coro):

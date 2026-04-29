@@ -3,15 +3,25 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<meta name="color-scheme" content="dark only" />
+		<meta name="supported-color-schemes" content="dark only" />
 		<title>{{ subject }}</title>
+		<style>
+			:root { color-scheme: dark only; supported-color-schemes: dark only; }
+			body { color-scheme: dark only; }
+			a { color: #ff7a1a; }
+			@media (prefers-color-scheme: light) {
+				body, table, td { background-color: #0d0907 !important; }
+			}
+		</style>
 	</head>
-	<body style="margin:0;padding:0;background:#1a1410;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#fff8ef;">
-		<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#1a1410;">
+	<body style="margin:0;padding:0;background:#0d0907;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#fff8ef;">
+		<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#0d0907" style="background:#0d0907;">
 			<tr>
-				<td align="center" style="padding:32px 16px;">
-					<table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;background:#221913;border-radius:16px;overflow:hidden;border:1px solid #3a2a1f;">
+				<td align="center" bgcolor="#0d0907" style="padding:32px 16px;background:#0d0907;">
+					<table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" bgcolor="#16100c" style="max-width:560px;background:#16100c;border-radius:16px;overflow:hidden;border:1px solid #2a1f17;">
 						<tr>
-							<td style="padding:28px 32px 8px;">
+							<td bgcolor="#16100c" style="padding:28px 32px 8px;background:#16100c;">
 								<table role="presentation" cellpadding="0" cellspacing="0" border="0">
 									<tr>
 										<td style="vertical-align:middle;padding-right:8px;">
@@ -27,38 +37,38 @@
 							</td>
 						</tr>
 						<tr>
-							<td style="padding:8px 32px 0;">
+							<td bgcolor="#16100c" style="padding:8px 32px 0;background:#16100c;">
 								<h1 style="margin:16px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:30px;line-height:1.1;font-weight:700;letter-spacing:-0.01em;text-transform:uppercase;color:#fff8ef;">
 									{% block title %}{% endblock %}
 								</h1>
 							</td>
 						</tr>
 						<tr>
-							<td style="padding:18px 32px 8px;font-size:15px;line-height:1.55;color:#e6d8c8;">
+							<td bgcolor="#16100c" style="padding:18px 32px 8px;background:#16100c;font-size:15px;line-height:1.55;color:#e6d8c8;">
 								{% block intro %}{% endblock %}
 							</td>
 						</tr>
 						<tr>
-							<td align="center" style="padding:24px 32px;">
-								<a href="{{ link }}" style="display:inline-block;padding:14px 28px;background:#ff7a1a;color:#1a1410;font-weight:700;text-decoration:none;border-radius:10px;font-size:15px;letter-spacing:0.01em;">
+							<td align="center" bgcolor="#16100c" style="padding:24px 32px;background:#16100c;">
+								<a href="{{ link }}" style="display:inline-block;padding:14px 28px;background:#ff7a1a;color:#1a1008;font-weight:700;text-decoration:none;border-radius:10px;font-size:15px;letter-spacing:0.01em;">
 									{% block cta %}{% endblock %}
 								</a>
 							</td>
 						</tr>
 						<tr>
-							<td style="padding:0 32px;font-size:13px;line-height:1.5;color:#a89685;">
+							<td bgcolor="#16100c" style="padding:0 32px;background:#16100c;font-size:13px;line-height:1.5;color:#a89685;">
 								{% block expiry %}{% endblock %}
 								<div style="margin-top:8px;word-break:break-all;color:#7a6855;">{{ link }}</div>
 							</td>
 						</tr>
 						<tr>
-							<td style="padding:18px 32px 8px;font-size:14px;line-height:1.55;color:#c9b9a8;">
+							<td bgcolor="#16100c" style="padding:18px 32px 8px;background:#16100c;font-size:14px;line-height:1.55;color:#c9b9a8;">
 								{% block outro %}{% endblock %}
 							</td>
 						</tr>
 						<tr>
-							<td style="padding:24px 32px 28px;font-size:14px;color:#a89685;">
-								Bis bald am Grill,<br />
+							<td bgcolor="#16100c" style="padding:24px 32px 28px;background:#16100c;font-size:14px;color:#a89685;">
+								Bis bald am Grill<br />
 								<span style="color:#ff7a1a;font-weight:600;">Grillmi</span>
 							</td>
 						</tr>

@@ -172,7 +172,10 @@ async def forgot_password(
         expires_at = datetime.now(timezone.utc) + timedelta(minutes=RESET_EXPIRY_MINUTES)
         link = f"{settings.PUBLIC_BASE_URL.rstrip('/')}/set-password?token={token}"
         rendered = render_reset(
-            link=link, expires_minutes=RESET_EXPIRY_MINUTES, recipient=user.email
+            link=link,
+            expires_minutes=RESET_EXPIRY_MINUTES,
+            recipient=user.email,
+            first_name=user.first_name,
         )
 
         try:

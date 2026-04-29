@@ -1,7 +1,7 @@
 {% extends "_base.html" %}
 {% block title %}Konto aktivieren{% endblock %}
 {% block intro %}
-	<p style="margin:0 0 12px;">Hallo,</p>
+	<p style="margin:0 0 12px;">Hallo{% if first_name %} {{ first_name }}{% endif %}</p>
 	<p style="margin:0;">dein Grillmi-Konto ist bereit. Aktiviere es über den Button unten.</p>
 {% endblock %}
 {% block cta %}Konto aktivieren{% endblock %}
