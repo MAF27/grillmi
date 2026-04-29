@@ -2,11 +2,10 @@
 	import { goto } from '$app/navigation'
 	import { onMount, onDestroy } from 'svelte'
 	import AlarmBanner, { type AlarmKind } from '$lib/components/AlarmBanner.svelte'
-	import ActivityLog from '$lib/components/desktop/ActivityLog.svelte'
 	import MasterClock from '$lib/components/MasterClock.svelte'
-	import PlanSummaryList from '$lib/components/desktop/PlanSummaryList.svelte'
 	import SessionHeader from '$lib/components/SessionHeader.svelte'
 	import TimerCard, { type TimerCardStatus } from '$lib/components/TimerCard.svelte'
+	import DesktopCockpit from '$lib/components/desktop/DesktopCockpit.svelte'
 	import { viewport } from '$lib/runtime/viewport.svelte'
 	import { fireAlarm, messageFor, type AlarmEvent } from '$lib/runtime/alarms'
 	import { createTicker, type TickerEvent } from '$lib/runtime/ticker'
@@ -39,6 +38,10 @@
 	onMount(async () => {
 		await grilladeStore.init()
 		await settingsStore.init()
+		// On desktop, /session and /plan render the same DesktopCockpit, which
+		// owns the ticker and wakeLock lifecycle and handles the no-session
+		// pre-start state itself. Skip the route's own session-runtime setup.
+		if (viewport.isDesktop) return
 		if (!grilladeStore.session) {
 			goto('/plan')
 			return
@@ -140,48 +143,9 @@
 	<title>Grillade · Grillmi</title>
 </svelte:head>
 
-{#if session}
-	{#if viewport.isDesktop}
-		<div class="desktop-session">
-			<PlanSummaryList items={session.items} statusByItem={Object.fromEntries(session.items.map(item => [item.id, item.status]))} />
-			<section class="cockpit-centre">
-				<div class="desktop-top">
-					<SessionHeader targetEpoch={session.targetEpoch} {wakeLockState} {planMode} placement="desktop" onEnd={endSession} />
-				</div>
-				{#if grilladeStore.sessionHasStarted}
-					<MasterClock targetEpoch={session.targetEpoch} size="desktop" />
-				{:else}
-					<div class="awaiting" data-testid="awaiting-start">Tippe auf Los, um die erste Grillzeit zu starten.</div>
-				{/if}
-				<div class="big-grid">
-					{#each session.items as item (item.id)}
-						<TimerCard
-							{item}
-							size="lg"
-							status={statusFor(item)}
-							alarmFiring={firingItemId === item.id}
-							onplate={plateItem}
-							onstart={startItem}
-							onremove={removeItem} />
-					{/each}
-				</div>
-			</section>
-			<aside class="right-pane">
-				{#if alarming}
-					{#key alarming.id}
-						<AlarmBanner
-							kind={alarming.kind}
-							itemName={alarming.itemName}
-							count={visibleAlarms.length}
-							message={alarming.message}
-							placement="top"
-							onDismiss={dismissAlarm} />
-					{/key}
-				{/if}
-				<ActivityLog events={activity} />
-			</aside>
-		</div>
-	{:else}
+{#if viewport.isDesktop}
+	<DesktopCockpit />
+{:else if session}
 	<div class="screen">
 		<SessionHeader targetEpoch={session.targetEpoch} {wakeLockState} {planMode} onEnd={endSession} />
 
@@ -216,48 +180,9 @@
 			{/key}
 		{/if}
 	</div>
-	{/if}
 {/if}
 
 <style>
-	.desktop-session {
-		display: grid;
-		grid-template-columns: 280px minmax(0, 1fr) 320px;
-		min-height: 100dvh;
-		background: var(--color-bg-base);
-		color: var(--color-fg-base);
-	}
-	.cockpit-centre {
-		min-width: 0;
-		padding: 24px 28px 36px;
-	}
-	.desktop-top :global(.session-header) {
-		position: static;
-		background: transparent;
-	}
-	.desktop-top :global(.bar) {
-		padding: 0 0 18px;
-	}
-	.big-grid {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 16px;
-	}
-	.right-pane {
-		position: relative;
-		min-width: 0;
-		padding: 24px;
-		border-left: 1px solid var(--color-border-subtle);
-		background: var(--color-bg-panel);
-	}
-	@media (max-width: 1279px) {
-		.desktop-session {
-			grid-template-columns: 280px minmax(0, 1fr) 300px;
-		}
-		.big-grid {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-		}
-	}
 	.screen {
 		position: relative;
 		min-height: 100dvh;

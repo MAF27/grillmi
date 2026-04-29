@@ -4,10 +4,9 @@
 	import Button from '$lib/components/Button.svelte'
 	import SegmentedControl from '$lib/components/SegmentedControl.svelte'
 	import TimePickerSheet from '$lib/components/TimePickerSheet.svelte'
-	import TimePickerPopover from '$lib/components/TimePickerPopover.svelte'
 	import PlanItemRow from '$lib/components/PlanItemRow.svelte'
-	import PlanSummaryList from '$lib/components/desktop/PlanSummaryList.svelte'
 	import AddItemSheet from '$lib/components/AddItemSheet.svelte'
+	import DesktopCockpit from '$lib/components/desktop/DesktopCockpit.svelte'
 	import { viewport } from '$lib/runtime/viewport.svelte'
 	import { grilladeStore } from '$lib/stores/grilladeStore.svelte'
 	import { favoritesStore } from '$lib/stores/favoritesStore.svelte'
@@ -57,7 +56,10 @@
 		;(async () => {
 			await grilladeStore.init()
 			await favoritesStore.init()
-			if (grilladeStore.session && grilladeStore.sessionHasStarted) goto('/session')
+			// On mobile, /plan and /session are separate routes; bounce to the live
+			// cockpit if a session is already running. On desktop the cockpit
+			// renders both states in place, so the redirect would loop.
+			if (!viewport.isDesktop && grilladeStore.session && grilladeStore.sessionHasStarted) goto('/session')
 		})()
 		return () => clearInterval(tickId)
 	})
@@ -120,16 +122,16 @@
 	<title>Plan · Grillmi</title>
 </svelte:head>
 
+{#if viewport.isDesktop}
+	<DesktopCockpit />
+{:else}
 <main>
 	<header>
 		<button class="back" onclick={() => goto('/')} aria-label="Zurück">‹</button>
 		<h1>Grillade planen</h1>
 	</header>
 
-	<div class="plan-shell" class:desktop={viewport.isDesktop}>
-	{#if viewport.isDesktop}
-		<PlanSummaryList items={plan.items} />
-	{/if}
+	<div class="plan-shell">
 	<div class="scroll">
 		<SegmentedControl {segments} value={segmentValue} ariaLabel="Planungsmodus" onchange={pickSegment} />
 
@@ -189,26 +191,19 @@
 				</div>
 			{/if}
 		</section>
-		{#if viewport.isDesktop}
-			<div class="desktop-start">
-				<Button variant="primary" size="lg" fullWidth disabled={plan.items.length === 0} onclick={start}>{goLabel}</Button>
-			</div>
-		{/if}
 	</div>
 	</div>
 
-	{#if !viewport.isDesktop}
-		<div class="bottom">
-			<Button variant="primary" size="lg" fullWidth disabled={plan.items.length === 0} onclick={start}>{goLabel}</Button>
-		</div>
-	{/if}
+	<div class="bottom">
+		<Button variant="primary" size="lg" fullWidth disabled={plan.items.length === 0} onclick={start}>{goLabel}</Button>
+	</div>
 </main>
 
 {#if sheetOpen}
 	<AddItemSheet
 		open={sheetOpen}
 		initial={editing}
-		placement={viewport.isDesktop ? 'drawer' : 'sheet'}
+		placement="sheet"
 		onclose={() => {
 			sheetOpen = false
 			editing = null
@@ -218,13 +213,8 @@
 
 
 {#if timePickerOpen}
-	{#if viewport.isDesktop}
-		<div class="popover-anchor">
-			<TimePickerPopover value={effectiveTarget} onConfirm={commitTime} onCancel={() => (timePickerOpen = false)} />
-		</div>
-	{:else}
-		<TimePickerSheet value={effectiveTarget} oncommit={commitTime} oncancel={() => (timePickerOpen = false)} />
-	{/if}
+	<TimePickerSheet value={effectiveTarget} oncommit={commitTime} oncancel={() => (timePickerOpen = false)} />
+{/if}
 {/if}
 
 <style>
@@ -267,25 +257,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: 16px;
-	}
-	.plan-shell.desktop {
-		display: grid;
-		grid-template-columns: 320px minmax(0, 1fr) minmax(120px, 0.35fr);
-		min-height: calc(100dvh - 74px);
-	}
-	.plan-shell.desktop .scroll {
-		min-width: 0;
-		padding: 24px 28px 36px;
-		max-width: 680px;
-	}
-	.desktop-start {
-		margin-top: 10px;
-	}
-	.popover-anchor {
-		position: fixed;
-		left: 50%;
-		top: 190px;
-		z-index: var(--z-modal);
 	}
 	.eatcard {
 		position: relative;
@@ -474,18 +445,5 @@
 		padding: 16px 24px calc(16px + env(safe-area-inset-bottom));
 		background: linear-gradient(to top, var(--color-bg-base) 70%, transparent);
 		z-index: var(--z-sticky);
-	}
-	@media (min-width: 1024px) {
-		main {
-			max-width: none;
-			padding-bottom: 0;
-		}
-		header {
-			padding: 24px 28px 16px;
-			border-bottom: 1px solid var(--color-border-subtle);
-		}
-		.bottom {
-			display: none;
-		}
 	}
 </style>

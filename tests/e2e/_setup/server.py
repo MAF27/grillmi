@@ -99,8 +99,8 @@ def _patch_email_sender() -> list[dict]:
     outbox: list[dict] = []
     from grillmi.email import sender as email_sender_mod
 
-    async def fake_send(to: str, subject: str, body_text: str) -> None:
-        outbox.append({"to": to, "subject": subject, "body": body_text})
+    async def fake_send(to: str, subject: str, body_text: str, body_html: str | None = None) -> None:
+        outbox.append({"to": to, "subject": subject, "body": body_text, "html": body_html})
 
     email_sender_mod.send = fake_send  # type: ignore[assignment]
     return outbox
@@ -193,8 +193,8 @@ def _install_test_routes(app, outbox: list[dict]) -> None:
 
         public = get_settings().PUBLIC_BASE_URL.rstrip("/")
         link = f"{public}/set-password?token={raw_token}"
-        subject, body = render_activation(link, 72, email)
-        await email_sender_mod.send(email, subject, body)
+        rendered = render_activation(link, 72, email)
+        await email_sender_mod.send(email, rendered.subject, rendered.text, rendered.html)
         return {"email": email, "token": raw_token, "link": link}
 
     @router.post("/_test/forge_token")

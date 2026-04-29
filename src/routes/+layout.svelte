@@ -26,21 +26,17 @@
 			: null,
 	)
 	const currentSection = $derived.by(() => {
-		if (pathname.startsWith('/plan')) return 'plan'
-		if (pathname.startsWith('/session')) return 'cook'
+		if (pathname.startsWith('/plan') || pathname.startsWith('/session')) return 'cook'
 		if (pathname.startsWith('/chronik')) return 'chronik'
 		if (pathname.startsWith('/settings')) return 'settings'
 		return 'home'
 	})
-	const sidebarItems = $derived<SidebarItem[]>(
-		[
-			{ id: 'home', label: 'Übersicht', icon: '⌂' },
-			{ id: 'plan', label: 'Planen', icon: '+' },
-			grilladeStore.session ? { id: 'cook', label: 'Grillen', icon: '◉', badge: 'LIVE' } : null,
-			{ id: 'chronik', label: 'Chronik', icon: '★' },
-			{ id: 'settings', label: 'Einstellungen', icon: '⚙' },
-		].filter((item): item is SidebarItem => item !== null),
-	)
+	const sidebarItems = $derived<SidebarItem[]>([
+		{ id: 'home', label: 'Übersicht', icon: '⌂' },
+		{ id: 'cook', label: 'Grillen', icon: '◉', badge: grilladeStore.session ? 'LIVE' : undefined },
+		{ id: 'chronik', label: 'Chronik', icon: '★' },
+		{ id: 'settings', label: 'Einstellungen', icon: '⚙' },
+	])
 
 	$effect(() => {
 		authStore.init(data.auth)
@@ -92,8 +88,7 @@
 	function nav(id: string) {
 		const map: Record<string, string> = {
 			home: '/',
-			plan: '/plan',
-			cook: '/session',
+			cook: grilladeStore.session ? '/session' : '/plan',
 			chronik: '/chronik',
 			settings: '/settings',
 		}
