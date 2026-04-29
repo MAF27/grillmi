@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="de">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<title>{{ subject }}</title>
+	</head>
+	<body style="margin:0;padding:0;background:#1a1410;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#fff8ef;">
+		<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#1a1410;">
+			<tr>
+				<td align="center" style="padding:32px 16px;">
+					<table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;background:#221913;border-radius:16px;overflow:hidden;border:1px solid #3a2a1f;">
+						<tr>
+							<td style="padding:28px 32px 8px;">
+								<table role="presentation" cellpadding="0" cellspacing="0" border="0">
+									<tr>
+										<td style="vertical-align:middle;padding-right:8px;">
+											<svg width="22" height="22" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+												<path d="M12 2c1 3-1 4-1 7 0 1.5 1 3 2.5 3S16 10.5 16 9c0-2-1-3-1-4 2 1 5 4 5 8 0 4-3.5 7-8 7s-8-3-8-7c0-3 2-5 4-6.5C7.2 5.7 9 4 12 2z" fill="#ff7a1a"/>
+											</svg>
+										</td>
+										<td style="vertical-align:middle;font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:#fff8ef;">
+											Grillmi
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td style="padding:8px 32px 0;">
+								<h1 style="margin:16px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:30px;line-height:1.1;font-weight:700;letter-spacing:-0.01em;text-transform:uppercase;color:#fff8ef;">
+									{% block title %}{% endblock %}
+								</h1>
+							</td>
+						</tr>
+						<tr>
+							<td style="padding:18px 32px 8px;font-size:15px;line-height:1.55;color:#e6d8c8;">
+								{% block intro %}{% endblock %}
+							</td>
+						</tr>
+						<tr>
+							<td align="center" style="padding:24px 32px;">
+								<a href="{{ link }}" style="display:inline-block;padding:14px 28px;background:#ff7a1a;color:#1a1410;font-weight:700;text-decoration:none;border-radius:10px;font-size:15px;letter-spacing:0.01em;">
+									{% block cta %}{% endblock %}
+								</a>
+							</td>
+						</tr>
+						<tr>
+							<td style="padding:0 32px;font-size:13px;line-height:1.5;color:#a89685;">
+								{% block expiry %}{% endblock %}
+								<div style="margin-top:8px;word-break:break-all;color:#7a6855;">{{ link }}</div>
+							</td>
+						</tr>
+						<tr>
+							<td style="padding:18px 32px 8px;font-size:14px;line-height:1.55;color:#c9b9a8;">
+								{% block outro %}{% endblock %}
+							</td>
+						</tr>
+						<tr>
+							<td style="padding:24px 32px 28px;font-size:14px;color:#a89685;">
+								Bis bald am Grill,<br />
+								<span style="color:#ff7a1a;font-weight:600;">Grillmi</span>
+							</td>
+						</tr>
+					</table>
+					<div style="margin-top:18px;font-size:11px;color:#5a4838;">
+						Diese Mail ging an {{ recipient_email }}.
+					</div>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>

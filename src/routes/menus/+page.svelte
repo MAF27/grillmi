@@ -39,7 +39,7 @@
 
 	{#if menusStore.all.length === 0}
 		<p class="empty">Noch kein Menü gespeichert. Stelle einen Plan zusammen und tippe auf <strong>Als Menü speichern</strong>.</p>
-		<Button variant="primary" fullWidth onclick={() => goto('/plan')}>Neue Session</Button>
+		<Button variant="primary" fullWidth onclick={() => goto('/plan')}>Neue Grillade</Button>
 	{:else}
 		<div class="list" role="list">
 			{#each menusStore.all as menu (menu.id)}
@@ -47,7 +47,7 @@
 			{/each}
 		</div>
 		<div class="cta">
-			<Button variant="primary" size="lg" fullWidth onclick={() => goto('/plan')}>Neue Session</Button>
+			<Button variant="primary" size="lg" fullWidth onclick={() => goto('/plan')}>Neue Grillade</Button>
 		</div>
 	{/if}
 </main>

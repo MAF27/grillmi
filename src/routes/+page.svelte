@@ -53,7 +53,7 @@
 		return `${menu.items.length} Stück · ${Math.round(totalSec / 60)} min`
 	}
 
-	function newDesktopSession() {
+	function newDesktopGrillade() {
 		grilladeStore.resetDraft()
 		goto('/plan')
 	}
@@ -68,7 +68,7 @@
 		<div class="date-kicker">Heute · {new Date().toLocaleDateString('de-CH', { weekday: 'long', day: '2-digit', month: '2-digit' })}</div>
 		<h1>Bereit zum <span>Grillen?</span></h1>
 		<p class="desktop-copy">Plane deine Grillade am Laptop, starte sie wann du fertig bist. Auf jedem Gerät.</p>
-		<Button variant="primary" size="lg" onclick={newDesktopSession}>Loszündeln</Button>
+		<Button variant="primary" size="lg" onclick={newDesktopGrillade}>Loszündeln</Button>
 		<div class="stats">
 			<Card>
 				<div class="stat-value">{finishedThisMonth ? finishedThisMonth : '-'}</div>
@@ -104,7 +104,7 @@
 				Bereit zum<br />
 				<span class="hero-accent">Grillen</span>?
 			</h1>
-			<p>Plane deine Session. Grillmi sagt dir, wann was auf den Rost muss.</p>
+			<p>Plane deine Grillade. Grillmi sagt dir, wann was auf den Rost muss.</p>
 		</div>
 
 		{#if recentMenus.length > 0}
@@ -121,7 +121,7 @@
 			</div>
 		{/if}
 
-		<Button variant="primary" size="lg" fullWidth onclick={() => goto('/plan')}>Neue Session</Button>
+		<Button variant="primary" size="lg" fullWidth onclick={() => goto('/plan')}>Neue Grillade</Button>
 		<div class="row-buttons">
 			<Button variant="secondary" fullWidth onclick={() => goto('/menus')}>Menüs</Button>
 			<Button variant="secondary" fullWidth onclick={() => goto('/settings')}>Einstellungen</Button>

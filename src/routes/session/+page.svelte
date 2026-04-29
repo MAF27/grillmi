@@ -109,7 +109,7 @@
 </script>
 
 <svelte:head>
-	<title>Session · Grillmi</title>
+	<title>Grillade · Grillmi</title>
 </svelte:head>
 
 {#if session}

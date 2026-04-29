@@ -245,7 +245,7 @@
 <main>
 	<header>
 		<button class="back" onclick={() => goto('/')} aria-label="Zurück">‹</button>
-		<h1>Session planen</h1>
+		<h1>Grillade planen</h1>
 	</header>
 
 	<div class="plan-shell" class:desktop={viewport.isDesktop}>

@@ -136,7 +136,7 @@
 	{:else}
 		<SectionHeader kicker="Grilladen" title="Was du schon gegrillt hast" />
 		{#if grilladenHistoryStore.finished.length === 0}
-			<button class="empty" type="button" onclick={() => goto('/plan')}>Noch keine Grilladen abgeschlossen<br /><span>Neue Session planen</span></button>
+			<button class="empty" type="button" onclick={() => goto('/plan')}>Noch keine Grilladen abgeschlossen<br /><span>Neue Grillade planen</span></button>
 		{:else}
 			<div class="grid">
 				{#each grilladenHistoryStore.finished as row (row.id)}

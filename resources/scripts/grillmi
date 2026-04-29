@@ -462,7 +462,7 @@ cmd_admin_init() {
 cmd_admin_reset() {
     local email="${1:-}"
     [[ -n "$email" ]] || fail "usage: grillmi admin-reset <email>"
-    (cd "$BACKEND_DIR" && load_config_env && doppler run -- bash grillmi/cli/_admin_reset_wrapper.sh --email "$email")
+    (cd "$BACKEND_DIR" && load_config_env && doppler run -- uv run grillmi-admin-reset --email "$email")
 }
 
 # === Backups ===
@@ -546,7 +546,7 @@ Commands:
   restore <file>           Restore the database from a gzipped pg_dump file (interactive confirm).
   admin-init --email <email>
                            Create a user account and email an activation link (idempotent).
-  admin-reset <email>      Reset a user's password (interactive prompt).
+  admin-reset <email>      Email a password-reset link to an existing user.
   help                     Show this message.
 
 Status formats:

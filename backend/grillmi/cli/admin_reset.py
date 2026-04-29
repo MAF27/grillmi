@@ -1,18 +1,26 @@
 import argparse
 import asyncio
+import hashlib
+import secrets
 import sys
+from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import select, update
+from sqlalchemy import select
 
+from grillmi.config import get_settings
 from grillmi.db import async_session_maker
+from grillmi.email import sender as email_sender
+from grillmi.email.templates import render_reset
 from grillmi.logging import configure_logging
-from grillmi.models import User
-from grillmi.repos.sessions_repo import delete_sessions_for_user
-from grillmi.security.argon2 import hash_password
+from grillmi.models import PasswordResetToken, User
+
+RESET_EXPIRY_MINUTES = 30
 
 
-async def _run(email: str, password: str) -> int:
+async def _run(email: str) -> int:
+    settings = get_settings()
     factory = async_session_maker()
+
     async with factory() as session:
         user = (
             await session.execute(select(User).where(User.email == email))
@@ -20,11 +28,32 @@ async def _run(email: str, password: str) -> int:
         if user is None:
             print(f"no user found for email {email!r}", file=sys.stderr)
             return 2
-        new_hash = await hash_password(password)
-        await session.execute(update(User).where(User.id == user.id).values(password_hash=new_hash))
-        await delete_sessions_for_user(session, user.id)
+
+        token = secrets.token_urlsafe(32)
+        token_hash = hashlib.sha256(token.encode("utf-8")).digest()
+        expires_at = datetime.now(timezone.utc) + timedelta(minutes=RESET_EXPIRY_MINUTES)
+        link = f"{settings.PUBLIC_BASE_URL.rstrip('/')}/set-password?token={token}"
+        rendered = render_reset(
+            link=link, expires_minutes=RESET_EXPIRY_MINUTES, recipient=user.email
+        )
+
+        try:
+            await email_sender.send(user.email, rendered.subject, rendered.text, rendered.html)
+        except Exception as exc:
+            print(f"send failed; aborting before any DB writes: {exc}", file=sys.stderr)
+            return 2
+
+        session.add(
+            PasswordResetToken(
+                user_id=user.id,
+                token_hash=token_hash,
+                kind="reset",
+                expires_at=expires_at,
+            )
+        )
         await session.commit()
-    print(f"password reset for {email}")
+
+    print(f"reset link sent to {email}; expires in {RESET_EXPIRY_MINUTES}m")
     return 0
 
 
@@ -32,19 +61,8 @@ def main() -> None:
     configure_logging(json=False)
     parser = argparse.ArgumentParser(prog="grillmi-admin-reset")
     parser.add_argument("--email", required=True)
-    parser.add_argument("--password-stdin", action="store_true",
-                        help="read the new password from stdin (recommended)")
     args = parser.parse_args()
-
-    if args.password_stdin:
-        password = sys.stdin.readline().rstrip("\n")
-    else:
-        import getpass
-        password = getpass.getpass("New password: ")
-    if len(password) < 12:
-        print("password must be at least 12 characters", file=sys.stderr)
-        sys.exit(2)
-    sys.exit(asyncio.run(_run(args.email, password)))
+    sys.exit(asyncio.run(_run(args.email)))
 
 
 if __name__ == "__main__":

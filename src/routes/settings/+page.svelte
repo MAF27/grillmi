@@ -44,6 +44,7 @@
 
 	function setSound(event: EventKey, soundId: ToneId) {
 		void settingsStore.setSound(event, soundId)
+		void play(soundId).catch(() => {})
 	}
 
 	function previewTone(id: ToneId, e: Event) {

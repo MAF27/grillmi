@@ -77,12 +77,26 @@ def smtp_outbox(monkeypatch) -> list[dict[str, Any]]:
     outbox: list[dict[str, Any]] = []
 
     async def fake_send(msg, **kwargs):
+        text_part = ""
+        html_part = ""
+        if msg.is_multipart():
+            for part in msg.walk():
+                if part.get_content_maintype() == "multipart":
+                    continue
+                content = part.get_content()
+                if part.get_content_subtype() == "html":
+                    html_part = content
+                else:
+                    text_part = content
+        else:
+            text_part = msg.get_content()
         outbox.append(
             {
                 "to": msg["To"],
                 "from": msg["From"],
                 "subject": msg["Subject"],
-                "body": msg.get_content(),
+                "body": text_part,
+                "html": html_part,
                 "kwargs": kwargs,
             }
         )

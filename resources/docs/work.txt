@@ -1,4 +1,6 @@
-Talking about the desktop version:
-We still have "Neue Session planen" - do a sweep. No "Session"! 
-What happened to the Settings pages? Were you just not in the mood to do work?
-When selecting a chime, it must be played.
+Akzentfarbe does nothing, nor does Dichte. 
+Light mode kinda works halfway.
+Sprache: Do we have i8n?
+When clicking Grillstück hinzufügen, the bottom card does not make sense on Desktop.
+"Grillen" is not clickable unless live. Very weird UX.
+Design of the timers (with rings) in Grillen does not follow the Design I gave you.

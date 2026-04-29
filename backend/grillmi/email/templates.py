@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -10,15 +11,36 @@ _env = Environment(
 )
 
 
-def render_activation(link: str, expires_hours: int, recipient: str) -> tuple[str, str]:
-    body = _env.get_template("activation.de.txt").render(
-        link=link, expires_hours=expires_hours, recipient_email=recipient
-    )
-    return "Grillmi: Konto aktivieren", body
+@dataclass(frozen=True)
+class Rendered:
+    subject: str
+    text: str
+    html: str
 
 
-def render_reset(link: str, expires_minutes: int, recipient: str) -> tuple[str, str]:
-    body = _env.get_template("password-reset.de.txt").render(
-        link=link, expires_minutes=expires_minutes, recipient_email=recipient
+def _render(text_template: str, html_template: str, subject: str, **ctx: object) -> Rendered:
+    text = _env.get_template(text_template).render(**ctx)
+    html = _env.get_template(html_template).render(subject=subject, **ctx)
+    return Rendered(subject=subject, text=text, html=html)
+
+
+def render_activation(link: str, expires_hours: int, recipient: str) -> Rendered:
+    return _render(
+        "activation.de.txt",
+        "activation.de.html",
+        subject="Grillmi: Konto aktivieren",
+        link=link,
+        expires_hours=expires_hours,
+        recipient_email=recipient,
     )
-    return "Grillmi: Passwort zurücksetzen", body
+
+
+def render_reset(link: str, expires_minutes: int, recipient: str) -> Rendered:
+    return _render(
+        "password-reset.de.txt",
+        "password-reset.de.html",
+        subject="Grillmi: Passwort zurücksetzen",
+        link=link,
+        expires_minutes=expires_minutes,
+        recipient_email=recipient,
+    )
