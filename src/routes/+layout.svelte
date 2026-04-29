@@ -34,13 +34,15 @@
 		if (pathname.startsWith('/settings')) return 'settings'
 		return 'home'
 	})
-	const sidebarItems = $derived<SidebarItem[]>([
-		{ id: 'home', label: 'Übersicht', icon: '⌂' },
-		{ id: 'plan', label: 'Planen', icon: '+' },
-		{ id: 'cook', label: 'Grillen', icon: '◉', badge: grilladeStore.session ? 'LIVE' : undefined },
-		{ id: 'grilladen', label: 'Grilladen', icon: '★' },
-		{ id: 'settings', label: 'Einstellungen', icon: '⚙' },
-	])
+	const sidebarItems = $derived<SidebarItem[]>(
+		[
+			{ id: 'home', label: 'Übersicht', icon: '⌂' },
+			{ id: 'plan', label: 'Planen', icon: '+' },
+			grilladeStore.session ? { id: 'cook', label: 'Grillen', icon: '◉', badge: 'LIVE' } : null,
+			{ id: 'grilladen', label: 'Grilladen', icon: '★' },
+			{ id: 'settings', label: 'Einstellungen', icon: '⚙' },
+		].filter((item): item is SidebarItem => item !== null),
+	)
 
 	$effect(() => {
 		authStore.init(data.auth)

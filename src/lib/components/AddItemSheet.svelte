@@ -14,9 +14,10 @@
 		initial?: PlannedItem | null
 		onclose: () => void
 		oncommit: (item: Omit<PlannedItem, 'id'>) => void
+		placement?: 'sheet' | 'drawer'
 	}
 
-	let { open, initial = null, onclose, oncommit }: Props = $props()
+	let { open, initial = null, onclose, oncommit, placement = 'sheet' }: Props = $props()
 
 	let step = $state<Step>('category')
 	let tab = $state<Tab>('categories')
@@ -329,8 +330,10 @@
 
 {#if open}
 	<div class="scrim" role="presentation" onclick={onclose}></div>
-	<div class="sheet" role="dialog" aria-modal="true" aria-label="Eintrag hinzufügen">
-		<div class="handle" aria-hidden="true"></div>
+	<div class="sheet" class:drawer={placement === 'drawer'} role="dialog" aria-modal="true" aria-label="Eintrag hinzufügen">
+		{#if placement === 'sheet'}
+			<div class="handle" aria-hidden="true"></div>
+		{/if}
 		<header>
 			<button class="back" onclick={back} aria-label="Zurück">‹</button>
 			<div class="title-stack">
@@ -554,8 +557,22 @@
 		width: 100%;
 		max-width: 600px;
 		margin: 0 auto;
-		box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.5);
+		box-shadow: var(--shadow-lg);
 		animation: aSheetIn 0.3s cubic-bezier(0.2, 0.7, 0.3, 1);
+	}
+	.sheet.drawer {
+		left: auto;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		max-height: 100dvh;
+		width: 480px;
+		max-width: 90vw;
+		margin: 0;
+		border-top-left-radius: 0;
+		border-top-right-radius: 0;
+		border-left: 1px solid var(--color-border-subtle);
+		animation: aDrawerIn 0.28s cubic-bezier(0.2, 0.7, 0.3, 1);
 	}
 	@keyframes aSheetIn {
 		from {
@@ -563,6 +580,14 @@
 		}
 		to {
 			transform: translateY(0);
+		}
+	}
+	@keyframes aDrawerIn {
+		from {
+			transform: translateX(100%);
+		}
+		to {
+			transform: translateX(0);
 		}
 	}
 	.handle {

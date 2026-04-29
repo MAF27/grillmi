@@ -28,11 +28,40 @@
 		return total <= 0 ? 1 : Math.min(1, (now - item.putOnEpoch) / total)
 	})
 	const value = $derived.by(() => {
-		if (effectiveStatus === 'ready') return 'OK'
+		if (effectiveStatus === 'ready') return '✓'
 		if (effectiveStatus === 'unstarted') return formatDuration(item.cookSeconds)
 		if (effectiveStatus === 'pending') return formatDuration(Math.max(0, Math.round((item.putOnEpoch - now) / 1000)))
 		if (effectiveStatus === 'resting') return formatDuration(Math.max(0, Math.round((item.restingUntilEpoch - now) / 1000)))
 		return formatDuration(Math.max(0, Math.round((item.doneEpoch - now) / 1000)))
+	})
+
+	const ringEyebrow = $derived.by(() => {
+		if (effectiveStatus === 'ready') return null
+		if (effectiveStatus === 'unstarted') return 'DAUER'
+		if (effectiveStatus === 'pending') return 'BIS START'
+		if (effectiveStatus === 'flip') return 'WENDEN'
+		if (effectiveStatus === 'resting') return 'RUHE'
+		if (effectiveStatus === 'cooking') return progress < 0.5 && item.flipEpoch !== null ? 'BIS WENDEN' : 'BIS ENDE'
+		if (effectiveStatus === 'plated') return 'ANGERICHTET'
+		return null
+	})
+
+	const statusLabel: Record<TimerCardStatus, string> = {
+		unstarted: 'BEREIT',
+		pending: 'WARTET',
+		cooking: 'GRILLT',
+		flip: 'WENDEN!',
+		resting: 'RUHT',
+		ready: 'FERTIG',
+		plated: 'ANGERICHTET',
+	}
+
+	const specLine = $derived.by(() => {
+		if (item.thicknessCm !== null && item.doneness) return `${item.thicknessCm} cm · ${item.doneness}`
+		if (item.thicknessCm !== null) return `${item.thicknessCm} cm`
+		if (item.doneness) return item.doneness
+		if (item.prepLabel && item.prepLabel !== '—' && item.prepLabel !== '-') return item.prepLabel
+		return `${formatDuration(item.cookSeconds)} Garzeit`
 	})
 
 	onMount(() => {
@@ -42,18 +71,21 @@
 </script>
 
 <article class="big-card" data-state={effectiveStatus} class:alarm={alarmFiring} data-testid="big-timer-card">
-	<ProgressRing progress={progress} state={effectiveStatus} size={132} stroke={7} ariaLabel={item.label || item.cutSlug}>
-		<div class="ring-value" data-live-countdown>{value}</div>
-		<div class="ring-label">{effectiveStatus === 'unstarted' ? 'DAUER' : effectiveStatus === 'resting' ? 'RUHE' : 'REST'}</div>
-	</ProgressRing>
-	<div class="body">
-		<h3>{item.label || item.cutSlug}</h3>
-		<p>{item.heatZone || 'Grillzone'}{#if item.grateTempC} · {item.grateTempC}&deg;C{/if}</p>
+	<div class="ring-wrap">
+		<ProgressRing {progress} state={effectiveStatus} size={132} stroke={7} ariaLabel={item.label || item.cutSlug}>
+			<div class="ring-value" data-live-countdown>{value}</div>
+			{#if ringEyebrow}
+				<div class="ring-eyebrow">{ringEyebrow}</div>
+			{/if}
+		</ProgressRing>
 	</div>
+	<div class="name">{item.label || item.cutSlug}</div>
+	<div class="spec">{specLine}</div>
+	<div class="status-badge">{statusLabel[effectiveStatus]}</div>
 	{#if effectiveStatus === 'unstarted' && onstart}
-		<button type="button" onclick={() => onstart!(item.id)}>Los</button>
+		<button class="action start" type="button" onclick={() => onstart!(item.id)}>Los</button>
 	{:else if effectiveStatus === 'ready' && onplate}
-		<button type="button" onclick={() => onplate!(item.id)}>Anrichten</button>
+		<button class="action plate" type="button" onclick={() => onplate!(item.id)}>Anrichten</button>
 	{/if}
 </article>
 
@@ -62,60 +94,139 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 16px;
 		min-width: 0;
-		padding: 22px 20px;
+		padding: 20px 18px 18px;
 		border-radius: 16px;
 		background: var(--color-bg-surface);
 		border: 1px solid var(--color-border-subtle);
 		color: var(--color-fg-base);
+		transition: border-color var(--duration-normal) var(--ease-default), box-shadow var(--duration-normal) var(--ease-default);
+	}
+	.big-card[data-state='flip'],
+	.big-card[data-state='ready'] {
+		border-color: currentColor;
+	}
+	.big-card[data-state='flip'] {
+		color: var(--color-ember);
+		box-shadow: 0 0 0 3px var(--color-accent-muted);
+	}
+	.big-card[data-state='ready'] {
+		color: var(--color-state-ready);
+		box-shadow: 0 0 0 3px var(--color-state-ready-bg);
 	}
 	.big-card.alarm {
-		border-color: var(--color-ember);
-		box-shadow: 0 0 0 4px rgba(255, 122, 26, 0.14);
+		animation: big-alarm 1000ms var(--ease-linear) infinite;
+	}
+	@keyframes big-alarm {
+		0%,
+		100% {
+			border-color: currentColor;
+		}
+		50% {
+			border-color: var(--color-ember-dim);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.big-card.alarm {
+			animation: none;
+		}
+	}
+	.ring-wrap {
+		display: flex;
+		justify-content: center;
+		margin-bottom: 14px;
 	}
 	.ring-value {
 		font-family: var(--font-display);
-		font-size: 26px;
-		font-weight: 700;
-		line-height: 1;
+		font-size: 30px;
+		line-height: 0.9;
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		color: var(--color-fg-base);
 		font-variant-numeric: tabular-nums;
 	}
-	.ring-label {
-		margin-top: 3px;
-		font-size: 9px;
-		font-weight: 700;
-		letter-spacing: 0.12em;
+	.big-card[data-state='unstarted'] .ring-value,
+	.big-card[data-state='plated'] .ring-value {
 		color: var(--color-fg-muted);
 	}
-	.body {
-		min-width: 0;
-		text-align: center;
+	.ring-eyebrow {
+		margin-top: 4px;
+		font-family: var(--font-body);
+		font-size: 9px;
+		font-weight: 700;
+		letter-spacing: 0.14em;
+		color: var(--color-fg-muted);
+		text-transform: uppercase;
 	}
-	h3 {
-		margin: 0;
+	.name {
+		font-family: var(--font-body);
+		font-size: 15px;
+		font-weight: 600;
+		line-height: 1.2;
+		text-align: center;
 		max-width: 100%;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
-		font-family: var(--font-body);
-		font-size: 16px;
-		font-weight: 700;
+		margin-bottom: 4px;
 	}
-	p {
-		margin: 6px 0 0;
+	.spec {
+		font-family: var(--font-display);
+		font-size: 11px;
+		font-variant-numeric: tabular-nums;
 		color: var(--color-fg-muted);
-		font-size: 12px;
+		text-align: center;
+		margin-bottom: 8px;
+		max-width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
-	button {
+	.status-badge {
+		font-family: var(--font-body);
+		font-size: 10px;
+		font-weight: 700;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		text-align: center;
+		color: var(--color-fg-muted);
+	}
+	.big-card[data-state='cooking'] .status-badge,
+	.big-card[data-state='flip'] .status-badge {
+		color: var(--color-ember);
+	}
+	.big-card[data-state='resting'] .status-badge {
+		color: var(--color-state-resting);
+	}
+	.big-card[data-state='ready'] .status-badge {
+		color: var(--color-state-ready);
+	}
+	.action {
+		margin-top: 12px;
 		min-height: 36px;
-		padding: 0 14px;
-		border: 1px solid var(--color-border-strong);
+		padding: 0 16px;
+		border: none;
 		border-radius: 10px;
-		background: transparent;
-		color: var(--color-fg-base);
 		font: inherit;
 		font-weight: 700;
+		font-size: 13px;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
 		cursor: pointer;
+		transition: filter 0.15s ease;
+	}
+	.action:hover {
+		filter: brightness(1.1);
+	}
+	.action.start {
+		background: var(--color-ember);
+		color: var(--color-ember-ink);
+	}
+	.action.plate {
+		background: var(--color-state-ready);
+		color: var(--color-bg-base);
+		text-transform: none;
+		letter-spacing: normal;
+		font-weight: 600;
 	}
 </style>

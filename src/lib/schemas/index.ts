@@ -90,11 +90,20 @@ export const soundAssignmentSchema = z.object({
 	done: toneIdSchema,
 })
 
+export const ACCENT_IDS = ['ember', 'coal', 'lime', 'sky'] as const
+export type AccentId = (typeof ACCENT_IDS)[number]
+
+export const DENSITY_IDS = ['comfortable', 'compact'] as const
+export type DensityId = (typeof DENSITY_IDS)[number]
+
 export const userSettingsSchema = z.object({
 	theme: z.enum(['system', 'light', 'dark']).default('system'),
 	sounds: soundAssignmentSchema.default({ putOn: 'glut', flip: 'funke', done: 'klassik' }),
 	firstRunSeen: z.boolean().default(false),
 	vibrate: z.boolean().default(true),
+	accent: z.enum(ACCENT_IDS).default('ember'),
+	density: z.enum(DENSITY_IDS).default('comfortable'),
+	showProgressRings: z.boolean().default(true),
 })
 
 export type ItemStatus = z.infer<typeof itemStatusSchema>

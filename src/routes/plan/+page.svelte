@@ -377,6 +377,7 @@
 	<AddItemSheet
 		open={sheetOpen}
 		initial={editing}
+		placement={viewport.isDesktop ? 'drawer' : 'sheet'}
 		onclose={() => {
 			sheetOpen = false
 			editing = null

@@ -11,7 +11,7 @@
 	import { play } from '$lib/sounds/player'
 	import { de } from '$lib/i18n/de'
 	import type { UserSettings } from '$lib/models'
-	import type { ToneId } from '$lib/schemas'
+	import type { AccentId, DensityId, ToneId } from '$lib/schemas'
 
 	type GroupId = 'signals' | 'display' | 'units' | 'devices' | 'account'
 	type EventKey = keyof UserSettings['sounds']
@@ -44,11 +44,11 @@
 		{ id: 'comfortable', label: 'Komfortabel' },
 		{ id: 'compact', label: 'Kompakt' },
 	]
-	const accents = [
-		{ id: 'ember', swatch: '#ff7a1a' },
-		{ id: 'coal', swatch: '#9a4af0' },
-		{ id: 'lime', swatch: '#9bd13a' },
-		{ id: 'sky', swatch: '#3aa3d1' },
+	const accents: Array<{ id: AccentId; swatch: string; label: string }> = [
+		{ id: 'ember', swatch: '#ff7a1a', label: 'Glut' },
+		{ id: 'coal', swatch: '#9a4af0', label: 'Kohle' },
+		{ id: 'lime', swatch: '#9bd13a', label: 'Limette' },
+		{ id: 'sky', swatch: '#3aa3d1', label: 'Himmel' },
 	]
 	const measurements = [
 		{ id: 'metric', label: 'Metrisch' },
@@ -74,9 +74,6 @@
 	let selected = $state<GroupId>((page.url.searchParams.get('group') as GroupId) || 'signals')
 	let leadFlip = $state(60)
 	let leadDone = $state(120)
-	let accent = $state<string>('ember')
-	let density = $state<string>('comfortable')
-	let progressRings = $state(true)
 	let measurement = $state<string>('metric')
 	let temperature = $state<string>('celsius')
 	let language = $state<string>('de')
@@ -337,11 +334,11 @@
 							<button
 								type="button"
 								class="swatch"
-								class:active={accent === a.id}
+								class:active={settingsStore.accent === a.id}
 								style="--swatch: {a.swatch}"
-								aria-label={a.id}
-								aria-pressed={accent === a.id}
-								onclick={() => (accent = a.id)}></button>
+								aria-label={a.label}
+								aria-pressed={settingsStore.accent === a.id}
+								onclick={() => settingsStore.setAccent(a.id)}></button>
 						{/each}
 					</div>
 				</div>
@@ -350,14 +347,21 @@
 						<strong>Dichte</strong>
 						<span>Wie eng der Cockpit sitzt</span>
 					</div>
-					<SegmentedControl segments={densities} value={density} ariaLabel="Dichte" onchange={id => (density = id)} />
+					<SegmentedControl
+						segments={densities}
+						value={settingsStore.density}
+						ariaLabel="Dichte"
+						onchange={id => settingsStore.setDensity(id as DensityId)} />
 				</div>
-				<button class="row toggle-row" type="button" onclick={() => (progressRings = !progressRings)}>
+				<button
+					class="row toggle-row"
+					type="button"
+					onclick={() => settingsStore.setShowProgressRings(!settingsStore.showProgressRings)}>
 					<div class="row-text">
 						<strong>Fortschrittsringe zeigen</strong>
-						<span>um den Master-Clock und Timer-Karten</span>
+						<span>auch bei nicht-aktiven Grillstücken</span>
 					</div>
-					<div class="toggle" class:on={progressRings} aria-hidden="true">
+					<div class="toggle" class:on={settingsStore.showProgressRings} aria-hidden="true">
 						<div class="toggle-knob"></div>
 					</div>
 				</button>
@@ -365,29 +369,29 @@
 		{:else if selected === 'units'}
 			<h1>Einheiten & Sprache</h1>
 			<div class="rows">
-				<div class="row">
+				<div class="row disabled">
 					<div class="row-text">
 						<strong>Masssystem</strong>
 						<span>Gramm und Zentimeter, oder Pfund und Zoll</span>
 					</div>
-					<SegmentedControl segments={measurements} value={measurement} ariaLabel="Masssystem" onchange={id => (measurement = id)} />
+					<SegmentedControl segments={measurements} value={measurement} ariaLabel="Masssystem" disabled onchange={id => (measurement = id)} />
 				</div>
-				<div class="row">
+				<div class="row disabled">
 					<div class="row-text">
 						<strong>Temperatur</strong>
 						<span>Celsius oder Fahrenheit</span>
 					</div>
-					<SegmentedControl segments={temperatures} value={temperature} ariaLabel="Temperatur" onchange={id => (temperature = id)} />
+					<SegmentedControl segments={temperatures} value={temperature} ariaLabel="Temperatur" disabled onchange={id => (temperature = id)} />
 				</div>
-				<div class="row">
+				<div class="row disabled">
 					<div class="row-text">
 						<strong>Sprache</strong>
-						<span>App-Sprache</span>
+						<span>Englisch in Vorbereitung</span>
 					</div>
-					<SegmentedControl segments={languages} value={language} ariaLabel="Sprache" onchange={id => (language = id)} />
+					<SegmentedControl segments={languages} value={language} ariaLabel="Sprache" disabled onchange={id => (language = id)} />
 				</div>
 			</div>
-			<p class="hint">Imperial, Fahrenheit und English sind in Vorbereitung. Aktuell läuft die App auf Metrisch / Celsius / Deutsch.</p>
+			<p class="hint">Imperial, Fahrenheit und English sind in Vorbereitung. Aktuell läuft die App auf Metrisch · Celsius · Deutsch.</p>
 		{:else if selected === 'devices'}
 			<h1>Geräte</h1>
 			{#if sessionsLoading}
@@ -509,7 +513,7 @@
 		font-weight: 600;
 	}
 	.body {
-		padding: 36px 48px;
+		padding: var(--density-pad-cockpit-y) var(--density-pad-cockpit-x);
 		max-width: 980px;
 	}
 	h1 {
@@ -538,11 +542,14 @@
 		grid-template-columns: minmax(0, 240px) minmax(0, 1fr);
 		gap: 24px;
 		align-items: center;
-		padding: 16px 18px;
+		padding: var(--density-pad-row-y) var(--density-pad-row-x);
 		border-bottom: 1px solid var(--color-border-subtle);
 	}
 	.row:last-child {
 		border-bottom: 0;
+	}
+	.row.disabled .row-text {
+		opacity: 0.6;
 	}
 	.row-text strong {
 		display: block;
@@ -631,8 +638,11 @@
 		width: 20px;
 		height: 20px;
 		border-radius: 10px;
-		background: #fff;
+		background: var(--color-fg-base);
 		transition: left 0.15s ease;
+	}
+	.toggle.on .toggle-knob {
+		background: var(--color-ember-ink);
 	}
 	.toggle.on .toggle-knob {
 		left: 21px;

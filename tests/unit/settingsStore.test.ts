@@ -33,6 +33,9 @@ describe('settingsStore', () => {
 			sounds: { putOn: 'chime-1', flip: 'chime-2', done: 'chime-3' } as never,
 			firstRunSeen: false,
 			vibrate: true,
+			accent: 'ember',
+			density: 'comfortable',
+			showProgressRings: true,
 		})
 		settingsStore._reset()
 		await settingsStore.init()

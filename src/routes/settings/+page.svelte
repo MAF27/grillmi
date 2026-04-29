@@ -3,11 +3,16 @@
 	import { onMount } from 'svelte'
 	import SettingsCockpit from '$lib/components/desktop/SettingsCockpit.svelte'
 	import SegmentedControl from '$lib/components/SegmentedControl.svelte'
+	import Button from '$lib/components/Button.svelte'
 	import { viewport } from '$lib/runtime/viewport.svelte'
 	import { settingsStore } from '$lib/stores/settingsStore.svelte'
+	import { authStore } from '$lib/stores/authStore.svelte'
+	import { apiFetch } from '$lib/api/client'
+	import { resetAll } from '$lib/stores/db'
+	import { de } from '$lib/i18n/de'
 	import { play } from '$lib/sounds/player'
 	import type { UserSettings } from '$lib/models'
-	import type { ToneId } from '$lib/schemas'
+	import type { AccentId, DensityId, ToneId } from '$lib/schemas'
 
 	type ThemeId = UserSettings['theme']
 	type EventKey = keyof UserSettings['sounds']
@@ -32,7 +37,35 @@
 		{ key: 'done', label: 'Fertig', sub: 'nach Garzeit und Ruhe' },
 	]
 
+	const accents: Array<{ id: AccentId; swatch: string; label: string }> = [
+		{ id: 'ember', swatch: '#ff7a1a', label: 'Glut' },
+		{ id: 'coal', swatch: '#9a4af0', label: 'Kohle' },
+		{ id: 'lime', swatch: '#9bd13a', label: 'Limette' },
+		{ id: 'sky', swatch: '#3aa3d1', label: 'Himmel' },
+	]
+
+	const densities: Array<{ id: DensityId; label: string }> = [
+		{ id: 'comfortable', label: 'Komfortabel' },
+		{ id: 'compact', label: 'Kompakt' },
+	]
+
+	const measurements = [
+		{ id: 'metric', label: 'Metrisch' },
+		{ id: 'imperial', label: 'Imperial' },
+	]
+	const temperatures = [
+		{ id: 'celsius', label: '°C' },
+		{ id: 'fahrenheit', label: '°F' },
+	]
+	const languages = [
+		{ id: 'de', label: 'Deutsch' },
+		{ id: 'en', label: 'English' },
+	]
+
 	let openEvent = $state<EventKey | null>(null)
+	let toast = $state<string | null>(null)
+	let holding = $state(false)
+	let holdTimer: ReturnType<typeof setTimeout> | null = null
 
 	onMount(async () => {
 		await settingsStore.init()
@@ -59,6 +92,68 @@
 	function toneName(id: ToneId): string {
 		return tones.find(t => t.id === id)?.name ?? id
 	}
+
+	async function changePassword() {
+		if (!authStore.user) return
+		try {
+			await apiFetch('/api/auth/forgot-password', {
+				method: 'POST',
+				body: JSON.stringify({ email: authStore.user.email }),
+			})
+			toast = de.auth.resetEmailSent
+		} catch {
+			toast = de.auth.genericError
+		}
+	}
+
+	async function signOut() {
+		try {
+			await apiFetch('/api/auth/logout', { method: 'POST' })
+		} catch {
+			/* best effort */
+		}
+		authStore.clear()
+		await resetAll()
+		await goto('/login')
+	}
+
+	function startHold() {
+		if (holding) return
+		holding = true
+		holdTimer = setTimeout(async () => {
+			holding = false
+			try {
+				await apiFetch('/api/auth/account', { method: 'DELETE' })
+				await resetAll()
+				authStore.clear()
+				toast = de.auth.accountDeleted
+				await goto('/login')
+			} catch {
+				toast = de.auth.genericError
+			}
+		}, 1500)
+	}
+
+	function endHold() {
+		if (holdTimer) {
+			clearTimeout(holdTimer)
+			holdTimer = null
+		}
+		holding = false
+	}
+
+	const userInitials = $derived(
+		authStore.user?.email
+			? authStore.user.email
+					.split('@')[0]
+					.split(/[._-]/)
+					.filter(Boolean)
+					.map(part => part[0])
+					.slice(0, 2)
+					.join('')
+					.toUpperCase()
+			: 'GM',
+	)
 </script>
 
 <svelte:head>
@@ -76,7 +171,78 @@
 
 	<section>
 		<div class="eyebrow">Darstellung</div>
-		<SegmentedControl segments={themes} value={settingsStore.theme} ariaLabel="Darstellung" onchange={setTheme} />
+		<SegmentedControl segments={themes} value={settingsStore.theme} ariaLabel="Theme" onchange={setTheme} />
+		<div class="rows">
+			<div class="setting-row">
+				<div class="setting-text">
+					<div class="setting-label">Akzentfarbe</div>
+					<div class="setting-sub">Buttons, Glühen, Highlights</div>
+				</div>
+				<div class="swatches">
+					{#each accents as a (a.id)}
+						<button
+							type="button"
+							class="swatch"
+							class:active={settingsStore.accent === a.id}
+							style="--swatch: {a.swatch}"
+							aria-label={a.label}
+							aria-pressed={settingsStore.accent === a.id}
+							onclick={() => settingsStore.setAccent(a.id)}></button>
+					{/each}
+				</div>
+			</div>
+			<div class="setting-row stack">
+				<div class="setting-text">
+					<div class="setting-label">Dichte</div>
+					<div class="setting-sub">Wie eng der Inhalt sitzt</div>
+				</div>
+				<SegmentedControl
+					segments={densities}
+					value={settingsStore.density}
+					ariaLabel="Dichte"
+					onchange={id => settingsStore.setDensity(id as DensityId)} />
+			</div>
+			<button
+				type="button"
+				class="setting-row toggle-row"
+				onclick={() => settingsStore.setShowProgressRings(!settingsStore.showProgressRings)}
+				aria-pressed={settingsStore.showProgressRings}>
+				<div class="setting-text">
+					<div class="setting-label">Fortschrittsringe zeigen</div>
+					<div class="setting-sub">auch bei nicht-aktiven Grillstücken</div>
+				</div>
+				<div class="toggle" class:on={settingsStore.showProgressRings} aria-hidden="true">
+					<div class="toggle-knob"></div>
+				</div>
+			</button>
+		</div>
+	</section>
+
+	<section>
+		<div class="eyebrow">Einheiten & Sprache</div>
+		<div class="rows">
+			<div class="setting-row stack disabled">
+				<div class="setting-text">
+					<div class="setting-label">Masssystem</div>
+					<div class="setting-sub">Imperial folgt später</div>
+				</div>
+				<SegmentedControl segments={measurements} value="metric" ariaLabel="Masssystem" disabled onchange={() => {}} />
+			</div>
+			<div class="setting-row stack disabled">
+				<div class="setting-text">
+					<div class="setting-label">Temperatur</div>
+					<div class="setting-sub">Fahrenheit folgt später</div>
+				</div>
+				<SegmentedControl segments={temperatures} value="celsius" ariaLabel="Temperatur" disabled onchange={() => {}} />
+			</div>
+			<div class="setting-row stack disabled">
+				<div class="setting-text">
+					<div class="setting-label">Sprache</div>
+					<div class="setting-sub">Englisch in Vorbereitung</div>
+				</div>
+				<SegmentedControl segments={languages} value="de" ariaLabel="Sprache" disabled onchange={() => {}} />
+			</div>
+		</div>
 	</section>
 
 	<section>
@@ -166,11 +332,46 @@
 		</div>
 	</button>
 
+	{#if authStore.isAuthenticated}
+		<section>
+			<div class="eyebrow">Konto & Datenschutz</div>
+			<div class="account-card">
+				<div class="avatar">{userInitials}</div>
+				<div class="account-id">
+					<div class="account-name">{authStore.user?.email.split('@')[0] ?? 'Grillmi'}</div>
+					<div class="account-email">{authStore.user?.email ?? ''}</div>
+				</div>
+			</div>
+			<div class="account-actions">
+				<Button variant="secondary" fullWidth onclick={changePassword}>Passwort ändern</Button>
+				<Button variant="secondary" fullWidth onclick={signOut}>Abmelden</Button>
+				<button
+					type="button"
+					id="delete-account-hold"
+					class="danger-hold"
+					class:holding
+					onpointerdown={startHold}
+					onpointerup={endHold}
+					onpointerleave={endHold}
+					onpointercancel={endHold}>
+					Konto löschen
+				</button>
+				{#if holding}
+					<p class="hint">Halten zum Bestätigen. Loslassen zum Abbrechen.</p>
+				{/if}
+			</div>
+		</section>
+	{/if}
+
 	<section class="about">
 		<div class="eyebrow">Über Grillmi</div>
 		<p>Version 1.0.0, gebaut für den Garten.</p>
 		<p class="muted">Garzeiten basieren auf Migros Grilltimer, Weber, Serious Eats und Meathead.</p>
 	</section>
+
+	{#if toast}
+		<div class="toast" role="status">{toast}</div>
+	{/if}
 </main>
 {/if}
 
@@ -408,11 +609,12 @@
 		width: 20px;
 		height: 20px;
 		border-radius: 10px;
-		background: #fff;
+		background: var(--color-fg-base);
 		transition: left 0.15s ease;
 	}
 	.toggle.on .toggle-knob {
 		left: 21px;
+		background: var(--color-ember-ink);
 	}
 	.about {
 		gap: 6px;
@@ -424,5 +626,157 @@
 	.muted {
 		color: var(--color-fg-muted);
 		font-size: 13px;
+	}
+	.rows {
+		display: flex;
+		flex-direction: column;
+		background: var(--color-bg-surface);
+		border: 1px solid var(--color-border-subtle);
+		border-radius: 16px;
+		overflow: hidden;
+	}
+	.setting-row {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		padding: 14px 16px;
+		background: transparent;
+		border: 0;
+		border-top: 1px solid var(--color-border-subtle);
+		color: var(--color-fg-base);
+		font: inherit;
+		text-align: left;
+		cursor: default;
+	}
+	.setting-row:first-child {
+		border-top: 0;
+	}
+	.setting-row.toggle-row {
+		cursor: pointer;
+	}
+	.setting-row.stack {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 10px;
+	}
+	.setting-row.disabled .setting-text {
+		opacity: 0.55;
+	}
+	.setting-text {
+		flex: 1;
+		min-width: 0;
+	}
+	.setting-label {
+		font-family: var(--font-body);
+		font-weight: 600;
+		font-size: 15px;
+		line-height: 1.2;
+	}
+	.setting-sub {
+		margin-top: 2px;
+		font-size: 12px;
+		color: var(--color-fg-muted);
+	}
+	.swatches {
+		display: flex;
+		gap: 8px;
+		flex-shrink: 0;
+	}
+	.swatch {
+		width: 28px;
+		height: 28px;
+		border-radius: 50%;
+		border: 2px solid transparent;
+		background: var(--swatch);
+		cursor: pointer;
+		padding: 0;
+		box-shadow: inset 0 0 0 2px var(--color-bg-surface);
+	}
+	.swatch.active {
+		border-color: var(--color-fg-base);
+	}
+	.account-card {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		padding: 16px;
+		border-radius: 16px;
+		background: var(--color-bg-surface);
+		border: 1px solid var(--color-border-subtle);
+	}
+	.avatar {
+		width: 48px;
+		height: 48px;
+		border-radius: 50%;
+		background: linear-gradient(135deg, var(--color-ember), var(--color-ember-dim));
+		color: var(--color-ember-ink);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-weight: 800;
+		font-size: 16px;
+		text-transform: uppercase;
+		flex-shrink: 0;
+	}
+	.account-id {
+		min-width: 0;
+		flex: 1;
+	}
+	.account-name {
+		font-family: var(--font-body);
+		font-size: 15px;
+		font-weight: 600;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.account-email {
+		margin-top: 2px;
+		font-size: 12px;
+		color: var(--color-fg-muted);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.account-actions {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		margin-top: 10px;
+	}
+	.danger-hold {
+		min-height: 48px;
+		padding: 0 18px;
+		border-radius: 12px;
+		border: 1px solid color-mix(in srgb, var(--color-error-default) 60%, transparent);
+		background: transparent;
+		color: var(--color-error-default);
+		font: inherit;
+		font-weight: 600;
+		font-size: 15px;
+		cursor: pointer;
+		transition: background 0.15s ease;
+	}
+	.danger-hold.holding {
+		background: var(--color-error-default);
+		color: #fff;
+	}
+	.hint {
+		margin: 6px 0 0;
+		color: var(--color-fg-muted);
+		font-size: 12px;
+		text-align: center;
+	}
+	.toast {
+		position: fixed;
+		bottom: 24px;
+		left: 50%;
+		transform: translateX(-50%);
+		padding: 10px 16px;
+		border-radius: 10px;
+		background: var(--color-fg-base);
+		color: var(--color-bg-base);
+		font-size: 13px;
+		z-index: var(--z-toast);
 	}
 </style>

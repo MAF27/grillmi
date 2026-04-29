@@ -64,6 +64,14 @@
 	:global([data-theme='light']) .track {
 		stroke: rgba(26, 20, 17, 0.1);
 	}
+	/* When the user disables progress rings, hide the static ring on cards that
+	   aren't actively cooking. Active states still render so timing stays
+	   visible. */
+	:global([data-rings='off']) .progress-ring[data-state='pending'] .track,
+	:global([data-rings='off']) .progress-ring[data-state='unstarted'] .track,
+	:global([data-rings='off']) .progress-ring[data-state='plated'] .track {
+		display: none;
+	}
 	.bar {
 		transition: stroke-dashoffset 0.4s var(--ease-out);
 	}

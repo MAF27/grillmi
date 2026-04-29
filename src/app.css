@@ -223,6 +223,7 @@
 	--color-bg-surface-2: #f0e9dc;
 	--color-bg-elev: #ebe2d0;
 	--color-bg-elevated: #ebe2d0;
+	--color-bg-panel: #f0e9dc;
 	--color-bg-input: #f0e9dc;
 	--color-bg-overlay: rgba(26, 20, 17, 0.5);
 
@@ -236,6 +237,72 @@
 	--color-state-plated-bg: rgba(26, 20, 17, 0.06);
 
 	--color-fg-muted-on-accent: rgba(26, 10, 2, 0.65);
+
+	/* Shadows on light theme need lower alpha so bg-surface tiles still read. */
+	--shadow-sm: 0 1px 2px rgba(26, 20, 17, 0.08);
+	--shadow-md: 0 4px 12px rgba(26, 20, 17, 0.1);
+	--shadow-lg: 0 8px 32px rgba(26, 20, 17, 0.14);
+}
+
+/* Accent palettes. Ember is the default and matches @theme. */
+:where([data-accent='coal']) {
+	--color-accent-default: #9a4af0;
+	--color-accent-hover: #ad5fff;
+	--color-accent-muted: rgba(154, 74, 240, 0.2);
+	--color-ember: #9a4af0;
+	--color-ember-dim: #5a2b8a;
+	--color-ember-ink: #ffffff;
+	--color-state-cooking: #9a4af0;
+	--color-state-cooking-bg: rgba(154, 74, 240, 0.15);
+	--color-border-hot: rgba(154, 74, 240, 0.28);
+	--shadow-glow-accent: 0 0 16px rgba(154, 74, 240, 0.35);
+	--shadow-alarm: 0 0 0 4px rgba(154, 74, 240, 0.2), 0 12px 32px rgba(154, 74, 240, 0.4), 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+:where([data-accent='lime']) {
+	--color-accent-default: #9bd13a;
+	--color-accent-hover: #b3e552;
+	--color-accent-muted: rgba(155, 209, 58, 0.2);
+	--color-ember: #9bd13a;
+	--color-ember-dim: #5b7d22;
+	--color-ember-ink: #1a1411;
+	--color-state-cooking: #9bd13a;
+	--color-state-cooking-bg: rgba(155, 209, 58, 0.15);
+	--color-border-hot: rgba(155, 209, 58, 0.28);
+	--shadow-glow-accent: 0 0 16px rgba(155, 209, 58, 0.35);
+	--shadow-alarm: 0 0 0 4px rgba(155, 209, 58, 0.2), 0 12px 32px rgba(155, 209, 58, 0.4), 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+:where([data-accent='sky']) {
+	--color-accent-default: #3aa3d1;
+	--color-accent-hover: #56b8e3;
+	--color-accent-muted: rgba(58, 163, 209, 0.2);
+	--color-ember: #3aa3d1;
+	--color-ember-dim: #1f617c;
+	--color-ember-ink: #ffffff;
+	--color-state-cooking: #3aa3d1;
+	--color-state-cooking-bg: rgba(58, 163, 209, 0.15);
+	--color-border-hot: rgba(58, 163, 209, 0.28);
+	--shadow-glow-accent: 0 0 16px rgba(58, 163, 209, 0.35);
+	--shadow-alarm: 0 0 0 4px rgba(58, 163, 209, 0.2), 0 12px 32px rgba(58, 163, 209, 0.4), 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Density tokens. Components opt in via these custom props. */
+:where(html) {
+	--density-pad-cockpit-y: 36px;
+	--density-pad-cockpit-x: 48px;
+	--density-pad-row-y: 16px;
+	--density-pad-row-x: 18px;
+	--density-gap-section: 28px;
+	--density-gap-grid: 16px;
+	--density-card-pad: 22px 20px;
+}
+:where([data-density='compact']) {
+	--density-pad-cockpit-y: 22px;
+	--density-pad-cockpit-x: 32px;
+	--density-pad-row-y: 11px;
+	--density-pad-row-x: 14px;
+	--density-gap-section: 18px;
+	--density-gap-grid: 10px;
+	--density-card-pad: 16px 14px;
 }
 
 html,
