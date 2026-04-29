@@ -22,7 +22,7 @@
 	<button class="card" class:saved type="button" onclick={onClick} data-testid="grillade-card">
 		<span class="top">
 			<span>{new Date(grillade.endedEpoch ?? grillade.updatedEpoch).toLocaleDateString('de-CH')}</span>
-			<span class="star">{saved ? '★' : '☆'}</span>
+			{#if saved}<span class="saved-pill">Gespeichert</span>{/if}
 		</span>
 		<strong>{title}</strong>
 		<span class="meta">{itemCount} Stück · {duration}</span>
@@ -38,6 +38,13 @@
 			}}>×</button>
 	{/if}
 </div>
+
+<!--
+	Layout note: the delete button is absolutely positioned at the top-right
+	corner of the card, so the .top row reserves a right padding wide enough to
+	keep the date and (optional) Gespeichert pill clear of it.
+-->
+
 
 <style>
 	.card-wrap {
@@ -88,17 +95,22 @@
 	}
 	.top {
 		display: flex;
-		justify-content: space-between;
+		align-items: center;
+		gap: 8px;
+		padding-right: 28px;
 		color: var(--color-fg-muted);
 		font-size: 11px;
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
 	}
-	.star {
+	.saved-pill {
+		padding: 2px 8px;
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--color-ember) 14%, transparent);
 		color: var(--color-ember);
-		font-size: 18px;
-		line-height: 1;
+		font-size: 10px;
+		letter-spacing: 0.08em;
 	}
 	strong {
 		font-size: 16px;

@@ -148,7 +148,11 @@
 				<div class="desktop-top">
 					<SessionHeader targetEpoch={session.targetEpoch} {wakeLockState} {planMode} placement="desktop" onEnd={endSession} />
 				</div>
-				<MasterClock targetEpoch={session.targetEpoch} size="desktop" />
+				{#if grilladeStore.sessionHasStarted}
+					<MasterClock targetEpoch={session.targetEpoch} size="desktop" />
+				{:else}
+					<div class="awaiting" data-testid="awaiting-start">Tippe auf Los, um die erste Grillzeit zu starten.</div>
+				{/if}
 				<div class="big-grid">
 					{#each session.items as item (item.id)}
 						<TimerCard
@@ -181,7 +185,11 @@
 	<div class="screen">
 		<SessionHeader targetEpoch={session.targetEpoch} {wakeLockState} {planMode} onEnd={endSession} />
 
-		<MasterClock targetEpoch={session.targetEpoch} />
+		{#if grilladeStore.sessionHasStarted}
+			<MasterClock targetEpoch={session.targetEpoch} />
+		{:else}
+			<div class="awaiting" data-testid="awaiting-start">Tippe auf Los, um die erste Grillzeit zu starten.</div>
+		{/if}
 
 		<div class="grid-wrap">
 			<div class="grid">
@@ -262,6 +270,12 @@
 		flex: 1;
 		overflow-y: auto;
 		padding: 0 16px 120px;
+	}
+	.awaiting {
+		color: var(--color-fg-muted);
+		font-size: 14px;
+		text-align: center;
+		padding: 20px 16px;
 	}
 	.grid {
 		display: grid;

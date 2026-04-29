@@ -21,7 +21,7 @@
 		await grilladenHistoryStore.init()
 		await settingsStore.init()
 		await loadStats()
-		if (grilladeStore.session) goto('/session')
+		if (grilladeStore.session && grilladeStore.sessionHasStarted) goto('/session')
 	})
 
 	async function loadStats() {

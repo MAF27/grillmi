@@ -361,9 +361,9 @@
 		color: var(--color-state-ready);
 	}
 	.action {
-		margin-top: 10px;
+		margin-top: auto;
 		min-height: 44px;
-		padding: 12px;
+		padding: 12px 16px;
 		border: none;
 		border-radius: 10px;
 		font-family: var(--font-body);
@@ -373,9 +373,9 @@
 		text-transform: uppercase;
 		cursor: pointer;
 		transition: filter 0.15s ease;
+		align-self: stretch;
 	}
 	.card[data-size='lg'] .action {
-		margin-top: 12px;
 		min-height: 36px;
 		padding: 0 16px;
 		font-size: 13px;

@@ -57,7 +57,7 @@
 		;(async () => {
 			await grilladeStore.init()
 			await favoritesStore.init()
-			if (grilladeStore.session) goto('/session')
+			if (grilladeStore.session && grilladeStore.sessionHasStarted) goto('/session')
 		})()
 		return () => clearInterval(tickId)
 	})

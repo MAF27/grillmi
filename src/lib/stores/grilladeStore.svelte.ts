@@ -52,6 +52,13 @@ function createGrilladeStore() {
 	const pendingItems = $derived(session ? session.items.filter(i => i.status === 'pending') : [])
 	const platedItems = $derived(session ? session.items.filter(i => i.status === 'plated') : [])
 	const allPlated = $derived(session ? session.items.length > 0 && session.items.every(i => i.status === 'plated') : false)
+	// Manual sessions sit at this far-future putOnEpoch sentinel until the user
+	// clicks Los on at least one card. Until then the cockpit countdown stays
+	// hidden and other routes do NOT bounce the user back to /session.
+	const UNSTARTED_HORIZON_MS = 30 * 24 * 60 * 60 * 1000
+	const sessionHasStarted = $derived(
+		session ? session.items.some(i => i.putOnEpoch < Date.now() + UNSTARTED_HORIZON_MS) : false,
+	)
 	const longestCookSeconds = $derived(
 		plan.items.length === 0 ? 0 : Math.max(...plan.items.map(i => i.cookSeconds + i.restSeconds)),
 	)
@@ -121,6 +128,9 @@ function createGrilladeStore() {
 		},
 		get allPlated() {
 			return allPlated
+		},
+		get sessionHasStarted() {
+			return sessionHasStarted
 		},
 		get longestCookSeconds() {
 			return longestCookSeconds
@@ -255,7 +265,9 @@ function createGrilladeStore() {
 			const newSession = sessionSchema.parse({
 				id: uuid(),
 				createdAtEpoch: now,
-				targetEpoch: now + 60 * 60 * 1000,
+				// No real target until the user clicks Los on at least one item.
+				// /session hides MasterClock while everything is unstarted.
+				targetEpoch: now,
 				endedAtEpoch: null,
 				items: sessionItems,
 			})
