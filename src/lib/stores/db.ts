@@ -25,6 +25,9 @@ export interface GrilladeRow {
 	planState?: PersistedPlanState
 	session?: Session
 	timeline?: TimelineEvent[]
+	// Local-only flag: true once the row has been POSTed to the backend at
+	// least once. Used to choose POST vs PATCH on subsequent metadata pushes.
+	pushedToServer?: boolean
 }
 
 export interface SyncQueueRow {

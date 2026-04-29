@@ -5,13 +5,17 @@ import { uuid } from '$lib/util/uuid'
 import {
 	appendTimelineEvent,
 	clearCurrentSession,
+	getActiveGrillade,
 	getCurrentPlanState,
 	getCurrentSession,
 	getCurrentTimeline,
+	listGrilladen,
 	putCurrentPlanState,
 	putCurrentSession,
+	putGrillade,
 	type TimelineEvent,
 } from './db'
+import { pushGrilladeCreate, pushGrilladeUpdate } from '$lib/sync/pushGrillade'
 
 const STALE_AFTER_MS = 4 * 60 * 60 * 1000
 
@@ -96,11 +100,41 @@ function createGrilladeStore() {
 				}))
 			: []
 		await clearCurrentSession()
+		// After clearing, the just-finished GrilladeRow is the most recent one
+		// with status='finished'. Push the metadata update so other devices see
+		// it in their history list.
+		await pushFinishedGrilladeIfPossible()
 		session = null
 		sessionTimeline = []
 		plan = replayItems.length > 0 ? { targetEpoch: defaultTarget(), items: replayItems, mode: 'now' } : defaultPlan()
 		planMode = 'auto'
 		persistPlan()
+	}
+
+	async function stampPushedAndCreate() {
+		const active = await getActiveGrillade()
+		if (!active || active.pushedToServer) return
+		await pushGrilladeCreate(active)
+		active.pushedToServer = true
+		await putGrillade(active)
+	}
+
+	async function pushFinishedGrilladeIfPossible() {
+		const all = await listGrilladen()
+		const recent = all
+			.filter(g => g.status === 'finished' && g.deletedEpoch === null)
+			.sort((a, b) => (b.endedEpoch ?? 0) - (a.endedEpoch ?? 0))[0]
+		if (!recent) return
+		if (!recent.pushedToServer) {
+			// Edge case: the row never got a POST (e.g. legacy local state from
+			// before sync push existed). Push a create now so the server gets
+			// the finished snapshot in one step.
+			await pushGrilladeCreate(recent)
+			recent.pushedToServer = true
+			await putGrillade(recent)
+			return
+		}
+		await pushGrilladeUpdate(recent)
 	}
 
 	return {
@@ -241,6 +275,7 @@ function createGrilladeStore() {
 			plan = defaultPlan()
 			persistPlan()
 			await persist()
+			await stampPushedAndCreate()
 			return newSession
 		},
 
@@ -276,6 +311,7 @@ function createGrilladeStore() {
 			planMode = 'auto'
 			persistPlan()
 			await persist()
+			await stampPushedAndCreate()
 			return newSession
 		},
 

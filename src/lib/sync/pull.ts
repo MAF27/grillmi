@@ -1,5 +1,6 @@
 import { authStore } from '$lib/stores/authStore.svelte'
 import {
+	getGrillade,
 	getSyncMeta,
 	putFavorite,
 	putGrillade,
@@ -33,7 +34,16 @@ export async function pull(): Promise<void> {
 		if (grilladen) {
 			serverTime = grilladen.server_time
 			for (const r of grilladen.rows) {
-				await putGrillade(toGrilladeRow(r))
+				const incoming = toGrilladeRow(r)
+				// Preserve local-only fields (active session, timeline,
+				// planState) so a pull mid-cook doesn't wipe in-flight state.
+				const existing = await getGrillade(incoming.id)
+				if (existing) {
+					incoming.session = existing.session
+					incoming.timeline = existing.timeline
+					incoming.planState = existing.planState
+				}
+				await putGrillade(incoming)
 			}
 		}
 	} catch {
@@ -123,5 +133,8 @@ function toGrilladeRow(r: Record<string, unknown>): GrilladeRow {
 		position: Number(r.position ?? 0),
 		updatedEpoch: Date.parse(String(r.updated_at ?? '')) || Date.now(),
 		deletedEpoch: r.deleted_at ? Date.parse(String(r.deleted_at)) : null,
+		// Server already knows this row, so future local edits should PATCH
+		// rather than POST a duplicate.
+		pushedToServer: true,
 	}
 }
