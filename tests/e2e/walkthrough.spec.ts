@@ -103,16 +103,15 @@ function pendingSession(putOnInMs: number, cookSeconds = 240): SeededSession {
 }
 
 test.describe('walkthrough (full Glühen surface)', () => {
-	test('test_home_to_save_menu_to_recent_pill_to_plan', async ({ page }) => {
+	test('test_home_to_plan_to_step_value_round_trip', async ({ page }) => {
 		await gotoHomeFresh(page)
 
 		await expect(page.getByRole('heading', { level: 1 })).toContainText(/Bereit zum/)
-		await expect(page.getByRole('button', { name: /Neue Session/ })).toBeVisible()
-		await expect(page.getByRole('button', { name: /^Menüs$/ })).toBeVisible()
+		await expect(page.getByRole('button', { name: /Neue Grillade/ })).toBeVisible()
+		await expect(page.getByRole('button', { name: /^Grilladen$/ })).toBeVisible()
 		await expect(page.getByRole('button', { name: /Einstellungen/ })).toBeVisible()
-		await expect(page.getByText('Zuletzt gespeicherte Menüs')).toHaveCount(0)
 
-		await page.getByRole('button', { name: /Neue Session/ }).click()
+		await page.getByRole('button', { name: /Neue Grillade/ }).click()
 		await expect(page).toHaveURL(/\/plan/)
 
 		await expect(page.getByRole('tab', { name: 'Jetzt' })).toBeVisible()
@@ -132,108 +131,23 @@ test.describe('walkthrough (full Glühen surface)', () => {
 		await expect(page.getByRole('dialog', { name: 'Essen um' })).toBeVisible()
 		await page.getByRole('button', { name: 'Abbrechen' }).click()
 		await expect(page.getByRole('dialog', { name: 'Essen um' })).toHaveCount(0)
-
-		await page.getByRole('button', { name: /Als Menü speichern/ }).click()
-		await page.getByPlaceholder(/Sonntagsmenü/i).fill('Walk-Menü')
-		await page.getByRole('button', { name: 'Speichern', exact: true }).click()
-		await expect(page.getByRole('button', { name: 'Speichern', exact: true })).toHaveCount(0)
-
-		await page.goto('/')
-		await expect(page.getByText('Zuletzt gespeicherte Menüs')).toBeVisible()
-		const pill = page.getByRole('button', { name: /Walk-Menü/ })
-		await expect(pill).toBeVisible()
-		await pill.click()
-		await expect(page).toHaveURL(/\/plan/)
-		await expect(page.locator('.step-value').first()).toBeVisible()
 	})
 
-	test('test_menus_inline_rename_persists_across_reload', async ({ page }) => {
-		await gotoHomeFresh(page)
-		await page.goto('/plan')
-		await addEntrecoteOnPlan(page)
-		await page.getByRole('button', { name: /Als Menü speichern/ }).click()
-		await page.getByPlaceholder(/Sonntagsmenü/i).fill('Vorher')
-		await page.getByRole('button', { name: 'Speichern', exact: true }).click()
-		await expect(page.getByRole('button', { name: 'Speichern', exact: true })).toHaveCount(0)
-
-		await page.goto('/menus')
-		const titleBtn = page.getByRole('button', { name: 'Vorher', exact: true })
-		await expect(titleBtn).toBeVisible()
-
-		// Long-press the title to enter rename mode (350 ms timer).
-		const box = await titleBtn.boundingBox()
-		if (!box) throw new Error('Could not measure title button')
-		await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
-		await page.mouse.down()
-		await page.waitForTimeout(450)
-		await page.mouse.up()
-
-		const renameInput = page.getByRole('textbox', { name: 'Menü umbenennen' })
-		await expect(renameInput).toBeVisible()
-		await renameInput.fill('Nachher')
-		await renameInput.press('Enter')
-
-		await expect(page.getByRole('button', { name: 'Nachher', exact: true })).toBeVisible()
-
-		await page.reload()
-		await expect(page.getByRole('button', { name: 'Nachher', exact: true })).toBeVisible()
-	})
-
-	test('test_menus_swipe_left_reveals_delete_affordance', async ({ page }) => {
-		await gotoHomeFresh(page)
-		await page.goto('/plan')
-		await addEntrecoteOnPlan(page)
-		await page.getByRole('button', { name: /Als Menü speichern/ }).click()
-		await page.getByPlaceholder(/Sonntagsmenü/i).fill('Swipe-Menü')
-		await page.getByRole('button', { name: 'Speichern', exact: true }).click()
-		await expect(page.getByRole('button', { name: 'Speichern', exact: true })).toHaveCount(0)
-
-		await page.goto('/menus')
-		const card = page.locator('.list [role="group"]').first()
-		await expect(card).toBeVisible()
-
-		// Dispatch a left-swipe via TouchEvent — Playwright's mouse can't drive touchstart/move/end.
-		await card.evaluate((el: HTMLElement) => {
-			function fire(type: string, x: number) {
-				const t = new Touch({ identifier: 1, target: el, clientX: x, clientY: 100 })
-				const ev = new TouchEvent(type, {
-					bubbles: true,
-					cancelable: true,
-					touches: type === 'touchend' ? [] : [t],
-					targetTouches: type === 'touchend' ? [] : [t],
-					changedTouches: [t],
-				})
-				el.dispatchEvent(ev)
-			}
-			fire('touchstart', 200)
-			fire('touchmove', 50)
-			fire('touchend', 50)
-		})
-
-		await expect(page.getByRole('button', { name: 'Löschen bestätigen' })).toBeVisible()
-		await page.getByRole('button', { name: 'Abbrechen' }).click()
-		await expect(page.getByRole('button', { name: 'Löschen bestätigen' })).toHaveCount(0)
-	})
-
-	test('test_manual_mode_los_drives_card_to_ready_via_clock', async ({ page }) => {
+	test('test_manual_mode_los_drives_session_card_to_ready_via_clock', async ({ page }) => {
 		await gotoHomeFresh(page)
 		await page.goto('/plan')
 		await addEntrecoteOnPlan(page)
 
 		await page.getByRole('tab', { name: 'Manuell' }).click()
-		await expect(page.locator('.bottom')).toHaveCount(0)
+		await page.getByRole('button', { name: /Manuelle Grillade starten/ }).click()
+		await expect(page).toHaveURL(/\/session/)
 
 		const losBtn = page.getByRole('button', { name: 'Los' }).first()
 		await expect(losBtn).toBeVisible()
-
-		// Read the cook time off the first PlanItemRow before switching modes; we
-		// need a duration to advance past. Since we already left Auf-Zeit/Jetzt
-		// for Manuell the row is gone; default Entrecôte cook time is around 8 min.
-		// Click Los and skip the elapsed time forward by enough to land on ready.
 		await losBtn.click()
 
-		// Advance wall-clock by 15 minutes via clock injection: the manual-mode
-		// status derive uses Date.now() against manualStarts, so monkey-patch.
+		// Advance wall-clock by 15 minutes via clock injection: the ticker uses
+		// Date.now() against putOnEpoch / doneEpoch, so monkey-patch the clock.
 		await page.evaluate(() => {
 			const realNow = Date.now
 			const offset = 15 * 60 * 1000
@@ -247,15 +161,6 @@ test.describe('walkthrough (full Glühen surface)', () => {
 		// Trigger a tick so the derived status re-runs.
 		await page.evaluate(() => window.dispatchEvent(new Event('focus')))
 		await expect(page.getByRole('button', { name: 'Anrichten' }).first()).toBeVisible({ timeout: 10_000 })
-	})
-
-	test('test_session_direct_nav_in_manual_mode_bounces_to_plan', async ({ page }) => {
-		await gotoHomeFresh(page)
-		await page.goto('/plan')
-		await addEntrecoteOnPlan(page)
-		await page.getByRole('tab', { name: 'Manuell' }).click()
-		await page.goto('/session')
-		await expect(page).toHaveURL(/\/plan/)
 	})
 
 	test('test_session_renders_master_clock_and_top_bar', async ({ page }) => {

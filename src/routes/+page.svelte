@@ -5,20 +5,20 @@
 	import GlowGrates from '$lib/components/GlowGrates.svelte'
 	import Card from '$lib/components/Card.svelte'
 	import { grilladeStore } from '$lib/stores/grilladeStore.svelte'
+	import { grilladenHistoryStore } from '$lib/stores/grilladenHistoryStore.svelte'
 	import { settingsStore } from '$lib/stores/settingsStore.svelte'
-	import { menusStore } from '$lib/stores/menusStore.svelte'
 	import { listGrilladen } from '$lib/stores/db'
 	import { viewport } from '$lib/runtime/viewport.svelte'
 	import { formatDuration } from '$lib/util/format'
 
-	const recentMenus = $derived(menusStore.all.slice(0, 6))
+	const recentGrilladen = $derived(grilladenHistoryStore.finished.slice(0, 6))
 	let finishedThisMonth = $state<number | null>(null)
 	let savedHistory = $state<number | null>(null)
 	let longestDuration = $state<number | null>(null)
 
 	onMount(async () => {
 		await grilladeStore.init()
-		await menusStore.init()
+		await grilladenHistoryStore.init()
 		await settingsStore.init()
 		await loadStats()
 		if (grilladeStore.session) goto('/session')
@@ -40,17 +40,21 @@
 				.sort((a, b) => b - a)[0] ?? 0
 	}
 
-	function loadMenu(id: string) {
-		const menu = menusStore.all.find(m => m.id === id)
-		if (!menu) return
-		void menusStore.touch(id)
-		grilladeStore.loadFromMenu(menu.items)
+	async function loadGrillade(id: string) {
+		const loaded = await grilladenHistoryStore.loadItems(id)
+		if (!loaded.ok) return
+		grilladeStore.loadFromMenu(loaded.items)
 		goto('/plan')
 	}
 
-	function fmtMenuMeta(menu: { items: Array<{ cookSeconds: number; restSeconds: number }> }) {
-		const totalSec = menu.items.reduce((s, i) => s + i.cookSeconds + (i.restSeconds || 0), 0)
-		return `${menu.items.length} Stück · ${Math.round(totalSec / 60)} min`
+	function fmtRowMeta(row: { startedEpoch: number | null; endedEpoch: number | null; session?: { items: Array<unknown> } | undefined; planState?: { plan: { items: Array<unknown> } } | undefined }) {
+		const itemCount = row.session?.items.length ?? row.planState?.plan.items.length ?? 0
+		const dur = row.startedEpoch && row.endedEpoch ? Math.round((row.endedEpoch - row.startedEpoch) / 1000) : 0
+		return `${itemCount} Stück · ${Math.round(dur / 60)} min`
+	}
+
+	function rowName(row: { name: string | null; endedEpoch: number | null; updatedEpoch: number }) {
+		return row.name ?? `Grillade vom ${new Date(row.endedEpoch ?? row.updatedEpoch).toLocaleDateString('de-CH')}`
 	}
 
 	function newDesktopGrillade() {
@@ -107,14 +111,14 @@
 			<p>Plane deine Grillade. Grillmi sagt dir, wann was auf den Rost muss.</p>
 		</div>
 
-		{#if recentMenus.length > 0}
+		{#if recentGrilladen.length > 0}
 			<div class="recent">
-				<div class="recent-eyebrow">Zuletzt gespeicherte Grilladen</div>
+				<div class="recent-eyebrow">Zuletzt gegrillt</div>
 				<div class="recent-row">
-					{#each recentMenus as menu (menu.id)}
-						<button class="recent-pill" onclick={() => loadMenu(menu.id)}>
-							<span class="recent-name">{menu.name}</span>
-							<span class="recent-meta">{fmtMenuMeta(menu)}</span>
+					{#each recentGrilladen as row (row.id)}
+						<button class="recent-pill" onclick={() => loadGrillade(row.id)}>
+							<span class="recent-name">{rowName(row)}</span>
+							<span class="recent-meta">{fmtRowMeta(row)}</span>
 						</button>
 					{/each}
 				</div>

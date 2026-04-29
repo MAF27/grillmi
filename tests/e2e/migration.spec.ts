@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
 
 async function dismissFirstRun(page: import('@playwright/test').Page) {
 	const btn = page.getByRole('button', { name: 'Verstanden' })
@@ -93,10 +93,6 @@ test.describe('migration', () => {
 			await dismissFirstRun(page)
 		}
 
-		// Menüs page now lists the migrated record.
-		await page.getByRole('button', { name: /Menüs/ }).click()
-		await expect(page).toHaveURL(/\/menus/)
-		await expect(page.getByText('Migrierter Plan')).toBeVisible()
 		await context.close()
 	})
 })

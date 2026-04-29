@@ -11,7 +11,6 @@
 	import { viewport } from '$lib/runtime/viewport.svelte'
 	import { grilladeStore } from '$lib/stores/grilladeStore.svelte'
 	import { favoritesStore } from '$lib/stores/favoritesStore.svelte'
-	import { menusStore } from '$lib/stores/menusStore.svelte'
 	import { schedule } from '$lib/scheduler/schedule'
 	import { formatHHMM } from '$lib/util/format'
 	import type { PlannedItem } from '$lib/models'
@@ -26,9 +25,6 @@
 
 	let sheetOpen = $state(false)
 	let editing = $state<PlannedItem | null>(null)
-	let saveMenuOpen = $state(false)
-	let menuName = $state('')
-	let menusSheetOpen = $state(false)
 	let timePickerOpen = $state(false)
 
 
@@ -61,7 +57,6 @@
 		;(async () => {
 			await grilladeStore.init()
 			await favoritesStore.init()
-			await menusStore.init()
 			if (grilladeStore.session) goto('/session')
 		})()
 		return () => clearInterval(tickId)
@@ -113,30 +108,6 @@
 		if (isManual) await grilladeStore.startManualSession()
 		else await grilladeStore.startSession()
 		await goto('/session')
-	}
-
-	function openSaveMenu() {
-		menuName = ''
-		saveMenuOpen = true
-	}
-
-	async function saveMenu() {
-		const name = menuName.trim()
-		if (!name) return
-		await menusStore.save(name, plan.items)
-		saveMenuOpen = false
-	}
-
-	function openMenusSheet() {
-		menusSheetOpen = true
-	}
-
-	function appendMenu(id: string) {
-		const m = menusStore.all.find(p => p.id === id)
-		if (!m) return
-		void menusStore.touch(id)
-		grilladeStore.appendFromMenu(m.items)
-		menusSheetOpen = false
 	}
 
 	function commitTime(epoch: number) {
@@ -192,11 +163,6 @@
 				<h2>
 					Grillstücke{#if plan.items.length > 0}<span class="count">{plan.items.length} STÜCK</span>{/if}
 				</h2>
-				<div class="section-actions">
-					{#if menusStore.all.length > 0}
-						<Button variant="accentGhost" size="sm" onclick={openMenusSheet}>★ Grillade</Button>
-					{/if}
-				</div>
 			</div>
 
 			{#if overdue && !isManual}
@@ -221,13 +187,6 @@
 						<span>Weiteres Grillstück</span>
 					</button>
 				</div>
-			{/if}
-
-			{#if plan.items.length > 0}
-				<button class="save-menu-cta" type="button" onclick={openSaveMenu}>
-					<span class="star" aria-hidden="true">★</span>
-					Als Grillade speichern
-				</button>
 			{/if}
 		</section>
 		{#if viewport.isDesktop}
@@ -257,38 +216,6 @@
 		oncommit={commit} />
 {/if}
 
-{#if menusSheetOpen}
-	<div class="scrim" role="presentation" onclick={() => (menusSheetOpen = false)}></div>
-	<div class="menu-sheet" role="dialog" aria-modal="true" aria-label="Grillade hinzufügen">
-		<header class="menu-sheet-header">
-			<h2>Grillade hinzufügen</h2>
-			<button class="dismiss" onclick={() => (menusSheetOpen = false)} aria-label="Schliessen">×</button>
-		</header>
-		<p class="menu-sheet-hint">Tippe auf eine Grillade. Die Einträge werden an deinen Plan angehängt.</p>
-		<ul class="menu-list">
-			{#each menusStore.all as m (m.id)}
-				<li>
-					<button class="menu-row" onclick={() => appendMenu(m.id)}>
-						<span class="menu-name">{m.name}</span>
-						<span class="menu-count">{m.items.length} Einträge</span>
-					</button>
-				</li>
-			{/each}
-		</ul>
-	</div>
-{/if}
-
-{#if saveMenuOpen}
-	<div class="scrim" role="presentation" onclick={() => (saveMenuOpen = false)}></div>
-	<div class="save-modal" role="dialog" aria-modal="true" aria-label="Als Grillade speichern">
-		<h3>Als Grillade speichern</h3>
-		<input type="text" bind:value={menuName} maxlength="40" placeholder="z.B. Sonntagsgrillade" />
-		<div class="row-buttons">
-			<Button variant="ghost" onclick={() => (saveMenuOpen = false)}>Abbrechen</Button>
-			<Button variant="primary" onclick={saveMenu}>Speichern</Button>
-		</div>
-	</div>
-{/if}
 
 {#if timePickerOpen}
 	{#if viewport.isDesktop}
@@ -539,26 +466,6 @@
 		font-weight: 300;
 		line-height: 1;
 	}
-	.save-menu-cta {
-		margin-top: 12px;
-		width: 100%;
-		background: transparent;
-		border: 1px dashed var(--color-border-strong);
-		color: var(--color-fg-muted);
-		padding: 12px;
-		border-radius: 12px;
-		font-family: var(--font-body);
-		font-weight: 500;
-		font-size: 13px;
-		cursor: pointer;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 8px;
-	}
-	.save-menu-cta .star {
-		font-size: 14px;
-	}
 	.bottom {
 		position: fixed;
 		left: 0;
@@ -567,126 +474,6 @@
 		padding: 16px 24px calc(16px + env(safe-area-inset-bottom));
 		background: linear-gradient(to top, var(--color-bg-base) 70%, transparent);
 		z-index: var(--z-sticky);
-	}
-	.scrim {
-		position: fixed;
-		inset: 0;
-		background: var(--color-bg-overlay);
-		z-index: var(--z-modal);
-	}
-	.save-modal {
-		position: fixed;
-		left: 50%;
-		top: 50%;
-		transform: translate(-50%, -50%);
-		background: var(--color-bg-surface);
-		color: var(--color-fg-base);
-		border: 1px solid var(--color-border-strong);
-		border-radius: 18px;
-		padding: 22px;
-		width: min(92vw, 420px);
-		z-index: calc(var(--z-modal) + 1);
-		display: flex;
-		flex-direction: column;
-		gap: 14px;
-	}
-	.save-modal h3 {
-		margin: 0;
-		font-family: var(--font-display);
-		font-size: 22px;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: -0.01em;
-	}
-	.save-modal input {
-		min-height: 48px;
-		padding: 12px 14px;
-		background: var(--color-bg-surface-2);
-		border: 1px solid var(--color-border-strong);
-		border-radius: 12px;
-		color: var(--color-fg-base);
-		font-family: var(--font-body);
-		font-size: 16px;
-	}
-	.row-buttons {
-		display: flex;
-		gap: 8px;
-		justify-content: flex-end;
-	}
-	.menu-sheet {
-		position: fixed;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		max-height: 75dvh;
-		background: var(--color-bg-surface);
-		color: var(--color-fg-base);
-		border-top-left-radius: 24px;
-		border-top-right-radius: 24px;
-		padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
-		z-index: calc(var(--z-modal) + 1);
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
-		max-width: 600px;
-		margin: 0 auto;
-		overflow: auto;
-	}
-	.menu-sheet-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
-	.menu-sheet-header h2 {
-		margin: 0;
-		font-family: var(--font-display);
-		font-size: 22px;
-		font-weight: 600;
-		text-transform: uppercase;
-	}
-	.dismiss {
-		background: transparent;
-		border: none;
-		color: var(--color-fg-base);
-		min-width: 44px;
-		min-height: 44px;
-		font-size: 22px;
-		cursor: pointer;
-	}
-	.menu-sheet-hint {
-		font-size: 14px;
-		color: var(--color-fg-muted);
-		margin: 0;
-	}
-	.menu-list {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-	}
-	.menu-row {
-		width: 100%;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 14px 18px;
-		min-height: 56px;
-		background: var(--color-bg-surface-2);
-		border: 1px solid var(--color-border-subtle);
-		border-radius: 14px;
-		color: var(--color-fg-base);
-		font: inherit;
-		text-align: left;
-		cursor: pointer;
-	}
-	.menu-name {
-		font-weight: 600;
-	}
-	.menu-count {
-		font-size: 14px;
-		color: var(--color-fg-muted);
 	}
 	@media (min-width: 1024px) {
 		main {

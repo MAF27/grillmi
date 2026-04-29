@@ -3,7 +3,13 @@
 	import { onMount } from 'svelte'
 	import SettingsCockpit from '$lib/components/desktop/SettingsCockpit.svelte'
 	import SegmentedControl from '$lib/components/SegmentedControl.svelte'
-	import Button from '$lib/components/Button.svelte'
+	import RowGroup from '$lib/components/settings/RowGroup.svelte'
+	import SettingRow from '$lib/components/settings/SettingRow.svelte'
+	import SwatchesRow from '$lib/components/settings/SwatchesRow.svelte'
+	import ToggleRow from '$lib/components/settings/ToggleRow.svelte'
+	import StepperRow from '$lib/components/settings/StepperRow.svelte'
+	import AccountBlock from '$lib/components/settings/AccountBlock.svelte'
+	import Toast from '$lib/components/Toast.svelte'
 	import { viewport } from '$lib/runtime/viewport.svelte'
 	import { settingsStore } from '$lib/stores/settingsStore.svelte'
 	import { authStore } from '$lib/stores/authStore.svelte'
@@ -22,7 +28,6 @@
 		{ id: 'light', label: 'Hell' },
 		{ id: 'dark', label: 'Dunkel' },
 	]
-
 	const tones: Array<{ id: ToneId; name: string; desc: string }> = [
 		{ id: 'glut', name: 'Glut', desc: 'Tiefer Bell-Ton, sanft' },
 		{ id: 'funke', name: 'Funke', desc: 'Kurzer hoher Tropfen' },
@@ -30,25 +35,21 @@
 		{ id: 'klassik', name: 'Klassik', desc: 'iOS-Standard Glocke' },
 		{ id: 'lautlos', name: 'Lautlos', desc: 'Nur Vibration' },
 	]
-
 	const events: Array<{ key: EventKey; label: string; sub: string }> = [
 		{ key: 'putOn', label: 'Auflegen', sub: "wenn's auf den Rost geht" },
 		{ key: 'flip', label: 'Wenden', sub: 'auf halber Strecke' },
 		{ key: 'done', label: 'Fertig', sub: 'nach Garzeit und Ruhe' },
 	]
-
 	const accents: Array<{ id: AccentId; swatch: string; label: string }> = [
 		{ id: 'ember', swatch: '#ff7a1a', label: 'Glut' },
 		{ id: 'coal', swatch: '#9a4af0', label: 'Kohle' },
 		{ id: 'lime', swatch: '#9bd13a', label: 'Limette' },
 		{ id: 'sky', swatch: '#3aa3d1', label: 'Himmel' },
 	]
-
 	const densities: Array<{ id: DensityId; label: string }> = [
 		{ id: 'comfortable', label: 'Komfortabel' },
 		{ id: 'compact', label: 'Kompakt' },
 	]
-
 	const measurements = [
 		{ id: 'metric', label: 'Metrisch' },
 		{ id: 'imperial', label: 'Imperial' },
@@ -66,15 +67,6 @@
 	let toast = $state<string | null>(null)
 	let holding = $state(false)
 	let holdTimer: ReturnType<typeof setTimeout> | null = null
-	function adjustLead(which: 'putOn' | 'flip' | 'done', delta: number) {
-		const current =
-			which === 'putOn'
-				? settingsStore.leadPutOnSeconds
-				: which === 'flip'
-					? settingsStore.leadFlipSeconds
-					: settingsStore.leadDoneSeconds
-		void settingsStore.setLead(which, current + delta)
-	}
 
 	function fmtLead(seconds: number): string {
 		if (seconds === 0) return 'Aus'
@@ -88,10 +80,6 @@
 		await settingsStore.init()
 	})
 
-	function setTheme(t: string) {
-		void settingsStore.setTheme(t as ThemeId)
-	}
-
 	function setSound(event: EventKey, soundId: ToneId) {
 		void settingsStore.setSound(event, soundId)
 		void play(soundId).catch(() => {})
@@ -100,10 +88,6 @@
 	function previewTone(id: ToneId, e: Event) {
 		e.stopPropagation()
 		void play(id).catch(() => {})
-	}
-
-	function toggleVibrate() {
-		void settingsStore.setVibrate(!settingsStore.vibrate)
 	}
 
 	function toneName(id: ToneId): string {
@@ -158,19 +142,6 @@
 		}
 		holding = false
 	}
-
-	const userInitials = $derived(
-		authStore.user?.email
-			? authStore.user.email
-					.split('@')[0]
-					.split(/[._-]/)
-					.filter(Boolean)
-					.map(part => part[0])
-					.slice(0, 2)
-					.join('')
-					.toUpperCase()
-			: 'GM',
-	)
 </script>
 
 <svelte:head>
@@ -180,255 +151,184 @@
 {#if viewport.isDesktop}
 	<SettingsCockpit />
 {:else}
-<main>
-	<header>
-		<button class="back" onclick={() => goto('/')} aria-label="Zurück">‹</button>
-		<h1>Einstellungen</h1>
-	</header>
+	<main>
+		<header>
+			<button class="back" onclick={() => goto('/')} aria-label="Zurück">‹</button>
+			<h1>Einstellungen</h1>
+		</header>
 
-	<section>
-		<div class="eyebrow">Darstellung</div>
-		<SegmentedControl segments={themes} value={settingsStore.theme} ariaLabel="Theme" onchange={setTheme} />
-		<div class="rows">
-			<div class="setting-row">
-				<div class="setting-text">
-					<div class="setting-label">Akzentfarbe</div>
-					<div class="setting-sub">Buttons, Glühen, Highlights</div>
-				</div>
-				<div class="swatches">
-					{#each accents as a (a.id)}
-						<button
-							type="button"
-							class="swatch"
-							class:active={settingsStore.accent === a.id}
-							style="--swatch: {a.swatch}"
-							aria-label={a.label}
-							aria-pressed={settingsStore.accent === a.id}
-							onclick={() => settingsStore.setAccent(a.id)}></button>
-					{/each}
-				</div>
-			</div>
-			<div class="setting-row stack">
-				<div class="setting-text">
-					<div class="setting-label">Dichte</div>
-					<div class="setting-sub">Wie eng der Inhalt sitzt</div>
-				</div>
-				<SegmentedControl
-					segments={densities}
-					value={settingsStore.density}
-					ariaLabel="Dichte"
-					onchange={id => settingsStore.setDensity(id as DensityId)} />
-			</div>
-			<button
-				type="button"
-				class="setting-row toggle-row"
-				onclick={() => settingsStore.setShowProgressRings(!settingsStore.showProgressRings)}
-				aria-pressed={settingsStore.showProgressRings}>
-				<div class="setting-text">
-					<div class="setting-label">Fortschrittsringe zeigen</div>
-					<div class="setting-sub">auch bei nicht-aktiven Grillstücken</div>
-				</div>
-				<div class="toggle" class:on={settingsStore.showProgressRings} aria-hidden="true">
-					<div class="toggle-knob"></div>
-				</div>
-			</button>
-		</div>
-	</section>
+		<section class="darstellung">
+			<div class="eyebrow">Darstellung</div>
+			<SegmentedControl
+				segments={themes}
+				value={settingsStore.theme}
+				ariaLabel="Theme"
+				onchange={id => settingsStore.setTheme(id as ThemeId)} />
+		</section>
 
-	<section>
-		<div class="eyebrow">Einheiten & Sprache</div>
-		<div class="rows">
-			<div class="setting-row stack disabled">
-				<div class="setting-text">
-					<div class="setting-label">Masssystem</div>
-					<div class="setting-sub">Imperial folgt später</div>
-				</div>
-				<SegmentedControl segments={measurements} value="metric" ariaLabel="Masssystem" disabled onchange={() => {}} />
-			</div>
-			<div class="setting-row stack disabled">
-				<div class="setting-text">
-					<div class="setting-label">Temperatur</div>
-					<div class="setting-sub">Fahrenheit folgt später</div>
-				</div>
-				<SegmentedControl segments={temperatures} value="celsius" ariaLabel="Temperatur" disabled onchange={() => {}} />
-			</div>
-			<div class="setting-row stack disabled">
-				<div class="setting-text">
-					<div class="setting-label">Sprache</div>
-					<div class="setting-sub">Englisch in Vorbereitung</div>
-				</div>
-				<SegmentedControl segments={languages} value="de" ariaLabel="Sprache" disabled onchange={() => {}} />
-			</div>
-		</div>
-	</section>
+		<RowGroup>
+			<SwatchesRow label="Akzentfarbe" sub="Buttons, Glühen, Highlights" value={settingsStore.accent} options={accents} onchange={id => settingsStore.setAccent(id as AccentId)} />
+			<SettingRow label="Dichte" sub="Wie eng der Inhalt sitzt" layout="stack">
+				{#snippet trailing()}
+					<SegmentedControl
+						segments={densities}
+						value={settingsStore.density}
+						ariaLabel="Dichte"
+						onchange={id => settingsStore.setDensity(id as DensityId)} />
+				{/snippet}
+			</SettingRow>
+			<ToggleRow
+				label="Fortschrittsringe zeigen"
+				sub="auch bei nicht-aktiven Grillstücken"
+				value={settingsStore.showProgressRings}
+				onchange={v => settingsStore.setShowProgressRings(v)} />
+		</RowGroup>
 
-	<section>
-		<div class="eyebrow">Signale</div>
-		<div class="signals">
-			{#each events as ev, i (ev.key)}
-				{@const open = openEvent === ev.key}
-				<div class="signal-row" class:first={i === 0}>
-					<button class="signal-head" onclick={() => (openEvent = open ? null : ev.key)} aria-expanded={open}>
-						<span class="glyph-well" aria-hidden="true">
-							{#if ev.key === 'putOn'}
-								<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-									<path
-										d="M12 2c1 3-1 4-1 7 0 1.5 1 3 2.5 3S16 10.5 16 9c0-2-1-3-1-4 2 1 5 4 5 8 0 4-3.5 7-8 7s-8-3-8-7c0-3 2-5 4-6.5C7.2 5.7 9 4 12 2z" />
-								</svg>
-							{:else if ev.key === 'flip'}
-								<svg
-									width="18"
-									height="18"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-									stroke-linecap="round"
-									stroke-linejoin="round">
-									<path d="M3 12 a9 9 0 0 1 15-6.7 L21 8" />
-									<path d="M21 3 v5 h-5" />
-								</svg>
-							{:else}
-								<svg
-									width="18"
-									height="18"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2.4"
-									stroke-linecap="round"
-									stroke-linejoin="round">
-									<polyline points="4 12 10 18 20 6" />
-								</svg>
-							{/if}
-						</span>
-						<div class="signal-text">
-							<div class="signal-label">{ev.label}</div>
-							<div class="signal-sub">{ev.sub}</div>
-						</div>
-						<div class="signal-trail">
-							<span class="current-tone">{toneName(settingsStore.sounds[ev.key])}</span>
-							<span class="chevron" class:open>›</span>
-						</div>
-					</button>
-					{#if open}
-						<div class="tone-list">
-							{#each tones as t (t.id)}
-								{@const active = settingsStore.sounds[ev.key] === t.id}
-								<div class="tone-row">
-									<button class="tone-pick" onclick={() => setSound(ev.key, t.id)} aria-pressed={active}>
-										<span class="radio" class:active aria-hidden="true">
-											{#if active}<span class="radio-dot"></span>{/if}
-										</span>
-										<div class="tone-text">
-											<div class="tone-name">{t.name}</div>
-											<div class="tone-desc">{t.desc}</div>
-										</div>
-									</button>
-									<button class="play-btn" onclick={e => previewTone(t.id, e)} aria-label={`${t.name} probehören`} type="button">
-										<svg width="11" height="12" viewBox="0 0 11 12" fill="currentColor" aria-hidden="true">
-											<path d="M1 1.2v9.6c0 .5.5.8.9.5l8-4.8c.4-.2.4-.8 0-1L1.9.7C1.5.4 1 .7 1 1.2z" />
-										</svg>
-									</button>
-								</div>
-							{/each}
-						</div>
-					{/if}
-				</div>
-			{/each}
-		</div>
-	</section>
+		<RowGroup eyebrow="Einheiten & Sprache">
+			<SettingRow label="Masssystem" sub="Imperial folgt später" layout="stack" disabled>
+				{#snippet trailing()}
+					<SegmentedControl segments={measurements} value="metric" ariaLabel="Masssystem" disabled onchange={() => {}} />
+				{/snippet}
+			</SettingRow>
+			<SettingRow label="Temperatur" sub="Fahrenheit folgt später" layout="stack" disabled>
+				{#snippet trailing()}
+					<SegmentedControl segments={temperatures} value="celsius" ariaLabel="Temperatur" disabled onchange={() => {}} />
+				{/snippet}
+			</SettingRow>
+			<SettingRow label="Sprache" sub="Englisch in Vorbereitung" layout="stack" disabled>
+				{#snippet trailing()}
+					<SegmentedControl segments={languages} value="de" ariaLabel="Sprache" disabled onchange={() => {}} />
+				{/snippet}
+			</SettingRow>
+		</RowGroup>
 
-	<button class="vibrate-row" onclick={toggleVibrate} aria-pressed={settingsStore.vibrate}>
-		<div class="vibrate-text">
-			<div class="vibrate-label">Vibration</div>
-			<div class="vibrate-sub">zusätzlich zum Ton</div>
-		</div>
-		<div class="toggle" class:on={settingsStore.vibrate} aria-hidden="true">
-			<div class="toggle-knob"></div>
-		</div>
-	</button>
-
-	<section>
-		<div class="eyebrow">Vorlauf</div>
-		<div class="rows">
-			<div class="setting-row stepper">
-				<div class="setting-text">
-					<div class="setting-label">Auflegen-Vorlauf</div>
-					<div class="setting-sub">Vorwarnung vor dem Auflegen</div>
-				</div>
-				<div class="stepper-pill">
-					<button type="button" onclick={() => adjustLead('putOn', -15)} aria-label="weniger">−</button>
-					<span>{fmtLead(settingsStore.leadPutOnSeconds)}</span>
-					<button type="button" onclick={() => adjustLead('putOn', 15)} aria-label="mehr">+</button>
-				</div>
-			</div>
-			<div class="setting-row stepper">
-				<div class="setting-text">
-					<div class="setting-label">Wenden-Vorlauf</div>
-					<div class="setting-sub">Vorwarnung vor dem Wenden</div>
-				</div>
-				<div class="stepper-pill">
-					<button type="button" onclick={() => adjustLead('flip', -15)} aria-label="weniger">−</button>
-					<span>{fmtLead(settingsStore.leadFlipSeconds)}</span>
-					<button type="button" onclick={() => adjustLead('flip', 15)} aria-label="mehr">+</button>
-				</div>
-			</div>
-			<div class="setting-row stepper">
-				<div class="setting-text">
-					<div class="setting-label">Fertig-Vorlauf</div>
-					<div class="setting-sub">Vorwarnung vor Garzeit-Ende</div>
-				</div>
-				<div class="stepper-pill">
-					<button type="button" onclick={() => adjustLead('done', -15)} aria-label="weniger">−</button>
-					<span>{fmtLead(settingsStore.leadDoneSeconds)}</span>
-					<button type="button" onclick={() => adjustLead('done', 15)} aria-label="mehr">+</button>
-				</div>
-			</div>
-		</div>
-	</section>
-
-	{#if authStore.isAuthenticated}
 		<section>
-			<div class="eyebrow">Konto & Datenschutz</div>
-			<div class="account-card">
-				<div class="avatar">{userInitials}</div>
-				<div class="account-id">
-					<div class="account-name">{authStore.user?.email.split('@')[0] ?? 'Grillmi'}</div>
-					<div class="account-email">{authStore.user?.email ?? ''}</div>
-				</div>
-			</div>
-			<div class="account-actions">
-				<Button variant="secondary" fullWidth onclick={changePassword}>Passwort ändern</Button>
-				<Button variant="secondary" fullWidth onclick={signOut}>Abmelden</Button>
-				<button
-					type="button"
-					id="delete-account-hold"
-					class="danger-hold"
-					class:holding
-					onpointerdown={startHold}
-					onpointerup={endHold}
-					onpointerleave={endHold}
-					onpointercancel={endHold}>
-					Konto löschen
-				</button>
-				{#if holding}
-					<p class="hint">Halten zum Bestätigen. Loslassen zum Abbrechen.</p>
-				{/if}
+			<div class="eyebrow">Signale</div>
+			<div class="signals">
+				{#each events as ev, i (ev.key)}
+					{@const open = openEvent === ev.key}
+					<div class="signal-row" class:first={i === 0}>
+						<button class="signal-head" onclick={() => (openEvent = open ? null : ev.key)} aria-expanded={open}>
+							<span class="glyph-well" aria-hidden="true">
+								{#if ev.key === 'putOn'}
+									<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+										<path
+											d="M12 2c1 3-1 4-1 7 0 1.5 1 3 2.5 3S16 10.5 16 9c0-2-1-3-1-4 2 1 5 4 5 8 0 4-3.5 7-8 7s-8-3-8-7c0-3 2-5 4-6.5C7.2 5.7 9 4 12 2z" />
+									</svg>
+								{:else if ev.key === 'flip'}
+									<svg
+										width="18"
+										height="18"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2"
+										stroke-linecap="round"
+										stroke-linejoin="round">
+										<path d="M3 12 a9 9 0 0 1 15-6.7 L21 8" />
+										<path d="M21 3 v5 h-5" />
+									</svg>
+								{:else}
+									<svg
+										width="18"
+										height="18"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2.4"
+										stroke-linecap="round"
+										stroke-linejoin="round">
+										<polyline points="4 12 10 18 20 6" />
+									</svg>
+								{/if}
+							</span>
+							<div class="signal-text">
+								<div class="signal-label">{ev.label}</div>
+								<div class="signal-sub">{ev.sub}</div>
+							</div>
+							<div class="signal-trail">
+								<span class="current-tone">{toneName(settingsStore.sounds[ev.key])}</span>
+								<span class="chevron" class:open>›</span>
+							</div>
+						</button>
+						{#if open}
+							<div class="tone-list">
+								{#each tones as t (t.id)}
+									{@const active = settingsStore.sounds[ev.key] === t.id}
+									<div class="tone-row">
+										<button class="tone-pick" onclick={() => setSound(ev.key, t.id)} aria-pressed={active}>
+											<span class="radio" class:active aria-hidden="true">
+												{#if active}<span class="radio-dot"></span>{/if}
+											</span>
+											<div class="tone-text">
+												<div class="tone-name">{t.name}</div>
+												<div class="tone-desc">{t.desc}</div>
+											</div>
+										</button>
+										<button class="play-btn" onclick={e => previewTone(t.id, e)} aria-label={`${t.name} probehören`} type="button">
+											<svg width="11" height="12" viewBox="0 0 11 12" fill="currentColor" aria-hidden="true">
+												<path d="M1 1.2v9.6c0 .5.5.8.9.5l8-4.8c.4-.2.4-.8 0-1L1.9.7C1.5.4 1 .7 1 1.2z" />
+											</svg>
+										</button>
+									</div>
+								{/each}
+							</div>
+						{/if}
+					</div>
+				{/each}
 			</div>
 		</section>
-	{/if}
 
-	<section class="about">
-		<div class="eyebrow">Über Grillmi</div>
-		<p>Version 1.0.0, gebaut für den Garten.</p>
-		<p class="muted">Garzeiten basieren auf Migros Grilltimer, Weber, Serious Eats und Meathead.</p>
-	</section>
+		<RowGroup>
+			<ToggleRow label="Vibration" sub="zusätzlich zum Ton" value={settingsStore.vibrate} onchange={v => settingsStore.setVibrate(v)} />
+		</RowGroup>
 
-	{#if toast}
-		<div class="toast" role="status">{toast}</div>
-	{/if}
-</main>
+		<RowGroup eyebrow="Vorlauf">
+			<StepperRow
+				label="Auflegen-Vorlauf"
+				sub="Vorwarnung vor dem Auflegen"
+				value={settingsStore.leadPutOnSeconds}
+				formatted={fmtLead(settingsStore.leadPutOnSeconds)}
+				step={15}
+				onchange={s => settingsStore.setLead('putOn', s)} />
+			<StepperRow
+				label="Wenden-Vorlauf"
+				sub="Vorwarnung vor dem Wenden"
+				value={settingsStore.leadFlipSeconds}
+				formatted={fmtLead(settingsStore.leadFlipSeconds)}
+				step={15}
+				onchange={s => settingsStore.setLead('flip', s)} />
+			<StepperRow
+				label="Fertig-Vorlauf"
+				sub="Vorwarnung vor Garzeit-Ende"
+				value={settingsStore.leadDoneSeconds}
+				formatted={fmtLead(settingsStore.leadDoneSeconds)}
+				step={15}
+				onchange={s => settingsStore.setLead('done', s)} />
+		</RowGroup>
+
+		{#if authStore.isAuthenticated}
+			<section class="account">
+				<div class="eyebrow">Konto & Datenschutz</div>
+				<AccountBlock
+					{holding}
+					onPasswordChange={changePassword}
+					onSignOut={signOut}
+					onHoldStart={startHold}
+					onHoldEnd={endHold} />
+			</section>
+		{/if}
+
+		<section class="about">
+			<div class="eyebrow">Über Grillmi</div>
+			<p>Version 1.0.0, gebaut für den Garten.</p>
+			<p class="muted">Garzeiten basieren auf Migros Grilltimer, Weber, Serious Eats und Meathead.</p>
+		</section>
+
+		{#if toast}
+			<Toast msg={toast} duration={2500} onClose={() => (toast = null)} />
+		{/if}
+	</main>
 {/if}
 
 <style>
@@ -466,7 +366,7 @@
 		cursor: pointer;
 		padding: 4px;
 	}
-	section {
+	.darstellung {
 		display: flex;
 		flex-direction: column;
 		gap: 10px;
@@ -620,59 +520,14 @@
 		justify-content: center;
 		padding: 0;
 	}
-	.vibrate-row {
-		width: 100%;
+	.account {
 		display: flex;
-		align-items: center;
-		gap: 14px;
-		padding: 14px 16px;
-		background: var(--color-bg-surface);
-		border: 1px solid var(--color-border-subtle);
-		border-radius: 14px;
-		color: var(--color-fg-base);
-		cursor: pointer;
-	}
-	.vibrate-text {
-		flex: 1;
-		text-align: left;
-	}
-	.vibrate-label {
-		font-family: var(--font-body);
-		font-weight: 600;
-		font-size: 15px;
-	}
-	.vibrate-sub {
-		font-size: 12px;
-		color: var(--color-fg-muted);
-		margin-top: 2px;
-	}
-	.toggle {
-		width: 44px;
-		height: 26px;
-		border-radius: 13px;
-		background: var(--color-border-strong);
-		position: relative;
-		transition: background 0.15s ease;
-		flex-shrink: 0;
-	}
-	.toggle.on {
-		background: var(--color-ember);
-	}
-	.toggle-knob {
-		position: absolute;
-		top: 3px;
-		left: 3px;
-		width: 20px;
-		height: 20px;
-		border-radius: 10px;
-		background: var(--color-fg-base);
-		transition: left 0.15s ease;
-	}
-	.toggle.on .toggle-knob {
-		left: 21px;
-		background: var(--color-ember-ink);
+		flex-direction: column;
+		gap: 10px;
 	}
 	.about {
+		display: flex;
+		flex-direction: column;
 		gap: 6px;
 	}
 	.about p {
@@ -682,184 +537,5 @@
 	.muted {
 		color: var(--color-fg-muted);
 		font-size: 13px;
-	}
-	.rows {
-		display: flex;
-		flex-direction: column;
-		background: var(--color-bg-surface);
-		border: 1px solid var(--color-border-subtle);
-		border-radius: 16px;
-		overflow: hidden;
-	}
-	.setting-row {
-		display: flex;
-		align-items: center;
-		gap: 14px;
-		padding: 14px 16px;
-		background: transparent;
-		border: 0;
-		border-top: 1px solid var(--color-border-subtle);
-		color: var(--color-fg-base);
-		font: inherit;
-		text-align: left;
-		cursor: default;
-	}
-	.setting-row:first-child {
-		border-top: 0;
-	}
-	.setting-row.toggle-row {
-		cursor: pointer;
-	}
-	.setting-row.stack {
-		flex-direction: column;
-		align-items: stretch;
-		gap: 10px;
-	}
-	.setting-row.disabled .setting-text {
-		opacity: 0.55;
-	}
-	.setting-text {
-		flex: 1;
-		min-width: 0;
-	}
-	.setting-label {
-		font-family: var(--font-body);
-		font-weight: 600;
-		font-size: 15px;
-		line-height: 1.2;
-	}
-	.setting-sub {
-		margin-top: 2px;
-		font-size: 12px;
-		color: var(--color-fg-muted);
-	}
-	.stepper-pill {
-		display: inline-flex;
-		align-items: center;
-		gap: 10px;
-		padding: 4px 6px;
-		border: 1px solid var(--color-border-strong);
-		border-radius: 999px;
-		flex-shrink: 0;
-	}
-	.stepper-pill button {
-		width: 32px;
-		height: 32px;
-		border-radius: 50%;
-		border: 0;
-		background: transparent;
-		color: var(--color-fg-base);
-		font-size: 18px;
-		line-height: 1;
-		cursor: pointer;
-	}
-	.stepper-pill span {
-		min-width: 64px;
-		text-align: center;
-		font-family: var(--font-display);
-		font-variant-numeric: tabular-nums;
-		font-size: 14px;
-	}
-	.swatches {
-		display: flex;
-		gap: 8px;
-		flex-shrink: 0;
-	}
-	.swatch {
-		width: 28px;
-		height: 28px;
-		border-radius: 50%;
-		border: 2px solid transparent;
-		background: var(--swatch);
-		cursor: pointer;
-		padding: 0;
-		box-shadow: inset 0 0 0 2px var(--color-bg-surface);
-	}
-	.swatch.active {
-		border-color: var(--color-fg-base);
-	}
-	.account-card {
-		display: flex;
-		align-items: center;
-		gap: 14px;
-		padding: 16px;
-		border-radius: 16px;
-		background: var(--color-bg-surface);
-		border: 1px solid var(--color-border-subtle);
-	}
-	.avatar {
-		width: 48px;
-		height: 48px;
-		border-radius: 50%;
-		background: linear-gradient(135deg, var(--color-ember), var(--color-ember-dim));
-		color: var(--color-ember-ink);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-weight: 800;
-		font-size: 16px;
-		text-transform: uppercase;
-		flex-shrink: 0;
-	}
-	.account-id {
-		min-width: 0;
-		flex: 1;
-	}
-	.account-name {
-		font-family: var(--font-body);
-		font-size: 15px;
-		font-weight: 600;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-	.account-email {
-		margin-top: 2px;
-		font-size: 12px;
-		color: var(--color-fg-muted);
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-	.account-actions {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-		margin-top: 10px;
-	}
-	.danger-hold {
-		min-height: 48px;
-		padding: 0 18px;
-		border-radius: 12px;
-		border: 1px solid color-mix(in srgb, var(--color-error-default) 60%, transparent);
-		background: transparent;
-		color: var(--color-error-default);
-		font: inherit;
-		font-weight: 600;
-		font-size: 15px;
-		cursor: pointer;
-		transition: background 0.15s ease;
-	}
-	.danger-hold.holding {
-		background: var(--color-error-default);
-		color: #fff;
-	}
-	.hint {
-		margin: 6px 0 0;
-		color: var(--color-fg-muted);
-		font-size: 12px;
-		text-align: center;
-	}
-	.toast {
-		position: fixed;
-		bottom: 24px;
-		left: 50%;
-		transform: translateX(-50%);
-		padding: 10px 16px;
-		border-radius: 10px;
-		background: var(--color-fg-base);
-		color: var(--color-bg-base);
-		font-size: 13px;
-		z-index: var(--z-toast);
 	}
 </style>

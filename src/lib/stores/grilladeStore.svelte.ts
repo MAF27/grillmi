@@ -208,12 +208,6 @@ function createGrilladeStore() {
 			persistPlan()
 		},
 
-		appendFromMenu(items: PlannedItem[]) {
-			const fresh = items.map(i => ({ ...i, id: uuid() }))
-			plan = { ...plan, items: [...plan.items, ...fresh] }
-			persistPlan()
-		},
-
 		resetDraft() {
 			plan = defaultPlan()
 			planMode = 'auto'

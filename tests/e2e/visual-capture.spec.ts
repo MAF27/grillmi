@@ -246,18 +246,6 @@ test.describe('visual capture (prototype + app)', () => {
 		await page.screenshot({ path: `${ROOT}/app/session-mid-cook-alarm.png`, fullPage: false })
 	})
 
-	test('app_menus', async ({ page }) => {
-		await page.goto(APP_BASE)
-		await clearIDB(page)
-		await page.goto(`${APP_BASE}/plan`)
-		await addEntrecoteOnPlan(page)
-		await page.getByRole('button', { name: /Als Menü speichern/ }).click()
-		await page.getByPlaceholder(/Sonntagsmenü/i).fill('Capture-Menü')
-		await page.getByRole('button', { name: 'Speichern', exact: true }).click()
-		await expect(page.getByRole('button', { name: 'Speichern', exact: true })).toHaveCount(0)
-		await captureFullPage(page, '/menus', 'menus')
-	})
-
 	test('app_settings_expanded', async ({ page }) => {
 		await page.goto(`${APP_BASE}/settings`)
 		await page.getByRole('button', { name: /Auflegen/ }).click()

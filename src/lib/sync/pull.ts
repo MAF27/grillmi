@@ -3,7 +3,6 @@ import {
 	getSyncMeta,
 	putFavorite,
 	putGrillade,
-	putSavedPlan,
 	putSettings,
 	setSyncMeta,
 	type GrilladeRow,
@@ -39,25 +38,6 @@ export async function pull(): Promise<void> {
 		}
 	} catch {
 		// Network errors leave watermark untouched; next pull retries.
-	}
-
-	try {
-		const menus = await fetchJson<DeltaResponse<Record<string, unknown>>>(`/api/menus${params}`)
-		if (menus) {
-			serverTime = menus.server_time
-			for (const r of menus.rows) {
-				if (r.deleted_at) continue
-				await putSavedPlan({
-					id: String(r.id),
-					name: String(r.name ?? ''),
-					items: [],
-					createdAtEpoch: Date.parse(String(r.created_at ?? '')) || Date.now(),
-					lastUsedEpoch: Date.parse(String(r.updated_at ?? '')) || Date.now(),
-				})
-			}
-		}
-	} catch {
-		/* noop */
 	}
 
 	try {
