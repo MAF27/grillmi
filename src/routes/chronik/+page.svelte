@@ -85,12 +85,12 @@
 </script>
 
 <svelte:head>
-	<title>Grilladen · Grillmi</title>
+	<title>Chronik · Grillmi</title>
 </svelte:head>
 
 <main class="history">
 	{#if selected}
-		<button class="back" type="button" onclick={() => (selectedId = null)}>Zurück zu Grilladen</button>
+		<button class="back" type="button" onclick={() => (selectedId = null)}>Zurück zur Chronik</button>
 		<SectionHeader kicker="Grillade" title={selected.name || `Grillade vom ${new Date(selected.endedEpoch ?? selected.updatedEpoch).toLocaleDateString('de-CH')}`} />
 		<div class="detail-meta">
 			<span>{new Date(selected.endedEpoch ?? selected.updatedEpoch).toLocaleDateString('de-CH')}</span>
@@ -142,7 +142,7 @@
 			</aside>
 		</div>
 	{:else}
-		<SectionHeader kicker="Grilladen" title="Was du schon gegrillt hast" />
+		<SectionHeader kicker="Chronik" title="Was du schon gegrillt hast" />
 		{#if grilladenHistoryStore.finished.length === 0}
 			<button class="empty" type="button" onclick={() => goto('/plan')}>Noch keine Grilladen abgeschlossen<br /><span>Neue Grillade planen</span></button>
 		{:else}

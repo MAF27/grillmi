@@ -127,7 +127,7 @@
 
 		<Button variant="primary" size="lg" fullWidth onclick={() => goto('/plan')}>Neue Grillade</Button>
 		<div class="row-buttons">
-			<Button variant="secondary" fullWidth onclick={() => goto('/grilladen')}>Grilladen</Button>
+			<Button variant="secondary" fullWidth onclick={() => goto('/chronik')}>Chronik</Button>
 			<Button variant="secondary" fullWidth onclick={() => goto('/settings')}>Einstellungen</Button>
 		</div>
 	</div>

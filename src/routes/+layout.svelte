@@ -28,7 +28,7 @@
 	const currentSection = $derived.by(() => {
 		if (pathname.startsWith('/plan')) return 'plan'
 		if (pathname.startsWith('/session')) return 'cook'
-		if (pathname.startsWith('/grilladen')) return 'grilladen'
+		if (pathname.startsWith('/chronik')) return 'chronik'
 		if (pathname.startsWith('/settings')) return 'settings'
 		return 'home'
 	})
@@ -37,7 +37,7 @@
 			{ id: 'home', label: 'Übersicht', icon: '⌂' },
 			{ id: 'plan', label: 'Planen', icon: '+' },
 			grilladeStore.session ? { id: 'cook', label: 'Grillen', icon: '◉', badge: 'LIVE' } : null,
-			{ id: 'grilladen', label: 'Grilladen', icon: '★' },
+			{ id: 'chronik', label: 'Chronik', icon: '★' },
 			{ id: 'settings', label: 'Einstellungen', icon: '⚙' },
 		].filter((item): item is SidebarItem => item !== null),
 	)
@@ -94,7 +94,7 @@
 			home: '/',
 			plan: '/plan',
 			cook: '/session',
-			grilladen: '/grilladen',
+			chronik: '/chronik',
 			settings: '/settings',
 		}
 		void goto(map[id] ?? '/')

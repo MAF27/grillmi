@@ -40,8 +40,8 @@ test.describe('a11y axe-core', () => {
 		expect(result.violations.filter(v => v.impact === 'critical')).toEqual([])
 	})
 
-	test('test_axe_core_clean_on_grilladen', async ({ page }) => {
-		await page.goto('/grilladen')
+	test('test_axe_core_clean_on_chronik', async ({ page }) => {
+		await page.goto('/chronik')
 		await dismissFirstRun(page)
 		const result = await new AxeBuilder({ page }).analyze()
 		// Only `critical`-level violations fail the build. `serious` (e.g. light-mode contrast
