@@ -3,6 +3,7 @@
 	import { formatDuration } from '$lib/util/format'
 	import { onMount } from 'svelte'
 	import ProgressRing from './ProgressRing.svelte'
+	import { settingsStore } from '$lib/stores/settingsStore.svelte'
 	import type { TimerCardStatus } from './TimerCard.svelte'
 
 	interface Props {
@@ -17,9 +18,20 @@
 	let { item, alarmFiring = false, onplate, onstart, onremove, status }: Props = $props()
 	let now = $state(Date.now())
 
-	const effectiveStatus = $derived<TimerCardStatus>(status ?? item.status)
+	const baseStatus = $derived<TimerCardStatus>(status ?? item.status)
+	const leadPutOnMs = $derived(settingsStore.leadPutOnSeconds * 1000)
+	const inPutOnVorlauf = $derived(
+		baseStatus === 'pending' && leadPutOnMs > 0 && now >= item.putOnEpoch - leadPutOnMs && now < item.putOnEpoch,
+	)
+	const effectiveStatus = $derived<TimerCardStatus>(baseStatus)
+	const ringState = $derived<'pending' | 'put-on-soon' | 'cooking' | 'resting' | 'ready' | 'plated' | 'flip' | 'unstarted'>(
+		inPutOnVorlauf ? 'put-on-soon' : effectiveStatus,
+	)
 	const total = $derived(item.doneEpoch - item.putOnEpoch)
 	const progress = $derived.by(() => {
+		if (inPutOnVorlauf) {
+			return Math.min(1, Math.max(0, (now - (item.putOnEpoch - leadPutOnMs)) / leadPutOnMs))
+		}
 		if (effectiveStatus === 'pending' || effectiveStatus === 'unstarted') return 0
 		if (effectiveStatus === 'ready' || effectiveStatus === 'plated') return 1
 		if (effectiveStatus === 'resting') {
@@ -39,6 +51,7 @@
 	const ringEyebrow = $derived.by(() => {
 		if (effectiveStatus === 'ready') return null
 		if (effectiveStatus === 'unstarted') return 'DAUER'
+		if (inPutOnVorlauf) return 'GLEICH AUFLEGEN'
 		if (effectiveStatus === 'pending') return 'BIS START'
 		if (effectiveStatus === 'flip') return 'WENDEN'
 		if (effectiveStatus === 'resting') return 'RUHE'
@@ -83,7 +96,7 @@
 			}}>×</button>
 	{/if}
 	<div class="ring-wrap">
-		<ProgressRing {progress} state={effectiveStatus} size={132} stroke={7} ariaLabel={item.label || item.cutSlug}>
+		<ProgressRing {progress} state={ringState} size={132} stroke={7} ariaLabel={item.label || item.cutSlug}>
 			<div class="ring-value" data-live-countdown>{value}</div>
 			{#if ringEyebrow}
 				<div class="ring-eyebrow">{ringEyebrow}</div>

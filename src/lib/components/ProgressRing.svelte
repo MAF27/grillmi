@@ -3,7 +3,7 @@
 
 	interface Props {
 		progress: number
-		state: 'pending' | 'cooking' | 'resting' | 'ready' | 'plated' | 'flip' | 'unstarted'
+		state: 'pending' | 'put-on-soon' | 'cooking' | 'resting' | 'ready' | 'plated' | 'flip' | 'unstarted'
 		size?: number
 		stroke?: number
 		ariaLabel?: string
@@ -77,6 +77,9 @@
 	}
 	.progress-ring[data-state='pending'] .bar {
 		stroke: var(--color-state-pending);
+	}
+	.progress-ring[data-state='put-on-soon'] .bar {
+		stroke: var(--color-state-resting);
 	}
 	.progress-ring[data-state='unstarted'] .bar {
 		stroke: var(--color-fg-muted);

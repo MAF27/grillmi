@@ -110,7 +110,11 @@
 	}
 
 	$effect(() => {
-		if (!grilladeStore.allPlated || endingForAllPlated) return
+		if (endingForAllPlated) return
+		const live = grilladeStore.session
+		if (!live) return
+		const finished = live.items.length === 0 || live.items.every(i => i.status === 'plated')
+		if (!finished) return
 		endingForAllPlated = true
 		void endSession()
 	})

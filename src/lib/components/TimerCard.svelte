@@ -3,6 +3,7 @@
 	import { formatDuration } from '$lib/util/format'
 	import { onMount } from 'svelte'
 	import ProgressRing from './ProgressRing.svelte'
+	import { settingsStore } from '$lib/stores/settingsStore.svelte'
 
 	export type TimerCardStatus = 'unstarted' | 'pending' | 'cooking' | 'flip' | 'resting' | 'ready' | 'plated'
 
@@ -33,7 +34,18 @@
 		return item.status
 	}
 
+	const leadPutOnMs = $derived(settingsStore.leadPutOnSeconds * 1000)
+	const inPutOnVorlauf = $derived(
+		effectiveStatus === 'pending' && leadPutOnMs > 0 && now >= item.putOnEpoch - leadPutOnMs && now < item.putOnEpoch,
+	)
+	const ringState = $derived<'pending' | 'put-on-soon' | 'cooking' | 'resting' | 'ready' | 'plated' | 'flip' | 'unstarted'>(
+		inPutOnVorlauf ? 'put-on-soon' : effectiveStatus,
+	)
+
 	const cookProgress = $derived.by(() => {
+		if (inPutOnVorlauf) {
+			return Math.min(1, Math.max(0, (now - (item.putOnEpoch - leadPutOnMs)) / leadPutOnMs))
+		}
 		if (effectiveStatus === 'pending' || effectiveStatus === 'unstarted') return 0
 		if (effectiveStatus === 'ready' || effectiveStatus === 'plated') return 1
 		if (effectiveStatus === 'cooking' || effectiveStatus === 'flip') {
@@ -73,6 +85,7 @@
 
 	const ringEyebrow = $derived.by(() => {
 		if (effectiveStatus === 'unstarted') return 'DAUER'
+		if (inPutOnVorlauf) return 'GLEICH AUFLEGEN'
 		if (effectiveStatus === 'pending') return 'IN'
 		if (effectiveStatus === 'cooking' || effectiveStatus === 'flip') return 'REST'
 		if (effectiveStatus === 'resting') return 'RUHE'
@@ -134,7 +147,7 @@
 	<div class="ring-wrap">
 		<ProgressRing
 			progress={cookProgress}
-			state={effectiveStatus}
+			state={ringState}
 			size={92}
 			stroke={6}
 			ariaLabel={`${item.label}: ${Math.round(cookProgress * 100)}% gegart`}>
