@@ -106,6 +106,10 @@
 	function plateItem(id: string) {
 		void grilladeStore.plateItem(id)
 	}
+
+	function removeItem(id: string) {
+		void grilladeStore.removeSessionItem(id)
+	}
 </script>
 
 <svelte:head>
@@ -123,7 +127,7 @@
 				<MasterClock targetEpoch={session.targetEpoch} size="desktop" />
 				<div class="big-grid">
 					{#each session.items as item (item.id)}
-						<BigTimerCard {item} alarmFiring={firingItemId === item.id} onplate={plateItem} />
+						<BigTimerCard {item} alarmFiring={firingItemId === item.id} onplate={plateItem} onremove={removeItem} />
 					{/each}
 				</div>
 			</section>

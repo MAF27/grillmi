@@ -11,6 +11,14 @@
 
 	let { events }: Props = $props()
 
+	const kindLabel: Record<ActivityEvent['kind'], string> = {
+		on: 'Auflegen',
+		flip: 'Wenden',
+		resting: 'Ruht',
+		ready: 'Fertig',
+		plated: 'Angerichtet',
+	}
+
 	function relative(epoch: number) {
 		const seconds = Math.max(0, Math.round((Date.now() - epoch) / 1000))
 		if (seconds < 60) return 'gerade eben'
@@ -29,7 +37,7 @@
 					<span class="dot" data-kind={event.kind} aria-hidden="true"></span>
 					<span>
 						<strong>{event.itemName}</strong>
-						<small>{event.kind} · {relative(event.at)}</small>
+						<small>{kindLabel[event.kind]} · {relative(event.at)}</small>
 					</span>
 				</li>
 			{/each}

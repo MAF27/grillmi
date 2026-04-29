@@ -287,7 +287,7 @@
 				</h2>
 				<div class="section-actions">
 					{#if menusStore.all.length > 0}
-						<Button variant="accentGhost" size="sm" onclick={openMenusSheet}>★ Menü</Button>
+						<Button variant="accentGhost" size="sm" onclick={openMenusSheet}>★ Grillade</Button>
 					{/if}
 				</div>
 			</div>
@@ -343,7 +343,7 @@
 			{#if plan.items.length > 0}
 				<button class="save-menu-cta" type="button" onclick={openSaveMenu}>
 					<span class="star" aria-hidden="true">★</span>
-					Als Menü speichern
+					Als Grillade speichern
 				</button>
 			{/if}
 		</section>
@@ -387,12 +387,12 @@
 
 {#if menusSheetOpen}
 	<div class="scrim" role="presentation" onclick={() => (menusSheetOpen = false)}></div>
-	<div class="menu-sheet" role="dialog" aria-modal="true" aria-label="Menü hinzufügen">
+	<div class="menu-sheet" role="dialog" aria-modal="true" aria-label="Grillade hinzufügen">
 		<header class="menu-sheet-header">
-			<h2>Menü hinzufügen</h2>
+			<h2>Grillade hinzufügen</h2>
 			<button class="dismiss" onclick={() => (menusSheetOpen = false)} aria-label="Schliessen">×</button>
 		</header>
-		<p class="menu-sheet-hint">Tippe auf ein Menü. Die Einträge werden an deinen Plan angehängt.</p>
+		<p class="menu-sheet-hint">Tippe auf eine Grillade. Die Einträge werden an deinen Plan angehängt.</p>
 		<ul class="menu-list">
 			{#each menusStore.all as m (m.id)}
 				<li>
@@ -408,9 +408,9 @@
 
 {#if saveMenuOpen}
 	<div class="scrim" role="presentation" onclick={() => (saveMenuOpen = false)}></div>
-	<div class="save-modal" role="dialog" aria-modal="true" aria-label="Als Menü speichern">
-		<h3>Als Menü speichern</h3>
-		<input type="text" bind:value={menuName} maxlength="40" placeholder="z.B. Sonntagsmenü" />
+	<div class="save-modal" role="dialog" aria-modal="true" aria-label="Als Grillade speichern">
+		<h3>Als Grillade speichern</h3>
+		<input type="text" bind:value={menuName} maxlength="40" placeholder="z.B. Sonntagsgrillade" />
 		<div class="row-buttons">
 			<Button variant="ghost" onclick={() => (saveMenuOpen = false)}>Abbrechen</Button>
 			<Button variant="primary" onclick={saveMenu}>Speichern</Button>

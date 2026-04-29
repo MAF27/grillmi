@@ -72,8 +72,9 @@
 	}
 
 	let selected = $state<GroupId>((page.url.searchParams.get('group') as GroupId) || 'signals')
-	let leadFlip = $state(60)
-	let leadDone = $state(120)
+	let leadPutOn = $state(15)
+	let leadFlip = $state(15)
+	let leadDone = $state(15)
 	let measurement = $state<string>('metric')
 	let temperature = $state<string>('celsius')
 	let language = $state<string>('de')
@@ -115,8 +116,9 @@
 		void play(id).catch(() => {})
 	}
 
-	function adjustLead(which: 'flip' | 'done', delta: number) {
-		if (which === 'flip') leadFlip = Math.max(0, Math.min(300, leadFlip + delta))
+	function adjustLead(which: 'putOn' | 'flip' | 'done', delta: number) {
+		if (which === 'putOn') leadPutOn = Math.max(0, Math.min(300, leadPutOn + delta))
+		else if (which === 'flip') leadFlip = Math.max(0, Math.min(300, leadFlip + delta))
 		else leadDone = Math.max(0, Math.min(600, leadDone + delta))
 	}
 
@@ -288,6 +290,17 @@
 			<div class="rows">
 				<div class="row stepper-row">
 					<div class="row-text">
+						<strong>Auflegen-Vorlauf</strong>
+						<span>Vorwarnung vor dem Auflegen</span>
+					</div>
+					<div class="stepper">
+						<button type="button" onclick={() => adjustLead('putOn', -15)} aria-label="weniger">−</button>
+						<span>{fmtLead(leadPutOn)}</span>
+						<button type="button" onclick={() => adjustLead('putOn', 15)} aria-label="mehr">+</button>
+					</div>
+				</div>
+				<div class="row stepper-row">
+					<div class="row-text">
 						<strong>Wenden-Vorlauf</strong>
 						<span>Vorwarnung vor dem Wenden</span>
 					</div>
@@ -303,9 +316,9 @@
 						<span>Vorwarnung vor Garzeit-Ende</span>
 					</div>
 					<div class="stepper">
-						<button type="button" onclick={() => adjustLead('done', -30)} aria-label="weniger">−</button>
+						<button type="button" onclick={() => adjustLead('done', -15)} aria-label="weniger">−</button>
 						<span>{fmtLead(leadDone)}</span>
-						<button type="button" onclick={() => adjustLead('done', 30)} aria-label="mehr">+</button>
+						<button type="button" onclick={() => adjustLead('done', 15)} aria-label="mehr">+</button>
 					</div>
 				</div>
 			</div>

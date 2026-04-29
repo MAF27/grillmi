@@ -66,6 +66,23 @@
 	let toast = $state<string | null>(null)
 	let holding = $state(false)
 	let holdTimer: ReturnType<typeof setTimeout> | null = null
+	let leadPutOn = $state(15)
+	let leadFlip = $state(15)
+	let leadDone = $state(15)
+
+	function adjustLead(which: 'putOn' | 'flip' | 'done', delta: number) {
+		if (which === 'putOn') leadPutOn = Math.max(0, Math.min(300, leadPutOn + delta))
+		else if (which === 'flip') leadFlip = Math.max(0, Math.min(300, leadFlip + delta))
+		else leadDone = Math.max(0, Math.min(600, leadDone + delta))
+	}
+
+	function fmtLead(seconds: number): string {
+		if (seconds === 0) return 'Aus'
+		if (seconds < 60) return `${seconds} s`
+		const m = Math.floor(seconds / 60)
+		const s = seconds % 60
+		return s ? `${m} min ${s} s` : `${m} min`
+	}
 
 	onMount(async () => {
 		await settingsStore.init()
@@ -331,6 +348,45 @@
 			<div class="toggle-knob"></div>
 		</div>
 	</button>
+
+	<section>
+		<div class="eyebrow">Vorlauf</div>
+		<div class="rows">
+			<div class="setting-row stepper">
+				<div class="setting-text">
+					<div class="setting-label">Auflegen-Vorlauf</div>
+					<div class="setting-sub">Vorwarnung vor dem Auflegen</div>
+				</div>
+				<div class="stepper-pill">
+					<button type="button" onclick={() => adjustLead('putOn', -15)} aria-label="weniger">−</button>
+					<span>{fmtLead(leadPutOn)}</span>
+					<button type="button" onclick={() => adjustLead('putOn', 15)} aria-label="mehr">+</button>
+				</div>
+			</div>
+			<div class="setting-row stepper">
+				<div class="setting-text">
+					<div class="setting-label">Wenden-Vorlauf</div>
+					<div class="setting-sub">Vorwarnung vor dem Wenden</div>
+				</div>
+				<div class="stepper-pill">
+					<button type="button" onclick={() => adjustLead('flip', -15)} aria-label="weniger">−</button>
+					<span>{fmtLead(leadFlip)}</span>
+					<button type="button" onclick={() => adjustLead('flip', 15)} aria-label="mehr">+</button>
+				</div>
+			</div>
+			<div class="setting-row stepper">
+				<div class="setting-text">
+					<div class="setting-label">Fertig-Vorlauf</div>
+					<div class="setting-sub">Vorwarnung vor Garzeit-Ende</div>
+				</div>
+				<div class="stepper-pill">
+					<button type="button" onclick={() => adjustLead('done', -15)} aria-label="weniger">−</button>
+					<span>{fmtLead(leadDone)}</span>
+					<button type="button" onclick={() => adjustLead('done', 15)} aria-label="mehr">+</button>
+				</div>
+			</div>
+		</div>
+	</section>
 
 	{#if authStore.isAuthenticated}
 		<section>
@@ -676,6 +732,33 @@
 		margin-top: 2px;
 		font-size: 12px;
 		color: var(--color-fg-muted);
+	}
+	.stepper-pill {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		padding: 4px 6px;
+		border: 1px solid var(--color-border-strong);
+		border-radius: 999px;
+		flex-shrink: 0;
+	}
+	.stepper-pill button {
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		border: 0;
+		background: transparent;
+		color: var(--color-fg-base);
+		font-size: 18px;
+		line-height: 1;
+		cursor: pointer;
+	}
+	.stepper-pill span {
+		min-width: 64px;
+		text-align: center;
+		font-family: var(--font-display);
+		font-variant-numeric: tabular-nums;
+		font-size: 14px;
 	}
 	.swatches {
 		display: flex;

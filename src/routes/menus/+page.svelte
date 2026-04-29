@@ -28,17 +28,17 @@
 </script>
 
 <svelte:head>
-	<title>Menüs · Grillmi</title>
+	<title>Grilladen · Grillmi</title>
 </svelte:head>
 
 <main>
 	<header>
 		<button class="back" onclick={() => goto('/')} aria-label="Zurück">‹</button>
-		<h1>Menüs</h1>
+		<h1>Grilladen</h1>
 	</header>
 
 	{#if menusStore.all.length === 0}
-		<p class="empty">Noch kein Menü gespeichert. Stelle einen Plan zusammen und tippe auf <strong>Als Menü speichern</strong>.</p>
+		<p class="empty">Noch keine Grillade gespeichert. Stelle einen Plan zusammen und tippe auf <strong>Als Grillade speichern</strong>.</p>
 		<Button variant="primary" fullWidth onclick={() => goto('/plan')}>Neue Grillade</Button>
 	{:else}
 		<div class="list" role="list">

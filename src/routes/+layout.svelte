@@ -5,7 +5,6 @@
 	import { page } from '$app/state'
 	import AccountChip from '$lib/components/AccountChip.svelte'
 	import Sidebar, { type SidebarItem } from '$lib/components/Sidebar.svelte'
-	import SyncChip from '$lib/components/SyncChip.svelte'
 	import { viewport } from '$lib/runtime/viewport.svelte'
 	import { settingsStore } from '$lib/stores/settingsStore.svelte'
 	import { authStore } from '$lib/stores/authStore.svelte'
@@ -17,7 +16,6 @@
 	const pathname = $derived(page.url.pathname)
 	const publicPage = $derived(['/login', '/set-password', '/forgot-password'].some(path => pathname.startsWith(path)))
 	const showDesktopShell = $derived(viewport.isDesktop && authStore.isAuthenticated && !publicPage)
-	const showMobileHeader = $derived(!viewport.isDesktop && authStore.isAuthenticated && !publicPage)
 	const accountUser = $derived(
 		authStore.user
 			? {
@@ -121,7 +119,6 @@
 			</div>
 			<Sidebar items={sidebarItems} current={currentSection} onChange={nav} />
 			<div class="sidebar-spacer"></div>
-			<SyncChip />
 			<AccountChip
 				user={accountUser}
 				onSignedInClick={() => goto('/settings?group=account')}
@@ -132,11 +129,6 @@
 		</div>
 	</div>
 {:else}
-	{#if showMobileHeader}
-		<div class="mobile-sync">
-			<SyncChip />
-		</div>
-	{/if}
 	{@render children()}
 {/if}
 
@@ -181,17 +173,5 @@
 	.desktop-content {
 		min-width: 0;
 		min-height: 100dvh;
-	}
-	.mobile-sync {
-		position: sticky;
-		top: 0;
-		z-index: var(--z-sticky);
-		display: flex;
-		justify-content: flex-end;
-		padding: calc(env(safe-area-inset-top) + 8px) 16px 0;
-		pointer-events: none;
-	}
-	.mobile-sync :global(.sync-chip) {
-		pointer-events: auto;
 	}
 </style>

@@ -109,7 +109,7 @@
 
 		{#if recentMenus.length > 0}
 			<div class="recent">
-				<div class="recent-eyebrow">Zuletzt gespeicherte Menüs</div>
+				<div class="recent-eyebrow">Zuletzt gespeicherte Grilladen</div>
 				<div class="recent-row">
 					{#each recentMenus as menu (menu.id)}
 						<button class="recent-pill" onclick={() => loadMenu(menu.id)}>
@@ -123,7 +123,7 @@
 
 		<Button variant="primary" size="lg" fullWidth onclick={() => goto('/plan')}>Neue Grillade</Button>
 		<div class="row-buttons">
-			<Button variant="secondary" fullWidth onclick={() => goto('/menus')}>Menüs</Button>
+			<Button variant="secondary" fullWidth onclick={() => goto('/grilladen')}>Grilladen</Button>
 			<Button variant="secondary" fullWidth onclick={() => goto('/settings')}>Einstellungen</Button>
 		</div>
 	</div>

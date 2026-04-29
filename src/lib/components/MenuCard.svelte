@@ -112,7 +112,7 @@
 					maxlength="40"
 					onkeydown={onRenameKey}
 					onblur={commitRename}
-					aria-label="Menü umbenennen" />
+					aria-label="Grillade umbenennen" />
 			{:else}
 				<button
 					class="title"

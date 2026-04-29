@@ -10,10 +10,11 @@
 		alarmFiring?: boolean
 		onplate?: (id: string) => void
 		onstart?: (id: string) => void
+		onremove?: (id: string) => void
 		status?: TimerCardStatus
 	}
 
-	let { item, alarmFiring = false, onplate, onstart, status }: Props = $props()
+	let { item, alarmFiring = false, onplate, onstart, onremove, status }: Props = $props()
 	let now = $state(Date.now())
 
 	const effectiveStatus = $derived<TimerCardStatus>(status ?? item.status)
@@ -61,7 +62,7 @@
 		if (item.thicknessCm !== null) return `${item.thicknessCm} cm`
 		if (item.doneness) return item.doneness
 		if (item.prepLabel && item.prepLabel !== '—' && item.prepLabel !== '-') return item.prepLabel
-		return `${formatDuration(item.cookSeconds)} Garzeit`
+		return ''
 	})
 
 	onMount(() => {
@@ -71,6 +72,16 @@
 </script>
 
 <article class="big-card" data-state={effectiveStatus} class:alarm={alarmFiring} data-testid="big-timer-card">
+	{#if onremove}
+		<button
+			class="remove"
+			type="button"
+			aria-label="Entfernen"
+			onclick={e => {
+				e.stopPropagation()
+				onremove!(item.id)
+			}}>×</button>
+	{/if}
 	<div class="ring-wrap">
 		<ProgressRing {progress} state={effectiveStatus} size={132} stroke={7} ariaLabel={item.label || item.cutSlug}>
 			<div class="ring-value" data-live-countdown>{value}</div>
@@ -80,7 +91,9 @@
 		</ProgressRing>
 	</div>
 	<div class="name">{item.label || item.cutSlug}</div>
-	<div class="spec">{specLine}</div>
+	{#if specLine}
+		<div class="spec">{specLine}</div>
+	{/if}
 	<div class="status-badge">{statusLabel[effectiveStatus]}</div>
 	{#if effectiveStatus === 'unstarted' && onstart}
 		<button class="action start" type="button" onclick={() => onstart!(item.id)}>Los</button>
@@ -91,6 +104,7 @@
 
 <style>
 	.big-card {
+		position: relative;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -101,6 +115,30 @@
 		border: 1px solid var(--color-border-subtle);
 		color: var(--color-fg-base);
 		transition: border-color var(--duration-normal) var(--ease-default), box-shadow var(--duration-normal) var(--ease-default);
+	}
+	.remove {
+		position: absolute;
+		top: 8px;
+		right: 8px;
+		width: 28px;
+		height: 28px;
+		padding: 0;
+		border-radius: 14px;
+		border: 1px solid var(--color-border-strong);
+		background: var(--color-bg-surface-2);
+		color: var(--color-fg-muted);
+		font: inherit;
+		font-size: 18px;
+		line-height: 1;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 1;
+	}
+	.remove:hover {
+		color: var(--color-fg-base);
+		border-color: var(--color-error-default);
 	}
 	.big-card[data-state='flip'],
 	.big-card[data-state='ready'] {
