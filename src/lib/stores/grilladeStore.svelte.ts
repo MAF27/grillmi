@@ -291,6 +291,16 @@ function createGrilladeStore() {
 			persistPlan()
 		},
 
+		resetDraft() {
+			plan = defaultPlan()
+			planMode = 'auto'
+			manualStarts = {}
+			manualPlated = new Set()
+			manualAlarms = []
+			manualAlarmDismissed = new Set()
+			persistPlan()
+		},
+
 		startManualItem(id: string) {
 			manualStarts = { ...manualStarts, [id]: Date.now() }
 			persistPlan()

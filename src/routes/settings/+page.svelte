@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation'
 	import { onMount } from 'svelte'
+	import SettingsCockpit from '$lib/components/desktop/SettingsCockpit.svelte'
 	import SegmentedControl from '$lib/components/SegmentedControl.svelte'
+	import { viewport } from '$lib/runtime/viewport.svelte'
 	import { settingsStore } from '$lib/stores/settingsStore.svelte'
 	import { play } from '$lib/sounds/player'
 	import type { UserSettings } from '$lib/models'
@@ -62,6 +64,9 @@
 	<title>Einstellungen · Grillmi</title>
 </svelte:head>
 
+{#if viewport.isDesktop}
+	<SettingsCockpit />
+{:else}
 <main>
 	<header>
 		<button class="back" onclick={() => goto('/')} aria-label="Zurück">‹</button>
@@ -166,6 +171,7 @@
 		<p class="muted">Garzeiten basieren auf Migros Grilltimer, Weber, Serious Eats und Meathead.</p>
 	</section>
 </main>
+{/if}
 
 <style>
 	main {

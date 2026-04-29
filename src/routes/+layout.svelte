@@ -1,18 +1,55 @@
 <script lang="ts">
 	import '../app.css'
 	import { onMount } from 'svelte'
+	import { goto } from '$app/navigation'
+	import { page } from '$app/state'
+	import AccountChip from '$lib/components/AccountChip.svelte'
+	import Sidebar, { type SidebarItem } from '$lib/components/Sidebar.svelte'
+	import SyncChip from '$lib/components/SyncChip.svelte'
+	import { viewport } from '$lib/runtime/viewport.svelte'
 	import { settingsStore } from '$lib/stores/settingsStore.svelte'
 	import { authStore } from '$lib/stores/authStore.svelte'
+	import { grilladeStore } from '$lib/stores/grilladeStore.svelte'
 	import { attachSync, pull } from '$lib/sync'
 
 	let { data, children } = $props<{ data: { auth: { user: { id: string; email: string }; csrfToken: string } | null }; children: any }>()
+
+	const pathname = $derived(page.url.pathname)
+	const publicPage = $derived(['/login', '/set-password', '/forgot-password'].some(path => pathname.startsWith(path)))
+	const showDesktopShell = $derived(viewport.isDesktop && authStore.isAuthenticated && !publicPage)
+	const showMobileHeader = $derived(!viewport.isDesktop && authStore.isAuthenticated && !publicPage)
+	const accountUser = $derived(
+		authStore.user
+			? {
+					name: authStore.user.email.split('@')[0],
+					email: authStore.user.email,
+					initials: authStore.user.email.slice(0, 2),
+				}
+			: null,
+	)
+	const currentSection = $derived.by(() => {
+		if (pathname.startsWith('/plan')) return 'plan'
+		if (pathname.startsWith('/session')) return 'cook'
+		if (pathname.startsWith('/grilladen')) return 'grilladen'
+		if (pathname.startsWith('/settings')) return 'settings'
+		return 'home'
+	})
+	const sidebarItems = $derived<SidebarItem[]>([
+		{ id: 'home', label: 'Übersicht', icon: '⌂' },
+		{ id: 'plan', label: 'Planen', icon: '+' },
+		{ id: 'cook', label: 'Grillen', icon: '◉', badge: grilladeStore.session ? 'LIVE' : undefined },
+		{ id: 'grilladen', label: 'Grilladen', icon: '★' },
+		{ id: 'settings', label: 'Einstellungen', icon: '⚙' },
+	])
 
 	$effect(() => {
 		authStore.init(data.auth)
 	})
 
 	onMount(() => {
+		const stopViewport = viewport.start()
 		void settingsStore.init()
+		void grilladeStore.init()
 		if (authStore.isAuthenticated) {
 			attachSync()
 			void pull()
@@ -49,7 +86,19 @@
 					.catch(() => {})
 			}
 		}
+		return () => stopViewport?.()
 	})
+
+	function nav(id: string) {
+		const map: Record<string, string> = {
+			home: '/',
+			plan: '/plan',
+			cook: '/session',
+			grilladen: '/grilladen',
+			settings: '/settings',
+		}
+		void goto(map[id] ?? '/')
+	}
 </script>
 
 <svelte:head>
@@ -58,4 +107,89 @@
 	{/if}
 </svelte:head>
 
-{@render children()}
+{#if showDesktopShell}
+	<div class="desktop-shell">
+		<aside class="desktop-sidebar">
+			<div class="brand">
+				<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+					<path
+						d="M12 2c1 3-1 4-1 7 0 1.5 1 3 2.5 3S16 10.5 16 9c0-2-1-3-1-4 2 1 5 4 5 8 0 4-3.5 7-8 7s-8-3-8-7c0-3 2-5 4-6.5C7.2 5.7 9 4 12 2z" />
+				</svg>
+				<span>Grillmi</span>
+			</div>
+			<Sidebar items={sidebarItems} current={currentSection} onChange={nav} />
+			<div class="sidebar-spacer"></div>
+			<SyncChip />
+			<AccountChip
+				user={accountUser}
+				onSignedInClick={() => goto('/settings?group=account')}
+				onSignedOutClick={() => goto('/login')} />
+		</aside>
+		<div class="desktop-content">
+			{@render children()}
+		</div>
+	</div>
+{:else}
+	{#if showMobileHeader}
+		<div class="mobile-sync">
+			<SyncChip />
+		</div>
+	{/if}
+	{@render children()}
+{/if}
+
+<style>
+	.desktop-shell {
+		display: grid;
+		grid-template-columns: 240px minmax(0, 1fr);
+		min-height: 100dvh;
+		background: var(--color-bg-base);
+		color: var(--color-fg-base);
+	}
+	.desktop-sidebar {
+		position: sticky;
+		top: 0;
+		height: 100dvh;
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+		padding: 24px 16px;
+		background: var(--color-bg-panel);
+		border-right: 1px solid var(--color-border-subtle);
+		box-sizing: border-box;
+	}
+	.brand {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin-bottom: 14px;
+		color: var(--color-ember);
+	}
+	.brand span {
+		font-family: var(--font-display);
+		font-size: 26px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.02em;
+		color: var(--color-fg-base);
+	}
+	.sidebar-spacer {
+		flex: 1;
+	}
+	.desktop-content {
+		min-width: 0;
+		min-height: 100dvh;
+	}
+	.mobile-sync {
+		position: sticky;
+		top: 0;
+		z-index: var(--z-sticky);
+		display: flex;
+		justify-content: flex-end;
+		padding: calc(env(safe-area-inset-top) + 8px) 16px 0;
+		pointer-events: none;
+	}
+	.mobile-sync :global(.sync-chip) {
+		pointer-events: auto;
+	}
+</style>

@@ -4,9 +4,10 @@
 
 	interface Props {
 		targetEpoch: number
+		size?: 'mobile' | 'desktop'
 	}
 
-	let { targetEpoch }: Props = $props()
+	let { targetEpoch, size = 'mobile' }: Props = $props()
 	let now = $state(Date.now())
 	const remaining = $derived(Math.max(0, Math.round((targetEpoch - now) / 1000)))
 
@@ -16,7 +17,7 @@
 	})
 </script>
 
-<div class="clock" aria-live="off">
+<div class="clock" class:desktop={size === 'desktop'} aria-live="off">
 	<div class="eyebrow">Bis zum Essen</div>
 	<div class="time" data-testid="master-clock-time" data-live-countdown>{formatDuration(remaining)}</div>
 </div>
@@ -43,5 +44,15 @@
 		color: var(--color-fg-base);
 		letter-spacing: -0.02em;
 		font-variant-numeric: tabular-nums;
+	}
+	.clock.desktop {
+		padding: 4px 0 28px;
+		text-align: left;
+	}
+	.clock.desktop .eyebrow {
+		font-size: 12px;
+	}
+	.clock.desktop .time {
+		font-size: 88px;
 	}
 </style>

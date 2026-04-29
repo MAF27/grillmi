@@ -79,6 +79,7 @@
 	--color-bg-surface-2: #1f1b15;
 	--color-bg-elev: #26211a;
 	--color-bg-elevated: #26211a;
+	--color-bg-panel: #100e0b;
 	--color-bg-input: #1f1b15;
 	--color-bg-overlay: rgba(0, 0, 0, 0.6);
 
@@ -115,6 +116,7 @@
 	--color-border-subtle-translucent: rgba(255, 255, 255, 0.06);
 	--color-border-strong-translucent: rgba(255, 255, 255, 0.12);
 	--color-border-accent: var(--color-accent-default);
+	--color-border-hot: rgba(255, 122, 26, 0.28);
 
 	/* === Typography === */
 	--font-display: 'Barlow Condensed', 'DIN Condensed', 'Oswald', ui-sans-serif, system-ui, sans-serif;

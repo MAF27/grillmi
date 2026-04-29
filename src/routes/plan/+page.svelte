@@ -5,9 +5,13 @@
 	import Button from '$lib/components/Button.svelte'
 	import SegmentedControl from '$lib/components/SegmentedControl.svelte'
 	import TimePickerSheet from '$lib/components/TimePickerSheet.svelte'
+	import TimePickerPopover from '$lib/components/TimePickerPopover.svelte'
 	import PlanItemRow from '$lib/components/PlanItemRow.svelte'
 	import TimerCard from '$lib/components/TimerCard.svelte'
+	import BigTimerCard from '$lib/components/BigTimerCard.svelte'
+	import PlanSummaryList from '$lib/components/desktop/PlanSummaryList.svelte'
 	import AddItemSheet from '$lib/components/AddItemSheet.svelte'
+	import { viewport } from '$lib/runtime/viewport.svelte'
 	import { fireAlarm, messageFor, type AlarmEvent } from '$lib/runtime/alarms'
 	import { grilladeStore } from '$lib/stores/grilladeStore.svelte'
 	import { favoritesStore } from '$lib/stores/favoritesStore.svelte'
@@ -244,6 +248,10 @@
 		<h1>Session planen</h1>
 	</header>
 
+	<div class="plan-shell" class:desktop={viewport.isDesktop}>
+	{#if viewport.isDesktop}
+		<PlanSummaryList items={plan.items} />
+	{/if}
 	<div class="scroll">
 		<SegmentedControl {segments} value={segmentValue} ariaLabel="Planungsmodus" onchange={pickSegment} />
 
@@ -297,17 +305,21 @@
 					<div class="empty-hint">Steak, Würstchen, Maiskolben, alles was auf den Rost kommt.</div>
 				</button>
 			{:else if isManual}
-				<div class="manual-grid" role="list">
+				<div class="manual-grid" class:single={plan.items.length === 1} role="list">
 					{#each plan.items as item, i (item.id)}
 						{@const status = deriveManualStatus(item, now).status}
 						{#if status !== 'plated'}
 							<div role="listitem">
-								<TimerCard
-									item={manualSession[i]}
-									status={status as never}
-									onstart={startMatch}
-									onplate={plateMatch}
-									onremove={deleteItem} />
+								{#if viewport.isDesktop}
+									<BigTimerCard item={manualSession[i]} status={status as never} onstart={startMatch} onplate={plateMatch} />
+								{:else}
+									<TimerCard
+										item={manualSession[i]}
+										status={status as never}
+										onstart={startMatch}
+										onplate={plateMatch}
+										onremove={deleteItem} />
+								{/if}
 							</div>
 						{/if}
 					{/each}
@@ -335,9 +347,15 @@
 				</button>
 			{/if}
 		</section>
+		{#if viewport.isDesktop && !isManual}
+			<div class="desktop-start">
+				<Button variant="primary" size="lg" fullWidth disabled={plan.items.length === 0} onclick={start}>{goLabel}</Button>
+			</div>
+		{/if}
+	</div>
 	</div>
 
-	{#if !isManual}
+	{#if !isManual && !viewport.isDesktop}
 		<div class="bottom">
 			<Button variant="primary" size="lg" fullWidth disabled={plan.items.length === 0} onclick={start}>{goLabel}</Button>
 		</div>
@@ -400,7 +418,13 @@
 {/if}
 
 {#if timePickerOpen}
-	<TimePickerSheet value={effectiveTarget} oncommit={commitTime} oncancel={() => (timePickerOpen = false)} />
+	{#if viewport.isDesktop}
+		<div class="popover-anchor">
+			<TimePickerPopover value={effectiveTarget} onConfirm={commitTime} onCancel={() => (timePickerOpen = false)} />
+		</div>
+	{:else}
+		<TimePickerSheet value={effectiveTarget} oncommit={commitTime} oncancel={() => (timePickerOpen = false)} />
+	{/if}
 {/if}
 
 <style>
@@ -443,6 +467,25 @@
 		display: flex;
 		flex-direction: column;
 		gap: 16px;
+	}
+	.plan-shell.desktop {
+		display: grid;
+		grid-template-columns: 320px minmax(0, 1fr) minmax(120px, 0.35fr);
+		min-height: calc(100dvh - 74px);
+	}
+	.plan-shell.desktop .scroll {
+		min-width: 0;
+		padding: 24px 28px 36px;
+		max-width: 680px;
+	}
+	.desktop-start {
+		margin-top: 10px;
+	}
+	.popover-anchor {
+		position: fixed;
+		left: 50%;
+		top: 190px;
+		z-index: var(--z-modal);
 	}
 	.eatcard {
 		position: relative;
@@ -779,5 +822,24 @@
 	.menu-count {
 		font-size: 14px;
 		color: var(--color-fg-muted);
+	}
+	@media (min-width: 1024px) {
+		main {
+			max-width: none;
+			padding-bottom: 0;
+		}
+		header {
+			padding: 24px 28px 16px;
+			border-bottom: 1px solid var(--color-border-subtle);
+		}
+		.bottom {
+			display: none;
+		}
+		.manual-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+	.manual-grid.single {
+		grid-template-columns: 1fr;
 	}
 </style>

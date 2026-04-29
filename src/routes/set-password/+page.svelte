@@ -43,8 +43,9 @@
 			return
 		}
 		submitting = true
+		let result: { kind: 'invitation' | 'reset'; user?: { id: string; email: string }; csrfToken?: string }
 		try {
-			const result = await apiFetch<{ kind: 'invitation' | 'reset'; user?: { id: string; email: string }; csrfToken?: string }>(
+			result = await apiFetch<{ kind: 'invitation' | 'reset'; user?: { id: string; email: string }; csrfToken?: string }>(
 				'/api/auth/set-password',
 				{
 					method: 'POST',
@@ -52,13 +53,6 @@
 					skipAuthRedirect: true,
 				}
 			)
-			if (result.kind === 'invitation' && result.user && result.csrfToken) {
-				authStore.setSession({ user: result.user, csrfToken: result.csrfToken })
-				await runFirstLoginImport()
-				await goto(safeNext())
-			} else {
-				await goto('/login')
-			}
 		} catch (err) {
 			const status = (err as { status?: number }).status
 			const body = (err as { body?: { detail?: { error_code?: string } } }).body
@@ -69,9 +63,33 @@
 			} else {
 				error = de.auth.genericError
 			}
-		} finally {
 			submitting = false
+			return
 		}
+
+		// Post-success steps must not surface as activation errors: the password
+		// is set and the session cookie is live, so any failure here is recoverable
+		// by a navigation. Swallow and force-navigate.
+		if (result.kind === 'invitation' && result.user && result.csrfToken) {
+			authStore.setSession({ user: result.user, csrfToken: result.csrfToken })
+			try {
+				await runFirstLoginImport()
+			} catch {
+				// First-login import is best-effort; the queue will retry.
+			}
+			try {
+				await goto(safeNext())
+			} catch {
+				window.location.assign(safeNext())
+			}
+		} else {
+			try {
+				await goto('/login')
+			} catch {
+				window.location.assign('/login')
+			}
+		}
+		submitting = false
 	}
 </script>
 
