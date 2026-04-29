@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte'
+	import { goto } from '$app/navigation'
 	import AddItemSheet from '$lib/components/AddItemSheet.svelte'
 	import AlarmBanner, { type AlarmKind } from '$lib/components/AlarmBanner.svelte'
 	import Button from '$lib/components/Button.svelte'
@@ -215,6 +216,7 @@
 	async function start() {
 		if (isManual) await grilladeStore.startManualSession()
 		else await grilladeStore.startSession()
+		await goto('/session')
 	}
 
 	function commitTime(epoch: number) {
@@ -233,6 +235,7 @@
 
 	async function endSession() {
 		await grilladeStore.endSession()
+		await goto('/')
 	}
 
 	function plateItem(id: string) {
