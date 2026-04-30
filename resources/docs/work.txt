@@ -1,0 +1,1 @@
+No Auflegen chimes and toasts when in Manual mode!

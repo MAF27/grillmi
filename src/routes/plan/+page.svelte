@@ -142,7 +142,6 @@
 				class:populated
 				onclick={() => populated && (timePickerOpen = true)}
 				disabled={!populated}>
-				<div class="eat-glow" aria-hidden="true"></div>
 				<div class="eat-eyebrow">{populated ? 'Fertig um' : 'Noch keine Zielzeit'}</div>
 				<div class="eat-row">
 					{#if populated}
@@ -276,20 +275,6 @@
 	}
 	.eatcard:disabled {
 		cursor: default;
-	}
-	.eat-glow {
-		position: absolute;
-		top: -40px;
-		right: -40px;
-		width: 200px;
-		height: 200px;
-		background: radial-gradient(circle, rgba(255, 122, 26, 0.13) 0%, transparent 70%);
-		pointer-events: none;
-		opacity: 0;
-		transition: opacity 0.2s ease;
-	}
-	.eatcard.populated .eat-glow {
-		opacity: 1;
 	}
 	.eat-eyebrow {
 		font-family: var(--font-body);

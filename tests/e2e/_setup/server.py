@@ -69,7 +69,10 @@ def _ensure_pgserver_citext(install_root: Path) -> None:
 def _start_pg() -> tuple["object", Path]:
     import pgserver
 
-    pginstall_root = Path(pgserver.__file__).parent / "pginstall"
+    # pgserver ships as a namespace package on recent uv-resolved venvs, so
+    # __file__ is None; fall back to __path__ which is always populated.
+    pgserver_root = Path(pgserver.__file__).parent if pgserver.__file__ else Path(next(iter(pgserver.__path__)))
+    pginstall_root = pgserver_root / "pginstall"
     _ensure_pgserver_citext(pginstall_root)
 
     pgdata = Path(tempfile.mkdtemp(prefix="grillmi_e2e_pgdata_"))

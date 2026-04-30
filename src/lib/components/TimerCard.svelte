@@ -219,8 +219,7 @@
 		min-width: 0;
 		transition:
 			transform var(--duration-fast) var(--ease-default),
-			border-color var(--duration-normal) var(--ease-default),
-			box-shadow var(--duration-normal) var(--ease-default);
+			border-color var(--duration-normal) var(--ease-default);
 	}
 	.card[data-size='lg'] {
 		padding: 20px 18px 18px;
@@ -229,34 +228,21 @@
 	.card.unstarted {
 		opacity: 0.85;
 	}
+	.card[data-state='cooking'],
 	.card[data-state='flip'],
+	.card[data-state='resting'],
 	.card[data-state='ready'] {
 		border-color: currentColor;
 	}
+	.card[data-state='cooking'],
 	.card[data-state='flip'] {
 		color: var(--color-ember);
-		box-shadow: 0 0 0 4px var(--color-accent-muted);
+	}
+	.card[data-state='resting'] {
+		color: var(--color-state-resting);
 	}
 	.card[data-state='ready'] {
 		color: var(--color-state-ready);
-		box-shadow: 0 0 0 4px var(--color-state-ready-bg);
-	}
-	.card.alarm {
-		animation: card-alarm 1000ms var(--ease-linear) infinite;
-	}
-	@keyframes card-alarm {
-		0%,
-		100% {
-			border-color: currentColor;
-		}
-		50% {
-			border-color: var(--color-ember-dim);
-		}
-	}
-	@media (prefers-reduced-motion: reduce) {
-		.card.alarm {
-			animation: none;
-		}
 	}
 	.ring-wrap {
 		display: flex;
