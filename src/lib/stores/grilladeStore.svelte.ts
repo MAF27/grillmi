@@ -18,6 +18,7 @@ import {
 import { pushGrilladeCreate, pushGrilladeUpdate } from '$lib/sync/pushGrillade'
 
 const STALE_AFTER_MS = 4 * 60 * 60 * 1000
+const MANUAL_UNSTARTED_HORIZON_MS = 30 * 24 * 60 * 60 * 1000
 
 export type PlanMode = 'auto' | 'manual'
 export type AutoMode = 'now' | 'time'
@@ -43,6 +44,19 @@ function effectiveTargetEpoch(p: Plan, now: number): number {
 	return now + longestMs
 }
 
+function normalizeSession(stored: Session): Session {
+	const parsed = sessionSchema.parse(stored)
+	if (parsed.mode === 'manual') return parsed
+	const hasManualSentinel = parsed.items.some(i => i.putOnEpoch > parsed.createdAtEpoch + MANUAL_UNSTARTED_HORIZON_MS)
+	return hasManualSentinel ? { ...parsed, mode: 'manual' } : parsed
+}
+
+function isStaleSession(s: Session, now = Date.now()): boolean {
+	const lastRelevantEpoch =
+		s.mode === 'manual' ? Math.max(s.targetEpoch, ...s.items.map(i => i.restingUntilEpoch)) : s.targetEpoch
+	return lastRelevantEpoch < now - STALE_AFTER_MS
+}
+
 function createGrilladeStore() {
 	let plan = $state<Plan>(defaultPlan())
 	let session = $state<Session | null>(null)
@@ -59,9 +73,8 @@ function createGrilladeStore() {
 	// Manual sessions sit at this far-future putOnEpoch sentinel until the user
 	// clicks Los on at least one card. Until then the cockpit countdown stays
 	// hidden and other routes do NOT bounce the user back to /session.
-	const UNSTARTED_HORIZON_MS = 30 * 24 * 60 * 60 * 1000
 	const sessionHasStarted = $derived(
-		session ? session.items.some(i => i.putOnEpoch < Date.now() + UNSTARTED_HORIZON_MS) : false,
+		session ? session.items.some(i => i.putOnEpoch < Date.now() + MANUAL_UNSTARTED_HORIZON_MS) : false,
 	)
 	const longestCookSeconds = $derived(
 		plan.items.length === 0 ? 0 : Math.max(...plan.items.map(i => i.cookSeconds + i.restSeconds)),
@@ -184,11 +197,12 @@ function createGrilladeStore() {
 			initialized = true
 			const stored = await getCurrentSession()
 			if (stored) {
-				const stale = stored.targetEpoch < Date.now() - STALE_AFTER_MS
+				const normalized = normalizeSession(stored)
+				const stale = isStaleSession(normalized)
 				if (stale) {
 					await clearCurrentSession()
 				} else {
-					session = stored
+					session = normalized
 					sessionTimeline = await getCurrentTimeline()
 				}
 			}
@@ -269,6 +283,7 @@ function createGrilladeStore() {
 				createdAtEpoch: now,
 				targetEpoch,
 				endedAtEpoch: null,
+				mode: 'auto',
 				items: sessionItems,
 			})
 			session = newSession
@@ -304,6 +319,7 @@ function createGrilladeStore() {
 				// /session hides MasterClock while everything is unstarted.
 				targetEpoch: now,
 				endedAtEpoch: null,
+				mode: 'manual',
 				items: sessionItems,
 			})
 			session = newSession
@@ -335,6 +351,7 @@ function createGrilladeStore() {
 			const items = session.items.map(i => (i.id === id ? updated : i))
 			session = {
 				...session,
+				mode: 'manual',
 				items,
 				targetEpoch: Math.max(session.targetEpoch, restingUntilEpoch),
 			}

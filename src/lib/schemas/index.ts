@@ -49,6 +49,7 @@ export const sessionSchema = z.object({
 	createdAtEpoch: z.number().int(),
 	targetEpoch: z.number().int(),
 	endedAtEpoch: z.number().int().nullable(),
+	mode: z.enum(['auto', 'manual']).default('auto'),
 	items: z.array(sessionItemSchema),
 })
 

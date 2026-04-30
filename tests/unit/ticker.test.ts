@@ -78,6 +78,37 @@ describe('ticker', () => {
 		})
 		t.tickOnce()
 		expect(item.status).toBe('resting')
+		expect(events.find(e => e.type === 'done')).toBeTruthy()
+	})
+
+	it('test_ticker_does_not_replay_put_on_after_refresh_when_already_cooking', () => {
+		const item = makeItem({ status: 'cooking', putOnEpoch: 0 })
+		const events: TickerEvent[] = []
+		const t = createTicker({
+			getItems: () => [item],
+			updateItem: (_, patch) => Object.assign(item, patch),
+			emit: e => events.push(e),
+			getLeads: () => ({ putOn: 60, flip: 30, done: 30 }),
+			now: () => item.putOnEpoch + 120_000,
+		})
+		t.tickOnce()
+		expect(events.find(e => e.type === 'put-on')).toBeUndefined()
+	})
+
+	it('test_ticker_does_not_replay_done_after_refresh_when_already_resting_or_ready', () => {
+		for (const status of ['resting', 'ready'] as const) {
+			const item = makeItem({ status, putOnEpoch: 0, doneEpoch: 100, restingUntilEpoch: status === 'resting' ? 10_000 : 100 })
+			const events: TickerEvent[] = []
+			const t = createTicker({
+				getItems: () => [item],
+				updateItem: (_, patch) => Object.assign(item, patch),
+				emit: e => events.push(e),
+				getLeads: () => ({ putOn: 60, flip: 30, done: 30 }),
+				now: () => 1_000,
+			})
+			t.tickOnce()
+			expect(events.find(e => e.type === 'done')).toBeUndefined()
+		}
 	})
 
 	it('test_ticker_transitions_cooking_to_ready_when_no_rest', () => {
@@ -93,6 +124,7 @@ describe('ticker', () => {
 		})
 		t.tickOnce()
 		expect(item.status).toBe('ready')
+		expect(events.find(e => e.type === 'done')).toBeTruthy()
 	})
 
 	it('test_ticker_transitions_resting_to_ready', () => {

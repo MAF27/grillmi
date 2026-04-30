@@ -52,23 +52,18 @@ export function createTicker(hooks: TickerHooks) {
 			// Pre-warning alarms fire on absolute wall-clock thresholds so the
 			// Vorlauf settings are respected; status transitions stay anchored to
 			// the canonical putOn / done epochs.
-			if (!fired.has(`${item.id}:put-on`) && t >= item.putOnEpoch - leads.putOn * 1000) {
+			if (prevStatus === 'pending' && !fired.has(`${item.id}:put-on`) && t >= item.putOnEpoch - leads.putOn * 1000) {
 				fired.add(`${item.id}:put-on`)
 				hooks.emit({ type: 'put-on', itemId: item.id })
 			}
-			if (
-				!item.flipFired &&
-				item.flipEpoch !== null &&
-				t >= item.flipEpoch - leads.flip * 1000 &&
-				target.status !== 'pending'
-			) {
+			if (!item.flipFired && item.flipEpoch !== null && t >= item.flipEpoch - leads.flip * 1000 && target.status !== 'pending') {
 				hooks.updateItem(item.id, { flipFired: true })
 				if (!fired.has(`${item.id}:flip`)) {
 					fired.add(`${item.id}:flip`)
 					hooks.emit({ type: 'flip', itemId: item.id })
 				}
 			}
-			if (!fired.has(`${item.id}:done`) && t >= item.doneEpoch - leads.done * 1000) {
+			if (prevStatus === 'cooking' && !fired.has(`${item.id}:done`) && t >= item.doneEpoch - leads.done * 1000) {
 				fired.add(`${item.id}:done`)
 				hooks.emit({ type: 'done', itemId: item.id })
 			}

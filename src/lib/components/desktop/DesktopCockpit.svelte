@@ -45,7 +45,7 @@
 
 	const session = $derived(grilladeStore.session)
 	const plan = $derived(grilladeStore.plan)
-	const planMode = $derived(grilladeStore.planMode)
+	const planMode = $derived(session?.mode ?? grilladeStore.planMode)
 	const isManual = $derived(planMode === 'manual')
 	const items = $derived(session?.items ?? plan.items)
 	const statusByItem = $derived(session ? Object.fromEntries(session.items.map(item => [item.id, item.status])) : undefined)
@@ -158,7 +158,7 @@
 		// Manual mode: the user tapped Los themselves, so the put-on event is
 		// the cook telling the app, not the app alerting the cook. The ring
 		// starting to run is the only confirmation they want.
-		if (event === 'put-on' && grilladeStore.planMode === 'manual') return
+		if (event === 'put-on' && grilladeStore.session?.mode === 'manual') return
 		const msg = messageFor(event, item.label || item.cutSlug)
 		const key = `${item.id}-${kind}`
 		if (stickyAlarms.some(a => a.id === key) || dismissedKeys.has(key)) return

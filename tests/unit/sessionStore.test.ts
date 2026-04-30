@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { IDBFactory } from 'fake-indexeddb'
 import { grilladeStore } from '$lib/stores/grilladeStore.svelte'
 import { __resetForTests } from '$lib/stores/db'
@@ -25,6 +25,7 @@ beforeEach(() => {
 })
 
 afterEach(() => {
+	vi.restoreAllMocks()
 	grilladeStore._reset()
 })
 
@@ -106,6 +107,7 @@ describe('grilladeStore', () => {
 		grilladeStore.addItem(item)
 		const session = await grilladeStore.startManualSession()
 		expect(session.items).toHaveLength(1)
+		expect(session.mode).toBe('manual')
 		const horizon = Date.now() + 30 * 24 * 60 * 60 * 1000
 		expect(session.items[0].putOnEpoch).toBeGreaterThan(horizon)
 		expect(session.items[0].status).toBe('pending')
@@ -134,5 +136,39 @@ describe('grilladeStore', () => {
 		await grilladeStore.init()
 		expect(grilladeStore.plan.items).toHaveLength(1)
 		expect(grilladeStore.planMode).toBe('manual')
+	})
+
+	it('test_init_restores_started_manual_session_timer', async () => {
+		grilladeStore.addItem(item)
+		const session = await grilladeStore.startManualSession()
+		await grilladeStore.startSessionItem(session.items[0].id)
+		const beforeReload = grilladeStore.session?.items[0]
+		expect(beforeReload?.status).toBe('cooking')
+
+		grilladeStore._reset()
+		await grilladeStore.init()
+
+		const restored = grilladeStore.session?.items[0]
+		expect(grilladeStore.session?.mode).toBe('manual')
+		expect(restored?.id).toBe(beforeReload?.id)
+		expect(restored?.status).toBe('cooking')
+		expect(restored?.putOnEpoch).toBe(beforeReload?.putOnEpoch)
+		expect(restored?.doneEpoch).toBe(beforeReload?.doneEpoch)
+	})
+
+	it('test_init_keeps_long_running_manual_timer_after_refresh', async () => {
+		const nowSpy = vi.spyOn(Date, 'now').mockReturnValue(new Date('2026-04-30T10:00:00Z').getTime())
+		grilladeStore.addItem({ ...item, cookSeconds: 8 * 60 * 60, restSeconds: 0 })
+		const session = await grilladeStore.startManualSession()
+		await grilladeStore.startSessionItem(session.items[0].id)
+		const beforeReload = grilladeStore.session?.items[0]
+
+		nowSpy.mockReturnValue(new Date('2026-04-30T15:00:00Z').getTime())
+		grilladeStore._reset()
+		await grilladeStore.init()
+
+		expect(grilladeStore.session?.mode).toBe('manual')
+		expect(grilladeStore.session?.items[0].id).toBe(beforeReload?.id)
+		expect(grilladeStore.session?.items[0].doneEpoch).toBe(beforeReload?.doneEpoch)
 	})
 })

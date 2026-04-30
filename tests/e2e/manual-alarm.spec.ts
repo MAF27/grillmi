@@ -12,7 +12,28 @@ async function clearIDB(page: import('@playwright/test').Page) {
 }
 
 test.describe('manual-alarm', () => {
-	test('test_manual_los_fires_auflegen_banner_and_activity_log', async ({ page }) => {
+	test('test_manual_los_does_not_fire_auflegen_banner_or_audio', async ({ page }) => {
+		await page.addInitScript(() => {
+			;(window as unknown as { __audioStarts: number }).__audioStarts = 0
+			class FakeAudioContext {
+				state = 'running'
+				destination = {}
+				async decodeAudioData() {
+					return {}
+				}
+				async resume() {}
+				createBufferSource() {
+					return {
+						buffer: null,
+						connect() {},
+						start() {
+							;(window as unknown as { __audioStarts: number }).__audioStarts += 1
+						},
+					}
+				}
+			}
+			;(window as unknown as { AudioContext: typeof FakeAudioContext }).AudioContext = FakeAudioContext
+		})
 		await page.goto('/')
 		await clearIDB(page)
 		await page.goto('/plan')
@@ -20,7 +41,10 @@ test.describe('manual-alarm', () => {
 		// Plan one item.
 		await page.getByRole('button', { name: /Grillstück hinzufügen/ }).click()
 		await page.getByRole('button', { name: 'Rind' }).click()
-		await page.getByRole('button', { name: /Rinds-Entrec/ }).first().click()
+		await page
+			.getByRole('button', { name: /Rinds-Entrec/ })
+			.first()
+			.click()
 		await page.getByRole('button', { name: 'Übernehmen' }).click()
 
 		// Switch to manual and start.
@@ -30,15 +54,16 @@ test.describe('manual-alarm', () => {
 		// On the cockpit, click Los on the first card.
 		await page.getByRole('button', { name: 'Los', exact: true }).first().click()
 
-		// Auflegen banner appears within a couple of ticks.
-		await expect(page.getByTestId('alarm-banner')).toBeVisible({ timeout: 5_000 })
-		await expect(page.getByTestId('alarm-banner')).toHaveAttribute('data-kind', 'on')
+		// Manual Los is an explicit user action; the running ring is the only
+		// confirmation. No Auflegen banner and no tone request should happen.
+		await expect(page.getByTestId('alarm-banner')).toHaveCount(0)
+		await expect.poll(() => page.evaluate(() => (window as unknown as { __audioStarts: number }).__audioStarts)).toBe(0)
 
-		// Activity log records the Auflegen event (desktop-only). On mobile this
-		// step is skipped because the right pane does not render.
+		// Activity log is desktop-only. It must not record an Auflegen event for
+		// the manual Los click.
 		const log = page.locator('[data-testid="activity-log"]')
 		if (await log.count()) {
-			await expect(log).toContainText(/Auflegen|auflegen/i)
+			await expect(log).not.toContainText(/Auflegen|auflegen/i)
 		}
 	})
 })

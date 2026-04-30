@@ -27,9 +27,7 @@ test.describe('manual-mode', () => {
 
 		await page.getByRole('tab', { name: 'Manuell' }).click()
 
-		// Sticky bottom CTA hides in manual mode.
-		await expect(page.locator('.bottom')).toHaveCount(0)
-		// At least one Los button on the inline timer cards.
+		await page.getByRole('button', { name: /Manuelle Grillade starten/ }).click()
 		await expect(page.getByRole('button', { name: 'Los' }).first()).toBeVisible()
 	})
 

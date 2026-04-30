@@ -45,7 +45,7 @@ describe('AddItemSheet', () => {
 
 		// Tap "Rind" → step advances to cut list.
 		await fireEvent.click(getByText('Rind'))
-		expect(container.querySelector('h2')?.textContent).toBe('Stück')
+		expect(container.querySelector('h2')?.textContent).toBe('Grillstück')
 
 		// Tap "Rinds-Entrecôte" → step advances to specs (has thickness + doneness).
 		await fireEvent.click(getByText('Rinds-Entrecôte'))
@@ -58,14 +58,14 @@ describe('AddItemSheet', () => {
 		const { getByText, getByLabelText, container } = open()
 
 		await fireEvent.click(getByText('Rind'))
-		expect(container.querySelector('h2')?.textContent).toBe('Stück')
+		expect(container.querySelector('h2')?.textContent).toBe('Grillstück')
 
 		await fireEvent.click(getByText('Rinds-Entrecôte'))
-		expect(container.querySelector('h2')?.textContent).not.toBe('Stück')
+		expect(container.querySelector('h2')?.textContent).not.toBe('Grillstück')
 
 		// Back from specs returns to cut list.
 		await fireEvent.click(getByLabelText('Zurück'))
-		expect(container.querySelector('h2')?.textContent).toBe('Stück')
+		expect(container.querySelector('h2')?.textContent).toBe('Grillstück')
 
 		// Back from cut returns to categories.
 		await fireEvent.click(getByLabelText('Zurück'))

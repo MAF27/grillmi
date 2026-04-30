@@ -33,7 +33,7 @@ function manualPendingItem(over: Partial<SessionItem> = {}): SessionItem {
 }
 
 describe('ticker: manual mode put-on alarm', () => {
-	it('fires put-on alarm after the user clicks Los on a manual card', () => {
+	it('does not fire put-on alarm after the user clicks Los on a manual card', () => {
 		const item = manualPendingItem()
 		const events: TickerEvent[] = []
 		let now = 1_000_000
@@ -62,6 +62,6 @@ describe('ticker: manual mode put-on alarm', () => {
 		now += 16
 		t.tickOnce()
 
-		expect(events.find(e => e.type === 'put-on' && e.itemId === item.id)).toBeTruthy()
+		expect(events.find(e => e.type === 'put-on' && e.itemId === item.id)).toBeUndefined()
 	})
 })

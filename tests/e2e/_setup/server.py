@@ -109,6 +109,18 @@ def _patch_email_sender() -> list[dict]:
     return outbox
 
 
+def _patch_external_services() -> None:
+    """Keep e2e auth hermetic: no HIBP/network password reputation calls."""
+    from grillmi.routes import auth as auth_routes
+    from grillmi.security import hibp
+
+    async def safe_password(_: str) -> bool:
+        return False
+
+    hibp.check_password = safe_password  # type: ignore[assignment]
+    auth_routes.check_password = safe_password  # type: ignore[assignment]
+
+
 def _install_test_routes(app, outbox: list[dict]) -> None:
     """Register `/api/_test/*` endpoints used only when APP_ENV=test."""
     from datetime import datetime, timedelta, timezone
@@ -295,6 +307,8 @@ def main() -> int:
     reset_engine_for_tests()
 
     from grillmi.main import app
+
+    _patch_external_services()
 
     _install_test_routes(app, outbox)
 

@@ -22,7 +22,7 @@
 	let endingForAllPlated = false
 
 	const session = $derived(grilladeStore.session)
-	const activity = $derived(grilladeStore.sessionTimeline)
+	const sessionMode = $derived(session?.mode ?? grilladeStore.planMode)
 	const visibleAlarms = $derived(
 		stickyAlarms
 			.filter(a => !dismissedKeys.has(a.id))
@@ -30,7 +30,6 @@
 			.reverse(),
 	)
 	const alarming = $derived(visibleAlarms[0] ?? null)
-	const planMode = $derived(grilladeStore.planMode)
 
 	let ticker: ReturnType<typeof createTicker> | null = null
 	let unsubWakeLock: (() => void) | null = null
@@ -38,14 +37,13 @@
 	onMount(async () => {
 		await grilladeStore.init()
 		await settingsStore.init()
-		// On desktop, /session and /plan render the same DesktopCockpit, which
-		// owns the ticker and wakeLock lifecycle and handles the no-session
-		// pre-start state itself. Skip the route's own session-runtime setup.
-		if (viewport.isDesktop) return
 		if (!grilladeStore.session) {
 			goto('/plan')
 			return
 		}
+		// On desktop, /session and /plan render the same DesktopCockpit, which
+		// owns the ticker and wakeLock lifecycle once a session exists.
+		if (viewport.isDesktop) return
 		preload([settingsStore.sounds.putOn, settingsStore.sounds.flip, settingsStore.sounds.done]).catch(() => {})
 		unsubWakeLock = onWakeLockChange(s => (wakeLockState = s))
 		await requestWakeLock()
@@ -67,7 +65,7 @@
 				const kind: AlarmKind = event === 'flip' ? 'flip' : event === 'done' ? 'ready' : 'on'
 				// Manual mode: tapping Los is the cook telling the app the item is on the
 				// grill; the ring starting to run is the only confirmation. No chime, no toast.
-				if (event === 'put-on' && grilladeStore.planMode === 'manual') return
+				if (event === 'put-on' && grilladeStore.session?.mode === 'manual') return
 				const msg = messageFor(event, item.label || item.cutSlug)
 				const key = `${item.id}-${kind}`
 				if (stickyAlarms.some(a => a.id === key) || dismissedKeys.has(key)) return
@@ -150,7 +148,7 @@
 	<DesktopCockpit />
 {:else if session}
 	<div class="screen">
-		<SessionHeader targetEpoch={session.targetEpoch} {wakeLockState} {planMode} onEnd={endSession} />
+		<SessionHeader targetEpoch={session.targetEpoch} {wakeLockState} planMode={sessionMode} onEnd={endSession} />
 
 		{#if grilladeStore.sessionHasStarted}
 			<MasterClock targetEpoch={session.targetEpoch} />
