@@ -1,1 +1,6 @@
-No Auflegen chimes and toasts when in Manual mode!
+grillmi status on dev must not show a "build" status.
+
+maf@grillmi-dev /opt/grillmi (feature/desktop-cockpit *) $ grillmi status
+grillmi 0.1.0 env:dev up:0d00h41m
+  ● caddy  ● grillmi-api  ● build
+  ● https://grillmi.krafted.cc

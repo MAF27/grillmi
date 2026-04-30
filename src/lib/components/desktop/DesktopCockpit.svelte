@@ -155,6 +155,10 @@
 		if (!item) return
 		const event = e.type as AlarmEvent
 		const kind: AlarmKind = event === 'flip' ? 'flip' : event === 'done' ? 'ready' : 'on'
+		// Manual mode: the user tapped Los themselves, so the put-on event is
+		// the cook telling the app, not the app alerting the cook. The ring
+		// starting to run is the only confirmation they want.
+		if (event === 'put-on' && grilladeStore.planMode === 'manual') return
 		const msg = messageFor(event, item.label || item.cutSlug)
 		const key = `${item.id}-${kind}`
 		if (stickyAlarms.some(a => a.id === key) || dismissedKeys.has(key)) return
