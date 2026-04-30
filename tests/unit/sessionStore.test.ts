@@ -58,6 +58,17 @@ describe('grilladeStore', () => {
 		expect(session.items[0].restingUntilEpoch).toBe(target)
 	})
 
+	it('test_start_now_session_reserves_put_on_vorlauf_before_cooking', async () => {
+		const now = new Date('2026-04-30T12:00:00Z').getTime()
+		vi.spyOn(Date, 'now').mockReturnValue(now)
+		grilladeStore.setAutoMode('now')
+		grilladeStore.addItem(item)
+		const session = await grilladeStore.startSession(60)
+		expect(session.targetEpoch).toBe(now + 60_000 + (item.cookSeconds + item.restSeconds) * 1000)
+		expect(session.items[0].putOnEpoch).toBe(now + 60_000)
+		expect(session.items[0].status).toBe('pending')
+	})
+
 	it('test_plate_item_moves_to_plated_group', async () => {
 		const target = Date.now() + 60 * 60 * 1000
 		grilladeStore.setTargetTime(target)

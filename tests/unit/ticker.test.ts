@@ -49,6 +49,32 @@ describe('ticker', () => {
 		expect(events.find(e => e.type === 'put-on')).toBeTruthy()
 	})
 
+	it('test_ticker_keeps_put_on_vorlauf_silent_until_actual_put_on', () => {
+		const item = makeItem()
+		const events: TickerEvent[] = []
+		let now = item.putOnEpoch - 30_000
+		const t = createTicker({
+			getItems: () => [item],
+			updateItem: (_, patch) => Object.assign(item, patch),
+			emit: e => events.push(e),
+			getLeads: () => ({ putOn: 30, flip: 0, done: 0 }),
+			now: () => now,
+		})
+		t.tickOnce()
+		expect(item.status).toBe('pending')
+		expect(events.filter(e => e.type === 'put-on')).toHaveLength(0)
+
+		now = item.putOnEpoch - 1
+		t.tickOnce()
+		expect(item.status).toBe('pending')
+		expect(events.filter(e => e.type === 'put-on')).toHaveLength(0)
+
+		now = item.putOnEpoch + 1
+		t.tickOnce()
+		expect(item.status).toBe('cooking')
+		expect(events.filter(e => e.type === 'put-on')).toHaveLength(1)
+	})
+
 	it('test_ticker_emits_flip_event_once', () => {
 		const item = makeItem({ status: 'cooking', putOnEpoch: 0, doneEpoch: 360_000, flipEpoch: 100 })
 		const events: TickerEvent[] = []

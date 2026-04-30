@@ -5,7 +5,15 @@
 	import ProgressRing from './ProgressRing.svelte'
 	import { settingsStore } from '$lib/stores/settingsStore.svelte'
 
-	export type TimerCardStatus = 'unstarted' | 'pending' | 'cooking' | 'flip' | 'resting' | 'ready' | 'plated'
+	export type TimerCardStatus =
+		| 'unstarted'
+		| 'pending'
+		| 'put-on-soon'
+		| 'cooking'
+		| 'flip'
+		| 'resting'
+		| 'ready'
+		| 'plated'
 	export type TimerCardSize = 'sm' | 'lg'
 
 	interface Props {
@@ -30,7 +38,7 @@
 
 	const cookTotalMs = $derived(item.doneEpoch - item.putOnEpoch)
 
-	const effectiveStatus = $derived<TimerCardStatus>(status ?? deriveStatus())
+	const baseStatus = $derived<TimerCardStatus>(status ?? deriveStatus())
 
 	function deriveStatus(): TimerCardStatus {
 		if (item.status === 'cooking' && item.flipEpoch !== null && Math.abs(now - item.flipEpoch) < 5000 && !item.flipFired) {
@@ -40,16 +48,18 @@
 	}
 
 	const leadPutOnMs = $derived(settingsStore.leadPutOnSeconds * 1000)
+	const putOnLeadStart = $derived(item.putOnEpoch - leadPutOnMs)
 	const inPutOnVorlauf = $derived(
-		effectiveStatus === 'pending' && leadPutOnMs > 0 && now >= item.putOnEpoch - leadPutOnMs && now < item.putOnEpoch,
+		baseStatus === 'pending' && leadPutOnMs > 0 && now >= putOnLeadStart && now < item.putOnEpoch,
 	)
+	const effectiveStatus = $derived<TimerCardStatus>(inPutOnVorlauf ? 'put-on-soon' : baseStatus)
 	const ringState = $derived<'pending' | 'put-on-soon' | 'cooking' | 'resting' | 'ready' | 'plated' | 'flip' | 'unstarted'>(
-		inPutOnVorlauf ? 'put-on-soon' : effectiveStatus,
+		effectiveStatus,
 	)
 
 	const cookProgress = $derived.by(() => {
-		if (inPutOnVorlauf) {
-			return Math.min(1, Math.max(0, (now - (item.putOnEpoch - leadPutOnMs)) / leadPutOnMs))
+		if (effectiveStatus === 'put-on-soon') {
+			return Math.min(1, Math.max(0, (now - putOnLeadStart) / leadPutOnMs))
 		}
 		if (effectiveStatus === 'pending' || effectiveStatus === 'unstarted') return 0
 		if (effectiveStatus === 'ready' || effectiveStatus === 'plated') return 1
@@ -68,6 +78,7 @@
 	const labelMap: Record<TimerCardStatus, string> = {
 		unstarted: 'BEREIT',
 		pending: 'WARTET',
+		'put-on-soon': 'AUFLEGEN',
 		cooking: 'GRILLT',
 		flip: 'WENDEN!',
 		resting: 'RUHT',
@@ -78,7 +89,11 @@
 	const ringValue = $derived.by(() => {
 		if (effectiveStatus === 'unstarted') return formatDuration(item.cookSeconds)
 		if (effectiveStatus === 'ready') return '✓'
-		if (effectiveStatus === 'pending') return formatDuration(Math.max(0, Math.round((item.putOnEpoch - now) / 1000)))
+		if (effectiveStatus === 'put-on-soon') return formatDuration(Math.max(0, Math.round((item.putOnEpoch - now) / 1000)))
+		if (effectiveStatus === 'pending') {
+			const targetEpoch = leadPutOnMs > 0 ? putOnLeadStart : item.putOnEpoch
+			return formatDuration(Math.max(0, Math.round((targetEpoch - now) / 1000)))
+		}
 		if (effectiveStatus === 'cooking' || effectiveStatus === 'flip') {
 			return formatDuration(Math.max(0, Math.round((item.doneEpoch - now) / 1000)))
 		}
@@ -91,8 +106,8 @@
 	const ringEyebrow = $derived.by(() => {
 		if (effectiveStatus === 'ready') return null
 		if (effectiveStatus === 'unstarted') return 'DAUER'
-		if (inPutOnVorlauf) return 'GLEICH AUFLEGEN'
-		if (effectiveStatus === 'pending') return 'BIS START'
+		if (effectiveStatus === 'put-on-soon') return 'AUFLEGEN IN'
+		if (effectiveStatus === 'pending') return leadPutOnMs > 0 ? 'BIS VORLAUF' : 'BIS START'
 		if (effectiveStatus === 'flip') return 'WENDEN'
 		if (effectiveStatus === 'resting') return 'RUHE'
 		if (effectiveStatus === 'cooking') {
@@ -230,9 +245,13 @@
 	}
 	.card[data-state='cooking'],
 	.card[data-state='flip'],
+	.card[data-state='put-on-soon'],
 	.card[data-state='resting'],
 	.card[data-state='ready'] {
 		border-color: currentColor;
+	}
+	.card[data-state='put-on-soon'] {
+		color: var(--color-state-resting);
 	}
 	.card[data-state='cooking'],
 	.card[data-state='flip'] {
@@ -339,6 +358,9 @@
 	.card[data-state='cooking'] .status-badge,
 	.card[data-state='flip'] .status-badge {
 		color: var(--color-ember);
+	}
+	.card[data-state='put-on-soon'] .status-badge {
+		color: var(--color-state-resting);
 	}
 	.card[data-state='resting'] .status-badge {
 		color: var(--color-state-resting);

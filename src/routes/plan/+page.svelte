@@ -9,6 +9,7 @@
 	import DesktopCockpit from '$lib/components/desktop/DesktopCockpit.svelte'
 	import { viewport } from '$lib/runtime/viewport.svelte'
 	import { grilladeStore } from '$lib/stores/grilladeStore.svelte'
+	import { settingsStore } from '$lib/stores/settingsStore.svelte'
 	import { favoritesStore } from '$lib/stores/favoritesStore.svelte'
 	import { schedule } from '$lib/scheduler/schedule'
 	import { formatHHMM } from '$lib/util/format'
@@ -31,7 +32,7 @@
 	const planMode = $derived(grilladeStore.planMode)
 	const isManual = $derived(planMode === 'manual')
 	let now = $state(Date.now())
-	const effectiveTarget = $derived(grilladeStore.effectiveTargetEpoch(now))
+	const effectiveTarget = $derived(grilladeStore.effectiveTargetEpoch(now, settingsStore.leadPutOnSeconds))
 
 	const segmentValue = $derived<SegmentId>(planMode === 'manual' ? 'manual' : plan.mode === 'now' ? 'now' : 'target')
 
@@ -55,6 +56,7 @@
 		const tickId = setInterval(() => (now = Date.now()), 1000)
 		;(async () => {
 			await grilladeStore.init()
+			await settingsStore.init()
 			await favoritesStore.init()
 			// On mobile, /plan and /session are separate routes; bounce to the live
 			// cockpit if a session is already running. On desktop the cockpit
@@ -108,7 +110,7 @@
 
 	async function start() {
 		if (isManual) await grilladeStore.startManualSession()
-		else await grilladeStore.startSession()
+		else await grilladeStore.startSession(settingsStore.leadPutOnSeconds)
 		await goto('/session')
 	}
 

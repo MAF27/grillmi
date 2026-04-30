@@ -1,7 +1,8 @@
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { render, fireEvent } from '@testing-library/svelte'
 import TimerCard from '$lib/components/TimerCard.svelte'
 import type { SessionItem } from '$lib/models'
+import { settingsStore } from '$lib/stores/settingsStore.svelte'
 
 function makeItem(over: Partial<SessionItem> = {}): SessionItem {
 	const NOW = Date.now()
@@ -32,12 +33,64 @@ function makeItem(over: Partial<SessionItem> = {}): SessionItem {
 }
 
 describe('TimerCard', () => {
+	afterEach(() => {
+		settingsStore._reset()
+		vi.useRealTimers()
+	})
+
 	it('test_renders_pending_state_with_state_color', () => {
 		const { container } = render(TimerCard, {
-			props: { item: makeItem(), alarmFiring: false, onplate: () => {}, onlongpress: () => {} },
+			props: {
+				item: makeItem({ putOnEpoch: Date.now() + 20_000 }),
+				alarmFiring: false,
+				onplate: () => {},
+				onlongpress: () => {},
+			},
 		})
 		const card = container.querySelector('[data-testid="timer-card"]')
 		expect(card?.getAttribute('data-state')).toBe('pending')
+	})
+
+	it('test_renders_put_on_vorlauf_as_own_countdown_phase', async () => {
+		const now = new Date('2026-04-30T12:00:00Z')
+		await settingsStore.setLead('putOn', 60)
+		vi.useFakeTimers()
+		vi.setSystemTime(now)
+		const { container, getByText } = render(TimerCard, {
+			props: {
+				item: makeItem({
+					putOnEpoch: now.getTime() + 30_000,
+					flipEpoch: now.getTime() + 180_000,
+					doneEpoch: now.getTime() + 360_000,
+					restingUntilEpoch: now.getTime() + 660_000,
+				}),
+			},
+		})
+		const card = container.querySelector('[data-testid="timer-card"]')
+		expect(card?.getAttribute('data-state')).toBe('put-on-soon')
+		expect(getByText('AUFLEGEN IN')).toBeTruthy()
+		expect(getByText('00:30')).toBeTruthy()
+	})
+
+	it('test_pending_card_counts_down_to_vorlauf_start_when_put_on_lead_exists', async () => {
+		const now = new Date('2026-04-30T12:00:00Z')
+		await settingsStore.setLead('putOn', 60)
+		vi.useFakeTimers()
+		vi.setSystemTime(now)
+		const { container, getByText } = render(TimerCard, {
+			props: {
+				item: makeItem({
+					putOnEpoch: now.getTime() + 90_000,
+					flipEpoch: now.getTime() + 180_000,
+					doneEpoch: now.getTime() + 360_000,
+					restingUntilEpoch: now.getTime() + 660_000,
+				}),
+			},
+		})
+		const card = container.querySelector('[data-testid="timer-card"]')
+		expect(card?.getAttribute('data-state')).toBe('pending')
+		expect(getByText('BIS VORLAUF')).toBeTruthy()
+		expect(getByText('00:30')).toBeTruthy()
 	})
 
 	it('test_renders_cooking_state_with_progress_ring', () => {

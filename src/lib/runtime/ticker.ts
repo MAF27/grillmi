@@ -49,10 +49,7 @@ export function createTicker(hooks: TickerHooks) {
 				}
 			}
 			if (target.status === 'plated') continue
-			// Pre-warning alarms fire on absolute wall-clock thresholds so the
-			// Vorlauf settings are respected; status transitions stay anchored to
-			// the canonical putOn / done epochs.
-			if (prevStatus === 'pending' && !fired.has(`${item.id}:put-on`) && t >= item.putOnEpoch - leads.putOn * 1000) {
+			if (prevStatus === 'pending' && !fired.has(`${item.id}:put-on`) && t >= item.putOnEpoch) {
 				fired.add(`${item.id}:put-on`)
 				hooks.emit({ type: 'put-on', itemId: item.id })
 			}

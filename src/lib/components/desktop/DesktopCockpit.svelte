@@ -19,7 +19,7 @@
 	import { schedule } from '$lib/scheduler/schedule'
 	import { preload } from '$lib/sounds/player'
 	import { formatHHMM } from '$lib/util/format'
-	import type { PlannedItem } from '$lib/models'
+	import type { PlannedItem, SessionItem } from '$lib/models'
 
 	type SegmentId = 'now' | 'target' | 'manual'
 	type StickyAlarm = { id: string; itemId: string; kind: AlarmKind; itemName: string; message: string; firedAt: number }
@@ -46,7 +46,7 @@
 	const plan = $derived(grilladeStore.plan)
 	const planMode = $derived(session?.mode ?? grilladeStore.planMode)
 	const isManual = $derived(planMode === 'manual')
-	const effectiveTarget = $derived(grilladeStore.effectiveTargetEpoch(now))
+	const effectiveTarget = $derived(grilladeStore.effectiveTargetEpoch(now, settingsStore.leadPutOnSeconds))
 	const segmentValue = $derived<SegmentId>(planMode === 'manual' ? 'manual' : plan.mode === 'now' ? 'now' : 'target')
 
 	const scheduleResult = $derived.by(() => {
@@ -63,6 +63,7 @@
 		if (active.length === 0) return null
 		return Math.max(...active.map(i => i.restingUntilEpoch))
 	})
+	const hasRunningTimers = $derived(session ? session.items.some(hasActiveTimer) : false)
 	const wakeLockLabel = $derived.by(() => {
 		switch (wakeLockState) {
 			case 'held':
@@ -234,7 +235,7 @@
 
 	async function start() {
 		if (isManual) await grilladeStore.startManualSession()
-		else await grilladeStore.startSession()
+		else await grilladeStore.startSession(settingsStore.leadPutOnSeconds)
 		await goto('/session')
 	}
 
@@ -257,6 +258,11 @@
 		await grilladeStore.endSession()
 	}
 
+	function requestEndSession() {
+		if (hasRunningTimers) confirmEndOpen = true
+		else void endSession()
+	}
+
 	function plateItem(id: string) {
 		void grilladeStore.plateItem(id)
 	}
@@ -270,6 +276,12 @@
 	}
 
 	const UNSTARTED_HORIZON_MS = 30 * 24 * 60 * 60 * 1000
+	function hasActiveTimer(item: SessionItem): boolean {
+		if (item.status === 'plated') return false
+		if (item.status !== 'pending') return true
+		return item.putOnEpoch <= Date.now() + UNSTARTED_HORIZON_MS
+	}
+
 	function statusFor(item: { status: string; putOnEpoch: number }): TimerCardStatus | undefined {
 		if (item.status === 'pending' && item.putOnEpoch > Date.now() + UNSTARTED_HORIZON_MS) return 'unstarted'
 		return undefined
@@ -320,7 +332,7 @@
 					<span class="wake-dot" aria-hidden="true"></span>
 					<span>{wakeLockLabel}</span>
 				</div>
-				<Button variant="secondary" fullWidth onclick={() => (confirmEndOpen = true)}>Grillade beenden</Button>
+				<Button variant="secondary" fullWidth onclick={requestEndSession}>Grillade beenden</Button>
 			</div>
 			{#if session.mode === 'manual'}
 				<div class="eta-card">

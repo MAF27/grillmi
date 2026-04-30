@@ -37,11 +37,11 @@ function defaultPlan(): Plan {
  * finishes when started immediately and faster dishes are staggered later.
  * In 'time' mode: the user's pinned eating time.
  */
-function effectiveTargetEpoch(p: Plan, now: number): number {
+function effectiveTargetEpoch(p: Plan, now: number, putOnLeadSeconds = 0): number {
 	if (p.mode === 'time') return p.targetEpoch
 	if (p.items.length === 0) return now
 	const longestMs = Math.max(...p.items.map(i => (i.cookSeconds + i.restSeconds) * 1000))
-	return now + longestMs
+	return now + Math.max(0, putOnLeadSeconds) * 1000 + longestMs
 }
 
 function normalizeSession(stored: Session): Session {
@@ -233,8 +233,8 @@ function createGrilladeStore() {
 			persistPlan()
 		},
 
-		effectiveTargetEpoch(now: number = Date.now()) {
-			return effectiveTargetEpoch(plan, now)
+		effectiveTargetEpoch(now: number = Date.now(), putOnLeadSeconds = 0) {
+			return effectiveTargetEpoch(plan, now, putOnLeadSeconds)
 		},
 
 		addItem(item: Omit<PlannedItem, 'id'>): PlannedItem {
@@ -272,10 +272,10 @@ function createGrilladeStore() {
 			persistPlan()
 		},
 
-		async startSession(): Promise<Session> {
+		async startSession(putOnLeadSeconds = 0): Promise<Session> {
 			if (plan.items.length === 0) throw new Error('cannot start: no items in plan')
 			const now = Date.now()
-			const targetEpoch = effectiveTargetEpoch(plan, now)
+			const targetEpoch = effectiveTargetEpoch(plan, now, putOnLeadSeconds)
 			const result = schedule({ targetEpoch, items: plan.items, now })
 			const sessionItems: SessionItem[] = plan.items.map((p, i) => buildSessionItem(p, result.items[i], now))
 			const newSession = sessionSchema.parse({
