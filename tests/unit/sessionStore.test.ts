@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { IDBFactory } from 'fake-indexeddb'
 import { grilladeStore } from '$lib/stores/grilladeStore.svelte'
-import { __resetForTests, listGrilladen } from '$lib/stores/db'
+import { __resetForTests, getActiveGrillade, listGrilladen, putGrillade } from '$lib/stores/db'
 
 const item = {
 	categorySlug: 'beef',
@@ -94,6 +94,17 @@ describe('grilladeStore', () => {
 		grilladeStore.addItem(item)
 		await grilladeStore.startSession()
 		await grilladeStore.endSession()
+		expect(grilladeStore.session).toBeNull()
+	})
+
+	it('test_reload_clears_session_when_active_row_finished_remotely', async () => {
+		grilladeStore.setTargetTime(Date.now() + 3600_000)
+		grilladeStore.addItem(item)
+		await grilladeStore.startSession()
+		const active = await getActiveGrillade()
+		expect(active).toBeTruthy()
+		await putGrillade({ ...active!, status: 'finished', endedEpoch: Date.now(), updatedEpoch: Date.now() })
+		await grilladeStore.reloadFromStorage()
 		expect(grilladeStore.session).toBeNull()
 	})
 

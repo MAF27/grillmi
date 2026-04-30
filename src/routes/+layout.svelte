@@ -8,8 +8,9 @@
 	import { viewport } from '$lib/runtime/viewport.svelte'
 	import { settingsStore } from '$lib/stores/settingsStore.svelte'
 	import { authStore } from '$lib/stores/authStore.svelte'
+	import { grilladenHistoryStore } from '$lib/stores/grilladenHistoryStore.svelte'
 	import { grilladeStore } from '$lib/stores/grilladeStore.svelte'
-	import { attachSync, flush, pull } from '$lib/sync'
+	import { attachSync, flush, onSyncApplied, pull } from '$lib/sync'
 	import { debugSync } from '$lib/sync/debug'
 	import { unlockAudio } from '$lib/sounds/player'
 
@@ -63,7 +64,11 @@
 		window.addEventListener('keydown', unlock, { capture: true, once: true })
 		void settingsStore.init()
 		const grilladeInit = grilladeStore.init()
+		let stopSyncApplied: (() => void) | null = null
 		if (data.auth) {
+			stopSyncApplied = onSyncApplied(async () => {
+				await Promise.all([grilladeStore.reloadFromStorage(), grilladenHistoryStore.refresh()])
+			})
 			attachSync()
 			const pushLocal = desktopAtStartup ? grilladeInit.then(() => grilladeStore.syncActive()) : grilladeInit
 			void pushLocal
@@ -112,6 +117,7 @@
 			window.removeEventListener('pointerdown', unlock, { capture: true })
 			window.removeEventListener('keydown', unlock, { capture: true })
 			stopViewport?.()
+			stopSyncApplied?.()
 		}
 	})
 

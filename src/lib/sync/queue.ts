@@ -17,6 +17,7 @@ let flushPromise: Promise<void> | null = null
 let attached = false
 let liveSyncTimer: ReturnType<typeof setInterval> | null = null
 let liveSyncPromise: Promise<void> | null = null
+const syncAppliedListeners = new Set<() => void | Promise<void>>()
 
 interface EnqueueArgs {
 	method: string
@@ -134,7 +135,8 @@ export async function syncNow(reason = 'manual'): Promise<void> {
 			if (!authStore.isAuthenticated) return
 			debugSync('sync', 'cycle start', { reason })
 			await flush()
-			await pull()
+			const changed = await pull()
+			if (changed) await notifySyncApplied(reason)
 			debugSync('sync', 'cycle done', { reason })
 		} finally {
 			liveSyncPromise = null
@@ -143,8 +145,21 @@ export async function syncNow(reason = 'manual'): Promise<void> {
 	return liveSyncPromise
 }
 
+export function onSyncApplied(listener: () => void | Promise<void>): () => void {
+	syncAppliedListeners.add(listener)
+	return () => {
+		syncAppliedListeners.delete(listener)
+	}
+}
+
+async function notifySyncApplied(reason: string): Promise<void> {
+	debugSync('sync', 'applied remote/local changes', { reason, listeners: syncAppliedListeners.size })
+	await Promise.all([...syncAppliedListeners].map(listener => listener()))
+}
+
 export function detachSyncForTests(): void {
 	if (liveSyncTimer) clearInterval(liveSyncTimer)
 	liveSyncTimer = null
 	attached = false
+	syncAppliedListeners.clear()
 }

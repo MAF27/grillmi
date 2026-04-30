@@ -27,16 +27,17 @@ interface ServerSettings {
 	updated_at: string | null
 }
 
-export async function pull(): Promise<void> {
+export async function pull(): Promise<boolean> {
 	if (!authStore.isAuthenticated) {
 		debugSync('pull', 'skipped: unauthenticated')
-		return
+		return false
 	}
 	const since = ((await getSyncMeta(LAST_PULL_KEY)) as string | undefined) ?? '1970-01-01T00:00:00Z'
 	const params = `?since=${encodeURIComponent(since)}`
 	debugSync('pull', 'start', { since })
 
 	let serverTime: string | null = null
+	let changed = false
 	try {
 		const grilladen = await fetchJson<DeltaResponse<Record<string, unknown>>>(`/api/grilladen${params}`)
 		if (grilladen) {
@@ -47,6 +48,7 @@ export async function pull(): Promise<void> {
 				// Preserve local-only fields (active session, timeline,
 				// planState) so a pull mid-cook doesn't wipe in-flight state.
 				const existing = await getGrillade(incoming.id)
+				const beforeSignature = grilladeSignature(existing)
 				if (existing) {
 					incoming.session = existing.session
 					incoming.timeline = existing.timeline
@@ -78,6 +80,7 @@ export async function pull(): Promise<void> {
 					await retireOtherActiveGrilladen(incoming.id)
 				}
 				await putGrillade(incoming)
+				changed = grilladeSignature(incoming) !== beforeSignature || changed
 				debugSync('pull', 'stored grillade', {
 					id: incoming.id,
 					status: incoming.status,
@@ -87,7 +90,7 @@ export async function pull(): Promise<void> {
 				})
 			}
 		}
-		await refreshLocalActiveItems()
+		changed = (await refreshLocalActiveItems()) || changed
 	} catch (error) {
 		debugSync('pull', 'grilladen error', { error: String(error) })
 		// Network errors leave watermark untouched; next pull retries.
@@ -100,7 +103,9 @@ export async function pull(): Promise<void> {
 			for (const r of favorites.rows) {
 				if (r.deleted_at) continue
 				const fav = favoriteFromServer(r)
-				if (fav) await putFavorite(fav)
+				if (fav) {
+					await putFavorite(fav)
+				}
 			}
 		}
 	} catch (error) {
@@ -120,11 +125,13 @@ export async function pull(): Promise<void> {
 		await setSyncMeta(LAST_PULL_KEY, serverTime)
 		debugSync('pull', 'watermark updated', { serverTime })
 	}
+	return changed
 }
 
-async function refreshLocalActiveItems(): Promise<void> {
+async function refreshLocalActiveItems(): Promise<boolean> {
 	const active = await getActiveGrillade()
-	if (!active || (active.status !== 'planned' && active.status !== 'running')) return
+	if (!active || (active.status !== 'planned' && active.status !== 'running')) return false
+	const beforeSignature = grilladeSignature(active)
 	const rows = await fetchGrilladeItemRows(active.id)
 	const items = rows.map(plannedItemFromServer).filter((item): item is PlannedItem => item !== null)
 	debugSync('pull', 'local active items refresh', {
@@ -133,7 +140,7 @@ async function refreshLocalActiveItems(): Promise<void> {
 		rowCount: rows.length,
 		mappedCount: items.length,
 	})
-	if (items.length === 0) return
+	if (items.length === 0) return false
 	if (active.status === 'running') active.session = sessionFromServer(active, rows, items)
 	else
 		active.planState = {
@@ -146,7 +153,42 @@ async function refreshLocalActiveItems(): Promise<void> {
 		}
 	active.syncedItemIds = items.map(item => item.id)
 	active.updatedEpoch = Math.max(active.updatedEpoch, ...rows.map(r => Date.parse(String(r.updated_at ?? '')) || 0))
+	const changed = grilladeSignature(active) !== beforeSignature
+	if (!changed) return false
 	await putGrillade(active)
+	return changed
+}
+
+function grilladeSignature(row: GrilladeRow | undefined): string {
+	if (!row) return 'missing'
+	return JSON.stringify({
+		id: row.id,
+		status: row.status,
+		targetEpoch: row.targetEpoch,
+		startedEpoch: row.startedEpoch,
+		endedEpoch: row.endedEpoch,
+		deletedEpoch: row.deletedEpoch,
+		planItems: row.planState?.plan.items.map(item => ({
+			id: item.id,
+			label: item.label,
+			cutSlug: item.cutSlug,
+			thicknessCm: item.thicknessCm,
+			doneness: item.doneness,
+			cookSeconds: item.cookSeconds,
+			restSeconds: item.restSeconds,
+		})),
+		sessionItems: row.session?.items.map(item => ({
+			id: item.id,
+			status: item.status,
+			label: item.label,
+			cutSlug: item.cutSlug,
+			putOnEpoch: item.putOnEpoch,
+			doneEpoch: item.doneEpoch,
+			restingUntilEpoch: item.restingUntilEpoch,
+			flipFired: item.flipFired,
+			platedEpoch: item.platedEpoch,
+		})),
+	})
 }
 
 async function retireOtherActiveGrilladen(activeId: string): Promise<void> {

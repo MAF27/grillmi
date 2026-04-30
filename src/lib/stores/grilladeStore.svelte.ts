@@ -172,6 +172,10 @@ function createGrilladeStore() {
 			if (initialized) return
 			initialized = true
 			debugSync('grilladeStore', 'init start')
+			session = null
+			sessionTimeline = []
+			plan = defaultPlan()
+			planMode = 'auto'
 			const stored = await getCurrentSession()
 			if (stored) {
 				const normalized = normalizeSession(stored)

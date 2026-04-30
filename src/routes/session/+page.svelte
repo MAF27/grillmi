@@ -20,6 +20,7 @@
 	let dismissedKeys = $state<Set<string>>(new Set())
 	let firingItemId = $state<string | null>(null)
 	let endingForAllPlated = false
+	let mounted = $state(false)
 
 	const session = $derived(grilladeStore.session)
 	const sessionMode = $derived(session?.mode ?? grilladeStore.planMode)
@@ -41,6 +42,7 @@
 			goto('/plan')
 			return
 		}
+		mounted = true
 		// On desktop, /session and /plan render the same DesktopCockpit, which
 		// owns the ticker and wakeLock lifecycle once a session exists.
 		if (viewport.isDesktop) return
@@ -107,6 +109,10 @@
 		await grilladeStore.endSession()
 		await goto('/')
 	}
+
+	$effect(() => {
+		if (mounted && !viewport.isDesktop && !session) void goto('/plan')
+	})
 
 	$effect(() => {
 		if (endingForAllPlated) return

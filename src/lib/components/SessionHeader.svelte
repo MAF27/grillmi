@@ -47,7 +47,7 @@
 					<div class="badge-eyebrow">Modus</div>
 					<div class="badge-value manual">Manuell</div>
 				</div>
-			{:else}
+			{:else if placement === 'desktop'}
 				<div class="badge">
 					<div class="badge-eyebrow">Essen um</div>
 					<div class="badge-value" data-mask-time>{formatHHMM(targetEpoch)}</div>
