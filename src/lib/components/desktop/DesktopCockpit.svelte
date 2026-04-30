@@ -9,7 +9,6 @@
 	import SegmentedControl from '$lib/components/SegmentedControl.svelte'
 	import TimePickerPopover from '$lib/components/TimePickerPopover.svelte'
 	import TimerCard, { type TimerCardStatus } from '$lib/components/TimerCard.svelte'
-	import ActivityLog from '$lib/components/desktop/ActivityLog.svelte'
 	import { fireAlarm, messageFor, type AlarmEvent } from '$lib/runtime/alarms'
 	import { createTicker, type TickerEvent } from '$lib/runtime/ticker'
 	import { getWakeLockState, onWakeLockChange, releaseWakeLock, requestWakeLock } from '$lib/runtime/wakeLock'
@@ -90,7 +89,6 @@
 			.reverse(),
 	)
 	const alarming = $derived(visibleAlarms[0] ?? null)
-	const activity = $derived(grilladeStore.sessionTimeline)
 
 	let ticker: ReturnType<typeof createTicker> | null = null
 	let unsubWakeLock: (() => void) | null = null
@@ -334,6 +332,17 @@
 				</div>
 				<Button variant="secondary" fullWidth onclick={requestEndSession}>Grillade beenden</Button>
 			</div>
+			{#if alarming}
+				{#key alarming.id}
+					<AlarmBanner
+						kind={alarming.kind}
+						itemName={alarming.itemName}
+						count={visibleAlarms.length}
+						message={alarming.message}
+						placement="top"
+						onDismiss={dismissAlarm} />
+				{/key}
+			{/if}
 			{#if session.mode === 'manual'}
 				<div class="eta-card">
 					<div class="eat-eyebrow">Erwartet fertig</div>
@@ -396,23 +405,6 @@
 			{/if}
 		{/if}
 	</section>
-
-	<aside class="right-pane">
-		{#if session && alarming}
-			{#key alarming.id}
-				<AlarmBanner
-					kind={alarming.kind}
-					itemName={alarming.itemName}
-					count={visibleAlarms.length}
-					message={alarming.message}
-					placement="top"
-					onDismiss={dismissAlarm} />
-			{/key}
-		{/if}
-		{#if session}
-			<ActivityLog events={activity} />
-		{/if}
-	</aside>
 </div>
 
 {#if sheetOpen}
@@ -447,8 +439,11 @@
 
 <style>
 	.cockpit {
+		--timer-card-width: calc((100dvw - 900px - 56px - 16px) / 2);
+		--timer-column-width: calc(var(--timer-card-width) * 3 + 32px + 56px);
 		display: grid;
-		grid-template-columns: 340px minmax(0, 1fr) 320px;
+		grid-template-columns: 340px minmax(0, var(--timer-column-width));
+		justify-content: start;
 		min-height: calc(100dvh - 0px);
 		background: var(--color-bg-base);
 		color: var(--color-fg-base);
@@ -480,17 +475,10 @@
 	}
 	.big-grid {
 		display: grid;
-		grid-template-columns: repeat(2, calc((100% - 16px) / 2));
+		grid-template-columns: repeat(3, var(--timer-card-width));
 		gap: 16px;
 		align-items: start;
 		justify-content: start;
-	}
-	.right-pane {
-		position: relative;
-		min-width: 0;
-		padding: 24px;
-		border-left: 1px solid var(--color-border-subtle);
-		background: var(--color-bg-panel);
 	}
 	.awaiting {
 		color: var(--color-fg-muted);
@@ -762,10 +750,11 @@
 	}
 	@media (max-width: 1279px) {
 		.cockpit {
-			grid-template-columns: 300px minmax(0, 1fr) 280px;
+			--timer-card-width: calc((100dvw - 820px - 56px - 16px) / 2);
+			--timer-column-width: calc(var(--timer-card-width) * 3 + 32px + 56px);
+			grid-template-columns: 300px minmax(0, var(--timer-column-width));
 		}
-		.control-pane,
-		.right-pane {
+		.control-pane {
 			padding: 20px;
 		}
 	}

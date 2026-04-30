@@ -204,41 +204,51 @@
 	</div>
 
 	<div class="name">{item.label || item.cutSlug}</div>
-	{#if specLine}
-		<div class="spec">{specLine}</div>
-	{/if}
-	{#if heatLine}
-		<div class="heat-meta">{heatLine}</div>
-	{/if}
-	<div class="status-badge" aria-live="polite">{labelMap[effectiveStatus]}</div>
+	<div class="spec" class:empty={!specLine} aria-hidden={!specLine}>{specLine || '\u00a0'}</div>
+	<div class="heat-meta" class:empty={!heatLine} aria-hidden={!heatLine}>{heatLine || '\u00a0'}</div>
+	<div class="status-slot">
+		<div class="status-badge" aria-live="polite">{labelMap[effectiveStatus]}</div>
 
-	{#if effectiveStatus === 'unstarted' && onstart}
-		<button class="action start" type="button" onclick={() => onstart!(item.id)}>Los</button>
-	{:else if effectiveStatus === 'ready' && onplate}
-		<button class="action plate" type="button" onclick={() => onplate!(item.id)}>Anrichten</button>
-	{/if}
+		{#if effectiveStatus === 'unstarted' && onstart}
+			<button class="action start" type="button" onclick={() => onstart!(item.id)}>Los</button>
+		{:else if effectiveStatus === 'ready' && onplate}
+			<button class="action plate" type="button" onclick={() => onplate!(item.id)}>Anrichten</button>
+		{/if}
+	</div>
 </article>
 
 <style>
 	.card {
 		position: relative;
-		display: flex;
-		flex-direction: column;
+		display: grid;
+		grid-template-rows: 94px 34px 16px 16px 26px;
 		align-items: center;
-		gap: 4px;
-		padding: 16px 14px;
+		gap: 3px;
+		padding: 12px 14px;
 		background: var(--color-bg-surface);
 		border: 1px solid var(--color-border-subtle);
 		border-radius: 18px;
 		color: var(--color-fg-base);
+		height: 213px;
 		min-width: 0;
+		overflow: hidden;
 		transition:
 			transform var(--duration-fast) var(--ease-default),
 			border-color var(--duration-normal) var(--ease-default);
 	}
 	.card[data-size='lg'] {
-		padding: 20px 18px 18px;
+		grid-template-rows: 134px 38px 18px 18px 30px;
+		height: 262px;
+		padding: 14px 18px 14px;
 		border-radius: 16px;
+	}
+	.card:has(.action) {
+		grid-template-rows: 94px 34px 16px 16px 50px;
+		height: 237px;
+	}
+	.card[data-size='lg']:has(.action) {
+		grid-template-rows: 134px 38px 18px 18px 44px;
+		height: 276px;
 	}
 	.card.unstarted {
 		opacity: 0.85;
@@ -266,10 +276,11 @@
 	.ring-wrap {
 		display: flex;
 		justify-content: center;
-		margin-bottom: 12px;
+		align-self: start;
+		min-width: 0;
 	}
 	.card[data-size='lg'] .ring-wrap {
-		margin-bottom: 14px;
+		align-self: start;
 	}
 	.ring-value {
 		font-family: var(--font-display);
@@ -277,7 +288,7 @@
 		font-weight: 700;
 		color: var(--color-fg-base);
 		font-variant-numeric: tabular-nums;
-		letter-spacing: -0.02em;
+		letter-spacing: 0;
 		line-height: 1;
 	}
 	.card[data-size='lg'] .ring-value {
@@ -303,17 +314,20 @@
 		letter-spacing: 0.14em;
 	}
 	.name {
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
 		font-family: var(--font-body);
 		font-size: 14px;
 		font-weight: 600;
 		text-align: center;
 		line-height: 1.2;
 		color: var(--color-fg-base);
-		margin-bottom: 4px;
 		max-width: 100%;
 		overflow: hidden;
 		text-overflow: ellipsis;
-		white-space: nowrap;
+		white-space: normal;
 	}
 	.card[data-size='lg'] .name {
 		font-size: 15px;
@@ -325,10 +339,13 @@
 		color: var(--color-fg-muted);
 		text-align: center;
 		max-width: 100%;
+		min-height: 16px;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
-		margin-bottom: 4px;
+	}
+	.spec.empty {
+		visibility: hidden;
 	}
 	.heat-meta {
 		font-family: var(--font-body);
@@ -337,10 +354,25 @@
 		text-align: center;
 		color: var(--color-fg-subtle);
 		max-width: 100%;
+		min-height: 16px;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
-		margin-bottom: 4px;
+	}
+	.heat-meta.empty {
+		visibility: hidden;
+	}
+	.status-slot {
+		align-self: stretch;
+		display: grid;
+		grid-template-rows: 16px;
+		align-items: end;
+		width: 100%;
+		min-width: 0;
+	}
+	.card:has(.action) .status-slot {
+		grid-template-rows: 16px 1fr;
+		gap: 4px;
 	}
 	.status-badge {
 		font-family: var(--font-body);
@@ -369,9 +401,8 @@
 		color: var(--color-state-ready);
 	}
 	.action {
-		margin-top: auto;
-		min-height: 44px;
-		padding: 12px 16px;
+		height: 44px;
+		padding: 0 16px;
 		border: none;
 		border-radius: 10px;
 		font-family: var(--font-body);
@@ -381,10 +412,11 @@
 		text-transform: uppercase;
 		cursor: pointer;
 		transition: filter 0.15s ease;
-		align-self: stretch;
+		align-self: end;
+		width: 100%;
 	}
 	.card[data-size='lg'] .action {
-		min-height: 36px;
+		height: 36px;
 		padding: 0 16px;
 		font-size: 13px;
 	}

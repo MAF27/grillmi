@@ -277,7 +277,10 @@ function createGrilladeStore() {
 			const now = Date.now()
 			const targetEpoch = effectiveTargetEpoch(plan, now, putOnLeadSeconds)
 			const result = schedule({ targetEpoch, items: plan.items, now })
-			const sessionItems: SessionItem[] = plan.items.map((p, i) => buildSessionItem(p, result.items[i], now))
+			const sessionItems: SessionItem[] = plan.items
+				.map((p, i) => ({ item: buildSessionItem(p, result.items[i], now), index: i }))
+				.sort((a, b) => a.item.putOnEpoch - b.item.putOnEpoch || a.index - b.index)
+				.map(({ item }) => item)
 			const newSession = sessionSchema.parse({
 				id: uuid(),
 				createdAtEpoch: now,
