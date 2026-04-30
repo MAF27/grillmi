@@ -28,6 +28,8 @@ export interface GrilladeRow {
 	// Local-only flag: true once the row has been POSTed to the backend at
 	// least once. Used to choose POST vs PATCH on subsequent metadata pushes.
 	pushedToServer?: boolean
+	// Local-only item ids already enqueued/synced to the backend for this row.
+	syncedItemIds?: string[]
 }
 
 export interface SyncQueueRow {
@@ -214,6 +216,7 @@ export async function putCurrentSession(s: Session): Promise<void> {
 	active.session = JSON.parse(JSON.stringify(s)) as Session
 	active.status = 'running'
 	active.startedEpoch = active.startedEpoch ?? Date.now()
+	active.targetEpoch = s.targetEpoch
 	active.updatedEpoch = Date.now()
 	await putGrillade(active)
 }
@@ -249,6 +252,10 @@ export async function getCurrentPlanState(): Promise<PersistedPlanState | undefi
 export async function putCurrentPlanState(state: PersistedPlanState): Promise<void> {
 	const active = (await getActiveGrillade()) ?? newDefaultGrillade()
 	active.planState = JSON.parse(JSON.stringify(state)) as PersistedPlanState
+	if (!active.session && active.status !== 'running') {
+		active.status = 'planned'
+		active.targetEpoch = state.plan.targetEpoch
+	}
 	active.updatedEpoch = Date.now()
 	await putGrillade(active)
 }

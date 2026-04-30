@@ -1,6 +1,7 @@
 import { settingsStore } from '$lib/stores/settingsStore.svelte'
 import { play } from '$lib/sounds/player'
 import { formatDuration } from '$lib/util/format'
+import { debugSync } from '$lib/sync/debug'
 
 export type AlarmEvent = 'put-on' | 'flip' | 'done'
 
@@ -12,15 +13,27 @@ export function alarmSoundFor(event: AlarmEvent): string {
 }
 
 export function fireHaptic(): void {
-	if (typeof navigator === 'undefined') return
+	if (typeof navigator === 'undefined') {
+		debugSync('alarm', 'haptic skipped: no navigator')
+		return
+	}
 	const vibrate = (navigator as Navigator & { vibrate?: (p: number | number[]) => boolean }).vibrate
-	if (typeof vibrate === 'function') vibrate.call(navigator, [200])
+	if (typeof vibrate === 'function') {
+		const ok = vibrate.call(navigator, [200])
+		debugSync('alarm', 'haptic fired', { ok })
+	} else {
+		debugSync('alarm', 'haptic skipped: unsupported')
+	}
 }
 
 export async function fireAlarm(event: AlarmEvent): Promise<void> {
 	const sound = alarmSoundFor(event)
-	await play(sound).catch(() => {})
+	debugSync('alarm', 'fire start', { event, sound })
+	await play(sound).catch(error => {
+		debugSync('alarm', 'play error swallowed', { event, sound, error: String(error) })
+	})
 	fireHaptic()
+	debugSync('alarm', 'fire done', { event, sound })
 }
 
 export function messageFor(event: AlarmEvent, label: string, leadSeconds = 0): string {

@@ -5,17 +5,15 @@ import { uuid } from '$lib/util/uuid'
 import {
 	appendTimelineEvent,
 	clearCurrentSession,
-	getActiveGrillade,
 	getCurrentPlanState,
 	getCurrentSession,
 	getCurrentTimeline,
-	listGrilladen,
 	putCurrentPlanState,
 	putCurrentSession,
-	putGrillade,
 	type TimelineEvent,
 } from './db'
-import { pushGrilladeCreate, pushGrilladeUpdate } from '$lib/sync/pushGrillade'
+import { debugSync } from '$lib/sync/debug'
+import { pushFinishedGrillade, pushPlannedDraft, pushRunningSession } from './grilladeSync'
 
 const STALE_AFTER_MS = 4 * 60 * 60 * 1000
 const MANUAL_UNSTARTED_HORIZON_MS = 30 * 24 * 60 * 60 * 1000
@@ -88,7 +86,10 @@ function createGrilladeStore() {
 		// Chain each write so _persistFlush() awaits *all* in-flight persists
 		// in order. Without chaining, fire-and-forget calls in tests race past
 		// the awaiter and leave half-committed IDB state.
-		_pendingPersist = _pendingPersist.then(() => putCurrentPlanState({ plan, planMode }))
+		_pendingPersist = _pendingPersist.then(async () => {
+			await putCurrentPlanState({ plan, planMode })
+			await pushPlannedDraft(plan)
+		})
 		return _pendingPersist
 	}
 
@@ -117,38 +118,12 @@ function createGrilladeStore() {
 		// After clearing, the just-finished GrilladeRow is the most recent one
 		// with status='finished'. Push the metadata update so other devices see
 		// it in their history list.
-		await pushFinishedGrilladeIfPossible()
+		await pushFinishedGrillade()
 		session = null
 		sessionTimeline = []
 		plan = replayItems.length > 0 ? { targetEpoch: defaultTarget(), items: replayItems, mode: 'now' } : defaultPlan()
 		planMode = 'auto'
 		persistPlan()
-	}
-
-	async function stampPushedAndCreate() {
-		const active = await getActiveGrillade()
-		if (!active || active.pushedToServer) return
-		await pushGrilladeCreate(active)
-		active.pushedToServer = true
-		await putGrillade(active)
-	}
-
-	async function pushFinishedGrilladeIfPossible() {
-		const all = await listGrilladen()
-		const recent = all
-			.filter(g => g.status === 'finished' && g.deletedEpoch === null)
-			.sort((a, b) => (b.endedEpoch ?? 0) - (a.endedEpoch ?? 0))[0]
-		if (!recent) return
-		if (!recent.pushedToServer) {
-			// Edge case: the row never got a POST (e.g. legacy local state from
-			// before sync push existed). Push a create now so the server gets
-			// the finished snapshot in one step.
-			await pushGrilladeCreate(recent)
-			recent.pushedToServer = true
-			await putGrillade(recent)
-			return
-		}
-		await pushGrilladeUpdate(recent)
 	}
 
 	return {
@@ -196,6 +171,7 @@ function createGrilladeStore() {
 		async init() {
 			if (initialized) return
 			initialized = true
+			debugSync('grilladeStore', 'init start')
 			const stored = await getCurrentSession()
 			if (stored) {
 				const normalized = normalizeSession(stored)
@@ -215,6 +191,38 @@ function createGrilladeStore() {
 					planMode = storedPlan.planMode === 'manual' ? 'manual' : 'auto'
 				}
 			}
+			debugSync('grilladeStore', 'init done', {
+				hasSession: Boolean(session),
+				sessionId: session?.id,
+				sessionItems: session?.items.length ?? 0,
+				planItems: plan.items.length,
+				mode: plan.mode,
+			})
+		},
+
+		async reloadFromStorage() {
+			initialized = false
+			await this.init()
+			debugSync('grilladeStore', 'reload done', {
+				hasSession: Boolean(session),
+				sessionId: session?.id,
+				sessionItems: session?.items.length ?? 0,
+				planItems: plan.items.length,
+			})
+		},
+
+		async syncActive() {
+			debugSync('grilladeStore', 'sync active start', {
+				hasSession: Boolean(session),
+				sessionId: session?.id,
+				sessionItems: session?.items.length ?? 0,
+				planItems: plan.items.length,
+			})
+			if (session) {
+				await pushRunningSession(session)
+				return
+			}
+			if (plan.items.length > 0) await pushPlannedDraft(plan)
 		},
 
 		setTargetTime(epoch: number) {
@@ -274,6 +282,7 @@ function createGrilladeStore() {
 		},
 
 		async startSession(putOnLeadSeconds = 0): Promise<Session> {
+			await _pendingPersist
 			if (plan.items.length === 0) throw new Error('cannot start: no items in plan')
 			const now = Date.now()
 			const targetEpoch = effectiveTargetEpoch(plan, now, putOnLeadSeconds)
@@ -291,10 +300,10 @@ function createGrilladeStore() {
 				items: sessionItems,
 			})
 			session = newSession
-			plan = defaultPlan()
-			persistPlan()
 			await persist()
-			await stampPushedAndCreate()
+			plan = defaultPlan()
+			await persistPlan()
+			await pushRunningSession(session)
 			return newSession
 		},
 
@@ -302,6 +311,7 @@ function createGrilladeStore() {
 		// putOnEpoch sentinel until the user clicks Los on each card. The ticker
 		// then drives them through cooking/resting/ready as wall-clock advances.
 		async startManualSession(): Promise<Session> {
+			await _pendingPersist
 			if (plan.items.length === 0) throw new Error('cannot start: no items in plan')
 			const now = Date.now()
 			const farFuture = now + 365 * 24 * 60 * 60 * 1000
@@ -327,11 +337,11 @@ function createGrilladeStore() {
 				items: sessionItems,
 			})
 			session = newSession
+			await persist()
 			plan = defaultPlan()
 			planMode = 'auto'
-			persistPlan()
-			await persist()
-			await stampPushedAndCreate()
+			await persistPlan()
+			await pushRunningSession(session)
 			return newSession
 		},
 
@@ -360,12 +370,14 @@ function createGrilladeStore() {
 				targetEpoch: Math.max(session.targetEpoch, restingUntilEpoch),
 			}
 			await persist()
+			await pushRunningSession(session)
 		},
 
 		async patchItem(id: string, patch: Partial<SessionItem>) {
 			if (!session) return
 			session = { ...session, items: session.items.map(i => (i.id === id ? { ...i, ...patch } : i)) }
 			await persist()
+			await pushRunningSession(session)
 		},
 
 		async plateItem(id: string) {
@@ -375,6 +387,7 @@ function createGrilladeStore() {
 				items: session.items.map(i => (i.id === id ? { ...i, status: 'plated', platedEpoch: Date.now() } : i)),
 			}
 			await persist()
+			await pushRunningSession(session)
 		},
 
 		async unplateItem(id: string) {
@@ -384,18 +397,21 @@ function createGrilladeStore() {
 				items: session.items.map(i => (i.id === id ? { ...i, status: 'ready', platedEpoch: null } : i)),
 			}
 			await persist()
+			await pushRunningSession(session)
 		},
 
 		async forceReady(id: string) {
 			if (!session) return
 			session = { ...session, items: session.items.map(i => (i.id === id ? { ...i, status: 'ready' } : i)) }
 			await persist()
+			await pushRunningSession(session)
 		},
 
 		async removeSessionItem(id: string) {
 			if (!session) return
 			session = { ...session, items: session.items.filter(i => i.id !== id) }
 			await persist()
+			await pushRunningSession(session)
 		},
 
 		async appendTimelineEvent(event: TimelineEvent) {

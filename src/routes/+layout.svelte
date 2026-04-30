@@ -9,7 +9,8 @@
 	import { settingsStore } from '$lib/stores/settingsStore.svelte'
 	import { authStore } from '$lib/stores/authStore.svelte'
 	import { grilladeStore } from '$lib/stores/grilladeStore.svelte'
-	import { attachSync, pull } from '$lib/sync'
+	import { attachSync, flush, pull } from '$lib/sync'
+	import { debugSync } from '$lib/sync/debug'
 	import { unlockAudio } from '$lib/sounds/player'
 
 	let { data, children } = $props<{
@@ -46,17 +47,34 @@
 	})
 
 	onMount(() => {
+		authStore.init(data.auth)
 		const stopViewport = viewport.start()
+		const desktopAtStartup = window.matchMedia('(min-width: 1024px)').matches
+		debugSync('layout', 'mount', {
+			hasAuth: Boolean(data.auth),
+			authStoreAuthenticated: authStore.isAuthenticated,
+			desktopAtStartup,
+			pathname,
+		})
 		const unlock = () => {
 			void unlockAudio()
 		}
 		window.addEventListener('pointerdown', unlock, { capture: true, once: true })
 		window.addEventListener('keydown', unlock, { capture: true, once: true })
 		void settingsStore.init()
-		void grilladeStore.init()
-		if (authStore.isAuthenticated) {
+		const grilladeInit = grilladeStore.init()
+		if (data.auth) {
 			attachSync()
-			void pull()
+			const pushLocal = desktopAtStartup ? grilladeInit.then(() => grilladeStore.syncActive()) : grilladeInit
+			void pushLocal
+				.then(() => debugSync('layout', 'startup push/init done', { desktopAtStartup }))
+				.then(() => flush())
+				.then(() => debugSync('layout', 'startup flush done'))
+				.then(() => pull())
+				.then(() => debugSync('layout', 'startup pull done'))
+				.then(() => grilladeStore.reloadFromStorage())
+				.then(() => debugSync('layout', 'startup reload done'))
+				.catch(error => debugSync('layout', 'startup sync error', { error: String(error) }))
 		}
 		if ('serviceWorker' in navigator) {
 			if (import.meta.env.DEV) {

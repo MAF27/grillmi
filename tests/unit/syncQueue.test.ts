@@ -4,7 +4,6 @@ import {
 	__resetForTests,
 	enqueueSyncRow,
 	listSyncQueue,
-	setSyncMeta,
 } from '$lib/stores/db'
 import { authStore } from '$lib/stores/authStore.svelte'
 import { enqueueSync, flush } from '$lib/sync/queue'
@@ -13,7 +12,6 @@ beforeEach(async () => {
 	__resetForTests()
 	;(globalThis as unknown as { indexedDB: unknown }).indexedDB = new IDBFactory()
 	authStore.setSession({ user: { id: 'u1', email: 'm@example.com' }, csrfToken: 'csrf-abc' })
-	await setSyncMeta('firstLoginMigrationComplete', true)
 	vi.restoreAllMocks()
 })
 
@@ -30,10 +28,9 @@ describe('syncQueue', () => {
 		expect(rows[0].path).toBe('/api/grilladen')
 	})
 
-	it('test_enqueue_skips_when_first_login_not_complete', async () => {
-		await setSyncMeta('firstLoginMigrationComplete', false)
+	it('test_enqueue_does_not_require_first_login_flag', async () => {
 		await enqueueSync({ method: 'POST', path: '/api/grilladen', body: '{}' })
-		expect(await listSyncQueue()).toEqual([])
+		expect(await listSyncQueue()).toHaveLength(1)
 	})
 
 	it('test_enqueue_skips_when_unauthenticated', async () => {

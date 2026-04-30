@@ -91,6 +91,7 @@ async def create(
     )
     session.add(row)
     await session.flush()
+    await _touch_parent(session, user_id, grillade_id)
     return row
 
 
@@ -138,6 +139,7 @@ async def update(
         if k in payload:
             setattr(row, k, _dt(payload[k]))
     await session.flush()
+    await _touch_parent(session, user_id, grillade_id)
     await session.refresh(row, ["updated_at"])
     return row
 
@@ -154,7 +156,21 @@ async def soft_delete(
     if row.deleted_at is None:
         row.deleted_at = datetime.now(timezone.utc)
         await session.flush()
+        await _touch_parent(session, user_id, grillade_id)
     return True
+
+
+async def _touch_parent(
+    session: AsyncSession, user_id: uuid.UUID, grillade_id: uuid.UUID
+) -> None:
+    parent = (
+        await session.execute(
+            select(Grillade).where(Grillade.id == grillade_id, Grillade.user_id == user_id)
+        )
+    ).scalar_one_or_none()
+    if parent is not None:
+        parent.updated_at = datetime.now(timezone.utc)
+        await session.flush()
 
 
 def _uuid_or_default(value: Any) -> uuid.UUID:

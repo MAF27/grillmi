@@ -1,7 +1,9 @@
 import { authStore } from '$lib/stores/authStore.svelte'
 import {
+	getActiveGrillade,
 	getGrillade,
 	getSyncMeta,
+	listGrilladen,
 	putFavorite,
 	putGrillade,
 	putSettings,
@@ -9,7 +11,9 @@ import {
 	type GrilladeRow,
 } from '$lib/stores/db'
 import { findCutBySlug, findRow } from '$lib/data/timings'
-import type { Favorite } from '$lib/schemas'
+import { buildSessionItem, schedule } from '$lib/scheduler/schedule'
+import type { Favorite, PlannedItem, Session, SessionItem } from '$lib/schemas'
+import { debugSync } from './debug'
 
 const LAST_PULL_KEY = 'lastPullEpoch'
 
@@ -24,15 +28,20 @@ interface ServerSettings {
 }
 
 export async function pull(): Promise<void> {
-	if (!authStore.isAuthenticated) return
+	if (!authStore.isAuthenticated) {
+		debugSync('pull', 'skipped: unauthenticated')
+		return
+	}
 	const since = ((await getSyncMeta(LAST_PULL_KEY)) as string | undefined) ?? '1970-01-01T00:00:00Z'
 	const params = `?since=${encodeURIComponent(since)}`
+	debugSync('pull', 'start', { since })
 
 	let serverTime: string | null = null
 	try {
 		const grilladen = await fetchJson<DeltaResponse<Record<string, unknown>>>(`/api/grilladen${params}`)
 		if (grilladen) {
 			serverTime = grilladen.server_time
+			debugSync('pull', 'grilladen received', { count: grilladen.rows.length, serverTime })
 			for (const r of grilladen.rows) {
 				const incoming = toGrilladeRow(r)
 				// Preserve local-only fields (active session, timeline,
@@ -42,11 +51,45 @@ export async function pull(): Promise<void> {
 					incoming.session = existing.session
 					incoming.timeline = existing.timeline
 					incoming.planState = existing.planState
+					incoming.syncedItemIds = existing.syncedItemIds
+				}
+				if (incoming.status === 'planned' || incoming.status === 'running') {
+					const rows = await fetchGrilladeItemRows(incoming.id)
+					const items = rows.map(plannedItemFromServer).filter((item): item is PlannedItem => item !== null)
+					debugSync('pull', 'active row items received', {
+						id: incoming.id,
+						status: incoming.status,
+						rowCount: rows.length,
+						mappedCount: items.length,
+					})
+					if (items.length > 0) {
+						if (incoming.status === 'running') incoming.session = sessionFromServer(incoming, rows, items)
+						else
+							incoming.planState = {
+								plan: {
+									targetEpoch: incoming.targetEpoch ?? Date.now(),
+									items,
+									mode: incoming.targetEpoch ? 'time' : 'now',
+								},
+								planMode: 'auto',
+						}
+						incoming.syncedItemIds = items.map(item => item.id)
+					}
+					await retireOtherActiveGrilladen(incoming.id)
 				}
 				await putGrillade(incoming)
+				debugSync('pull', 'stored grillade', {
+					id: incoming.id,
+					status: incoming.status,
+					hasSession: Boolean(incoming.session),
+					planItems: incoming.planState?.plan.items.length ?? 0,
+					sessionItems: incoming.session?.items.length ?? 0,
+				})
 			}
 		}
-	} catch {
+		await refreshLocalActiveItems()
+	} catch (error) {
+		debugSync('pull', 'grilladen error', { error: String(error) })
 		// Network errors leave watermark untouched; next pull retries.
 	}
 
@@ -60,8 +103,8 @@ export async function pull(): Promise<void> {
 				if (fav) await putFavorite(fav)
 			}
 		}
-	} catch {
-		/* noop */
+	} catch (error) {
+		debugSync('pull', 'favorites error', { error: String(error) })
 	}
 
 	try {
@@ -69,13 +112,67 @@ export async function pull(): Promise<void> {
 		if (settings && settings.value) {
 			await putSettings(settings.value as never)
 		}
-	} catch {
-		/* noop */
+	} catch (error) {
+		debugSync('pull', 'settings error', { error: String(error) })
 	}
 
 	if (serverTime) {
 		await setSyncMeta(LAST_PULL_KEY, serverTime)
+		debugSync('pull', 'watermark updated', { serverTime })
 	}
+}
+
+async function refreshLocalActiveItems(): Promise<void> {
+	const active = await getActiveGrillade()
+	if (!active || (active.status !== 'planned' && active.status !== 'running')) return
+	const rows = await fetchGrilladeItemRows(active.id)
+	const items = rows.map(plannedItemFromServer).filter((item): item is PlannedItem => item !== null)
+	debugSync('pull', 'local active items refresh', {
+		id: active.id,
+		status: active.status,
+		rowCount: rows.length,
+		mappedCount: items.length,
+	})
+	if (items.length === 0) return
+	if (active.status === 'running') active.session = sessionFromServer(active, rows, items)
+	else
+		active.planState = {
+			plan: {
+				targetEpoch: active.targetEpoch ?? Date.now(),
+				items,
+				mode: active.targetEpoch ? 'time' : 'now',
+			},
+			planMode: 'auto',
+		}
+	active.syncedItemIds = items.map(item => item.id)
+	active.updatedEpoch = Math.max(active.updatedEpoch, ...rows.map(r => Date.parse(String(r.updated_at ?? '')) || 0))
+	await putGrillade(active)
+}
+
+async function retireOtherActiveGrilladen(activeId: string): Promise<void> {
+	const now = Date.now()
+	const localRows = await listGrilladen()
+	await Promise.all(
+		localRows
+			.filter(row => row.id !== activeId && (row.status === 'planned' || row.status === 'running'))
+			.map(row =>
+				putGrillade({
+					...row,
+					status: 'finished',
+					endedEpoch: row.endedEpoch ?? now,
+					updatedEpoch: now,
+					deletedEpoch: now,
+				}),
+			),
+	)
+}
+
+async function fetchGrilladeItemRows(grilladeId: string): Promise<Array<Record<string, unknown>>> {
+	const response = await fetchJson<DeltaResponse<Record<string, unknown>>>(`/api/grilladen/${grilladeId}/items?since=1970-01-01T00%3A00%3A00Z`)
+	if (!response) return []
+	return response.rows
+		.filter(r => !r.deleted_at)
+		.sort((a, b) => Number(a.position ?? 0) - Number(b.position ?? 0))
 }
 
 async function fetchJson<T>(path: string): Promise<T | null> {
@@ -83,6 +180,8 @@ async function fetchJson<T>(path: string): Promise<T | null> {
 		credentials: 'include',
 		headers: { Accept: 'application/json' },
 	})
+	const text = await response.clone().text().catch(() => '')
+	debugSync('pull', 'fetch response', { path, status: response.status, body: text.slice(0, 300) })
 	if (response.status === 401) {
 		authStore.clear()
 		return null
@@ -119,6 +218,64 @@ function favoriteFromServer(r: Record<string, unknown>): Favorite | null {
 		grateTempC: row.grateTempC,
 		createdAtEpoch: Date.parse(String(r.created_at ?? '')) || Date.now(),
 		lastUsedEpoch: Date.parse(String(r.last_used_at ?? '')) || Date.now(),
+	}
+}
+
+function plannedItemFromServer(r: Record<string, unknown>): PlannedItem | null {
+	const cutSlug = String(r.cut_id ?? '')
+	const found = findCutBySlug(cutSlug)
+	if (!found) return null
+	const thicknessCm = r.thickness_cm == null ? null : Number(r.thickness_cm)
+	const doneness = (r.doneness as string | null) ?? null
+	const prepLabel = (r.prep_label as string | null) ?? null
+	const row = findRow(found.cut, thicknessCm, doneness)
+	return {
+		id: String(r.id),
+		categorySlug: found.category.slug,
+		cutSlug: found.cut.slug,
+		thicknessCm,
+		prepLabel,
+		doneness,
+		label: (r.label as string | null) ?? null,
+		cookSeconds: Number(r.cook_seconds_max ?? r.cook_seconds_min ?? row?.cookSecondsMax ?? 60),
+		restSeconds: Number(r.rest_seconds ?? row?.restSeconds ?? 0),
+		flipFraction: Number(r.flip_fraction ?? row?.flipFraction ?? 0.5),
+		idealFlipPattern: row?.idealFlipPattern ?? 'once',
+		heatZone: row?.heatZone ?? '—',
+		grateTempC: row?.grateTempC ?? null,
+	}
+}
+
+function sessionFromServer(row: GrilladeRow, rawItems: Array<Record<string, unknown>>, plannedItems: PlannedItem[]): Session {
+	const now = Date.now()
+	const targetEpoch = row.targetEpoch ?? now
+	const scheduled = schedule({ targetEpoch, items: plannedItems, now }).items
+	const items: SessionItem[] = plannedItems.map((planned, index) => {
+		const raw = rawItems[index]
+		const status = String(raw.status ?? 'pending') as SessionItem['status']
+		if (status === 'pending') return buildSessionItem(planned, scheduled[index], now)
+		const putOnEpoch = Date.parse(String(raw.started_at ?? '')) || now
+		const doneEpoch = putOnEpoch + planned.cookSeconds * 1000
+		const restingUntilEpoch = doneEpoch + planned.restSeconds * 1000
+		return {
+			...planned,
+			putOnEpoch,
+			flipEpoch: planned.flipFraction > 0 ? Math.round(putOnEpoch + planned.cookSeconds * 1000 * planned.flipFraction) : null,
+			doneEpoch,
+			restingUntilEpoch,
+			status,
+			overdue: false,
+			flipFired: status !== 'cooking',
+			platedEpoch: raw.plated_at ? Date.parse(String(raw.plated_at)) : null,
+		}
+	})
+	return {
+		id: row.id,
+		createdAtEpoch: row.startedEpoch ?? row.updatedEpoch,
+		targetEpoch,
+		endedAtEpoch: null,
+		mode: 'auto',
+		items,
 	}
 }
 

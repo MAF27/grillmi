@@ -1,4 +1,5 @@
 import type { SessionItem, ItemStatus, ScheduleEvent } from '$lib/models'
+import { debugSync } from '$lib/sync/debug'
 
 export type TickerEvent =
 	| { type: 'put-on'; itemId: string; leadSeconds: number }
@@ -36,15 +37,24 @@ export function createTicker(hooks: TickerHooks) {
 	function primeExistingAlarms() {
 		const t = now()
 		const leads = hooks.getLeads ? hooks.getLeads() : { putOn: 0, flip: 0, done: 0 }
+		const primed: string[] = []
 		for (const item of hooks.getItems()) {
 			const target = computeStatus(item, t)
 			if (target.status === 'plated') continue
-			if (item.status === 'pending' && t >= item.putOnEpoch - leads.putOn * 1000) fired.add(`${item.id}:put-on`)
+			if (item.status === 'pending' && t >= item.putOnEpoch - leads.putOn * 1000) {
+				fired.add(`${item.id}:put-on`)
+				primed.push(`${item.id}:put-on`)
+			}
 			if (!item.flipFired && item.flipEpoch !== null && t >= item.flipEpoch - leads.flip * 1000 && target.status !== 'pending') {
 				fired.add(`${item.id}:flip`)
+				primed.push(`${item.id}:flip`)
 			}
-			if (item.status === 'cooking' && t >= item.doneEpoch - leads.done * 1000) fired.add(`${item.id}:done`)
+			if (item.status === 'cooking' && t >= item.doneEpoch - leads.done * 1000) {
+				fired.add(`${item.id}:done`)
+				primed.push(`${item.id}:done`)
+			}
 		}
+		debugSync('ticker', 'primed existing alarms', { count: primed.length, primed, now: t, leads })
 	}
 
 	function tick() {
@@ -54,10 +64,12 @@ export function createTicker(hooks: TickerHooks) {
 			const prevStatus = item.status
 			const target = computeStatus(item, t)
 			if (target.status !== prevStatus) {
+				debugSync('ticker', 'status transition', { itemId: item.id, from: prevStatus, to: target.status, now: t })
 				hooks.updateItem(item.id, { status: target.status })
 				if (prevStatus === 'resting' && target.status === 'ready') {
 					if (!fired.has(`${item.id}:resting-complete`)) {
 						fired.add(`${item.id}:resting-complete`)
+						debugSync('ticker', 'emit', { type: 'resting-complete', itemId: item.id })
 						hooks.emit({ type: 'resting-complete', itemId: item.id })
 					}
 				}
@@ -65,17 +77,20 @@ export function createTicker(hooks: TickerHooks) {
 			if (target.status === 'plated') continue
 			if (prevStatus === 'pending' && !fired.has(`${item.id}:put-on`) && t >= item.putOnEpoch - leads.putOn * 1000) {
 				fired.add(`${item.id}:put-on`)
+				debugSync('ticker', 'emit', { type: 'put-on', itemId: item.id, leadSeconds: leads.putOn })
 				hooks.emit({ type: 'put-on', itemId: item.id, leadSeconds: leads.putOn })
 			}
 			if (!item.flipFired && item.flipEpoch !== null && t >= item.flipEpoch - leads.flip * 1000 && target.status !== 'pending') {
 				hooks.updateItem(item.id, { flipFired: true })
 				if (!fired.has(`${item.id}:flip`)) {
 					fired.add(`${item.id}:flip`)
+					debugSync('ticker', 'emit', { type: 'flip', itemId: item.id, leadSeconds: leads.flip })
 					hooks.emit({ type: 'flip', itemId: item.id, leadSeconds: leads.flip })
 				}
 			}
 			if (prevStatus === 'cooking' && !fired.has(`${item.id}:done`) && t >= item.doneEpoch - leads.done * 1000) {
 				fired.add(`${item.id}:done`)
+				debugSync('ticker', 'emit', { type: 'done', itemId: item.id, leadSeconds: leads.done })
 				hooks.emit({ type: 'done', itemId: item.id, leadSeconds: leads.done })
 			}
 		}
@@ -100,10 +115,12 @@ export function createTicker(hooks: TickerHooks) {
 
 	return {
 		start() {
+			debugSync('ticker', 'start', { itemCount: hooks.getItems().length })
 			primeExistingAlarms()
 			loop()
 		},
 		stop() {
+			debugSync('ticker', 'stop')
 			if (raf !== null && typeof cancelAnimationFrame !== 'undefined') cancelAnimationFrame(raf)
 			if (timer !== null) clearTimeout(timer)
 			raf = null

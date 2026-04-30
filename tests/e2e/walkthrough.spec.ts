@@ -107,11 +107,11 @@ test.describe('walkthrough (full Glühen surface)', () => {
 		await gotoHomeFresh(page)
 
 		await expect(page.getByRole('heading', { level: 1 })).toContainText(/Bereit zum/)
-		await expect(page.getByRole('button', { name: /Neue Grillade/ })).toBeVisible()
+		await expect(page.getByRole('button', { name: /^Grillen$/ })).toBeVisible()
 		await expect(page.getByRole('button', { name: /^Chronik$/ })).toBeVisible()
 		await expect(page.getByRole('button', { name: /Einstellungen/ })).toBeVisible()
 
-		await page.getByRole('button', { name: /Neue Grillade/ }).click()
+		await page.getByRole('button', { name: /^Grillen$/ }).click()
 		await expect(page).toHaveURL(/\/plan/)
 
 		await expect(page.getByRole('tab', { name: 'Jetzt' })).toBeVisible()

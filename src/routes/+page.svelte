@@ -12,6 +12,7 @@
 	import { formatDuration } from '$lib/util/format'
 
 	const recentGrilladen = $derived(grilladenHistoryStore.finished.slice(0, 6))
+	const primaryLive = $derived(Boolean(grilladeStore.session))
 	let finishedThisMonth = $state<number | null>(null)
 	let savedHistory = $state<number | null>(null)
 	let longestDuration = $state<number | null>(null)
@@ -59,6 +60,14 @@
 
 	function newDesktopGrillade() {
 		grilladeStore.resetDraft()
+		goto('/plan')
+	}
+
+	function primaryMobileAction() {
+		if (grilladeStore.session) {
+			goto('/session')
+			return
+		}
 		goto('/plan')
 	}
 </script>
@@ -125,7 +134,12 @@
 			</div>
 		{/if}
 
-		<Button variant="primary" size="lg" fullWidth onclick={() => goto('/plan')}>Neue Grillade</Button>
+		<Button variant="primary" size="lg" fullWidth onclick={primaryMobileAction}>
+			<span>Grillen</span>
+			{#if primaryLive}
+				<span class="primary-badge">LIVE</span>
+			{/if}
+		</Button>
 		<div class="row-buttons">
 			<Button variant="secondary" fullWidth onclick={() => goto('/chronik')}>Chronik</Button>
 			<Button variant="secondary" fullWidth onclick={() => goto('/settings')}>Einstellungen</Button>
@@ -306,5 +320,14 @@
 	.row-buttons {
 		display: flex;
 		gap: 8px;
+	}
+	.primary-badge {
+		border-radius: 999px;
+		background: color-mix(in srgb, currentColor 16%, transparent);
+		padding: 3px 7px;
+		font-size: 10px;
+		font-weight: 800;
+		letter-spacing: 0.08em;
+		line-height: 1;
 	}
 </style>

@@ -466,4 +466,25 @@
 		color: var(--color-fg-base);
 		border-color: var(--color-error-default);
 	}
+	@media (max-width: 767px) {
+		.card:has(.action) {
+			grid-template-rows: 94px 27px 16px 62px;
+		}
+		.card[data-size='lg']:has(.action) {
+			grid-template-rows: 134px 31px 18px 72px;
+		}
+		.card:has(.action) .status-slot {
+			grid-template-rows: 16px 32px;
+			align-content: start;
+		}
+		.card[data-size='lg']:has(.action) .status-slot {
+			grid-template-rows: 16px 34px;
+		}
+		.card:has(.action) .action {
+			height: 32px;
+		}
+		.card[data-size='lg']:has(.action) .action {
+			height: 34px;
+		}
+	}
 </style>
