@@ -33,10 +33,9 @@
 		if (pathname.startsWith('/plan') || pathname.startsWith('/session')) return 'cook'
 		if (pathname.startsWith('/chronik')) return 'chronik'
 		if (pathname.startsWith('/settings')) return 'settings'
-		return 'home'
+		return 'cook'
 	})
 	const sidebarItems = $derived<SidebarItem[]>([
-		{ id: 'home', label: 'Übersicht', icon: '⌂' },
 		{ id: 'cook', label: 'Grillen', icon: '◉', badge: grilladeStore.session ? 'LIVE' : undefined },
 		{ id: 'chronik', label: 'Chronik', icon: '★' },
 		{ id: 'settings', label: 'Einstellungen', icon: '⚙' },
@@ -98,9 +97,12 @@
 		}
 	})
 
+	$effect(() => {
+		if (showDesktopShell && pathname === '/') void goto('/plan')
+	})
+
 	function nav(id: string) {
 		const map: Record<string, string> = {
-			home: '/',
 			cook: grilladeStore.session ? '/session' : '/plan',
 			chronik: '/chronik',
 			settings: '/settings',

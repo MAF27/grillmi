@@ -346,13 +346,15 @@
 		font-size: 15px;
 	}
 	.meta {
-		font-family: var(--font-display);
-		font-size: 11px;
+		font-family: var(--font-body);
+		font-size: 12px;
+		font-weight: 600;
 		font-variant-numeric: tabular-nums;
-		color: var(--color-fg-muted);
+		color: var(--color-fg-subtle);
 		text-align: center;
 		max-width: 100%;
 		min-height: 16px;
+		line-height: 1.25;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
