@@ -10,7 +10,11 @@ Grillmi is a multi-timer BBQ companion PWA. The core feature is running many sim
 
 ## Data strategy
 
-Timing data is bundled as static JSON shipped with the app — so the whole app works offline after the first load, including timer state persisted in localStorage/IndexedDB. Source of truth for the data is `resources/docs/grill-timings-reference.md`, which gets compiled down into the shipped JSON.
+Grillmi has a FastAPI backend under `backend/` backed by Postgres. User data such as accounts, sessions, grillades, grillade items, menus, favorites, and settings is persisted there and synced with the frontend.
+
+The cooking timing catalogue is still bundled as static JSON shipped with the app. Source of truth for timing rows is `resources/docs/grill-timings-reference.md`, compiled into `src/lib/data/timings.generated.json`.
+
+Frontend runtime state is also cached locally in IndexedDB for offline use and sync. Do not assume repo-local JSON or IndexedDB is the only database when checking persisted app data; inspect the Postgres-backed backend models/routes as well.
 
 ## Conventions
 

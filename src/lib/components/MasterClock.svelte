@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { formatDuration } from '$lib/util/format'
-	import { onMount } from 'svelte'
+	import { formatHHMM } from '$lib/util/format'
 
 	interface Props {
 		targetEpoch: number
@@ -8,18 +7,11 @@
 	}
 
 	let { targetEpoch, size = 'mobile' }: Props = $props()
-	let now = $state(Date.now())
-	const remaining = $derived(Math.max(0, Math.round((targetEpoch - now) / 1000)))
-
-	onMount(() => {
-		const id = setInterval(() => (now = Date.now()), 1000)
-		return () => clearInterval(id)
-	})
 </script>
 
 <div class="clock" class:desktop={size === 'desktop'} aria-live="off">
-	<div class="eyebrow">Bis zum Essen</div>
-	<div class="time" data-testid="master-clock-time" data-live-countdown>{formatDuration(remaining)}</div>
+	<div class="eyebrow">Fertig um</div>
+	<div class="time" data-testid="master-clock-time" data-mask-time>{formatHHMM(targetEpoch)}</div>
 </div>
 
 <style>

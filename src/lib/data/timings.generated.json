@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-30T09:59:07.971Z",
+  "generatedAt": "2026-04-30T15:40:27.436Z",
   "categories": [
     {
       "slug": "beef",
@@ -21,7 +21,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -34,7 +34,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -47,7 +47,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -60,7 +60,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -86,7 +86,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -99,7 +99,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -112,7 +112,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -151,7 +151,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -164,7 +164,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -177,7 +177,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -216,7 +216,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -229,7 +229,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -242,7 +242,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -294,7 +294,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -307,7 +307,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -320,7 +320,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -333,7 +333,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -359,7 +359,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -372,7 +372,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -385,7 +385,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -424,7 +424,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -437,7 +437,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -450,7 +450,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -489,7 +489,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -502,7 +502,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -515,7 +515,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -566,7 +566,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -592,7 +592,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -630,7 +630,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 240,
               "notes": null
             },
@@ -643,7 +643,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 240,
               "notes": null
             }
@@ -881,7 +881,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 220,
               "notes": null
             }
@@ -911,7 +911,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -937,7 +937,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -975,7 +975,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -1001,7 +1001,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -1039,7 +1039,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 220,
               "notes": null
             },
@@ -1085,7 +1085,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -1098,7 +1098,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -1111,7 +1111,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -1124,7 +1124,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -1137,7 +1137,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -1150,7 +1150,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -1163,7 +1163,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -1201,7 +1201,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -1214,7 +1214,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             }
@@ -1239,7 +1239,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             }
@@ -1286,7 +1286,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 220,
               "notes": null
             }
@@ -1311,7 +1311,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             }
@@ -1372,7 +1372,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 220,
               "notes": null
             }
@@ -1402,7 +1402,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -1415,7 +1415,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -1428,7 +1428,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -1441,7 +1441,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             }
@@ -1463,7 +1463,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -1476,7 +1476,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             }
@@ -1501,7 +1501,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -1514,7 +1514,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -1527,7 +1527,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -1540,7 +1540,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -1553,7 +1553,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -1566,7 +1566,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -1579,7 +1579,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -1592,7 +1592,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             }
@@ -1614,7 +1614,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -1627,7 +1627,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             }
@@ -1683,7 +1683,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 220,
               "notes": null
             }
@@ -1708,7 +1708,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 220,
               "notes": null
             }
@@ -1733,7 +1733,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 250,
               "notes": null
             }
@@ -1821,7 +1821,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -1834,7 +1834,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             }
@@ -1859,7 +1859,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 220,
               "notes": null
             },
@@ -1872,7 +1872,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 220,
               "notes": null
             }
@@ -2136,7 +2136,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -2161,7 +2161,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -2186,7 +2186,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             },
@@ -2199,7 +2199,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -2224,7 +2224,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -2249,7 +2249,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 250,
               "notes": null
             }
@@ -2308,7 +2308,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -2333,7 +2333,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             }
@@ -2361,7 +2361,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 220,
               "notes": null
             }
@@ -2383,7 +2383,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 220,
               "notes": null
             }
@@ -2411,7 +2411,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 220,
               "notes": null
             }
@@ -2435,7 +2435,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -2459,7 +2459,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -2483,7 +2483,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             }
@@ -2505,7 +2505,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -2527,7 +2527,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -2549,7 +2549,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -2573,7 +2573,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -2595,7 +2595,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -2619,7 +2619,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -2641,7 +2641,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 220,
               "notes": null
             }
@@ -2666,7 +2666,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -2688,7 +2688,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -2710,7 +2710,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -2732,7 +2732,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -2754,7 +2754,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 250,
               "notes": null
             }
@@ -2780,7 +2780,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -2808,7 +2808,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -2830,7 +2830,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -2852,7 +2852,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -2874,7 +2874,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -2899,7 +2899,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -2921,7 +2921,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -2945,7 +2945,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -2967,7 +2967,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -2992,7 +2992,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -3014,7 +3014,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -3036,7 +3036,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -3060,7 +3060,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 0,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 200,
               "notes": null
             }
@@ -3090,7 +3090,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -3103,7 +3103,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -3116,7 +3116,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             },
@@ -3129,7 +3129,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 300,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             }
@@ -3153,7 +3153,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 230,
               "notes": null
             }
@@ -3175,7 +3175,7 @@
               "flipFraction": 0.5,
               "idealFlipPattern": "once",
               "restSeconds": 180,
-              "heatZone": "Direkt, Deckel zu",
+              "heatZone": "—",
               "grateTempC": 220,
               "notes": null
             }

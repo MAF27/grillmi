@@ -308,6 +308,13 @@ function pickColumn(row: RawRow, ...candidates: string[]): string {
 	return ''
 }
 
+function normalizeHeatZone(value: string): string {
+	const trimmed = value.trim()
+	if (!trimmed || trimmed === '—' || trimmed === '-') return '—'
+	if (trimmed.toLowerCase() === 'direkt, deckel zu') return '—'
+	return trimmed
+}
+
 interface ParseStats {
 	categories: number
 	cutsAttempted: number
@@ -359,7 +366,7 @@ function parseCut(name: string, body: string[], stats: ParseStats): Cut | null {
 		const turnsRaw = pickColumn(row, 'Turns', 'Turn')
 		const flip = inferFlip(turnsRaw)
 
-		const heatZone = pickColumn(row, 'Heat zone', 'Method').trim() || '—'
+		const heatZone = normalizeHeatZone(pickColumn(row, 'Heat zone', 'Method'))
 
 		const grateTempRaw = pickColumn(row, 'Grate temp', 'Temperature', 'Temp')
 		const grateTempC = parseGrateTemp(grateTempRaw)

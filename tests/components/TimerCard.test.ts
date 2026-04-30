@@ -102,6 +102,36 @@ describe('TimerCard', () => {
 		expect(container.querySelector('svg.progress-ring')).toBeTruthy()
 	})
 
+	it('test_heat_line_omits_grill_method', () => {
+		const { getByText, queryByText } = render(TimerCard, {
+			props: {
+				item: makeItem({ grateTempC: 230, heatZone: 'Direkt, Deckel zu' }),
+				alarmFiring: false,
+				onplate: () => {},
+			},
+		})
+		expect(getByText('3 cm · Medium-rare · 230 °C')).toBeTruthy()
+		expect(queryByText(/Direkt/)).toBeNull()
+	})
+
+	it('test_generated_label_does_not_repeat_specs_in_timer_title', () => {
+		const { container, getByText, queryByText } = render(TimerCard, {
+			props: {
+				item: makeItem({
+					label: 'Rinds-Entrecôte 1 cm, rare',
+					thicknessCm: 1,
+					doneness: 'rare',
+					grateTempC: 230,
+				}),
+				alarmFiring: false,
+				onplate: () => {},
+			},
+		})
+		expect(container.querySelector('.name')?.textContent?.trim()).toBe('Rinds-Entrecôte')
+		expect(getByText('1 cm · rare · 230 °C')).toBeTruthy()
+		expect(queryByText('Rinds-Entrecôte 1 cm, rare')).toBeNull()
+	})
+
 	it('test_renders_alarm_firing_state_with_pulse', () => {
 		const { container } = render(TimerCard, {
 			props: { item: makeItem({ status: 'cooking' }), alarmFiring: true, onplate: () => {}, onlongpress: () => {} },

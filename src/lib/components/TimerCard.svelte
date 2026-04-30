@@ -118,20 +118,15 @@
 		return null
 	})
 
-	const specLine = $derived.by(() => {
-		if (item.thicknessCm !== null && item.doneness) return `${item.thicknessCm} cm · ${item.doneness}`
-		if (item.thicknessCm !== null) return `${item.thicknessCm} cm`
-		if (item.doneness) return item.doneness
-		if (item.prepLabel && item.prepLabel !== '—' && item.prepLabel !== '-') return item.prepLabel
-		return ''
-	})
-
-	const heatLine = $derived.by(() => {
+	const metaLine = $derived.by(() => {
 		const parts: string[] = []
+		if (item.thicknessCm !== null) parts.push(`${item.thicknessCm} cm`)
+		else if (item.prepLabel && item.prepLabel !== '—' && item.prepLabel !== '-') parts.push(item.prepLabel)
+		if (item.doneness) parts.push(item.doneness)
 		if (item.grateTempC) parts.push(`${item.grateTempC} °C`)
-		if (item.heatZone && item.heatZone !== '—' && item.heatZone !== '-') parts.push(item.heatZone)
 		return parts.join(' · ')
 	})
+	const title = $derived(displayTitle())
 
 	onMount(() => {
 		const id = setInterval(() => (now = Date.now()), 500)
@@ -163,6 +158,25 @@
 		}
 		if (effectiveStatus === 'ready' && dragX > 80 && onplate) onplate(item.id)
 		dragX = 0
+	}
+
+	function displayTitle(): string {
+		const fallback = item.label || item.cutSlug
+		if (!item.label) return fallback
+		let next = item.label.trim()
+		if (item.doneness) next = next.replace(new RegExp(`,?\\s*${escapeRegExp(item.doneness)}$`, 'i'), '').trim()
+		if (item.thicknessCm !== null) {
+			const thickness = `${item.thicknessCm}`.replace('.', '[.,]')
+			next = next.replace(new RegExp(`\\s+${thickness}\\s*cm$`, 'i'), '').trim()
+		}
+		if (item.prepLabel && item.prepLabel !== '—' && item.prepLabel !== '-') {
+			next = next.replace(new RegExp(`,?\\s*${escapeRegExp(item.prepLabel)}$`, 'i'), '').trim()
+		}
+		return next || fallback
+	}
+
+	function escapeRegExp(value: string): string {
+		return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 	}
 </script>
 
@@ -203,9 +217,8 @@
 		</ProgressRing>
 	</div>
 
-	<div class="name">{item.label || item.cutSlug}</div>
-	<div class="spec" class:empty={!specLine} aria-hidden={!specLine}>{specLine || '\u00a0'}</div>
-	<div class="heat-meta" class:empty={!heatLine} aria-hidden={!heatLine}>{heatLine || '\u00a0'}</div>
+	<div class="name">{title}</div>
+	<div class="meta" class:empty={!metaLine} aria-hidden={!metaLine}>{metaLine || '\u00a0'}</div>
 	<div class="status-slot">
 		<div class="status-badge" aria-live="polite">{labelMap[effectiveStatus]}</div>
 
@@ -221,7 +234,7 @@
 	.card {
 		position: relative;
 		display: grid;
-		grid-template-rows: 94px 34px 16px 16px 26px;
+		grid-template-rows: 94px 27px 16px 26px;
 		align-items: center;
 		gap: 3px;
 		padding: 12px 14px;
@@ -229,7 +242,7 @@
 		border: 1px solid var(--color-border-subtle);
 		border-radius: 18px;
 		color: var(--color-fg-base);
-		height: 213px;
+		height: 194px;
 		min-width: 0;
 		overflow: hidden;
 		transition:
@@ -237,18 +250,18 @@
 			border-color var(--duration-normal) var(--ease-default);
 	}
 	.card[data-size='lg'] {
-		grid-template-rows: 134px 38px 18px 18px 30px;
-		height: 262px;
+		grid-template-rows: 134px 31px 18px 30px;
+		height: 241px;
 		padding: 14px 18px 14px;
 		border-radius: 16px;
 	}
 	.card:has(.action) {
-		grid-template-rows: 94px 34px 16px 16px 62px;
-		height: 249px;
+		grid-template-rows: 94px 27px 16px 62px;
+		height: 230px;
 	}
 	.card[data-size='lg']:has(.action) {
-		grid-template-rows: 134px 38px 18px 18px 72px;
-		height: 304px;
+		grid-template-rows: 134px 31px 18px 72px;
+		height: 283px;
 	}
 	.card.unstarted {
 		opacity: 0.85;
@@ -332,7 +345,7 @@
 	.card[data-size='lg'] .name {
 		font-size: 15px;
 	}
-	.spec {
+	.meta {
 		font-family: var(--font-display);
 		font-size: 11px;
 		font-variant-numeric: tabular-nums;
@@ -344,22 +357,7 @@
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}
-	.spec.empty {
-		visibility: hidden;
-	}
-	.heat-meta {
-		font-family: var(--font-body);
-		font-size: 11px;
-		font-weight: 500;
-		text-align: center;
-		color: var(--color-fg-subtle);
-		max-width: 100%;
-		min-height: 16px;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-	.heat-meta.empty {
+	.meta.empty {
 		visibility: hidden;
 	}
 	.status-slot {
@@ -367,6 +365,7 @@
 		display: grid;
 		grid-template-rows: 16px;
 		align-items: end;
+		padding-top: 10px;
 		width: 100%;
 		min-width: 0;
 	}

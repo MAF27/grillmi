@@ -34,6 +34,10 @@
 	const cut = $derived(category && cutSlug ? (category.cuts.find(c => c.slug === cutSlug) ?? null) : null)
 	const matchedRow = $derived(cut ? findRow(cut, thicknessCm, doneness) : undefined)
 	const computedSeconds = $derived(matchedRow ? Math.round((matchedRow.cookSecondsMin + matchedRow.cookSecondsMax) / 2) : 0)
+	const heatZoneTip = $derived.by(() => {
+		if (!matchedRow?.heatZone || isDefaultHeatZone(matchedRow.heatZone)) return null
+		return `Grillmethode: ${matchedRow.heatZone}`
+	})
 
 	const donenessOrder = ['Bleu', 'Rare', 'Medium-rare', 'Medium', 'Medium-well', 'Well-done']
 	const donenessOptions = $derived.by<string[]>(() => {
@@ -69,6 +73,11 @@
 				if (needsPrep) return 'Variante'
 				return 'Anpassen'
 		}
+	}
+
+	function isDefaultHeatZone(value: string): boolean {
+		const normalized = value.trim().toLowerCase()
+		return normalized === 'direkt, deckel zu' || normalized === '—' || normalized === '-'
 	}
 
 	$effect(() => {
@@ -466,10 +475,13 @@
 						</div>
 					</section>
 				{/if}
-				{#if (cut.notes && cut.notes.length > 0) || matchedRow?.notes}
+				{#if (cut.notes && cut.notes.length > 0) || matchedRow?.notes || heatZoneTip}
 					<section class="section">
 						<h3>Tipps</h3>
 						<ul class="tips">
+							{#if heatZoneTip}
+								<li>{heatZoneTip}</li>
+							{/if}
 							{#if matchedRow?.notes}
 								<li>{matchedRow.notes}</li>
 							{/if}
@@ -494,16 +506,12 @@
 						{/if}
 					</span>
 				</div>
-				{#if matchedRow.grateTempC || (matchedRow.heatZone && matchedRow.heatZone !== '—')}
+				{#if matchedRow.grateTempC}
 					<div class="heat-summary">
 						<span class="cook-eyebrow">Hitze</span>
 						<span class="cook-values">
 							{#if matchedRow.grateTempC}
 								<strong>{matchedRow.grateTempC}&nbsp;°C</strong>
-							{/if}
-							{#if matchedRow.heatZone && matchedRow.heatZone !== '—'}
-								<span class="cook-sep">·</span>
-								<span>{matchedRow.heatZone}</span>
 							{/if}
 						</span>
 					</div>
