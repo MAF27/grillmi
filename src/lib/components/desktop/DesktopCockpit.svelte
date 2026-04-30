@@ -11,12 +11,11 @@
 	import TimerCard, { type TimerCardStatus } from '$lib/components/TimerCard.svelte'
 	import { fireAlarm, messageFor, type AlarmEvent } from '$lib/runtime/alarms'
 	import { createTicker, type TickerEvent } from '$lib/runtime/ticker'
-	import { getWakeLockState, onWakeLockChange, releaseWakeLock, requestWakeLock } from '$lib/runtime/wakeLock'
 	import { favoritesStore } from '$lib/stores/favoritesStore.svelte'
 	import { grilladeStore } from '$lib/stores/grilladeStore.svelte'
 	import { settingsStore } from '$lib/stores/settingsStore.svelte'
 	import { schedule } from '$lib/scheduler/schedule'
-	import { preload } from '$lib/sounds/player'
+	import { preload, unlockAudio } from '$lib/sounds/player'
 	import { formatHHMM } from '$lib/util/format'
 	import type { PlannedItem, SessionItem } from '$lib/models'
 
@@ -34,7 +33,6 @@
 	let editing = $state<PlannedItem | null>(null)
 	let timePickerOpen = $state(false)
 
-	let wakeLockState = $state<'idle' | 'held' | 'denied' | 'unsupported'>(getWakeLockState())
 	let stickyAlarms = $state<StickyAlarm[]>([])
 	let dismissedKeys = $state<Set<string>>(new Set())
 	let firingItemId = $state<string | null>(null)
@@ -63,19 +61,6 @@
 		return Math.max(...active.map(i => i.restingUntilEpoch))
 	})
 	const hasRunningTimers = $derived(session ? session.items.some(hasActiveTimer) : false)
-	const wakeLockLabel = $derived.by(() => {
-		switch (wakeLockState) {
-			case 'held':
-				return 'Display aktiv'
-			case 'idle':
-				return 'Display bereit'
-			case 'denied':
-				return 'Display gesperrt'
-			case 'unsupported':
-				return 'Display n/a'
-		}
-	})
-
 	const goLabel = $derived.by(() => {
 		if (plan.items.length === 0) return 'Mindestens ein Eintrag nötig'
 		if (isManual) return 'Manuelle Grillade starten'
@@ -91,7 +76,6 @@
 	const alarming = $derived(visibleAlarms[0] ?? null)
 
 	let ticker: ReturnType<typeof createTicker> | null = null
-	let unsubWakeLock: (() => void) | null = null
 	let runtimeOwnedFor: string | null = null
 	let tickId: ReturnType<typeof setInterval> | null = null
 
@@ -129,8 +113,6 @@
 	function setupRuntime(sessionId: string) {
 		runtimeOwnedFor = sessionId
 		preload([settingsStore.sounds.putOn, settingsStore.sounds.flip, settingsStore.sounds.done]).catch(() => {})
-		unsubWakeLock = onWakeLockChange(s => (wakeLockState = s))
-		void requestWakeLock()
 		ticker = createTicker({
 			getItems: () => grilladeStore.session?.items ?? [],
 			updateItem: (id, patch) => {
@@ -152,11 +134,6 @@
 			ticker.stop()
 			ticker = null
 		}
-		if (unsubWakeLock) {
-			unsubWakeLock()
-			unsubWakeLock = null
-		}
-		void releaseWakeLock()
 		stickyAlarms = []
 		dismissedKeys = new Set()
 		firingItemId = null
@@ -232,6 +209,7 @@
 	}
 
 	async function start() {
+		await unlockAudio()
 		if (isManual) await grilladeStore.startManualSession()
 		else await grilladeStore.startSession(settingsStore.leadPutOnSeconds)
 		await goto('/session')
@@ -326,23 +304,21 @@
 					<div class="eat-eyebrow">Modus</div>
 					<div class="mode-value">{session.mode === 'manual' ? 'Manuell' : 'Automatisch'}</div>
 				</div>
-				<div class="wake-row" data-state={wakeLockState}>
-					<span class="wake-dot" aria-hidden="true"></span>
-					<span>{wakeLockLabel}</span>
-				</div>
 				<Button variant="secondary" fullWidth onclick={requestEndSession}>Grillade beenden</Button>
 			</div>
-			{#if alarming}
-				{#key alarming.id}
-					<AlarmBanner
-						kind={alarming.kind}
-						itemName={alarming.itemName}
-						count={visibleAlarms.length}
-						message={alarming.message}
-						placement="top"
-						onDismiss={dismissAlarm} />
-				{/key}
-			{/if}
+			<div class="toast-slot">
+				{#if alarming}
+					{#key alarming.id}
+						<AlarmBanner
+							kind={alarming.kind}
+							itemName={alarming.itemName}
+							count={visibleAlarms.length}
+							message={alarming.message}
+							placement="top"
+							onDismiss={dismissAlarm} />
+					{/key}
+				{/if}
+			</div>
 			{#if session.mode === 'manual'}
 				<div class="eta-card">
 					<div class="eat-eyebrow">Erwartet fertig</div>
@@ -456,6 +432,13 @@
 		display: flex;
 		flex-direction: column;
 		gap: 18px;
+		min-height: 100dvh;
+	}
+	.toast-slot {
+		min-height: 0;
+	}
+	.toast-slot :global(.banner.top) {
+		margin-bottom: 0;
 	}
 	.centre {
 		min-width: 0;
@@ -537,26 +520,6 @@
 		line-height: 1;
 		text-transform: uppercase;
 		color: var(--color-fg-base);
-	}
-	.wake-row {
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		color: var(--color-fg-muted);
-		font-size: 12px;
-		font-weight: 600;
-	}
-	.wake-dot {
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
-		background: var(--color-fg-muted);
-	}
-	.wake-row[data-state='held'] {
-		color: var(--color-state-ready);
-	}
-	.wake-row[data-state='held'] .wake-dot {
-		background: var(--color-state-ready);
 	}
 	.eatcard:disabled {
 		cursor: default;

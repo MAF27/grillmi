@@ -243,12 +243,12 @@
 		border-radius: 16px;
 	}
 	.card:has(.action) {
-		grid-template-rows: 94px 34px 16px 16px 50px;
-		height: 237px;
+		grid-template-rows: 94px 34px 16px 16px 62px;
+		height: 249px;
 	}
 	.card[data-size='lg']:has(.action) {
-		grid-template-rows: 134px 38px 18px 18px 44px;
-		height: 276px;
+		grid-template-rows: 134px 38px 18px 18px 72px;
+		height: 304px;
 	}
 	.card.unstarted {
 		opacity: 0.85;
@@ -372,7 +372,7 @@
 	}
 	.card:has(.action) .status-slot {
 		grid-template-rows: 16px 1fr;
-		gap: 4px;
+		gap: 6px;
 	}
 	.status-badge {
 		font-family: var(--font-body);
@@ -401,7 +401,7 @@
 		color: var(--color-state-ready);
 	}
 	.action {
-		height: 44px;
+		height: 38px;
 		padding: 0 16px;
 		border: none;
 		border-radius: 10px;
@@ -412,12 +412,15 @@
 		text-transform: uppercase;
 		cursor: pointer;
 		transition: filter 0.15s ease;
-		align-self: end;
+		align-self: start;
 		width: 100%;
 	}
 	.card[data-size='lg'] .action {
+		justify-self: center;
+		width: auto;
+		min-width: min(180px, 100%);
 		height: 36px;
-		padding: 0 16px;
+		padding: 0 24px;
 		font-size: 13px;
 	}
 	.action:hover {

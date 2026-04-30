@@ -12,6 +12,7 @@
 	import { settingsStore } from '$lib/stores/settingsStore.svelte'
 	import { favoritesStore } from '$lib/stores/favoritesStore.svelte'
 	import { schedule } from '$lib/scheduler/schedule'
+	import { unlockAudio } from '$lib/sounds/player'
 	import { formatHHMM } from '$lib/util/format'
 	import type { PlannedItem } from '$lib/models'
 
@@ -109,6 +110,7 @@
 	}
 
 	async function start() {
+		await unlockAudio()
 		if (isManual) await grilladeStore.startManualSession()
 		else await grilladeStore.startSession(settingsStore.leadPutOnSeconds)
 		await goto('/session')

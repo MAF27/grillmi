@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '../app.css'
-	import { onMount } from 'svelte'
+	import { onMount, type Snippet } from 'svelte'
 	import { goto } from '$app/navigation'
 	import { page } from '$app/state'
 	import AccountChip from '$lib/components/AccountChip.svelte'
@@ -10,8 +10,12 @@
 	import { authStore } from '$lib/stores/authStore.svelte'
 	import { grilladeStore } from '$lib/stores/grilladeStore.svelte'
 	import { attachSync, pull } from '$lib/sync'
+	import { unlockAudio } from '$lib/sounds/player'
 
-	let { data, children } = $props<{ data: { auth: { user: { id: string; email: string }; csrfToken: string } | null }; children: any }>()
+	let { data, children } = $props<{
+		data: { auth: { user: { id: string; email: string }; csrfToken: string } | null }
+		children: Snippet
+	}>()
 
 	const pathname = $derived(page.url.pathname)
 	const publicPage = $derived(['/login', '/set-password', '/forgot-password'].some(path => pathname.startsWith(path)))
@@ -44,6 +48,11 @@
 
 	onMount(() => {
 		const stopViewport = viewport.start()
+		const unlock = () => {
+			void unlockAudio()
+		}
+		window.addEventListener('pointerdown', unlock, { capture: true, once: true })
+		window.addEventListener('keydown', unlock, { capture: true, once: true })
 		void settingsStore.init()
 		void grilladeStore.init()
 		if (authStore.isAuthenticated) {
@@ -82,7 +91,11 @@
 					.catch(() => {})
 			}
 		}
-		return () => stopViewport?.()
+		return () => {
+			window.removeEventListener('pointerdown', unlock, { capture: true })
+			window.removeEventListener('keydown', unlock, { capture: true })
+			stopViewport?.()
+		}
 	})
 
 	function nav(id: string) {

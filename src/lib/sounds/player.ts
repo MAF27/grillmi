@@ -43,3 +43,9 @@ export async function play(soundId: string): Promise<void> {
 export async function preload(soundIds: string[]): Promise<void> {
 	await Promise.all(soundIds.filter(id => id !== 'lautlos').map(id => load(id).catch(() => null)))
 }
+
+export async function unlockAudio(): Promise<void> {
+	const c = getContext()
+	if (!c || c.state !== 'suspended') return
+	await c.resume()
+}
