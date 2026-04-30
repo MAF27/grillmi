@@ -49,7 +49,7 @@ describe('ticker', () => {
 		expect(events.find(e => e.type === 'put-on')).toBeTruthy()
 	})
 
-	it('test_ticker_keeps_put_on_vorlauf_silent_until_actual_put_on', () => {
+	it('test_ticker_emits_put_on_at_vorlauf_start_but_keeps_item_pending_until_put_on', () => {
 		const item = makeItem()
 		const events: TickerEvent[] = []
 		let now = item.putOnEpoch - 30_000
@@ -62,12 +62,13 @@ describe('ticker', () => {
 		})
 		t.tickOnce()
 		expect(item.status).toBe('pending')
-		expect(events.filter(e => e.type === 'put-on')).toHaveLength(0)
+		expect(events.filter(e => e.type === 'put-on')).toHaveLength(1)
+		expect(events.find(e => e.type === 'put-on')?.leadSeconds).toBe(30)
 
 		now = item.putOnEpoch - 1
 		t.tickOnce()
 		expect(item.status).toBe('pending')
-		expect(events.filter(e => e.type === 'put-on')).toHaveLength(0)
+		expect(events.filter(e => e.type === 'put-on')).toHaveLength(1)
 
 		now = item.putOnEpoch + 1
 		t.tickOnce()

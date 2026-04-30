@@ -1,9 +1,9 @@
 import type { SessionItem, ItemStatus, ScheduleEvent } from '$lib/models'
 
 export type TickerEvent =
-	| { type: 'put-on'; itemId: string }
-	| { type: 'flip'; itemId: string }
-	| { type: 'done'; itemId: string }
+	| { type: 'put-on'; itemId: string; leadSeconds: number }
+	| { type: 'flip'; itemId: string; leadSeconds: number }
+	| { type: 'done'; itemId: string; leadSeconds: number }
 	| { type: 'resting-complete'; itemId: string }
 
 export interface TickerLeads {
@@ -49,20 +49,20 @@ export function createTicker(hooks: TickerHooks) {
 				}
 			}
 			if (target.status === 'plated') continue
-			if (prevStatus === 'pending' && !fired.has(`${item.id}:put-on`) && t >= item.putOnEpoch) {
+			if (prevStatus === 'pending' && !fired.has(`${item.id}:put-on`) && t >= item.putOnEpoch - leads.putOn * 1000) {
 				fired.add(`${item.id}:put-on`)
-				hooks.emit({ type: 'put-on', itemId: item.id })
+				hooks.emit({ type: 'put-on', itemId: item.id, leadSeconds: leads.putOn })
 			}
 			if (!item.flipFired && item.flipEpoch !== null && t >= item.flipEpoch - leads.flip * 1000 && target.status !== 'pending') {
 				hooks.updateItem(item.id, { flipFired: true })
 				if (!fired.has(`${item.id}:flip`)) {
 					fired.add(`${item.id}:flip`)
-					hooks.emit({ type: 'flip', itemId: item.id })
+					hooks.emit({ type: 'flip', itemId: item.id, leadSeconds: leads.flip })
 				}
 			}
 			if (prevStatus === 'cooking' && !fired.has(`${item.id}:done`) && t >= item.doneEpoch - leads.done * 1000) {
 				fired.add(`${item.id}:done`)
-				hooks.emit({ type: 'done', itemId: item.id })
+				hooks.emit({ type: 'done', itemId: item.id, leadSeconds: leads.done })
 			}
 		}
 	}

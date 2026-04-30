@@ -49,6 +49,12 @@ describe('alarms message + sound mapping', () => {
 		expect(messageFor('done', 'Mais')).toBe('Mais ist fertig')
 	})
 
+	it('test_messageFor_describes_vorlauf_when_lead_seconds_are_present', () => {
+		expect(messageFor('put-on', 'Steak', 60)).toBe('Steak in 01:00 auflegen')
+		expect(messageFor('flip', 'Cervelat', 30)).toBe('Cervelat in 00:30 wenden')
+		expect(messageFor('done', 'Mais', 90)).toBe('Mais in 01:30 fertig')
+	})
+
 	it('test_alarmSoundFor_picks_event_specific_tone_from_settings', async () => {
 		await settingsStore.init()
 		await settingsStore.setSound('putOn', 'kohle')

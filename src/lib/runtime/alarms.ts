@@ -1,5 +1,6 @@
 import { settingsStore } from '$lib/stores/settingsStore.svelte'
 import { play } from '$lib/sounds/player'
+import { formatDuration } from '$lib/util/format'
 
 export type AlarmEvent = 'put-on' | 'flip' | 'done'
 
@@ -22,7 +23,18 @@ export async function fireAlarm(event: AlarmEvent): Promise<void> {
 	fireHaptic()
 }
 
-export function messageFor(event: AlarmEvent, label: string): string {
+export function messageFor(event: AlarmEvent, label: string, leadSeconds = 0): string {
+	if (leadSeconds > 0) {
+		const lead = formatDuration(leadSeconds)
+		switch (event) {
+			case 'put-on':
+				return `${label} in ${lead} auflegen`
+			case 'flip':
+				return `${label} in ${lead} wenden`
+			case 'done':
+				return `${label} in ${lead} fertig`
+		}
+	}
 	switch (event) {
 		case 'put-on':
 			return `${label} jetzt auflegen`

@@ -66,7 +66,7 @@
 				// Manual mode: tapping Los is the cook telling the app the item is on the
 				// grill; the ring starting to run is the only confirmation. No chime, no toast.
 				if (event === 'put-on' && grilladeStore.session?.mode === 'manual') return
-				const msg = messageFor(event, item.label || item.cutSlug)
+				const msg = messageFor(event, item.label || item.cutSlug, e.leadSeconds)
 				const key = `${item.id}-${kind}`
 				if (stickyAlarms.some(a => a.id === key) || dismissedKeys.has(key)) return
 				firingItemId = item.id
