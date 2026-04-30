@@ -76,6 +76,22 @@ describe('ticker', () => {
 		expect(events.filter(e => e.type === 'put-on')).toHaveLength(1)
 	})
 
+	it('test_ticker_primes_existing_put_on_alarm_on_startup_without_replay', () => {
+		const item = makeItem()
+		const events: TickerEvent[] = []
+		const t = createTicker({
+			getItems: () => [item],
+			updateItem: (_, patch) => Object.assign(item, patch),
+			emit: e => events.push(e),
+			getLeads: () => ({ putOn: 30, flip: 0, done: 0 }),
+			now: () => item.putOnEpoch - 10_000,
+		})
+		t._primeExistingAlarms()
+		t.tickOnce()
+		expect(item.status).toBe('pending')
+		expect(events.find(e => e.type === 'put-on')).toBeUndefined()
+	})
+
 	it('test_ticker_emits_flip_event_once', () => {
 		const item = makeItem({ status: 'cooking', putOnEpoch: 0, doneEpoch: 360_000, flipEpoch: 100 })
 		const events: TickerEvent[] = []
@@ -136,6 +152,29 @@ describe('ticker', () => {
 			t.tickOnce()
 			expect(events.find(e => e.type === 'done')).toBeUndefined()
 		}
+	})
+
+	it('test_ticker_primes_existing_flip_and_done_alarms_on_startup_without_replay', () => {
+		const item = makeItem({
+			status: 'cooking',
+			putOnEpoch: 0,
+			flipEpoch: 100,
+			doneEpoch: 1_000,
+			restingUntilEpoch: 2_000,
+		})
+		const events: TickerEvent[] = []
+		const t = createTicker({
+			getItems: () => [item],
+			updateItem: (_, patch) => Object.assign(item, patch),
+			emit: e => events.push(e),
+			getLeads: () => ({ putOn: 0, flip: 30, done: 30 }),
+			now: () => 1_200,
+		})
+		t._primeExistingAlarms()
+		t.tickOnce()
+		expect(item.status).toBe('resting')
+		expect(events.find(e => e.type === 'flip')).toBeUndefined()
+		expect(events.find(e => e.type === 'done')).toBeUndefined()
 	})
 
 	it('test_ticker_transitions_cooking_to_ready_when_no_rest', () => {

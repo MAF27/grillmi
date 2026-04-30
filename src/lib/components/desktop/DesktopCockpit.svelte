@@ -270,27 +270,34 @@
 			<SegmentedControl {segments} value={segmentValue} ariaLabel="Planungsmodus" onchange={pickSegment} />
 
 			{#if !isManual}
-				<button
-					type="button"
-					class="eatcard"
-					class:populated
-					onclick={() => populated && (timePickerOpen = true)}
-					disabled={!populated}>
-					<div class="eat-eyebrow">{populated ? 'Fertig um' : 'Noch keine Zielzeit'}</div>
-					<div class="eat-row">
-						{#if populated}
+				<div class="time-control">
+					<button
+						type="button"
+						class="eatcard"
+						class:populated
+						aria-expanded={timePickerOpen}
+						onclick={() => segmentValue === 'target' && (timePickerOpen = true)}>
+						<div class="eat-eyebrow">{segmentValue === 'target' ? 'Fertig um' : 'Bereit um'}</div>
+						<div class="eat-row">
 							<span class="eat-time" data-mask-time>{formatHHMM(effectiveTarget)}</span>
-							<span class="eat-meta" data-mask-time>Start {formatHHMM(startEpoch)}</span>
-						{:else}
-							<span class="eat-time empty">--:--</span>
-						{/if}
-					</div>
-					<div class="eat-hint">
-						{populated
-							? 'Die längste Grillzeit zählt; kürzere starten gestaffelt.'
-							: 'Füg ein Grillstück hinzu, wir rechnen zurück.'}
-					</div>
-				</button>
+							{#if populated}
+								<span class="eat-meta" data-mask-time>Start {formatHHMM(startEpoch)}</span>
+							{/if}
+						</div>
+						<div class="eat-hint">
+							{segmentValue === 'target'
+								? 'Wähle die Essenszeit; Grillmi rechnet den Start zurück.'
+								: populated
+								? 'Die längste Grillzeit zählt; kürzere starten gestaffelt.'
+								: 'Sobald du Grillstücke hinzufügst, berechnet Grillmi die frühestmögliche Essenszeit.'}
+						</div>
+					</button>
+					{#if timePickerOpen && segmentValue === 'target'}
+						<div class="popover-anchor">
+							<TimePickerPopover value={effectiveTarget} onConfirm={commitTime} onCancel={() => (timePickerOpen = false)} />
+						</div>
+					{/if}
+				</div>
 			{/if}
 
 			{#if overdue && !isManual}
@@ -393,12 +400,6 @@
 			editing = null
 		}}
 		oncommit={commit} />
-{/if}
-
-{#if timePickerOpen}
-	<div class="popover-anchor">
-		<TimePickerPopover value={effectiveTarget} onConfirm={commitTime} onCancel={() => (timePickerOpen = false)} />
-	</div>
 {/if}
 
 {#if confirmEndOpen}
@@ -547,10 +548,6 @@
 		color: var(--color-fg-base);
 		font-variant-numeric: tabular-nums;
 	}
-	.eat-time.empty {
-		font-size: 48px;
-		color: var(--color-fg-subtle);
-	}
 	.eat-meta {
 		font-family: var(--font-display);
 		font-size: 11px;
@@ -668,10 +665,13 @@
 	.start-row {
 		margin-top: 12px;
 	}
+	.time-control {
+		position: relative;
+	}
 	.popover-anchor {
-		position: fixed;
-		left: 50%;
-		top: 190px;
+		position: absolute;
+		left: 0;
+		top: calc(100% + 8px);
 		z-index: var(--z-modal);
 	}
 	.confirm-scrim {

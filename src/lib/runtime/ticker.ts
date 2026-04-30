@@ -33,6 +33,20 @@ export function createTicker(hooks: TickerHooks) {
 	const fired = new Set<string>()
 	const now = () => (hooks.now ? hooks.now() : Date.now())
 
+	function primeExistingAlarms() {
+		const t = now()
+		const leads = hooks.getLeads ? hooks.getLeads() : { putOn: 0, flip: 0, done: 0 }
+		for (const item of hooks.getItems()) {
+			const target = computeStatus(item, t)
+			if (target.status === 'plated') continue
+			if (item.status === 'pending' && t >= item.putOnEpoch - leads.putOn * 1000) fired.add(`${item.id}:put-on`)
+			if (!item.flipFired && item.flipEpoch !== null && t >= item.flipEpoch - leads.flip * 1000 && target.status !== 'pending') {
+				fired.add(`${item.id}:flip`)
+			}
+			if (item.status === 'cooking' && t >= item.doneEpoch - leads.done * 1000) fired.add(`${item.id}:done`)
+		}
+	}
+
 	function tick() {
 		const t = now()
 		const leads = hooks.getLeads ? hooks.getLeads() : { putOn: 0, flip: 0, done: 0 }
@@ -86,6 +100,7 @@ export function createTicker(hooks: TickerHooks) {
 
 	return {
 		start() {
+			primeExistingAlarms()
 			loop()
 		},
 		stop() {
@@ -96,6 +111,7 @@ export function createTicker(hooks: TickerHooks) {
 		},
 		// Test helper: drive a single tick at a controlled `now`.
 		tickOnce: tick,
+		_primeExistingAlarms: primeExistingAlarms,
 		_fired: fired,
 	}
 }

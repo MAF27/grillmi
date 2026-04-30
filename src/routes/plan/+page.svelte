@@ -144,21 +144,20 @@
 				type="button"
 				class="eatcard"
 				class:populated
-				onclick={() => populated && (timePickerOpen = true)}
-				disabled={!populated}>
-				<div class="eat-eyebrow">{populated ? 'Fertig um' : 'Noch keine Zielzeit'}</div>
+				onclick={() => segmentValue === 'target' && (timePickerOpen = true)}>
+				<div class="eat-eyebrow">{segmentValue === 'target' ? 'Fertig um' : 'Bereit um'}</div>
 				<div class="eat-row">
+					<span class="eat-time" data-mask-time>{formatHHMM(effectiveTarget)}</span>
 					{#if populated}
-						<span class="eat-time" data-mask-time>{formatHHMM(effectiveTarget)}</span>
 						<span class="eat-meta" data-mask-time>Start {formatHHMM(startEpoch)}</span>
-					{:else}
-						<span class="eat-time empty">––:––</span>
 					{/if}
 				</div>
 				<div class="eat-hint">
-					{populated
+					{segmentValue === 'target'
+						? 'Wähle die Essenszeit; Grillmi rechnet den Start zurück.'
+						: populated
 						? 'Die längste Grillzeit zählt; kürzere starten gestaffelt.'
-						: 'Füg ein Grillstück hinzu, wir rechnen zurück.'}
+						: 'Sobald du Grillstücke hinzufügst, berechnet Grillmi die frühestmögliche Essenszeit.'}
 				</div>
 			</button>
 		{/if}
@@ -215,7 +214,7 @@
 {/if}
 
 
-{#if timePickerOpen}
+{#if timePickerOpen && segmentValue === 'target'}
 	<TimePickerSheet value={effectiveTarget} oncommit={commitTime} oncancel={() => (timePickerOpen = false)} />
 {/if}
 {/if}
@@ -302,10 +301,6 @@
 		letter-spacing: -0.03em;
 		color: var(--color-fg-base);
 		font-variant-numeric: tabular-nums;
-	}
-	.eat-time.empty {
-		font-size: 56px;
-		color: var(--color-fg-subtle);
 	}
 	.eat-meta {
 		font-family: var(--font-display);

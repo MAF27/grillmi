@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte'
+	import { onMount, tick } from 'svelte'
 	import { formatHHMM } from '$lib/util/format'
 
 	interface Props {
@@ -11,9 +11,15 @@
 	let { value, onConfirm, onCancel }: Props = $props()
 	let hour = $state(0)
 	let minute = $state(0)
+	let hourCol: HTMLDivElement
+	let minuteCol: HTMLDivElement
 
 	const hours = Array.from({ length: 24 }, (_, i) => i)
 	const minutes = Array.from({ length: 12 }, (_, i) => i * 5)
+
+	function nearestMinute(value: number): number {
+		return minutes.reduce((best, candidate) => (Math.abs(candidate - value) < Math.abs(best - value) ? candidate : best), minutes[0])
+	}
 
 	function confirm() {
 		const next = new Date(value)
@@ -22,10 +28,17 @@
 		onConfirm(next.getTime())
 	}
 
+	async function scrollToCurrent() {
+		await tick()
+		hourCol?.querySelector('.active')?.scrollIntoView({ block: 'center' })
+		minuteCol?.querySelector('.active')?.scrollIntoView({ block: 'center' })
+	}
+
 	onMount(() => {
 		const initial = new Date(value)
 		hour = initial.getHours()
-		minute = initial.getMinutes()
+		minute = nearestMinute(initial.getMinutes())
+		void scrollToCurrent()
 		const onKey = (event: KeyboardEvent) => {
 			if (event.key === 'Escape') onCancel()
 		}
@@ -45,12 +58,12 @@
 <div class="popover" data-time-popover role="dialog" aria-label="Essenszeit wählen">
 	<div class="current">{formatHHMM(new Date(value).setHours(hour, minute, 0, 0))}</div>
 	<div class="columns">
-		<div class="col" aria-label="Stunden">
+		<div class="col" aria-label="Stunden" bind:this={hourCol}>
 			{#each hours as h}
 				<button type="button" class:active={h === hour} onclick={() => (hour = h)}>{String(h).padStart(2, '0')}</button>
 			{/each}
 		</div>
-		<div class="col" aria-label="Minuten">
+		<div class="col" aria-label="Minuten" bind:this={minuteCol}>
 			{#each minutes as m}
 				<button type="button" class:active={m === minute} onclick={() => (minute = m)}>{String(m).padStart(2, '0')}</button>
 			{/each}
@@ -64,7 +77,6 @@
 
 <style>
 	.popover {
-		position: absolute;
 		z-index: var(--z-modal);
 		width: 240px;
 		max-height: 320px;
