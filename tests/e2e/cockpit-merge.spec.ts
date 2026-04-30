@@ -10,20 +10,25 @@ test.describe('cockpit merge (desktop)', () => {
 		// Add a Grillstück: open the empty-state add card, pick category + cut.
 		await page.getByRole('button', { name: /Grillstück hinzufügen/ }).click()
 		await page.getByRole('button', { name: 'Rind' }).click()
-		await page.getByRole('button', { name: /Rinds-Entrec/ }).first().click()
+		await page
+			.getByRole('button', { name: /Rinds-Entrec/ })
+			.first()
+			.click()
 		await page.getByRole('button', { name: 'Übernehmen' }).click()
 
-		const summaryItems = page.locator('[data-testid="plan-summary-list"] li')
-		await expect(summaryItems).toHaveCount(1)
-		const itemLabel = await summaryItems.first().locator('.name').textContent()
+		const itemLabel = await page
+			.locator('.list')
+			.getByText(/Rinds-Entrec/)
+			.first()
+			.textContent()
+		await expect(page.getByTestId('plan-summary-list')).toHaveCount(0)
 
-		// Click Los; centre swaps to live cockpit, summary list keeps showing the
-		// same item with a status dot. URL flips to /session per the route.
+		// Click Los; centre swaps from compose to live timers without keeping a
+		// duplicate plan rail around. URL flips to /session per the route.
 		await page.getByRole('button', { name: /Los, fertig um/i }).click()
 		await expect(page).toHaveURL(/\/session/)
-		await expect(summaryItems).toHaveCount(1)
-		await expect(summaryItems.first().locator('.name')).toHaveText(itemLabel ?? '')
-		await expect(summaryItems.first().locator('.dot')).toBeVisible()
+		await expect(page.getByTestId('plan-summary-list')).toHaveCount(0)
+		await expect(page.getByTestId('timer-card').first()).toContainText(itemLabel?.trim() ?? '')
 
 		// Sidebar entry shows LIVE pill and routing target follows the live state.
 		await expect(page.getByRole('button', { name: /^Grillen/ }).locator('.badge')).toContainText('LIVE')

@@ -7,11 +7,9 @@
 	import MasterClock from '$lib/components/MasterClock.svelte'
 	import PlanItemRow from '$lib/components/PlanItemRow.svelte'
 	import SegmentedControl from '$lib/components/SegmentedControl.svelte'
-	import SessionHeader from '$lib/components/SessionHeader.svelte'
 	import TimePickerPopover from '$lib/components/TimePickerPopover.svelte'
 	import TimerCard, { type TimerCardStatus } from '$lib/components/TimerCard.svelte'
 	import ActivityLog from '$lib/components/desktop/ActivityLog.svelte'
-	import PlanSummaryList from '$lib/components/desktop/PlanSummaryList.svelte'
 	import { fireAlarm, messageFor, type AlarmEvent } from '$lib/runtime/alarms'
 	import { createTicker, type TickerEvent } from '$lib/runtime/ticker'
 	import { getWakeLockState, onWakeLockChange, releaseWakeLock, requestWakeLock } from '$lib/runtime/wakeLock'
@@ -42,13 +40,12 @@
 	let dismissedKeys = $state<Set<string>>(new Set())
 	let firingItemId = $state<string | null>(null)
 	let endingForAllPlated = false
+	let confirmEndOpen = $state(false)
 
 	const session = $derived(grilladeStore.session)
 	const plan = $derived(grilladeStore.plan)
 	const planMode = $derived(session?.mode ?? grilladeStore.planMode)
 	const isManual = $derived(planMode === 'manual')
-	const items = $derived(session?.items ?? plan.items)
-	const statusByItem = $derived(session ? Object.fromEntries(session.items.map(item => [item.id, item.status])) : undefined)
 	const effectiveTarget = $derived(grilladeStore.effectiveTargetEpoch(now))
 	const segmentValue = $derived<SegmentId>(planMode === 'manual' ? 'manual' : plan.mode === 'now' ? 'now' : 'target')
 
@@ -60,6 +57,24 @@
 	const overdue = $derived(scheduleResult?.overdue ?? false)
 	const startEpoch = $derived(effectiveTarget - grilladeStore.longestCookSeconds * 1000)
 	const populated = $derived(plan.items.length > 0)
+	const manualEtaEpoch = $derived.by(() => {
+		if (!session || session.mode !== 'manual') return null
+		const active = session.items.filter(i => i.status !== 'pending' && i.status !== 'plated')
+		if (active.length === 0) return null
+		return Math.max(...active.map(i => i.restingUntilEpoch))
+	})
+	const wakeLockLabel = $derived.by(() => {
+		switch (wakeLockState) {
+			case 'held':
+				return 'Display aktiv'
+			case 'idle':
+				return 'Display bereit'
+			case 'denied':
+				return 'Display gesperrt'
+			case 'unsupported':
+				return 'Display n/a'
+		}
+	})
 
 	const goLabel = $derived.by(() => {
 		if (plan.items.length === 0) return 'Mindestens ein Eintrag nötig'
@@ -238,8 +253,8 @@
 	}
 
 	async function endSession() {
+		confirmEndOpen = false
 		await grilladeStore.endSession()
-		await goto('/')
 	}
 
 	function plateItem(id: string) {
@@ -262,31 +277,8 @@
 </script>
 
 <div class="cockpit">
-	<PlanSummaryList {items} {statusByItem} />
-
-	<section class="centre">
-		{#if session}
-			<div class="header-slot">
-				<SessionHeader targetEpoch={session.targetEpoch} {wakeLockState} {planMode} placement="desktop" onEnd={endSession} />
-			</div>
-			{#if grilladeStore.sessionHasStarted}
-				<MasterClock targetEpoch={session.targetEpoch} size="desktop" />
-			{:else}
-				<div class="awaiting" data-testid="awaiting-start">Tippe auf Los, um die erste Grillzeit zu starten.</div>
-			{/if}
-			<div class="big-grid">
-				{#each session.items as item (item.id)}
-					<TimerCard
-						{item}
-						size="lg"
-						status={statusFor(item)}
-						alarmFiring={firingItemId === item.id}
-						onplate={plateItem}
-						onstart={startSessionItem}
-						onremove={removeSessionItem} />
-				{/each}
-			</div>
-		{:else}
+	<aside class="control-pane">
+		{#if !session}
 			<SegmentedControl {segments} value={segmentValue} ariaLabel="Planungsmodus" onchange={pickSegment} />
 
 			{#if !isManual}
@@ -302,7 +294,7 @@
 							<span class="eat-time" data-mask-time>{formatHHMM(effectiveTarget)}</span>
 							<span class="eat-meta" data-mask-time>Start {formatHHMM(startEpoch)}</span>
 						{:else}
-							<span class="eat-time empty">––:––</span>
+							<span class="eat-time empty">--:--</span>
 						{/if}
 					</div>
 					<div class="eat-hint">
@@ -313,17 +305,62 @@
 				</button>
 			{/if}
 
-			<div class="section-header">
-				<h2>
-					Grillstücke{#if plan.items.length > 0}<span class="count">{plan.items.length} STÜCK</span>{/if}
-				</h2>
-			</div>
-
 			{#if overdue && !isManual}
 				<div class="warning" role="alert">
 					Zeit ist knapp. Folgende Einträge müssen sofort starten: {overdueItems.map(i => i.label).join(', ')}.
 				</div>
 			{/if}
+		{:else}
+			<div class="live-controls">
+				<div>
+					<div class="eat-eyebrow">Modus</div>
+					<div class="mode-value">{session.mode === 'manual' ? 'Manuell' : 'Automatisch'}</div>
+				</div>
+				<div class="wake-row" data-state={wakeLockState}>
+					<span class="wake-dot" aria-hidden="true"></span>
+					<span>{wakeLockLabel}</span>
+				</div>
+				<Button variant="secondary" fullWidth onclick={() => (confirmEndOpen = true)}>Grillade beenden</Button>
+			</div>
+			{#if session.mode === 'manual'}
+				<div class="eta-card">
+					<div class="eat-eyebrow">Erwartet fertig</div>
+					{#if manualEtaEpoch}
+						<div class="eta-time" data-mask-time>{formatHHMM(manualEtaEpoch)}</div>
+						<div class="eat-hint">Berechnet aus den laufenden Grillstücken.</div>
+					{:else}
+						<div class="eta-time empty">--:--</div>
+						<div class="eat-hint">Tippe auf Los, um die erste Grillzeit zu starten.</div>
+					{/if}
+				</div>
+			{:else if grilladeStore.sessionHasStarted}
+				<MasterClock targetEpoch={session.targetEpoch} size="desktop" />
+			{:else}
+				<div class="awaiting" data-testid="awaiting-start">Tippe auf Los, um die erste Grillzeit zu starten.</div>
+			{/if}
+		{/if}
+	</aside>
+
+	<section class="centre">
+		{#if session}
+			<div class="big-grid">
+				{#each session.items as item (item.id)}
+					<TimerCard
+						{item}
+						size="lg"
+						status={statusFor(item)}
+						alarmFiring={firingItemId === item.id}
+						onplate={plateItem}
+						onstart={startSessionItem}
+						onremove={removeSessionItem} />
+				{/each}
+			</div>
+		{:else}
+			<div class="section-header">
+				<h2>
+					Grillstücke{#if plan.items.length > 0}<span class="count">{plan.items.length} STÜCK</span>{/if}
+				</h2>
+			</div>
 
 			{#if plan.items.length === 0}
 				<button class="empty-add" type="button" onclick={openAddSheet}>
@@ -340,12 +377,11 @@
 						<span class="plus-glyph">+</span>
 						<span>Weiteres Grillstück</span>
 					</button>
+					<div class="start-row">
+						<Button variant="primary" size="lg" fullWidth disabled={plan.items.length === 0} onclick={start}>{goLabel}</Button>
+					</div>
 				</div>
 			{/if}
-
-			<div class="start-row">
-				<Button variant="primary" size="lg" fullWidth disabled={plan.items.length === 0} onclick={start}>{goLabel}</Button>
-			</div>
 		{/if}
 	</section>
 
@@ -385,13 +421,34 @@
 	</div>
 {/if}
 
+{#if confirmEndOpen}
+	<div class="confirm-scrim" role="presentation" onclick={() => (confirmEndOpen = false)}></div>
+	<div class="confirm-end" role="dialog" aria-modal="true" aria-labelledby="desktop-end-title">
+		<h2 id="desktop-end-title">Grillade beenden?</h2>
+		<p>Alle laufenden Timer werden gestoppt. Die Grillstücke bleiben für eine neue Grillade erhalten.</p>
+		<div class="confirm-actions">
+			<Button variant="secondary" onclick={() => (confirmEndOpen = false)}>Abbrechen</Button>
+			<Button variant="destructive" onclick={endSession}>Beenden</Button>
+		</div>
+	</div>
+{/if}
+
 <style>
 	.cockpit {
 		display: grid;
-		grid-template-columns: 280px minmax(0, 1fr) 320px;
+		grid-template-columns: 340px minmax(0, 1fr) 320px;
 		min-height: calc(100dvh - 0px);
 		background: var(--color-bg-base);
 		color: var(--color-fg-base);
+	}
+	.control-pane {
+		min-width: 0;
+		padding: 24px;
+		border-right: 1px solid var(--color-border-subtle);
+		background: var(--color-bg-panel);
+		display: flex;
+		flex-direction: column;
+		gap: 18px;
 	}
 	.centre {
 		min-width: 0;
@@ -400,17 +457,21 @@
 		flex-direction: column;
 		gap: 16px;
 	}
-	.header-slot :global(.session-header) {
-		position: static;
-		background: transparent;
+	.control-pane :global(.clock.desktop) {
+		padding: 0;
 	}
-	.header-slot :global(.bar) {
-		padding: 0 0 18px;
+	.control-pane :global(.clock.desktop .time) {
+		font-size: 64px;
+	}
+	.control-pane :global(.clock.desktop .eyebrow) {
+		font-size: 11px;
 	}
 	.big-grid {
 		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
+		grid-template-columns: repeat(2, calc((100% - 16px) / 2));
 		gap: 16px;
+		align-items: start;
+		justify-content: start;
 	}
 	.right-pane {
 		position: relative;
@@ -441,6 +502,62 @@
 		background: linear-gradient(180deg, var(--color-bg-surface-2) 0%, var(--color-bg-surface) 100%);
 		border-color: var(--color-border-strong);
 	}
+	.eta-card {
+		background: var(--color-bg-surface);
+		border: 1px solid var(--color-border-subtle);
+		border-radius: 18px;
+		padding: 20px;
+	}
+	.eta-time {
+		margin-top: 8px;
+		font-family: var(--font-display);
+		font-size: 56px;
+		font-weight: 600;
+		line-height: 0.9;
+		color: var(--color-fg-base);
+		font-variant-numeric: tabular-nums;
+	}
+	.eta-time.empty {
+		color: var(--color-fg-subtle);
+	}
+	.live-controls {
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+		padding: 18px;
+		border: 1px solid var(--color-border-subtle);
+		border-radius: 18px;
+		background: var(--color-bg-surface);
+	}
+	.mode-value {
+		margin-top: 4px;
+		font-family: var(--font-display);
+		font-size: 32px;
+		font-weight: 600;
+		line-height: 1;
+		text-transform: uppercase;
+		color: var(--color-fg-base);
+	}
+	.wake-row {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		color: var(--color-fg-muted);
+		font-size: 12px;
+		font-weight: 600;
+	}
+	.wake-dot {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: var(--color-fg-muted);
+	}
+	.wake-row[data-state='held'] {
+		color: var(--color-state-ready);
+	}
+	.wake-row[data-state='held'] .wake-dot {
+		background: var(--color-state-ready);
+	}
 	.eatcard:disabled {
 		cursor: default;
 	}
@@ -453,14 +570,14 @@
 		text-transform: uppercase;
 	}
 	.eat-row {
-		display: flex;
-		align-items: baseline;
+		display: grid;
+		grid-template-columns: 1fr;
 		gap: 16px;
 		margin-top: 8px;
 	}
 	.eat-time {
 		font-family: var(--font-display);
-		font-size: 76px;
+		font-size: 64px;
 		line-height: 0.85;
 		font-weight: 600;
 		letter-spacing: -0.03em;
@@ -468,7 +585,7 @@
 		font-variant-numeric: tabular-nums;
 	}
 	.eat-time.empty {
-		font-size: 56px;
+		font-size: 48px;
 		color: var(--color-fg-subtle);
 	}
 	.eat-meta {
@@ -586,7 +703,7 @@
 		line-height: 1;
 	}
 	.start-row {
-		margin-top: 10px;
+		margin-top: 12px;
 	}
 	.popover-anchor {
 		position: fixed;
@@ -594,12 +711,50 @@
 		top: 190px;
 		z-index: var(--z-modal);
 	}
+	.confirm-scrim {
+		position: fixed;
+		inset: 0;
+		background: var(--color-bg-overlay);
+		z-index: var(--z-modal);
+	}
+	.confirm-end {
+		position: fixed;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		width: min(360px, calc(100vw - 32px));
+		padding: 22px;
+		border: 1px solid var(--color-border-default);
+		border-radius: 16px;
+		background: var(--color-bg-surface);
+		color: var(--color-fg-base);
+		z-index: calc(var(--z-modal) + 1);
+	}
+	.confirm-end h2 {
+		margin: 0 0 10px;
+		font-family: var(--font-display);
+		font-size: 26px;
+		font-weight: 600;
+		text-transform: uppercase;
+	}
+	.confirm-end p {
+		margin: 0 0 18px;
+		color: var(--color-fg-muted);
+		font-size: 14px;
+		line-height: 1.45;
+	}
+	.confirm-actions {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 10px;
+	}
 	@media (max-width: 1279px) {
 		.cockpit {
-			grid-template-columns: 280px minmax(0, 1fr) 300px;
+			grid-template-columns: 300px minmax(0, 1fr) 280px;
 		}
-		.big-grid {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
+		.control-pane,
+		.right-pane {
+			padding: 20px;
 		}
 	}
 </style>

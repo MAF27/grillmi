@@ -330,7 +330,13 @@
 
 {#if open}
 	<div class="scrim" role="presentation" onclick={onclose}></div>
-	<div class="sheet" class:drawer={placement === 'drawer'} role="dialog" aria-modal="true" aria-label="Eintrag hinzufügen">
+	<div
+		class="sheet"
+		class:drawer={placement === 'drawer'}
+		data-step={step}
+		role="dialog"
+		aria-modal="true"
+		aria-label="Eintrag hinzufügen">
 		{#if placement === 'sheet'}
 			<div class="handle" aria-hidden="true"></div>
 		{/if}
@@ -574,6 +580,11 @@
 		border-left: 1px solid var(--color-border-subtle);
 		animation: aDrawerIn 0.28s cubic-bezier(0.2, 0.7, 0.3, 1);
 	}
+	.sheet.drawer[data-step='specs'] {
+		bottom: auto;
+		height: auto;
+		max-height: 100dvh;
+	}
 	@keyframes aSheetIn {
 		from {
 			transform: translateY(100%);
@@ -673,6 +684,10 @@
 	.body {
 		flex: 1;
 		overflow: auto;
+	}
+	.sheet.drawer[data-step='specs'] .body {
+		flex: 0 1 auto;
+		overflow: visible;
 	}
 	.section {
 		display: flex;
@@ -946,6 +961,10 @@
 		display: flex;
 		flex-direction: column;
 		gap: 12px;
+	}
+	.sheet.drawer[data-step='specs'] footer {
+		border-top: none;
+		padding-top: 0;
 	}
 	.cook-summary,
 	.heat-summary {
