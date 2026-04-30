@@ -306,22 +306,9 @@
 				</div>
 				<Button variant="secondary" fullWidth onclick={requestEndSession}>Grillade beenden</Button>
 			</div>
-			<div class="toast-slot">
-				{#if alarming}
-					{#key alarming.id}
-						<AlarmBanner
-							kind={alarming.kind}
-							itemName={alarming.itemName}
-							count={visibleAlarms.length}
-							message={alarming.message}
-							placement="top"
-							onDismiss={dismissAlarm} />
-					{/key}
-				{/if}
-			</div>
 			{#if session.mode === 'manual'}
 				<div class="eta-card">
-					<div class="eat-eyebrow">Erwartet fertig</div>
+					<div class="eat-eyebrow">Voraussichtlich fertig</div>
 					{#if manualEtaEpoch}
 						<div class="eta-time" data-mask-time>{formatHHMM(manualEtaEpoch)}</div>
 						<div class="eat-hint">Berechnet aus den laufenden Grillstücken.</div>
@@ -335,6 +322,19 @@
 			{:else}
 				<div class="awaiting" data-testid="awaiting-start">Tippe auf Los, um die erste Grillzeit zu starten.</div>
 			{/if}
+			<div class="toast-slot">
+				{#if alarming}
+					{#key alarming.id}
+						<AlarmBanner
+							kind={alarming.kind}
+							itemName={alarming.itemName}
+							count={visibleAlarms.length}
+							message={alarming.message}
+							placement="top"
+							onDismiss={dismissAlarm} />
+					{/key}
+				{/if}
+			</div>
 		{/if}
 	</aside>
 

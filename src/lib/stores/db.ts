@@ -221,8 +221,6 @@ export async function putCurrentSession(s: Session): Promise<void> {
 export async function clearCurrentSession(): Promise<void> {
 	const active = await getActiveGrillade()
 	if (!active) return
-	active.session = undefined
-	active.timeline = undefined
 	active.status = 'finished'
 	active.endedEpoch = Date.now()
 	active.updatedEpoch = Date.now()

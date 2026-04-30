@@ -1,6 +1,8 @@
 import { deleteGrillade, enqueueSyncRow, getSyncMeta, listGrilladen, setSyncMeta, type GrilladeRow } from './db'
 import type { PlannedItem } from '$lib/models'
 
+const CORRUPT_CLEANUP_KEY = 'historyCorruptFinishedItemsCleanup:v1'
+
 function createGrilladenHistoryStore() {
 	let rows = $state<GrilladeRow[]>([])
 	let initialized = false
@@ -22,6 +24,27 @@ function createGrilladenHistoryStore() {
 		async init() {
 			if (initialized) return
 			await this.refresh()
+			await this.cleanupCorruptFinished()
+		},
+		async cleanupCorruptFinished() {
+			if ((await getSyncMeta(CORRUPT_CLEANUP_KEY)) === true) return
+			const corrupt = rows.filter(
+				row =>
+					row.status === 'finished' &&
+					row.deletedEpoch === null &&
+					(row.session?.items.length ?? row.planState?.plan.items.length ?? 0) === 0,
+			)
+			for (const row of corrupt) {
+				await deleteGrillade(row.id)
+				await enqueueSyncRow({
+					method: 'PATCH',
+					path: `/api/grilladen/${row.id}`,
+					body: JSON.stringify({ deleted_at: new Date().toISOString() }),
+					createdEpoch: Date.now(),
+				})
+			}
+			await setSyncMeta(CORRUPT_CLEANUP_KEY, true)
+			if (corrupt.length > 0) await this.refresh()
 		},
 		async isSaved(id: string) {
 			return (await getSyncMeta(`historySaved:${id}`)) === true
@@ -54,6 +77,10 @@ function createGrilladenHistoryStore() {
 				createdEpoch: Date.now(),
 			})
 			await this.refresh()
+		},
+		_reset() {
+			rows = []
+			initialized = false
 		},
 	}
 }

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { IDBFactory } from 'fake-indexeddb'
 import { grilladeStore } from '$lib/stores/grilladeStore.svelte'
-import { __resetForTests } from '$lib/stores/db'
+import { __resetForTests, listGrilladen } from '$lib/stores/db'
 
 const item = {
 	categorySlug: 'beef',
@@ -95,6 +95,16 @@ describe('grilladeStore', () => {
 		await grilladeStore.startSession()
 		await grilladeStore.endSession()
 		expect(grilladeStore.session).toBeNull()
+	})
+
+	it('test_end_session_preserves_finished_history_items', async () => {
+		grilladeStore.setTargetTime(Date.now() + 3600_000)
+		grilladeStore.addItem(item)
+		await grilladeStore.startSession()
+		await grilladeStore.endSession()
+		const finished = (await listGrilladen()).find(row => row.status === 'finished')
+		expect(finished?.session?.items).toHaveLength(1)
+		expect(finished?.session?.items[0].label).toBe('Steak')
 	})
 
 	it('test_mid_session_remove_item_does_not_reschedule_others', async () => {

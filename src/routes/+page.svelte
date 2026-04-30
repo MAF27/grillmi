@@ -50,7 +50,7 @@
 	function fmtRowMeta(row: { startedEpoch: number | null; endedEpoch: number | null; session?: { items: Array<unknown> } | undefined; planState?: { plan: { items: Array<unknown> } } | undefined }) {
 		const itemCount = row.session?.items.length ?? row.planState?.plan.items.length ?? 0
 		const dur = row.startedEpoch && row.endedEpoch ? Math.round((row.endedEpoch - row.startedEpoch) / 1000) : 0
-		return `${itemCount} Stück · ${Math.round(dur / 60)} min`
+		return `${itemCount} ${itemCount === 1 ? 'Grillstück' : 'Grillstücke'} · ${Math.round(dur / 60)} min`
 	}
 
 	function rowName(row: { name: string | null; endedEpoch: number | null; updatedEpoch: number }) {

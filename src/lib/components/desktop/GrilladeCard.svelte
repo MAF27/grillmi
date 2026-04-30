@@ -13,6 +13,7 @@
 
 	const title = $derived(grillade.name || `Grillade vom ${new Date(grillade.endedEpoch ?? grillade.updatedEpoch).toLocaleDateString('de-CH')}`)
 	const itemCount = $derived(grillade.session?.items.length ?? grillade.planState?.plan.items.length ?? 0)
+	const itemCountLabel = $derived(`${itemCount} ${itemCount === 1 ? 'Grillstück' : 'Grillstücke'}`)
 	const duration = $derived(
 		grillade.startedEpoch && grillade.endedEpoch ? formatDuration(Math.round((grillade.endedEpoch - grillade.startedEpoch) / 1000)) : '-',
 	)
@@ -25,7 +26,7 @@
 			{#if saved}<span class="saved-pill">Gespeichert</span>{/if}
 		</span>
 		<strong>{title}</strong>
-		<span class="meta">{itemCount} Stück · {duration}</span>
+		<span class="meta">{itemCountLabel} · {duration}</span>
 	</button>
 	{#if onDelete}
 		<button

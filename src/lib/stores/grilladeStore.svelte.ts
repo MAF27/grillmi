@@ -95,6 +95,7 @@ function createGrilladeStore() {
 	let _pendingPersist: Promise<void> = Promise.resolve()
 
 	async function endSession() {
+		await _pendingPersist
 		const replayItems: PlannedItem[] = session
 			? session.items.map(s => ({
 					id: uuid(),
