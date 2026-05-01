@@ -280,7 +280,6 @@
 		</section>
 
 		<RowGroup>
-			<ToggleRow label="Vibration" sub="zusätzlich zum Ton" value={settingsStore.vibrate} onchange={v => settingsStore.setVibrate(v)} />
 		</RowGroup>
 
 		<RowGroup eyebrow="Vorlauf">

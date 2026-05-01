@@ -247,12 +247,6 @@
 						{/snippet}
 					</SettingRow>
 				{/each}
-				<ToggleRow
-					label="Haptik"
-					sub="zusätzlich zum Ton"
-					layout="cockpit"
-					value={settingsStore.vibrate}
-					onchange={v => settingsStore.setVibrate(v)} />
 			</RowGroup>
 
 			<div class="subhead">Vorlauf</div>

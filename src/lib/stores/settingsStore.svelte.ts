@@ -91,9 +91,6 @@ function createSettingsStore() {
 		get firstRunSeen() {
 			return value.firstRunSeen
 		},
-		get vibrate() {
-			return value.vibrate
-		},
 		get accent() {
 			return value.accent
 		},
@@ -125,7 +122,6 @@ function createSettingsStore() {
 					theme: stored.theme ?? DEFAULTS.theme,
 					sounds: migrateSounds((stored.sounds ?? {}) as Record<string, unknown>),
 					firstRunSeen: stored.firstRunSeen ?? DEFAULTS.firstRunSeen,
-					vibrate: typeof stored.vibrate === 'boolean' ? stored.vibrate : DEFAULTS.vibrate,
 					accent,
 					density,
 					showProgressRings:
@@ -156,11 +152,6 @@ function createSettingsStore() {
 
 		async setSound(event: keyof UserSettings['sounds'], soundId: ToneId) {
 			value = { ...value, sounds: { ...value.sounds, [event]: soundId } }
-			await persist()
-		},
-
-		async setVibrate(on: boolean) {
-			value = { ...value, vibrate: on }
 			await persist()
 		},
 

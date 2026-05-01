@@ -32,7 +32,6 @@ describe('settingsStore', () => {
 			theme: 'dark',
 			sounds: { putOn: 'chime-1', flip: 'chime-2', done: 'chime-3' } as never,
 			firstRunSeen: false,
-			vibrate: true,
 			accent: 'ember',
 			density: 'comfortable',
 			showProgressRings: true,
@@ -45,11 +44,5 @@ describe('settingsStore', () => {
 		expect(settingsStore.sounds.putOn).toBe('glut')
 		expect(settingsStore.sounds.flip).toBe('funke')
 		expect(settingsStore.sounds.done).toBe('klassik')
-	})
-
-	it('test_vibrate_toggle_persists', async () => {
-		expect(settingsStore.vibrate).toBe(true)
-		await settingsStore.setVibrate(false)
-		expect(settingsStore.vibrate).toBe(false)
 	})
 })
