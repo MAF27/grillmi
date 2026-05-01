@@ -76,7 +76,11 @@ describe('ticker', () => {
 		expect(events.filter(e => e.type === 'put-on')).toHaveLength(1)
 	})
 
-	it('test_ticker_primes_existing_put_on_alarm_on_startup_without_replay', () => {
+	it('test_ticker_fires_put_on_when_jetzt_modus_starts_with_lead_window_already_open', () => {
+		// In Jetzt Modus the slowest Grillstück has putOnEpoch=now, so by the
+		// time the ticker primes, the lead trigger is already in the past. The
+		// alarm must still fire on the first tick instead of being suppressed
+		// as if it had already played in a prior session.
 		const item = makeItem()
 		const events: TickerEvent[] = []
 		const t = createTicker({
@@ -89,7 +93,7 @@ describe('ticker', () => {
 		t._primeExistingAlarms()
 		t.tickOnce()
 		expect(item.status).toBe('pending')
-		expect(events.find(e => e.type === 'put-on')).toBeUndefined()
+		expect(events.find(e => e.type === 'put-on')).toBeTruthy()
 	})
 
 	it('test_ticker_emits_flip_event_once', () => {

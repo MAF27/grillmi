@@ -4,7 +4,7 @@ test.describe('cockpit merge (desktop)', () => {
 	test('test_grillstuecke_persist_across_pre_post_start_transition', async ({ page }) => {
 		await page.goto('/', { waitUntil: 'networkidle' })
 		// Desktop defaults straight into the grill cockpit.
-		await expect(page).toHaveURL(/\/plan/)
+		await expect(page).toHaveURL(/\/grillen/)
 
 		// Add a Grillstück: open the empty-state add card, pick category + cut.
 		await page.getByRole('button', { name: /Grillstück hinzufügen/ }).click()
@@ -35,7 +35,7 @@ test.describe('cockpit merge (desktop)', () => {
 
 	test('test_sidebar_has_no_planen_entry', async ({ page }) => {
 		await page.goto('/', { waitUntil: 'networkidle' })
-		await expect(page).toHaveURL(/\/plan/)
+		await expect(page).toHaveURL(/\/grillen/)
 		const sidebarButtons = page.locator('aside.desktop-sidebar nav button')
 		await expect(sidebarButtons).toHaveCount(3)
 		await expect(page.getByRole('button', { name: /^Übersicht$/ })).toHaveCount(0)

@@ -62,7 +62,7 @@
 		if (!loaded.ok) return
 		grilladeStore.loadFromMenu(loaded.items)
 		toast = `„${selected.name || 'Grillade'}" als Plan geladen`
-		await goto('/plan')
+		await goto('/grillen')
 	}
 
 	async function remove() {
@@ -144,7 +144,7 @@
 	{:else}
 		<SectionHeader kicker="Chronik" title="Was du schon gegrillt hast" />
 		{#if grilladenHistoryStore.finished.length === 0}
-			<button class="empty" type="button" onclick={() => goto('/plan')}>Noch keine Grilladen abgeschlossen<br /><span>Neue Grillade planen</span></button>
+			<button class="empty" type="button" onclick={() => goto('/grillen')}>Noch keine Grilladen abgeschlossen<br /><span>Neue Grillade planen</span></button>
 		{:else}
 			<div class="grid">
 				{#each grilladenHistoryStore.finished as row (row.id)}

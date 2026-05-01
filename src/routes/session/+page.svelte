@@ -39,11 +39,11 @@
 		await grilladeStore.init()
 		await settingsStore.init()
 		if (!grilladeStore.session) {
-			goto('/plan')
+			goto('/grillen')
 			return
 		}
 		mounted = true
-		// On desktop, /session and /plan render the same DesktopCockpit, which
+		// On desktop, /session and /grillen render the same DesktopCockpit, which
 		// owns the ticker and wakeLock lifecycle once a session exists.
 		if (viewport.isDesktop) return
 		preload([settingsStore.sounds.putOn, settingsStore.sounds.flip, settingsStore.sounds.done]).catch(() => {})
@@ -111,7 +111,7 @@
 	}
 
 	$effect(() => {
-		if (mounted && !viewport.isDesktop && !session) void goto('/plan')
+		if (mounted && !viewport.isDesktop && !session) void goto('/grillen')
 	})
 
 	$effect(() => {

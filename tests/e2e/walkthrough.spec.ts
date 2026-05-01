@@ -112,7 +112,7 @@ test.describe('walkthrough (full Glühen surface)', () => {
 		await expect(page.getByRole('button', { name: /Einstellungen/ })).toBeVisible()
 
 		await page.getByRole('button', { name: /^Grillen$/ }).click()
-		await expect(page).toHaveURL(/\/plan/)
+		await expect(page).toHaveURL(/\/grillen/)
 
 		await expect(page.getByRole('tab', { name: 'Jetzt' })).toBeVisible()
 		await expect(page.getByRole('tab', { name: 'Auf Zeit' })).toBeVisible()
@@ -135,7 +135,7 @@ test.describe('walkthrough (full Glühen surface)', () => {
 
 	test('test_manual_mode_los_drives_session_card_to_ready_via_clock', async ({ page }) => {
 		await gotoHomeFresh(page)
-		await page.goto('/plan')
+		await page.goto('/grillen')
 		await addEntrecoteOnPlan(page)
 
 		await page.getByRole('tab', { name: 'Manuell' }).click()

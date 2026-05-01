@@ -28,7 +28,7 @@ test.describe('menus', () => {
 
 		// Plan an item.
 		await page.getByRole('button', { name: /Neue Session/ }).click()
-		await expect(page).toHaveURL(/\/plan/)
+		await expect(page).toHaveURL(/\/grillen/)
 		await page.getByRole('button', { name: /Grillstück hinzufügen/ }).click()
 		await page.getByRole('button', { name: 'Rind' }).click()
 		await page

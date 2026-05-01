@@ -32,7 +32,7 @@
 			: null,
 	)
 	const currentSection = $derived.by(() => {
-		if (pathname.startsWith('/plan') || pathname.startsWith('/session')) return 'cook'
+		if (pathname.startsWith('/grillen') || pathname.startsWith('/session')) return 'cook'
 		if (pathname.startsWith('/chronik')) return 'chronik'
 		if (pathname.startsWith('/settings')) return 'settings'
 		return 'cook'
@@ -122,12 +122,12 @@
 	})
 
 	$effect(() => {
-		if (showDesktopShell && pathname === '/') void goto('/plan')
+		if (showDesktopShell && pathname === '/') void goto('/grillen')
 	})
 
 	function nav(id: string) {
 		const map: Record<string, string> = {
-			cook: grilladeStore.session ? '/session' : '/plan',
+			cook: grilladeStore.session ? '/session' : '/grillen',
 			chronik: '/chronik',
 			settings: '/settings',
 		}

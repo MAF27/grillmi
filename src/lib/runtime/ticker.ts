@@ -41,15 +41,23 @@ export function createTicker(hooks: TickerHooks) {
 		for (const item of hooks.getItems()) {
 			const target = computeStatus(item, t)
 			if (target.status === 'plated') continue
-			if (item.status === 'pending' && t >= item.putOnEpoch - leads.putOn * 1000) {
+			// Put-on: only suppress on resume after the item already started
+			// cooking. In Jetzt Modus the slowest item has putOnEpoch=now and
+			// status=pending; the alarm must fire on the first tick.
+			if (item.status !== 'pending' && t >= item.putOnEpoch - leads.putOn * 1000) {
 				fired.add(`${item.id}:put-on`)
 				primed.push(`${item.id}:put-on`)
 			}
-			if (!item.flipFired && item.flipEpoch !== null && t >= item.flipEpoch - leads.flip * 1000 && target.status !== 'pending') {
+			// Flip: suppress if the alarm already fired (flipFired) or the cook
+			// is already over (target is resting or ready). A user mid-cook who
+			// missed the flip moment still gets a single replay on next tick.
+			const flipPassed = item.flipFired || target.status === 'resting' || target.status === 'ready'
+			if (item.flipEpoch !== null && flipPassed && t >= item.flipEpoch - leads.flip * 1000) {
 				fired.add(`${item.id}:flip`)
 				primed.push(`${item.id}:flip`)
 			}
-			if (item.status === 'cooking' && t >= item.doneEpoch - leads.done * 1000) {
+			// Done: suppress if cooking is already over.
+			if ((target.status === 'resting' || target.status === 'ready') && t >= item.doneEpoch - leads.done * 1000) {
 				fired.add(`${item.id}:done`)
 				primed.push(`${item.id}:done`)
 			}

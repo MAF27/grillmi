@@ -12,7 +12,7 @@ async function clearIDB(page: import('@playwright/test').Page) {
 }
 
 async function seedMenu(page: import('@playwright/test').Page, name: string) {
-	await page.goto('/plan')
+	await page.goto('/grillen')
 	await page.getByRole('button', { name: /Grillstück hinzufügen/ }).click()
 	await page.getByRole('button', { name: 'Rind' }).click()
 	await page

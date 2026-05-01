@@ -36,7 +36,7 @@ test.describe('manual-alarm', () => {
 		})
 		await page.goto('/')
 		await clearIDB(page)
-		await page.goto('/plan')
+		await page.goto('/grillen')
 
 		// Plan one item.
 		await page.getByRole('button', { name: /Grillstück hinzufügen/ }).click()

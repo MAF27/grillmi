@@ -59,9 +59,9 @@
 			await grilladeStore.init()
 			await settingsStore.init()
 			await favoritesStore.init()
-			// On mobile, /plan and /session are separate routes; bounce to the live
-			// cockpit if a session is already running. On desktop the cockpit
-			// renders both states in place, so the redirect would loop.
+			// On mobile, /grillen and /session are separate routes; bounce to the
+			// live cockpit if a session is already running. On desktop the
+			// cockpit renders both states in place, so the redirect would loop.
 			if (!viewport.isDesktop && grilladeStore.session && grilladeStore.sessionHasStarted) goto('/session')
 		})()
 		return () => clearInterval(tickId)
@@ -123,7 +123,7 @@
 </script>
 
 <svelte:head>
-	<title>Plan · Grillmi</title>
+	<title>Grillen · Grillmi</title>
 </svelte:head>
 
 {#if viewport.isDesktop}

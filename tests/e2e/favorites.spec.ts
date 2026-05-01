@@ -41,7 +41,7 @@ test.describe('favorites', () => {
 		}
 
 		await page.getByRole('button', { name: /Neue Session/ }).click()
-		await expect(page).toHaveURL(/\/plan/)
+		await expect(page).toHaveURL(/\/grillen/)
 		await page.getByRole('button', { name: /Grillstück hinzufügen/ }).click()
 		await page.getByRole('button', { name: 'Rind' }).click()
 		await page
@@ -137,7 +137,7 @@ test.describe('favorites', () => {
 		}
 
 		await page.getByRole('button', { name: /Neue Session/ }).click()
-		await expect(page).toHaveURL(/\/plan/)
+		await expect(page).toHaveURL(/\/grillen/)
 		await page.getByRole('button', { name: /Grillstück hinzufügen/ }).click()
 		await page.getByRole('tab', { name: 'Favoriten' }).click()
 		await page.getByText('Geseedeter Favorit').click()

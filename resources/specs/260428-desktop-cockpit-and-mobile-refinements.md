@@ -2,7 +2,7 @@
 
 ## Meta
 
-- Status: Implemented on `feature/desktop-cockpit`. Spec rewritten on 2026-05-01 to match the app as shipped. Scope was reduced during implementation: the Übersicht overview screen, the auth-surface re-skin, the SyncChip mount, and the formal visual-reconciliation pipeline were dropped. The desktop home at `/` redirects straight to `/plan` (the Grillen cockpit); account management lives entirely in the Einstellungen cockpit instead of a separate `/account` route. See **Out of scope** for the full list of intentionally dropped items. Vocabulary follows `CONTEXT.md` (Grillade, Grillstück, Modus, Chronik).
+- Status: Implemented on `feature/desktop-cockpit`. Spec rewritten on 2026-05-01 to match the app as shipped. Scope was reduced during implementation: the Übersicht overview screen, the auth-surface re-skin, the SyncChip mount, and the formal visual-reconciliation pipeline were dropped. The desktop home at `/` redirects straight to `/grillen` (the Grillen cockpit); account management lives entirely in the Einstellungen cockpit instead of a separate `/account` route. See **Out of scope** for the full list of intentionally dropped items. Vocabulary follows `CONTEXT.md` (Grillade, Grillstück, Modus, Chronik).
 - Branch: feature/desktop-cockpit
 - Infra: none
 - Runbook: none
@@ -11,7 +11,7 @@ This spec replaces and supersedes `260427-ipad-responsive-layout.md`, which was 
 
 ### Amendments
 
-- 2026-04-29: Cockpit merge. Planen and Grillen are no longer two separate desktop sections. They collapse into a single sidebar entry called "Grillen" that renders one cockpit screen for both pre-start planning and post-start live state. The same Grillstücke list is shown across both states (sourced from `session.items` when a session exists, `plan.items` otherwise). The sidebar entry carries the LIVE pill while a session is running. Mobile keeps `/plan` and `/session` as two separate routes with their existing Glühen layouts; the merge is desktop only.
+- 2026-04-29: Cockpit merge. Planen and Grillen are no longer two separate desktop sections. They collapse into a single sidebar entry called "Grillen" that renders one cockpit screen for both pre-start planning and post-start live state. The same Grillstücke list is shown across both states (sourced from `session.items` when a session exists, `plan.items` otherwise). The sidebar entry carries the LIVE pill while a session is running. Mobile keeps `/grillen` and `/session` as two separate routes with their existing Glühen layouts; the merge is desktop only.
 - 2026-04-29: History rename. The sidebar entry and route `/grilladen` are renamed to "Chronik" and `/chronik`. The `grilladen` IDB store, the `/api/grilladen` backend endpoints, and the `GrilladeRow` shape stay unchanged; only the user-visible label and the SvelteKit route move. "Grillade" / "Grilladen" remain the entity terms per `project_grillade_terminology.md`.
 
 ---
@@ -24,7 +24,7 @@ Add a first-class desktop cockpit direction to Grillmi, refresh a small set of m
 
 ### Proposal
 
-Introduce a viewport-driven layout shell at `src/routes/+layout.svelte` that switches between the existing mobile direction (below 1024 px) and a desktop cockpit (1024 px and above). The cockpit renders a 240 px sidebar (`Sidebar.svelte`) with three top-level entries (Grillen, Chronik, Einstellungen) plus an account chip, and routes each existing route into a desktop-shaped pane: Grillen is a single three-pane cockpit covering both `/plan` (pre-start) and `/session` (post-start) with the same Grillstücke list shown throughout, Chronik is a list-and-detail view at `/chronik` backed by the existing `GET /api/grilladen` endpoint filtered to `status === 'finished'`, and Einstellungen is the package's left-rail grouped settings view. The desktop home at `/` redirects to `/plan` so the Grillen cockpit is the canonical landing page; the mobile home keeps the existing Glühen direction. The design system tokens and shared atoms join `src/app.css` and `src/lib/components/`. The four auth pages keep their existing markup; account management consolidates into the Einstellungen Konto group. Mobile gets two small refinements from the same package: alarm queue `+N` badge and manual-mode single-Grillstück full-row polish.
+Introduce a viewport-driven layout shell at `src/routes/+layout.svelte` that switches between the existing mobile direction (below 1024 px) and a desktop cockpit (1024 px and above). The cockpit renders a 240 px sidebar (`Sidebar.svelte`) with three top-level entries (Grillen, Chronik, Einstellungen) plus an account chip, and routes each existing route into a desktop-shaped pane: Grillen is a single three-pane cockpit covering both `/grillen` (pre-start) and `/session` (post-start) with the same Grillstücke list shown throughout, Chronik is a list-and-detail view at `/chronik` backed by the existing `GET /api/grilladen` endpoint filtered to `status === 'finished'`, and Einstellungen is the package's left-rail grouped settings view. The desktop home at `/` redirects to `/grillen` so the Grillen cockpit is the canonical landing page; the mobile home keeps the existing Glühen direction. The design system tokens and shared atoms join `src/app.css` and `src/lib/components/`. The four auth pages keep their existing markup; account management consolidates into the Einstellungen Konto group. Mobile gets two small refinements from the same package: alarm queue `+N` badge and manual-mode single-Grillstück full-row polish.
 
 ### Pixel Target Contract
 
@@ -64,20 +64,20 @@ The package contains prototype-only history fields (`saved`, `guests`, `note`, `
 
 #### Sidebar (desktop cockpit chrome)
 
-- The sidebar carries the wordmark "Grillmi" with a small ember flame glyph at the top (display, not a link), then three nav items in order: Grillen, Chronik, Einstellungen. Each item shows a small monoline glyph and a label. There is no separate Übersicht entry; the desktop home at `/` redirects to `/plan` via a layout-level effect so the Grillen cockpit is the canonical landing page.
+- The sidebar carries the wordmark "Grillmi" with a small ember flame glyph at the top (display, not a link), then three nav items in order: Grillen, Chronik, Einstellungen. Each item shows a small monoline glyph and a label. There is no separate Übersicht entry; the desktop home at `/` redirects to `/grillen` via a layout-level effect so the Grillen cockpit is the canonical landing page.
 - The currently active item carries an ember tint background, ember-coloured icon and label, and a 3 px ember left bar. Inactive items show body text colour with muted icon.
 - The Grillen item is the unified cockpit entry. It always renders. It carries a small "LIVE" pill in `emberInk` on `ember` whenever there is an active Grillade (status `running`); the pill is hidden otherwise. There is no separate "Planen" entry; pre-start planning happens inside the Grillen cockpit.
-- The Grillen entry navigates to `/plan` when no session exists and to `/session` when a session is running, so the URL stays semantic. Both routes render the same desktop cockpit component, so visually the entry is one stable destination. The `currentSection` derivation in `+layout.svelte` maps both `/plan` and `/session` to the Grillen entry.
+- The Grillen entry navigates to `/grillen` when no session exists and to `/session` when a session is running, so the URL stays semantic. Both routes render the same desktop cockpit component, so visually the entry is one stable destination. The `currentSection` derivation in `+layout.svelte` maps both `/grillen` and `/session` to the Grillen entry.
 - The bottom of the sidebar mounts the account chip. Signed-in: 32 px gradient circle with the user's initials, name and email next to it. Signed-out: outlined "Anmelden" button with a placeholder circle. Tapping signed-in goes to Einstellungen with the Konto group preselected (`/settings?group=account`); tapping signed-out goes to `/login`.
 
 #### Home (`/`)
 
-- On desktop (1024 px and above), `+layout.svelte` runs an effect that redirects `/` to `/plan` so the user lands directly in the Grillen cockpit. There is no overview screen and no `/` content rendered.
+- On desktop (1024 px and above), `+layout.svelte` runs an effect that redirects `/` to `/grillen` so the user lands directly in the Grillen cockpit. There is no overview screen and no `/` content rendered.
 - On mobile (below 1024 px), `/` renders the existing Glühen direction: hero glow, brand wordmark, "Bereit zum Grillen?" hero, recent Grilladen pills, primary "Grillen" CTA with LIVE badge when a Session is running, plus secondary "Chronik" and "Einstellungen" buttons.
 
-#### Grillen (desktop only at 1024 px+, routes `/plan` and `/session`)
+#### Grillen (desktop only at 1024 px+, routes `/grillen` and `/session`)
 
-The Grillen cockpit is one screen that covers both pre-start planning and post-start live state. Both routes render the same `DesktopCockpit.svelte` component on desktop. Mobile keeps `/plan` and `/session` as two separate Glühen layouts and is unchanged.
+The Grillen cockpit is one screen that covers both pre-start planning and post-start live state. Both routes render the same `DesktopCockpit.svelte` component on desktop. Mobile keeps `/grillen` and `/session` as two separate Glühen layouts and is unchanged.
 
 **Layout (both states):**
 
@@ -98,11 +98,11 @@ The Grillen cockpit is one screen that covers both pre-start planning and post-s
 - Top: wake-lock chip and end-session button from `SessionHeader.svelte` (placement `desktop` keeps them inline at the top-right of the centre pane).
 - Below the header: the master countdown via `MasterClock.svelte` (size `desktop`), an 88 px display-font numeral for the eating time and a 56 px display-font numeral for the live countdown. While a manual-mode session is unstarted, an "Auflegen Vorlauf" affordance replaces the countdown.
 - Below the countdown: a grid of `TimerCard` size `lg` (a 132 px stroke-7 progress ring variant) renders one card per item. 3 columns above 1280 px, 2 columns at 1024 to 1279 px. Card colour tracks status: pending slate, cooking ember, resting amber, ready green, plated muted.
-- Hitting "Anrichten" on a card transitions the item to plated and updates the activity log. When every item is plated (or the items list becomes empty), the cockpit ends the Grillade and returns to the Grillen pre-start state at `/plan`.
+- Hitting "Anrichten" on a card transitions the item to plated and updates the activity log. When every item is plated (or the items list becomes empty), the cockpit ends the Grillade and returns to the Grillen pre-start state at `/grillen`.
 
 **Transition behaviour:**
 
-- Clicking "Los, fertig um HH:MM" calls `grilladeStore.startSession()` (or `startManualSession()` in Manuell mode) and navigates from `/plan` to `/session`. The same DesktopCockpit instance reads from `session.items` going forward; the centre pane swaps from compose to live state without a layout shift.
+- Clicking "Los, fertig um HH:MM" calls `grilladeStore.startSession()` (or `startManualSession()` in Manuell mode) and navigates from `/grillen` to `/session`. The same DesktopCockpit instance reads from `session.items` going forward; the centre pane swaps from compose to live state without a layout shift.
 - Adding Grillstücke during a live session (Auflegen Vorlauf) appends a new pending item with a far-future `putOnEpoch` sentinel, surfaced in the centre grid with a "Los" affordance until the cook clicks it. The left summary picks the item up immediately.
 - "Beenden" on the SessionHeader confirms, ends the Grillade, replays the items into a fresh draft plan via `grilladeStore.endSession()`, and returns the cockpit to pre-start state. URL navigates to `/`.
 
@@ -115,12 +115,12 @@ The Grillen cockpit is one screen that covers both pre-start planning and post-s
 - Detail metrics render as four tiles in `repeat(4, 1fr)`, gap `12px`: Personen, Grillstücke, Dauer, Fenster. Missing Personen renders dim "-"; Fenster derives from started/ended timestamps.
 - Detail body renders as `grid-template-columns: 1fr 280px`, gap `18px`. The left card lists items under "Was auf dem Rost war" with the right header "Garzeit", index numbers padded to two digits, row padding `12px 0`, and note block below a top border. The right action column contains "Erneut grillen", saved toggle, note edit/add, spacer `8px`, and delete confirmation controls.
 - Delete follows the package's two-step confirmation visual, not a hold button: initial ghost "Löschen"; after click, a `bgSurface` confirmation box with "Wirklich löschen?", danger "Ja, löschen", and ghost "Abbrechen". Successful delete returns to the list and shows a toast reading "Grillade gelöscht".
-- "Erneut grillen" turns the past Grillade into a fresh plan and navigates to the Grillen cockpit pre-start state at `/plan`. A toast reads `„<title>" als Plan geladen`.
+- "Erneut grillen" turns the past Grillade into a fresh plan and navigates to the Grillen cockpit pre-start state at `/grillen`. A toast reads `„<title>" als Plan geladen`.
 - The Chronik route reads from the existing `grilladen` IDB store and filters client-side to rows where `status === 'finished'` and `deletedEpoch === null`. Sort is `endedEpoch desc`. The existing pull mechanism keeps the list current. The IDB store name and the `/api/grilladen` endpoint paths stay unchanged; only the user-visible label and the SvelteKit route move from `/grilladen` to `/chronik`.
 - If a finished Grillade has no embedded item rows and the device is offline, the detail view keeps the metadata header visible, shows "Details offline nicht verfügbar" in the items area, and disables "Erneut grillen" until item rows can be fetched.
 - Below 1024 px the route still mounts (so deep links work) but renders a single-column mobile variant: stacked cards, full-width detail view, no two-column actions. This means the route is reachable from both viewports.
 - The route inherits the existing auth gate in `src/routes/+layout.ts` because only `/login`, `/set-password`, and `/forgot-password` are public paths.
-- When there are zero finished Grilladen, the empty state shows the section header plus a single dashed card reading "Noch keine Grilladen abgeschlossen" with a secondary CTA "Neue Grillade planen" linking to `/plan`.
+- When there are zero finished Grilladen, the empty state shows the section header plus a single dashed card reading "Noch keine Grilladen abgeschlossen" with a secondary CTA "Neue Grillade planen" linking to `/grillen`.
 
 #### Einstellungen (desktop only at 1024 px+, route `/settings`)
 
@@ -143,7 +143,7 @@ The Grillen cockpit is one screen that covers both pre-start planning and post-s
 #### Mobile refinements (carry-over from the design package)
 
 - The alarm banner shows a `+N` badge when more than one alarm queues, mirroring the desktop right-pane behaviour.
-- Manual Modus on the Grillen route (`/plan` mobile branch) renders a single Grillstück card full-width when the plan has only one item, falling back to the existing two-column grid for two or more items.
+- Manual Modus on the Grillen route (`/grillen` mobile branch) renders a single Grillstück card full-width when the plan has only one item, falling back to the existing two-column grid for two or more items.
 
 ### Out of scope
 
@@ -160,7 +160,7 @@ The Grillen cockpit is one screen that covers both pre-start planning and post-s
 
 The following items appeared in earlier drafts of this spec and were intentionally dropped during implementation. They are out of scope for this spec and have no follow-up unless explicitly re-opened:
 
-- **Übersicht overview screen.** Earlier drafts called for a dashboard at `/` with a hero, stat cards, and a "Loszündeln" CTA. It was dropped entirely; the desktop `/` redirects to `/plan` so the Grillen cockpit is the only landing surface. The sidebar consolidated to three entries: Grillen, Chronik, Einstellungen.
+- **Übersicht overview screen.** Earlier drafts called for a dashboard at `/` with a hero, stat cards, and a "Loszündeln" CTA. It was dropped entirely; the desktop `/` redirects to `/grillen` so the Grillen cockpit is the only landing surface. The sidebar consolidated to three entries: Grillen, Chronik, Einstellungen.
 - **Auth surface re-skin.** `/login`, `/set-password`, and `/forgot-password` keep their existing styling. The token-aligned input style, `SectionHeader.svelte` adoption, and re-skin of error banners are not part of this spec.
 - **Standalone `/account` route.** Account management is consolidated into the Einstellungen Konto group; there is no `/account` page. Activation emails and any external link must target `/settings?group=account`.
 - **`SyncChip.svelte` mounting.** The component exists in `src/lib/components/SyncChip.svelte` but is not imported by `+layout.svelte` or any other surface. The chip is dead code; see Cleanup follow-ups.
@@ -237,17 +237,17 @@ The phases are ordered foundation, then atoms, then responsive shell, then deskt
 
 - [x] Implement `src/lib/runtime/viewport.svelte.ts` exposing a singleton rune `viewport` with `{ isDesktop: boolean }`. Initialises from `matchMedia('(min-width: 1024px)').matches` synchronously, then attaches a listener that updates the rune on change. Tear-down removes the listener.
 - [x] Update `src/routes/+layout.svelte` to import the viewport rune and the new `Sidebar.svelte` and `AccountChip.svelte`. When `viewport.isDesktop && authStore.isAuthenticated && !publicPage`, render a two-column grid (240 px sidebar plus flex content) with `<Sidebar>` and `<AccountChip>` mounted in the sidebar; otherwise render the existing single-column tree. The pre-auth pages (`/login`, `/set-password`, `/forgot-password`) render unchromed regardless of viewport.
-- [x] Add the sidebar `current` mapping in `+layout.svelte`: derive from `page.url.pathname` so `/plan` and `/session` both map to "cook" (the unified Grillen entry, see Phase 5), `/chronik` to "chronik", `/settings` to "settings". The fallthrough default is "cook" so the home route at `/` highlights the Grillen entry. `onChange` calls `goto(...)` with the matching path; the cook target depends on Session state per Phase 5.
+- [x] Add the sidebar `current` mapping in `+layout.svelte`: derive from `page.url.pathname` so `/grillen` and `/session` both map to "cook" (the unified Grillen entry, see Phase 5), `/chronik` to "chronik", `/settings` to "settings". The fallthrough default is "cook" so the home route at `/` highlights the Grillen entry. `onChange` calls `goto(...)` with the matching path; the cook target depends on Session state per Phase 5.
 - [x] Add the LIVE badge logic to the Grillen sidebar item: read `grilladeStore.session` truthiness and pass a `badge: 'LIVE'` to the `Sidebar` items array when a Session is running.
 - [x] Mobile authenticated header band is out of scope (see Out of scope: SyncChip mounting). The mobile layout renders the route content directly without an extra header.
 
-**Phase 4: Home redirect (desktop / to /plan)**
+**Phase 4: Home redirect (desktop / to /grillen)**
 
-- [x] Add a `$effect` in `src/routes/+layout.svelte` that redirects to `/plan` whenever `showDesktopShell && pathname === '/'`, so the Grillen cockpit is the canonical landing page on desktop.
+- [x] Add a `$effect` in `src/routes/+layout.svelte` that redirects to `/grillen` whenever `showDesktopShell && pathname === '/'`, so the Grillen cockpit is the canonical landing page on desktop.
 - [x] Add `grilladeStore.resetDraft()` so any caller that wants a fresh Grillade can reset the plan and persist it before navigating into Grillen.
 - [x] Keep `src/routes/+page.svelte` mobile-only: the desktop branch renders nothing because the layout redirects before the page ever shows.
 
-**Phase 5: Grillen unified cockpit (desktop `/plan` and `/session`)**
+**Phase 5: Grillen unified cockpit (desktop `/grillen` and `/session`)**
 
 This phase replaces the earlier split between Planen and Grillen. Both routes render the same `DesktopCockpit.svelte` component on desktop. Mobile branches in each route stay as today.
 
@@ -255,11 +255,11 @@ This phase replaces the earlier split between Planen and Grillen. Both routes re
 - [x] Add the `size: 'desktop'` prop to `MasterClock.svelte` switching the inner numeral classes between 76 px (mobile) and 88 px / 56 px (desktop).
 - [x] Add the `size: 'lg'` variant to `TimerCard.svelte` for the 132 px stroke-7 desktop progress ring. Wire the same status colours, label, time, and action props as the mobile size.
 - [x] Add the `placement: 'mobile' | 'desktop'` prop to `SessionHeader.svelte`. Desktop placement keeps the wake-lock chip and end-session button inline at the top of the centre pane.
-- [x] Ship the desktop split in `src/routes/plan/+page.svelte` and `src/routes/session/+page.svelte` as separate inline desktop branches (interim shape before Phase 5 cleanup).
+- [x] Ship the desktop split in `src/routes/grillen/+page.svelte` and `src/routes/session/+page.svelte` as separate inline desktop branches (interim shape before Phase 5 cleanup).
 - [x] Build `src/lib/components/desktop/DesktopCockpit.svelte`. The component renders one three-pane layout for both pre-start and post-start states. Left rail: `<PlanSummaryList items={session?.items ?? plan.items} statusByItem={session ? itemStatusMap : undefined} />`. Right rail: empty whitespace pre-start, `<AlarmBanner placement="top">` plus `<ActivityLog>` post-start. Centre: pre-start renders the SegmentedControl, eat-time card, items list, AddItemSheet trigger, and Los button; post-start renders `<SessionHeader placement="desktop">`, `<MasterClock size="desktop">`, and a `<TimerCard size="lg">` grid. The component owns the ticker, wakeLock, alarm queue, and end-session lifecycle when a session is live, mirroring the logic currently inlined in `src/routes/session/+page.svelte`.
-- [x] Update `src/routes/plan/+page.svelte` so the desktop branch renders `<DesktopCockpit />` directly, replacing the inlined three-pane wrapper. Mobile branch unchanged. Remove the desktop auto-redirect from `/plan` to `/session`; the redirect stays for mobile only (the mobile flow still uses two routes). The mobile branch keeps calling `grilladeStore.startSession()` then `goto('/session')`.
+- [x] Update `src/routes/grillen/+page.svelte` so the desktop branch renders `<DesktopCockpit />` directly, replacing the inlined three-pane wrapper. Mobile branch unchanged. Remove the desktop auto-redirect from `/grillen` to `/session`; the redirect stays for mobile only (the mobile flow still uses two routes). The mobile branch keeps calling `grilladeStore.startSession()` then `goto('/session')`.
 - [x] Update `src/routes/session/+page.svelte` so the desktop branch renders `<DesktopCockpit />` directly, replacing the inlined live-cockpit markup. Mobile branch unchanged. The mobile branch keeps the existing ticker, alarm, and wakeLock setup.
-- [x] In `+layout.svelte`, collapse the conditional `Planen` + `Grillen` sidebar entries into a single always-on `Grillen` entry. Map `currentSection` so both `/plan` and `/session` highlight the Grillen entry. The Grillen onChange handler navigates to `/session` if `grilladeStore.session` exists, otherwise to `/plan`. The LIVE badge on the entry follows `grilladeStore.session` truthiness.
+- [x] In `+layout.svelte`, collapse the conditional `Planen` + `Grillen` sidebar entries into a single always-on `Grillen` entry. Map `currentSection` so both `/grillen` and `/session` highlight the Grillen entry. The Grillen onChange handler navigates to `/session` if `grilladeStore.session` exists, otherwise to `/grillen`. The LIVE badge on the entry follows `grilladeStore.session` truthiness.
 - [x] Mount `AddItemSheet.svelte` as a 480 px right-side drawer on desktop when add-item is triggered (the existing `placement: 'sheet' | 'drawer'` prop). DesktopCockpit passes `placement="drawer"`.
 - [x] The activity log reads from the existing `grilladeStore.sessionTimeline` array; verify entries append for every state transition (cooking, resting, ready, plated, started-pending). Keep this outside the persisted `Session` object so `sessionSchema` and the IDB schema do not change.
 - [x] When the cockpit transitions from pre-start to post-start (Los click), assert no layout shift in the left rail, no flash of an empty Grillstücke list, and that the centre pane swaps from compose to live state in place.
@@ -281,11 +281,11 @@ The route was originally introduced as `/grilladen`; Phase 6 renamed it to `/chr
 - [x] Implement the list view in `src/routes/chronik/+page.svelte` using `<GrilladeCard>` tiles in a CSS Grid (`grid-template-columns: repeat(auto-fill, minmax(280px, 1fr))`). Cards keep the package's saved-star slot and saved border treatment; ordering stays `endedEpoch desc`.
 - [x] Implement the detail view in `src/routes/chronik/+page.svelte` showing the header (title, date, duration, item count), metric tiles, a two-column body (items/note card left, actions right), "Erneut grillen", saved toggle, note edit/add, and package-matching delete confirmation controls.
 - [x] Add `src/lib/stores/grilladenHistoryStore.svelte.ts` helper `loadItems(grilladeId)` that returns embedded `row.session.items` when present; otherwise it calls `apiFetch('/api/grilladen/{id}/items?since=1970-01-01T00:00:00Z')`, maps server item rows back to `PlannedItem` fields using the same timing-data lookup pattern as `favoriteFromServer()` in `src/lib/sync/pull.ts`, and reports a typed offline/error state when fetch fails.
-- [x] Implement "Erneut grillen": copy the past Grillade's loaded items into a fresh plan via a new `grilladeStore.loadFromPastGrillade(grilladeId)` action that reads through `grilladenHistoryStore.loadItems()`, builds a new draft plan with the same item rows verbatim where local data exists and reconstructed specs where server rows are fetched, and navigates to `/plan` (the Grillen cockpit pre-start state). Toast on success.
+- [x] Implement "Erneut grillen": copy the past Grillade's loaded items into a fresh plan via a new `grilladeStore.loadFromPastGrillade(grilladeId)` action that reads through `grilladenHistoryStore.loadItems()`, builds a new draft plan with the same item rows verbatim where local data exists and reconstructed specs where server rows are fetched, and navigates to `/grillen` (the Grillen cockpit pre-start state). Toast on success.
 - [x] Implement package-matching local-only saved and note controls in the Chronik detail action column: star/save toggle, `Notiz hinzufügen` / `Notiz bearbeiten`, textarea placeholder `Wie war's? Was würdest du anders machen?`, primary `Speichern`, ghost `Abbrechen`, and the saved `Gespeichert` metadata pill.
 - [x] In the Chronik detail view, when `loadItems(grilladeId)` reports offline/error and no embedded items exist, render "Details offline nicht verfügbar", keep the metadata header visible, and disable "Erneut grillen"; delete remains available because it only needs the Grillade id and the sync queue.
 - [x] Implement "Löschen": add `grilladeStore.softDelete(id)` that calls `deleteGrillade(id)` locally, enqueues `PATCH /api/grilladen/{id}` with a server wire payload containing `deleted_at` set to the current ISO timestamp, refreshes `grilladenHistoryStore`, and returns to the list. Toast on success.
-- [x] Empty state: when `grilladenHistoryStore.finished.length === 0`, render the dashed "Noch keine Grilladen abgeschlossen" card with a secondary CTA "Neue Grillade planen" to `/plan`.
+- [x] Empty state: when `grilladenHistoryStore.finished.length === 0`, render the dashed "Noch keine Grilladen abgeschlossen" card with a secondary CTA "Neue Grillade planen" to `/grillen`.
 - [x] Below 1024 px the route renders the same data in a single-column layout: stacked cards, full-width detail. Use the existing component-scoped CSS pattern; no separate mobile component.
 
 **Phase 8: Einstellungen (desktop /settings)**
@@ -309,7 +309,7 @@ The route was originally introduced as `/grilladen`; Phase 6 renamed it to `/chr
 **Phase 10: Mobile refinements**
 
 - [x] Keep `src/lib/components/AlarmBanner.svelte`'s existing `count` prop behaviour for the mobile `+N` badge and add the desktop `placement: 'top' | 'bottom'` prop from Phase 6. Pass `count={visibleAlarms.length}` from both mobile and desktop alarm callers.
-- [x] Update `src/routes/plan/+page.svelte` mobile manual-mode rendering so that when only one item is in the plan the single card spans the full row width; two-or-more items use the existing two-column grid.
+- [x] Update `src/routes/grillen/+page.svelte` mobile manual-mode rendering so that when only one item is in the plan the single card spans the full row width; two-or-more items use the existing two-column grid.
 - [x] SyncChip mount is out of scope (see Out of scope: SyncChip mounting). The component still ships in `src/lib/components/SyncChip.svelte` and is listed in the Cleanup follow-ups in `CONTEXT.md`.
 
 **Phase 11: Visual reconciliation (one-shot, no recurring pipeline)**

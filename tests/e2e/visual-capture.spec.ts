@@ -118,7 +118,7 @@ test.describe('visual capture (prototype + app)', () => {
 	test('app_home_with_menu', async ({ page }) => {
 		await page.goto(APP_BASE)
 		await clearIDB(page)
-		await page.goto(`${APP_BASE}/plan`)
+		await page.goto(`${APP_BASE}/grillen`)
 		await addEntrecoteOnPlan(page)
 		await page.getByRole('button', { name: /Als Menü speichern/ }).click()
 		await page.getByPlaceholder(/Sonntagsmenü/i).fill('Capture-Menü')
@@ -130,13 +130,13 @@ test.describe('visual capture (prototype + app)', () => {
 	test('app_plan_empty', async ({ page }) => {
 		await page.goto(APP_BASE)
 		await clearIDB(page)
-		await captureFullPage(page, '/plan', 'plan-empty')
+		await captureFullPage(page, '/grillen', 'plan-empty')
 	})
 
 	test('app_plan_filled', async ({ page }) => {
 		await page.goto(APP_BASE)
 		await clearIDB(page)
-		await page.goto(`${APP_BASE}/plan`)
+		await page.goto(`${APP_BASE}/grillen`)
 		await addEntrecoteOnPlan(page)
 		await page.waitForTimeout(300)
 		await page.screenshot({ path: `${ROOT}/app/plan-filled.png`, fullPage: false })
@@ -145,7 +145,7 @@ test.describe('visual capture (prototype + app)', () => {
 	test('app_plan_manual', async ({ page }) => {
 		await page.goto(APP_BASE)
 		await clearIDB(page)
-		await page.goto(`${APP_BASE}/plan`)
+		await page.goto(`${APP_BASE}/grillen`)
 		await addEntrecoteOnPlan(page)
 		await page.getByRole('tab', { name: 'Manuell' }).click()
 		await page.waitForTimeout(300)
@@ -155,7 +155,7 @@ test.describe('visual capture (prototype + app)', () => {
 	test('app_addsheet_category', async ({ page }) => {
 		await page.goto(APP_BASE)
 		await clearIDB(page)
-		await page.goto(`${APP_BASE}/plan`)
+		await page.goto(`${APP_BASE}/grillen`)
 		await page.getByRole('button', { name: /Grillstück hinzufügen/ }).click()
 		await page.waitForTimeout(300)
 		await page.screenshot({ path: `${ROOT}/app/addsheet-category.png`, fullPage: false })
@@ -164,7 +164,7 @@ test.describe('visual capture (prototype + app)', () => {
 	test('app_addsheet_cut', async ({ page }) => {
 		await page.goto(APP_BASE)
 		await clearIDB(page)
-		await page.goto(`${APP_BASE}/plan`)
+		await page.goto(`${APP_BASE}/grillen`)
 		await page.getByRole('button', { name: /Grillstück hinzufügen/ }).click()
 		await page.getByRole('button', { name: 'Rind' }).click()
 		await page.waitForTimeout(300)
@@ -174,7 +174,7 @@ test.describe('visual capture (prototype + app)', () => {
 	test('app_addsheet_specs', async ({ page }) => {
 		await page.goto(APP_BASE)
 		await clearIDB(page)
-		await page.goto(`${APP_BASE}/plan`)
+		await page.goto(`${APP_BASE}/grillen`)
 		await page.getByRole('button', { name: /Grillstück hinzufügen/ }).click()
 		await page.getByRole('button', { name: 'Rind' }).click()
 		await page

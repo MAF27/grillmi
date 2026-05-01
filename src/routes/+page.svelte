@@ -22,7 +22,7 @@
 		const loaded = await grilladenHistoryStore.loadItems(id)
 		if (!loaded.ok) return
 		grilladeStore.loadFromMenu(loaded.items)
-		goto('/plan')
+		goto('/grillen')
 	}
 
 	function fmtRowMeta(row: { startedEpoch: number | null; endedEpoch: number | null; session?: { items: Array<unknown> } | undefined; planState?: { plan: { items: Array<unknown> } } | undefined }) {
@@ -40,7 +40,7 @@
 			goto('/session')
 			return
 		}
-		goto('/plan')
+		goto('/grillen')
 	}
 </script>
 

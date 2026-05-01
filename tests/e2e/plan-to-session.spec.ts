@@ -16,6 +16,6 @@ test.describe('plan-to-session', () => {
 		await page.goto('/', { waitUntil: 'networkidle' })
 		await dismissFirstRun(page)
 		await page.getByRole('button', { name: /Neue Session/ }).click()
-		await expect(page).toHaveURL(/\/plan/)
+		await expect(page).toHaveURL(/\/grillen/)
 	})
 })

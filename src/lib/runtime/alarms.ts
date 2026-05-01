@@ -13,6 +13,10 @@ export function alarmSoundFor(event: AlarmEvent): string {
 }
 
 export function fireHaptic(): void {
+	if (!settingsStore.vibrate) {
+		debugSync('alarm', 'haptic skipped: setting off')
+		return
+	}
 	if (typeof navigator === 'undefined') {
 		debugSync('alarm', 'haptic skipped: no navigator')
 		return
@@ -22,7 +26,7 @@ export function fireHaptic(): void {
 		const ok = vibrate.call(navigator, [200])
 		debugSync('alarm', 'haptic fired', { ok })
 	} else {
-		debugSync('alarm', 'haptic skipped: unsupported')
+		debugSync('alarm', 'haptic skipped: unsupported (iOS Safari does not implement navigator.vibrate)')
 	}
 }
 

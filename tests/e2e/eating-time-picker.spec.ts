@@ -15,7 +15,7 @@ test.describe('eating-time picker', () => {
 	test('test_picker_opens_on_card_tap', async ({ page }) => {
 		await page.goto('/')
 		await clearIDB(page)
-		await page.goto('/plan')
+		await page.goto('/grillen')
 
 		// Add an item so the eating-time card becomes populated and tappable.
 		await page.getByRole('button', { name: /Grillstück hinzufügen/ }).click()
@@ -35,7 +35,7 @@ test.describe('eating-time picker', () => {
 	test('test_picker_cancel_closes_without_change', async ({ page }) => {
 		await page.goto('/')
 		await clearIDB(page)
-		await page.goto('/plan')
+		await page.goto('/grillen')
 
 		await page.getByRole('button', { name: /Grillstück hinzufügen/ }).click()
 		await page.getByRole('button', { name: 'Rind' }).click()
