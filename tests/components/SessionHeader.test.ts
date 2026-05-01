@@ -9,6 +9,7 @@ describe('SessionHeader', () => {
 				targetEpoch: new Date(2026, 3, 26, 19, 5).getTime(),
 				wakeLockState: 'held',
 				planMode: 'auto',
+				placement: 'desktop',
 				onEnd: () => {},
 			},
 		})
