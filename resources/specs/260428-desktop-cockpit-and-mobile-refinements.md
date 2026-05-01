@@ -2,7 +2,7 @@
 
 ## Meta
 
-- Status: Implemented on `feature/desktop-cockpit`. Spec rewritten on 2026-05-01 to match the app as shipped. Scope was reduced during implementation: the Übersicht sidebar entry, the auth-surface re-skin, the SyncChip mount, and the formal visual-reconciliation pipeline were dropped. The Übersicht content survives at `/` without its own sidebar entry; account management lives entirely in the Einstellungen cockpit instead of a separate `/account` route. See **Out of scope** for the full list of intentionally dropped items. Vocabulary follows `CONTEXT.md` (Grillade, Grillstück, Modus, Chronik).
+- Status: Implemented on `feature/desktop-cockpit`. Spec rewritten on 2026-05-01 to match the app as shipped. Scope was reduced during implementation: the Übersicht overview screen, the auth-surface re-skin, the SyncChip mount, and the formal visual-reconciliation pipeline were dropped. The desktop home at `/` redirects straight to `/plan` (the Grillen cockpit); account management lives entirely in the Einstellungen cockpit instead of a separate `/account` route. See **Out of scope** for the full list of intentionally dropped items. Vocabulary follows `CONTEXT.md` (Grillade, Grillstück, Modus, Chronik).
 - Branch: feature/desktop-cockpit
 - Infra: none
 - Runbook: none
@@ -24,7 +24,7 @@ Add a first-class desktop cockpit direction to Grillmi, refresh a small set of m
 
 ### Proposal
 
-Introduce a viewport-driven layout shell at `src/routes/+layout.svelte` that switches between the existing mobile direction (below 1024 px) and the exact desktop cockpit from `Grillmi Desktop.html` (1024 px and above). The cockpit renders a 240 px sidebar (`Sidebar.svelte`) with four top-level sections (Übersicht, Grillen, Chronik, Einstellungen) plus an account chip, and routes each existing route into a desktop-shaped pane: Übersicht is a new dashboard view of `/`, Grillen is a single three-pane cockpit covering both `/plan` (pre-start) and `/session` (post-start) with the same Grillstücke list shown throughout, Chronik is a list-and-detail view at `/chronik` backed by the existing `GET /api/grilladen` endpoint filtered to `status === 'finished'`, and Einstellungen is the package's left-rail grouped settings view. The design system tokens and shared atoms from `desktop-shared.jsx` join `src/app.css` and `src/lib/components/`; `SyncChip.svelte` is additive and must use the same chip visual language. The four auth pages get a visual pass against the same tokens and shared atoms with no behavioural changes. Mobile gets three small refinements from the same package: alarm queue `+N` badge, manual-mode polish, and a sync chip in the top header.
+Introduce a viewport-driven layout shell at `src/routes/+layout.svelte` that switches between the existing mobile direction (below 1024 px) and a desktop cockpit (1024 px and above). The cockpit renders a 240 px sidebar (`Sidebar.svelte`) with three top-level entries (Grillen, Chronik, Einstellungen) plus an account chip, and routes each existing route into a desktop-shaped pane: Grillen is a single three-pane cockpit covering both `/plan` (pre-start) and `/session` (post-start) with the same Grillstücke list shown throughout, Chronik is a list-and-detail view at `/chronik` backed by the existing `GET /api/grilladen` endpoint filtered to `status === 'finished'`, and Einstellungen is the package's left-rail grouped settings view. The desktop home at `/` redirects to `/plan` so the Grillen cockpit is the canonical landing page; the mobile home keeps the existing Glühen direction. The design system tokens and shared atoms join `src/app.css` and `src/lib/components/`. The four auth pages keep their existing markup; account management consolidates into the Einstellungen Konto group. Mobile gets two small refinements from the same package: alarm queue `+N` badge and manual-mode single-Grillstück full-row polish.
 
 ### Pixel Target Contract
 
@@ -64,20 +64,16 @@ The package contains prototype-only history fields (`saved`, `guests`, `note`, `
 
 #### Sidebar (desktop cockpit chrome)
 
-- The sidebar carries the wordmark "Grillmi" with a small ember flame glyph at the top (display, not a link), then three nav items in order: Grillen, Chronik, Einstellungen. Each item shows a small monoline glyph and a label. There is no separate Übersicht entry; the home route at `/` is reached by URL or by the implicit fallback of `currentSection` defaulting to `cook` when no other path matches.
+- The sidebar carries the wordmark "Grillmi" with a small ember flame glyph at the top (display, not a link), then three nav items in order: Grillen, Chronik, Einstellungen. Each item shows a small monoline glyph and a label. There is no separate Übersicht entry; the desktop home at `/` redirects to `/plan` via a layout-level effect so the Grillen cockpit is the canonical landing page.
 - The currently active item carries an ember tint background, ember-coloured icon and label, and a 3 px ember left bar. Inactive items show body text colour with muted icon.
 - The Grillen item is the unified cockpit entry. It always renders. It carries a small "LIVE" pill in `emberInk` on `ember` whenever there is an active Grillade (status `running`); the pill is hidden otherwise. There is no separate "Planen" entry; pre-start planning happens inside the Grillen cockpit.
 - The Grillen entry navigates to `/plan` when no session exists and to `/session` when a session is running, so the URL stays semantic. Both routes render the same desktop cockpit component, so visually the entry is one stable destination. The `currentSection` derivation in `+layout.svelte` maps both `/plan` and `/session` to the Grillen entry.
 - The bottom of the sidebar mounts the account chip. Signed-in: 32 px gradient circle with the user's initials, name and email next to it. Signed-out: outlined "Anmelden" button with a placeholder circle. Tapping signed-in goes to Einstellungen with the Konto group preselected (`/settings?group=account`); tapping signed-out goes to `/login`.
 
-#### Home overview (desktop `/`, no sidebar entry)
+#### Home (`/`)
 
-- The desktop home pane lives at `/` and is reached by URL or by the layout's `currentSection` default. Content padding `32px 36px`. Kicker text is today's local Swiss date (`Heute · <weekday>, dd.mm.`).
-- Hero title reads "Bereit zum" with ember-coloured "Grillen?", display font, 56 px, line-height 1, weight 600, letter-spacing `-0.02em`.
-- Supporting copy reads "Plane deine Grillade am Laptop, starte sie wann du fertig bist. Auf jedem Gerät." Copy changes go through `src/lib/i18n/de.ts` if added there; today the string is inline in `+page.svelte`.
-- The primary CTA is a `Button size="lg" variant="primary"` reading "Loszündeln". It calls `grilladeStore.resetDraft()` then navigates to `/plan`, landing the user in the Grillen cockpit pre-start state with an empty Grillade.
-- Three stat cards render below the CTA: "Grilladen diesen Monat" (count of finished Grilladen this calendar month), "Gespeicherte Grilladen" (local saved-history count, currently always 0 because the saved-history feature is local-only and unwired), and "Längste Grillade" (longest finished Grillade duration). Empty values render as dim "-".
-- The mobile home (`/` below 1024 px) renders the existing Glühen direction: hero glow, brand wordmark, recent Grilladen pills, primary "Grillen" CTA with LIVE badge when a Session is running, plus secondary "Chronik" and "Einstellungen" buttons.
+- On desktop (1024 px and above), `+layout.svelte` runs an effect that redirects `/` to `/plan` so the user lands directly in the Grillen cockpit. There is no overview screen and no `/` content rendered.
+- On mobile (below 1024 px), `/` renders the existing Glühen direction: hero glow, brand wordmark, "Bereit zum Grillen?" hero, recent Grilladen pills, primary "Grillen" CTA with LIVE badge when a Session is running, plus secondary "Chronik" and "Einstellungen" buttons.
 
 #### Grillen (desktop only at 1024 px+, routes `/plan` and `/session`)
 
@@ -102,7 +98,7 @@ The Grillen cockpit is one screen that covers both pre-start planning and post-s
 - Top: wake-lock chip and end-session button from `SessionHeader.svelte` (placement `desktop` keeps them inline at the top-right of the centre pane).
 - Below the header: the master countdown via `MasterClock.svelte` (size `desktop`), an 88 px display-font numeral for the eating time and a 56 px display-font numeral for the live countdown. While a manual-mode session is unstarted, an "Auflegen Vorlauf" affordance replaces the countdown.
 - Below the countdown: a grid of `TimerCard` size `lg` (a 132 px stroke-7 progress ring variant) renders one card per item. 3 columns above 1280 px, 2 columns at 1024 to 1279 px. Card colour tracks status: pending slate, cooking ember, resting amber, ready green, plated muted.
-- Hitting "Anrichten" on a card transitions the item to plated and updates the activity log. When every item is plated (or the items list becomes empty), the cockpit ends the Grillade and returns to Übersicht.
+- Hitting "Anrichten" on a card transitions the item to plated and updates the activity log. When every item is plated (or the items list becomes empty), the cockpit ends the Grillade and returns to the Grillen pre-start state at `/plan`.
 
 **Transition behaviour:**
 
@@ -164,7 +160,7 @@ The Grillen cockpit is one screen that covers both pre-start planning and post-s
 
 The following items appeared in earlier drafts of this spec and were intentionally dropped during implementation. They are out of scope for this spec and have no follow-up unless explicitly re-opened:
 
-- **Übersicht as a sidebar entry.** The hero, stat cards, and "Loszündeln" CTA still render at `/` on desktop, but no sidebar item targets it. The sidebar consolidated to three entries: Grillen, Chronik, Einstellungen.
+- **Übersicht overview screen.** Earlier drafts called for a dashboard at `/` with a hero, stat cards, and a "Loszündeln" CTA. It was dropped entirely; the desktop `/` redirects to `/plan` so the Grillen cockpit is the only landing surface. The sidebar consolidated to three entries: Grillen, Chronik, Einstellungen.
 - **Auth surface re-skin.** `/login`, `/set-password`, and `/forgot-password` keep their existing styling. The token-aligned input style, `SectionHeader.svelte` adoption, and re-skin of error banners are not part of this spec.
 - **Standalone `/account` route.** Account management is consolidated into the Einstellungen Konto group; there is no `/account` page. Activation emails and any external link must target `/settings?group=account`.
 - **`SyncChip.svelte` mounting.** The component exists in `src/lib/components/SyncChip.svelte` but is not imported by `+layout.svelte` or any other surface. The chip is dead code; see Cleanup follow-ups.
@@ -245,11 +241,11 @@ The phases are ordered foundation, then atoms, then responsive shell, then deskt
 - [x] Add the LIVE badge logic to the Grillen sidebar item: read `grilladeStore.session` truthiness and pass a `badge: 'LIVE'` to the `Sidebar` items array when a Session is running.
 - [x] Mobile authenticated header band is out of scope (see Out of scope: SyncChip mounting). The mobile layout renders the route content directly without an extra header.
 
-**Phase 4: Übersicht (desktop /)**
+**Phase 4: Home redirect (desktop / to /plan)**
 
-- [x] Update `src/routes/+page.svelte` to branch on `viewport.isDesktop`. When desktop, render the `CockpitOverview` composition from `desktop.jsx`: date kicker, 56 px "Bereit zum Grillen?" hero, supporting copy, `Loszündeln` button, then three stat cards. When mobile, render the existing Glühen home unchanged.
-- [x] Compute the three stat values from the existing stores: current-month finished Grilladen count for "Grilladen diesen Monat", local saved-history count for "Gespeicherte Grilladen", and longest finished session duration for "Längste Grillade".
-- [x] The "Loszündeln" CTA navigates to `/plan` and clears the current draft plan via a new `grilladeStore.resetDraft()` action that sets `plan` to `defaultPlan()`, resets manual-mode fields, persists the empty plan, and leaves any active running session untouched.
+- [x] Add a `$effect` in `src/routes/+layout.svelte` that redirects to `/plan` whenever `showDesktopShell && pathname === '/'`, so the Grillen cockpit is the canonical landing page on desktop.
+- [x] Add `grilladeStore.resetDraft()` so any caller that wants a fresh Grillade can reset the plan and persist it before navigating into Grillen.
+- [x] Keep `src/routes/+page.svelte` mobile-only: the desktop branch renders nothing because the layout redirects before the page ever shows.
 
 **Phase 5: Grillen unified cockpit (desktop `/plan` and `/session`)**
 
@@ -382,18 +378,9 @@ The following end-to-end suites cover the desktop cockpit, the Chronik, the mobi
 
 ### Manual Verification (Marco)
 
-These steps require physical devices and Marco's eyes. Every step is one item. Run after the full automated suite is green.
+The automated suite (`pnpm test`, `pnpm test:components`, `pnpm test:e2e`) covers every behavioural assertion in this spec. Manual Verification is reserved for checks that genuinely require human eyes, ears, or touch on a real device. Run against the dev host `https://grillmi.krafted.cc`, not production.
 
-- [ ] On the Mac in Safari at fullscreen, open `https://grillmi.cloud`. The sidebar mounts on the left with three nav items (Grillen, Chronik, Einstellungen) and the AccountChip at the bottom. The LIVE pill is hidden when no Grillade is running. Click each nav item in turn and confirm the pane swaps in place.
-- [ ] On the Mac, navigate to `/` (home). The hero "Bereit zum Grillen?" renders with the date kicker and the three stat cards (Grilladen diesen Monat, Gespeicherte Grilladen, Längste Grillade). Click "Loszündeln"; the Grillen cockpit opens at `/plan` with an empty draft.
-- [ ] On the Mac, compose a Grillade with three Grillstücke including one thickness-doneness cut. The left-rail Grillstück summary updates as you add. The eating-time numeral opens its picker; pick a new time; the numeral updates. Hit "Los, fertig um HH:MM"; the centre pane swaps in place from compose to live cockpit (master countdown ticking, big timer cards) without the left-rail summary flashing empty. The sidebar Grillen entry now carries the LIVE pill.
-- [ ] On the Mac mid-cook, wait for the first Auflegen alarm. The alarm banner pulses at the top of the right pane. The activity log on the right shows the matching event with a coloured dot. Confirm the alarm; the banner clears.
-- [ ] On the Mac, open Chronik. Past finished Grilladen render as cards with the saved-star slot and footer metrics. Click one; the detail view shows metric tiles, the Grillstücke table, the note block, and the actions column. Hit "Erneut grillen"; the cockpit swaps to Grillen pre-start with the same Grillstücke. Click "Löschen", confirm with "Ja, löschen"; the row disappears and the toast confirms.
-- [ ] On the Mac with a live Grillade, click the sidebar Grillen entry. URL goes to `/session` because a Session is running. The cockpit shows the live state. Click "Beenden"; confirm; the cockpit returns to pre-start, the LIVE pill disappears from the sidebar, and the URL goes to `/plan`.
-- [ ] On the Mac, open Einstellungen. The left rail shows the five groups. Click Geräte; the active devices list renders with the Mac and the iPhone. Click Konto; the email, password-change button, and hold-to-delete render correctly.
-- [ ] On the Mac, click the AccountChip at the bottom of the sidebar. The URL becomes `/settings?group=account` and the Konto group is preselected.
-- [ ] On the iPad in landscape on Safari at `https://grillmi.cloud`, the sidebar mounts and the cockpit layout matches the Mac. Rotate to portrait; the sidebar disappears and the mobile direction takes over. Rotate back; the sidebar returns without a page reload.
-- [ ] On the iPhone PWA at the grill, start a Grillade with two Grillstücke. The mobile Session screen renders the existing Glühen direction. Trigger an alarm; the alarm banner shows the `+N` badge when a second alarm queues behind it. Switch to Manuell Modus; with one Grillstück the card renders full width; add a second; the layout switches to the two-column grid.
-- [ ] On the iPhone PWA, sign out, open `/login`, sign back in. The flow works end-to-end with the existing markup. Open the Einstellungen page; the four groups render and the Konto delete flow works.
-- [ ] On the iPhone PWA, toggle airplane mode on, edit a Grillade item name. Toggle airplane mode off. Within five seconds the Mac picks up the edit on next foreground (sync queue replay).
-- [ ] On the iPhone PWA, open `/chronik` via the URL bar. The route renders the finished list in a single column. Tap a row; detail view renders full-width.
+- [ ] **Real iPhone PWA at the grill (audible and haptic).** Install via A2HS to home screen, open the PWA in standalone mode, start a Grillade with two Grillstücke, and confirm: the Auflegen / Wenden / Fertig tones are audibly distinct and audible over kitchen ambient noise; with Haptik on, the buzz at each event feels right (not too long, not missed); a queue of two alarms triggers the `+N` badge as the user perceives it; the screen stays awake for the duration of the Session via Wake Lock.
+- [ ] **Real iPad rotation on Safari.** Open `https://grillmi.krafted.cc` in landscape. Rotate to portrait while a Session is running; the layout switches to the mobile direction without a page reload and without dropping the running Session. Rotate back to landscape; the desktop cockpit returns and the Session continues uninterrupted.
+- [ ] **Real Mac Safari fullscreen aesthetics.** Open `https://grillmi.krafted.cc` in Safari fullscreen on Retina at 1440×900 or higher. Verify the visual feel: ember accent reads correctly, display-font hero looks right at 56 px, sidebar typography is balanced, no scrollbar artefacts on the cockpit, dark theme has no off-tone surfaces. This is a judgement call about feel, not a pixel diff.
+- [ ] **Audible tone selection across devices.** In Einstellungen → Signale & Alarme, cycle through the available tones (Glut, Funke, Kohle, Klassik, Lautlos) on Mac speakers and on the iPhone PWA. Each tone preview is audibly distinct; Lautlos is genuinely silent; the chosen tone is what fires during a real cook on the iPhone.

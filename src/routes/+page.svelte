@@ -3,43 +3,20 @@
 	import { onMount } from 'svelte'
 	import Button from '$lib/components/Button.svelte'
 	import GlowGrates from '$lib/components/GlowGrates.svelte'
-	import Card from '$lib/components/Card.svelte'
 	import { grilladeStore } from '$lib/stores/grilladeStore.svelte'
 	import { grilladenHistoryStore } from '$lib/stores/grilladenHistoryStore.svelte'
 	import { settingsStore } from '$lib/stores/settingsStore.svelte'
-	import { listGrilladen } from '$lib/stores/db'
 	import { viewport } from '$lib/runtime/viewport.svelte'
-	import { formatDuration } from '$lib/util/format'
 
 	const recentGrilladen = $derived(grilladenHistoryStore.finished.slice(0, 6))
 	const primaryLive = $derived(Boolean(grilladeStore.session))
-	let finishedThisMonth = $state<number | null>(null)
-	let savedHistory = $state<number | null>(null)
-	let longestDuration = $state<number | null>(null)
 
 	onMount(async () => {
 		await grilladeStore.init()
 		await grilladenHistoryStore.init()
 		await settingsStore.init()
-		await loadStats()
 		if (grilladeStore.session && grilladeStore.sessionHasStarted) goto('/session')
 	})
-
-	async function loadStats() {
-		const rows = await listGrilladen()
-		const finished = rows.filter(row => row.status === 'finished' && row.deletedEpoch === null)
-		const now = new Date()
-		finishedThisMonth = finished.filter(row => {
-			if (!row.endedEpoch) return false
-			const ended = new Date(row.endedEpoch)
-			return ended.getFullYear() === now.getFullYear() && ended.getMonth() === now.getMonth()
-		}).length
-		savedHistory = 0
-		longestDuration =
-			finished
-				.map(row => (row.startedEpoch && row.endedEpoch ? Math.round((row.endedEpoch - row.startedEpoch) / 1000) : 0))
-				.sort((a, b) => b - a)[0] ?? 0
-	}
 
 	async function loadGrillade(id: string) {
 		const loaded = await grilladenHistoryStore.loadItems(id)
@@ -58,11 +35,6 @@
 		return row.name ?? `Grillade vom ${new Date(row.endedEpoch ?? row.updatedEpoch).toLocaleDateString('de-CH')}`
 	}
 
-	function newDesktopGrillade() {
-		grilladeStore.resetDraft()
-		goto('/plan')
-	}
-
 	function primaryMobileAction() {
 		if (grilladeStore.session) {
 			goto('/session')
@@ -76,28 +48,7 @@
 	<title>Grillmi</title>
 </svelte:head>
 
-{#if viewport.isDesktop}
-	<main class="desktop-overview">
-		<div class="date-kicker">Heute · {new Date().toLocaleDateString('de-CH', { weekday: 'long', day: '2-digit', month: '2-digit' })}</div>
-		<h1>Bereit zum <span>Grillen?</span></h1>
-		<p class="desktop-copy">Plane deine Grillade am Laptop, starte sie wann du fertig bist. Auf jedem Gerät.</p>
-		<Button variant="primary" size="lg" onclick={newDesktopGrillade}>Loszündeln</Button>
-		<div class="stats">
-			<Card>
-				<div class="stat-value">{finishedThisMonth ? finishedThisMonth : '-'}</div>
-				<div class="stat-label">Grilladen diesen Monat</div>
-			</Card>
-			<Card>
-				<div class="stat-value">{savedHistory ? savedHistory : '-'}</div>
-				<div class="stat-label">Gespeicherte Grilladen</div>
-			</Card>
-			<Card>
-				<div class="stat-value">{longestDuration ? formatDuration(longestDuration) : '-'}</div>
-				<div class="stat-label">Längste Grillade</div>
-			</Card>
-		</div>
-	</main>
-{:else}
+{#if !viewport.isDesktop}
 <div class="screen">
 	<GlowGrates />
 	<div class="content">
@@ -149,63 +100,6 @@
 {/if}
 
 <style>
-	.desktop-overview {
-		min-height: 100dvh;
-		padding: 32px 36px;
-		background: var(--color-bg-base);
-		color: var(--color-fg-base);
-	}
-	.date-kicker {
-		margin-bottom: 10px;
-		color: var(--color-ember);
-		font-family: var(--font-body);
-		font-size: 10px;
-		font-weight: 700;
-		letter-spacing: 0.14em;
-		text-transform: uppercase;
-	}
-	.desktop-overview h1 {
-		max-width: 760px;
-		margin: 0;
-		font-family: var(--font-display);
-		font-size: 56px;
-		font-weight: 600;
-		line-height: 1;
-		letter-spacing: -0.02em;
-		text-transform: uppercase;
-	}
-	.desktop-overview h1 span {
-		color: var(--color-ember);
-	}
-	.desktop-copy {
-		max-width: 470px;
-		margin: 16px 0 28px;
-		color: var(--color-fg-muted);
-		font-size: 16px;
-		line-height: 1.5;
-	}
-	.stats {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 16px;
-		max-width: 900px;
-		margin-top: 40px;
-	}
-	.stat-value {
-		font-family: var(--font-display);
-		font-size: 38px;
-		font-weight: 700;
-		line-height: 1;
-		font-variant-numeric: tabular-nums;
-	}
-	.stat-label {
-		margin-top: 8px;
-		color: var(--color-fg-muted);
-		font-size: 12px;
-		font-weight: 700;
-		letter-spacing: 0.06em;
-		text-transform: uppercase;
-	}
 	.screen {
 		position: relative;
 		min-height: 100dvh;
