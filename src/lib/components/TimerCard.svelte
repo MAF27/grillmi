@@ -33,8 +33,8 @@
 	let dragX = $state(0)
 	let pressTimer: ReturnType<typeof setTimeout> | null = null
 
-	const ringSize = $derived(size === 'lg' ? 132 : 92)
-	const ringStroke = $derived(size === 'lg' ? 7 : 6)
+	const ringSize = $derived(size === 'lg' ? 132 : 128)
+	const ringStroke = $derived(size === 'lg' ? 7 : 7)
 
 	const cookTotalMs = $derived(item.doneEpoch - item.putOnEpoch)
 
@@ -75,17 +75,6 @@
 		return 0
 	})
 
-	const labelMap: Record<TimerCardStatus, string> = {
-		unstarted: 'BEREIT',
-		pending: 'WARTET',
-		'put-on-soon': 'AUFLEGEN',
-		cooking: 'GRILLT',
-		flip: 'WENDEN!',
-		resting: 'RUHT',
-		ready: 'FERTIG',
-		plated: 'ANGERICHTET',
-	}
-
 	const ringValue = $derived.by(() => {
 		if (effectiveStatus === 'unstarted') return formatDuration(item.cookSeconds)
 		if (effectiveStatus === 'ready') return '✓'
@@ -95,6 +84,9 @@
 			return formatDuration(Math.max(0, Math.round((targetEpoch - now) / 1000)))
 		}
 		if (effectiveStatus === 'cooking' || effectiveStatus === 'flip') {
+			if (item.flipEpoch !== null && cookProgress < 0.5) {
+				return formatDuration(Math.max(0, Math.round((item.flipEpoch - now) / 1000)))
+			}
 			return formatDuration(Math.max(0, Math.round((item.doneEpoch - now) / 1000)))
 		}
 		if (effectiveStatus === 'resting') {
@@ -219,22 +211,19 @@
 
 	<div class="name">{title}</div>
 	<div class="meta" class:empty={!metaLine} aria-hidden={!metaLine}>{metaLine || '\u00a0'}</div>
-	<div class="status-slot">
-		<div class="status-badge" aria-live="polite">{labelMap[effectiveStatus]}</div>
 
-		{#if effectiveStatus === 'unstarted' && onstart}
-			<button class="action start" type="button" onclick={() => onstart!(item.id)}>Los</button>
-		{:else if effectiveStatus === 'ready' && onplate}
-			<button class="action plate" type="button" onclick={() => onplate!(item.id)}>Anrichten</button>
-		{/if}
-	</div>
+	{#if effectiveStatus === 'unstarted' && onstart}
+		<button class="action start" type="button" onclick={() => onstart!(item.id)}>Los</button>
+	{:else if effectiveStatus === 'ready' && onplate}
+		<button class="action plate" type="button" onclick={() => onplate!(item.id)}>Anrichten</button>
+	{/if}
 </article>
 
 <style>
 	.card {
 		position: relative;
 		display: grid;
-		grid-template-rows: 94px 27px 16px 26px;
+		grid-template-rows: 130px 27px 16px;
 		align-items: center;
 		gap: 3px;
 		padding: 12px 14px;
@@ -242,7 +231,7 @@
 		border: 1px solid var(--color-border-subtle);
 		border-radius: 18px;
 		color: var(--color-fg-base);
-		height: 194px;
+		height: 203px;
 		min-width: 0;
 		overflow: hidden;
 		transition:
@@ -250,18 +239,18 @@
 			border-color var(--duration-normal) var(--ease-default);
 	}
 	.card[data-size='lg'] {
-		grid-template-rows: 134px 31px 18px 30px;
-		height: 241px;
+		grid-template-rows: 134px 31px 18px;
+		height: 217px;
 		padding: 14px 18px 14px;
 		border-radius: 16px;
 	}
 	.card:has(.action) {
-		grid-template-rows: 94px 27px 16px 62px;
-		height: 230px;
+		grid-template-rows: 130px 27px 16px 44px;
+		height: 250px;
 	}
 	.card[data-size='lg']:has(.action) {
-		grid-template-rows: 134px 31px 18px 72px;
-		height: 283px;
+		grid-template-rows: 134px 31px 18px 42px;
+		height: 262px;
 	}
 	.card.unstarted {
 		opacity: 0.85;
@@ -297,7 +286,7 @@
 	}
 	.ring-value {
 		font-family: var(--font-display);
-		font-size: 16px;
+		font-size: 30px;
 		font-weight: 700;
 		color: var(--color-fg-base);
 		font-variant-numeric: tabular-nums;
@@ -313,9 +302,9 @@
 		color: var(--color-fg-muted);
 	}
 	.ring-eyebrow {
-		margin-top: 2px;
+		margin-top: 4px;
 		font-family: var(--font-body);
-		font-size: 8px;
+		font-size: 11px;
 		font-weight: 700;
 		letter-spacing: 0.12em;
 		color: var(--color-fg-muted);
@@ -362,45 +351,6 @@
 	.meta.empty {
 		visibility: hidden;
 	}
-	.status-slot {
-		align-self: stretch;
-		display: grid;
-		grid-template-rows: 16px;
-		align-items: end;
-		padding-top: 10px;
-		width: 100%;
-		min-width: 0;
-	}
-	.card:has(.action) .status-slot {
-		grid-template-rows: 16px 1fr;
-		gap: 6px;
-	}
-	.status-badge {
-		font-family: var(--font-body);
-		font-size: 9px;
-		font-weight: 700;
-		letter-spacing: 0.14em;
-		text-transform: uppercase;
-		text-align: center;
-		color: var(--color-fg-muted);
-	}
-	.card[data-size='lg'] .status-badge {
-		font-size: 10px;
-		letter-spacing: 0.16em;
-	}
-	.card[data-state='cooking'] .status-badge,
-	.card[data-state='flip'] .status-badge {
-		color: var(--color-ember);
-	}
-	.card[data-state='put-on-soon'] .status-badge {
-		color: var(--color-state-resting);
-	}
-	.card[data-state='resting'] .status-badge {
-		color: var(--color-state-resting);
-	}
-	.card[data-state='ready'] .status-badge {
-		color: var(--color-state-ready);
-	}
 	.action {
 		height: 38px;
 		padding: 0 16px;
@@ -413,7 +363,7 @@
 		text-transform: uppercase;
 		cursor: pointer;
 		transition: filter 0.15s ease;
-		align-self: start;
+		align-self: end;
 		width: 100%;
 	}
 	.card[data-size='lg'] .action {
@@ -468,17 +418,12 @@
 	}
 	@media (max-width: 767px) {
 		.card:has(.action) {
-			grid-template-rows: 94px 27px 16px 62px;
+			grid-template-rows: 130px 27px 16px 38px;
+			height: 244px;
 		}
 		.card[data-size='lg']:has(.action) {
-			grid-template-rows: 134px 31px 18px 72px;
-		}
-		.card:has(.action) .status-slot {
-			grid-template-rows: 16px 32px;
-			align-content: start;
-		}
-		.card[data-size='lg']:has(.action) .status-slot {
-			grid-template-rows: 16px 34px;
+			grid-template-rows: 134px 31px 18px 40px;
+			height: 260px;
 		}
 		.card:has(.action) .action {
 			height: 32px;

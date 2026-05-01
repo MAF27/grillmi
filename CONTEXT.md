@@ -80,6 +80,7 @@ These TypeScript or Python type names show up in code but are not user-facing co
 - A **Grillade** contains zero or more **Grillstücke**.
 - A **Favorit** is a single-Grillstück preset that the user adds into a Grillade.
 - Every per-item state transition during a cook appends a **TimelineEvent** to the running Grillade.
+- **The only user-facing persistent collections are Favoriten and Chronik.** Favoriten are single-Grillstück presets; Chronik is the list of finished Grilladen. There is no Menü, no Plan-Vorlage, and no separate "plans" collection.
 
 ### Mismatches to resolve
 
@@ -91,7 +92,7 @@ These TypeScript or Python type names show up in code but are not user-facing co
 
 ### Cleanup follow-ups
 
-The following code paths reference a deprecated "Menü" / "Plan-Vorlage" feature that no UI exposes. They have no canonical glossary entry on purpose. A follow-up cleanup spec should rip them out. The sidebar has exactly three entries: **Grillen**, **Chronik**, **Einstellungen**. There is no Übersicht.
+The following code paths reference a deprecated "Menü" / "Plan-Vorlage" feature that no UI exposes. They have no canonical glossary entry on purpose. A follow-up cleanup spec should rip them out. The user-facing persistent collections are exactly **Favoriten** and **Chronik** — nothing else. The sidebar has exactly three entries: **Grillen**, **Chronik**, **Einstellungen**. There is no Übersicht.
 
 - `src/lib/models/index.ts` exports a `Menu = SavedPlan` alias.
 - `src/lib/stores/db.ts` keeps a `SavedPlan` type and a `listSavedPlans()` helper.

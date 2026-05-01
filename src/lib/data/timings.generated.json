@@ -1,13 +1,13 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-05-01T08:40:16.420Z",
+  "generatedAt": "2026-05-01T20:44:50.155Z",
   "categories": [
     {
       "slug": "beef",
       "name": "Rind",
       "cuts": [
         {
-          "slug": "rinds-entrecote-ribeye-steak-boneless",
+          "slug": "rinds-entrecote",
           "name": "Rinds-Entrecôte",
           "hasThickness": true,
           "hasDoneness": true,
@@ -280,7 +280,7 @@
           ]
         },
         {
-          "slug": "rinds-filet-beef-tenderloin-filet-mignon",
+          "slug": "rinds-filet",
           "name": "Rinds-Filet",
           "hasThickness": true,
           "hasDoneness": true,
@@ -552,7 +552,7 @@
           ]
         },
         {
-          "slug": "hohrucken-rib-steak-bone-in-rinds-ribeye-bone-in",
+          "slug": "hohrucken",
           "name": "Hohrücken",
           "hasThickness": true,
           "hasDoneness": true,
@@ -616,7 +616,7 @@
           ]
         },
         {
-          "slug": "t-bone-porterhouse",
+          "slug": "t-bone",
           "name": "T-Bone",
           "hasThickness": true,
           "hasDoneness": true,
@@ -654,7 +654,7 @@
           ]
         },
         {
-          "slug": "bavette-flanksteak-flank-steak",
+          "slug": "bavette",
           "name": "Bavette",
           "hasThickness": true,
           "hasDoneness": true,
@@ -692,7 +692,7 @@
           ]
         },
         {
-          "slug": "burgermeisterstuck-tri-tip",
+          "slug": "burgermeisterstuck",
           "name": "Bürgermeisterstück",
           "hasThickness": true,
           "hasDoneness": true,
@@ -730,7 +730,7 @@
           ]
         },
         {
-          "slug": "huftsteak-rump-huft",
+          "slug": "huftsteak",
           "name": "Hüftsteak",
           "hasThickness": true,
           "hasDoneness": true,
@@ -778,7 +778,7 @@
           "notes": []
         },
         {
-          "slug": "rumpsteak-sirloin-striploin-new-york-strip",
+          "slug": "rumpsteak",
           "name": "Rumpsteak",
           "hasThickness": true,
           "hasDoneness": true,
@@ -829,7 +829,7 @@
           ]
         },
         {
-          "slug": "roastbeef-ganzer-braten-reverse-sear",
+          "slug": "roastbeef",
           "name": "Roastbeef",
           "hasThickness": false,
           "hasDoneness": true,
@@ -867,7 +867,7 @@
           ]
         },
         {
-          "slug": "hamburger-hackfleisch-patties",
+          "slug": "hamburger",
           "name": "Hamburger",
           "hasThickness": false,
           "hasDoneness": false,
@@ -897,7 +897,7 @@
       "name": "Kalb",
       "cuts": [
         {
-          "slug": "kalbs-hohrucken-veal-rib-steak",
+          "slug": "kalbs-hohrucken",
           "name": "Kalbs-Hohrücken",
           "hasThickness": true,
           "hasDoneness": true,
@@ -961,7 +961,7 @@
           ]
         },
         {
-          "slug": "kalbs-kotelett-veal-chop-bone-in",
+          "slug": "kalbs-kotelett",
           "name": "Kalbs-Kotelett",
           "hasThickness": true,
           "hasDoneness": true,
@@ -1025,7 +1025,7 @@
           ]
         },
         {
-          "slug": "kalbshaxe-veal-shank-cross-cut-beinscheibe-osso-buco",
+          "slug": "kalbshaxe",
           "name": "Kalbshaxe",
           "hasThickness": true,
           "hasDoneness": true,
@@ -1071,7 +1071,7 @@
       "name": "Schwein",
       "cuts": [
         {
-          "slug": "schweinsteak-schulter-oder-keule-pork-steak",
+          "slug": "schweinsteak",
           "name": "Schweinsteak",
           "hasThickness": true,
           "hasDoneness": true,
@@ -1187,7 +1187,7 @@
           ]
         },
         {
-          "slug": "schweinsfilet-pork-tenderloin-whole",
+          "slug": "schweinsfilet",
           "name": "Schweinsfilet",
           "hasThickness": false,
           "hasDoneness": true,
@@ -1225,7 +1225,7 @@
           ]
         },
         {
-          "slug": "schweinshals-pork-neck-collar-schopfbraten-steak",
+          "slug": "schweinshals",
           "name": "Schweinshals",
           "hasThickness": false,
           "hasDoneness": false,
@@ -1250,7 +1250,7 @@
           ]
         },
         {
-          "slug": "gerollter-schweinshals-rolled-pork-collar-roast",
+          "slug": "gerollter-schweinshals",
           "name": "Gerollter Schweinshals",
           "hasThickness": false,
           "hasDoneness": false,
@@ -1272,7 +1272,7 @@
           "notes": []
         },
         {
-          "slug": "schweinskoteletts-pork-chops-bone-in",
+          "slug": "schweinskoteletts",
           "name": "Schweinskoteletts",
           "hasThickness": false,
           "hasDoneness": false,
@@ -1297,7 +1297,7 @@
           ]
         },
         {
-          "slug": "spareribs-kotelettrippli-st-louis",
+          "slug": "spareribs",
           "name": "Spareribs",
           "hasThickness": false,
           "hasDoneness": false,
@@ -1323,7 +1323,7 @@
           ]
         },
         {
-          "slug": "baby-back-ribs-kotelettrippli-mager",
+          "slug": "baby-back-ribs",
           "name": "Baby Back Ribs",
           "hasThickness": false,
           "hasDoneness": false,
@@ -1358,7 +1358,7 @@
           "notes": []
         },
         {
-          "slug": "bbq-speck-speckscheiben-vom-grill",
+          "slug": "bbq-speck",
           "name": "BBQ-Speck",
           "hasThickness": false,
           "hasDoneness": false,
@@ -1388,7 +1388,7 @@
       "name": "Lamm",
       "cuts": [
         {
-          "slug": "lamm-huftli-lamm-huftsteak-lamb-rump-steak",
+          "slug": "lamm-huftli",
           "name": "Lamm-Hüftli",
           "hasThickness": false,
           "hasDoneness": true,
@@ -1449,7 +1449,7 @@
           "notes": []
         },
         {
-          "slug": "lamm-koteletts-lamb-chops-bone-in",
+          "slug": "lamm-koteletts",
           "name": "Lamm-Koteletts",
           "hasThickness": false,
           "hasDoneness": true,
@@ -1487,7 +1487,7 @@
           ]
         },
         {
-          "slug": "lamm-nierstuck-lamb-loin-saddle-cuts",
+          "slug": "lamm-nierstuck",
           "name": "Lamm-Nierstück",
           "hasThickness": true,
           "hasDoneness": true,
@@ -1600,7 +1600,7 @@
           "notes": []
         },
         {
-          "slug": "lamm-rack-rack-of-lamb-carre-d-agneau",
+          "slug": "lamm-rack",
           "name": "Lamm-Rack",
           "hasThickness": false,
           "hasDoneness": true,
@@ -1638,7 +1638,7 @@
           ]
         },
         {
-          "slug": "lamm-gigot-leg-of-lamb-boneless-or-bone-in",
+          "slug": "lamm-gigot",
           "name": "Lamm-Gigot",
           "hasThickness": false,
           "hasDoneness": false,
@@ -1669,7 +1669,7 @@
       "name": "Geflügel",
       "cuts": [
         {
-          "slug": "pouletschnitzel-chicken-breast-boneless-skinless",
+          "slug": "pouletschnitzel",
           "name": "Pouletschnitzel",
           "hasThickness": false,
           "hasDoneness": false,
@@ -1694,7 +1694,7 @@
           ]
         },
         {
-          "slug": "pouletschenkel-pouletoberschenkel-chicken-thighs",
+          "slug": "pouletschenkel",
           "name": "Pouletschenkel",
           "hasThickness": false,
           "hasDoneness": false,
@@ -1719,7 +1719,7 @@
           ]
         },
         {
-          "slug": "poulet-flugeli-chicken-wings",
+          "slug": "poulet-flugeli",
           "name": "Poulet-Flügeli",
           "hasThickness": false,
           "hasDoneness": false,
@@ -1744,7 +1744,7 @@
           ]
         },
         {
-          "slug": "aufgebrochenes-poulet-spatchcock",
+          "slug": "aufgebrochenes-poulet",
           "name": "Aufgebrochenes Poulet",
           "hasThickness": false,
           "hasDoneness": true,
@@ -1782,7 +1782,7 @@
           ]
         },
         {
-          "slug": "pouletspiessli-chicken-skewers",
+          "slug": "pouletspiessli",
           "name": "Pouletspiessli",
           "hasThickness": false,
           "hasDoneness": false,
@@ -1807,7 +1807,7 @@
           ]
         },
         {
-          "slug": "entenbrust-duck-breast",
+          "slug": "entenbrust",
           "name": "Entenbrust",
           "hasThickness": false,
           "hasDoneness": true,
@@ -1845,7 +1845,7 @@
           ]
         },
         {
-          "slug": "trutenschnitzel-turkey-cutlet",
+          "slug": "trutenschnitzel",
           "name": "Trutenschnitzel",
           "hasThickness": true,
           "hasDoneness": false,
@@ -1957,7 +1957,7 @@
           "notes": []
         },
         {
-          "slug": "grillschnecke-bratwurstschnecke",
+          "slug": "grillschnecke",
           "name": "Grillschnecke",
           "hasThickness": false,
           "hasDoneness": false,
@@ -1981,7 +1981,7 @@
           ]
         },
         {
-          "slug": "kalbsbratwurst-st-galler",
+          "slug": "kalbsbratwurst",
           "name": "Kalbsbratwurst",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2028,8 +2028,8 @@
           "notes": []
         },
         {
-          "slug": "italian-sausage-salsiccia",
-          "name": "Italian sausage",
+          "slug": "salsiccia",
+          "name": "Salsiccia",
           "hasThickness": false,
           "hasDoneness": false,
           "rows": [
@@ -2050,7 +2050,7 @@
           "notes": []
         },
         {
-          "slug": "chorizo-fresh",
+          "slug": "chorizo",
           "name": "Chorizo",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2072,7 +2072,7 @@
           "notes": []
         },
         {
-          "slug": "frankfurter-wienerli",
+          "slug": "frankfurter",
           "name": "Frankfurter",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2122,7 +2122,7 @@
       "name": "Fisch",
       "cuts": [
         {
-          "slug": "lachsfilet-salmon-fillet-single-portion-skin-on",
+          "slug": "lachsfilet",
           "name": "Lachsfilet",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2147,7 +2147,7 @@
           ]
         },
         {
-          "slug": "lachs-whole-side-of-salmon",
+          "slug": "lachs",
           "name": "Lachs",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2172,7 +2172,7 @@
           ]
         },
         {
-          "slug": "forelle-whole-trout-300-g",
+          "slug": "forelle",
           "name": "Forelle",
           "hasThickness": true,
           "hasDoneness": false,
@@ -2210,7 +2210,7 @@
           ]
         },
         {
-          "slug": "dorade-branzino-whole-sea-bream-sea-bass-400-g",
+          "slug": "dorade",
           "name": "Dorade",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2235,7 +2235,7 @@
           ]
         },
         {
-          "slug": "gelbflossenthunfisch-yellowfin-tuna-steak",
+          "slug": "gelbflossenthunfisch",
           "name": "Gelbflossenthunfisch",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2259,7 +2259,7 @@
           ]
         },
         {
-          "slug": "schwertfisch-swordfish-steak",
+          "slug": "schwertfisch",
           "name": "Schwertfisch",
           "hasThickness": true,
           "hasDoneness": true,
@@ -2294,7 +2294,7 @@
           "notes": []
         },
         {
-          "slug": "riesencrevetten-king-prawns-shell-on",
+          "slug": "riesencrevetten",
           "name": "Riesencrevetten",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2319,7 +2319,7 @@
           ]
         },
         {
-          "slug": "kalmar-squid-calamari",
+          "slug": "kalmar",
           "name": "Kalmar",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2389,6 +2389,28 @@
             }
           ],
           "notes": []
+        },
+        {
+          "slug": "scharfer-max-grill-cheese",
+          "name": "Scharfer Max Grill Cheese",
+          "hasThickness": false,
+          "hasDoneness": false,
+          "rows": [
+            {
+              "thicknessCm": null,
+              "prepLabel": "-",
+              "doneness": null,
+              "cookSecondsMin": 360,
+              "cookSecondsMax": 360,
+              "flipFraction": 0.5,
+              "idealFlipPattern": "once",
+              "restSeconds": 0,
+              "heatZone": "—",
+              "grateTempC": 220,
+              "notes": null
+            }
+          ],
+          "notes": []
         }
       ]
     },
@@ -2397,7 +2419,7 @@
       "name": "Gemüse",
       "cuts": [
         {
-          "slug": "aubergine-eggplant-slices",
+          "slug": "aubergine",
           "name": "Aubergine",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2421,7 +2443,7 @@
           ]
         },
         {
-          "slug": "champignons-mushrooms-white-or-brown-whole",
+          "slug": "champignons",
           "name": "Champignons",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2445,7 +2467,7 @@
           ]
         },
         {
-          "slug": "portobello-cap-whole",
+          "slug": "portobello",
           "name": "Portobello",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2491,7 +2513,7 @@
           "notes": []
         },
         {
-          "slug": "knoblauch-garlic-whole-head-in-foil",
+          "slug": "knoblauch",
           "name": "Knoblauch",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2513,7 +2535,7 @@
           "notes": []
         },
         {
-          "slug": "maiskolben-corn-on-the-cob",
+          "slug": "maiskolben",
           "name": "Maiskolben",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2535,7 +2557,7 @@
           "notes": []
         },
         {
-          "slug": "pak-choi-halved",
+          "slug": "pak-choi",
           "name": "Pak Choi",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2559,7 +2581,7 @@
           ]
         },
         {
-          "slug": "peperoni-bell-peppers",
+          "slug": "peperoni",
           "name": "Peperoni",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2581,7 +2603,7 @@
           "notes": []
         },
         {
-          "slug": "spargeln-asparagus-green",
+          "slug": "spargeln",
           "name": "Spargeln",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2605,7 +2627,7 @@
           ]
         },
         {
-          "slug": "susskartoffel-sweet-potato",
+          "slug": "susskartoffel",
           "name": "Süsskartoffel",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2627,7 +2649,7 @@
           "notes": []
         },
         {
-          "slug": "tofu-fest-gepresst",
+          "slug": "tofu",
           "name": "Tofu",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2652,7 +2674,7 @@
           ]
         },
         {
-          "slug": "tomate-ganz-oder-halbiert",
+          "slug": "tomate",
           "name": "Tomate",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2674,7 +2696,7 @@
           "notes": []
         },
         {
-          "slug": "zucchetti-zucchini-slices-lengthwise",
+          "slug": "zucchetti",
           "name": "Zucchetti",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2696,7 +2718,7 @@
           "notes": []
         },
         {
-          "slug": "fenchel-fennel-halved-or-wedges",
+          "slug": "fenchel",
           "name": "Fenchel",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2718,7 +2740,7 @@
           "notes": []
         },
         {
-          "slug": "fruhlingszwiebeln-spring-onions-whole",
+          "slug": "fruhlingszwiebeln",
           "name": "Frühlingszwiebeln",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2740,8 +2762,8 @@
           "notes": []
         },
         {
-          "slug": "plant-based-burger-patty-beyond-impossible-cornatur",
-          "name": "Plant-based burger patty",
+          "slug": "pflanzliches-burger-patty",
+          "name": "Pflanzliches Burger-Patty",
           "hasThickness": false,
           "hasDoneness": false,
           "rows": [
@@ -2766,8 +2788,8 @@
           ]
         },
         {
-          "slug": "cornatur-style-veggie-steak-seitan-wheat-protein",
-          "name": "Cornatur-style veggie steak",
+          "slug": "cornatur-steak",
+          "name": "Cornatur-Steak",
           "hasThickness": false,
           "hasDoneness": false,
           "rows": [
@@ -2794,7 +2816,7 @@
       "name": "Früchte",
       "cuts": [
         {
-          "slug": "ananas-pineapple-rings",
+          "slug": "ananas",
           "name": "Ananas",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2816,7 +2838,7 @@
           "notes": []
         },
         {
-          "slug": "apfel-apple-halved-or-rings",
+          "slug": "apfel",
           "name": "Apfel",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2838,7 +2860,7 @@
           "notes": []
         },
         {
-          "slug": "aprikosen-apricots-halved",
+          "slug": "aprikosen",
           "name": "Aprikosen",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2860,7 +2882,7 @@
           "notes": []
         },
         {
-          "slug": "avocado-halved-pit-removed",
+          "slug": "avocado",
           "name": "Avocado",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2885,7 +2907,7 @@
           ]
         },
         {
-          "slug": "banane-banana-in-skin-slit",
+          "slug": "banane",
           "name": "Banane",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2907,7 +2929,7 @@
           "notes": []
         },
         {
-          "slug": "feigen-figs-halved",
+          "slug": "feigen",
           "name": "Feigen",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2931,7 +2953,7 @@
           ]
         },
         {
-          "slug": "mango-cheeks-wedges",
+          "slug": "mango",
           "name": "Mango",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2953,7 +2975,7 @@
           "notes": []
         },
         {
-          "slug": "marroni-chestnuts-scored",
+          "slug": "marroni",
           "name": "Marroni",
           "hasThickness": false,
           "hasDoneness": false,
@@ -2978,7 +3000,7 @@
           ]
         },
         {
-          "slug": "nektarinen-nectarines-halved",
+          "slug": "nektarinen",
           "name": "Nektarinen",
           "hasThickness": false,
           "hasDoneness": false,
@@ -3000,7 +3022,7 @@
           "notes": []
         },
         {
-          "slug": "pfirsiche-peaches-halved",
+          "slug": "pfirsiche",
           "name": "Pfirsiche",
           "hasThickness": false,
           "hasDoneness": false,
@@ -3022,7 +3044,7 @@
           "notes": []
         },
         {
-          "slug": "wassermelone-watermelon-thick-slices",
+          "slug": "wassermelone",
           "name": "Wassermelone",
           "hasThickness": false,
           "hasDoneness": false,
@@ -3046,7 +3068,7 @@
           ]
         },
         {
-          "slug": "zitrone-limette-lemon-lime-halved-for-dressing",
+          "slug": "zitrone",
           "name": "Zitrone",
           "hasThickness": false,
           "hasDoneness": false,
@@ -3076,7 +3098,7 @@
       "name": "Spezial",
       "cuts": [
         {
-          "slug": "pferdesteak-horse-steak",
+          "slug": "pferdesteak",
           "name": "Pferdesteak",
           "hasThickness": false,
           "hasDoneness": true,
@@ -3139,7 +3161,7 @@
           ]
         },
         {
-          "slug": "kaninchenfilets-kaninchen-filets",
+          "slug": "kaninchenfilets",
           "name": "Kaninchenfilets",
           "hasThickness": false,
           "hasDoneness": false,
@@ -3161,8 +3183,8 @@
           "notes": []
         },
         {
-          "slug": "mixed-grill-spiessli-gemischte-spiessli",
-          "name": "Mixed-Grill Spiessli",
+          "slug": "gemischte-spiessli",
+          "name": "Gemischte Spiessli",
           "hasThickness": false,
           "hasDoneness": false,
           "rows": [
