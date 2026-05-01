@@ -1,9 +1,20 @@
-import { userSettingsSchema, TONE_IDS, type UserSettings, type ToneId } from '$lib/schemas'
+import {
+	userSettingsSchema,
+	TONE_IDS,
+	ACCENT_IDS,
+	DENSITY_IDS,
+	type UserSettings,
+	type ToneId,
+	type AccentId,
+	type DensityId,
+} from '$lib/schemas'
 import { getSettings, putSettings } from './db'
 import { enqueueSync } from '$lib/sync/queue'
 
 const DEFAULTS: UserSettings = userSettingsSchema.parse({})
 const VALID_TONES = new Set<string>(TONE_IDS)
+const VALID_ACCENTS = new Set<string>(ACCENT_IDS)
+const VALID_DENSITIES = new Set<string>(DENSITY_IDS)
 
 function applyTheme(theme: UserSettings['theme']): void {
 	if (typeof document === 'undefined') return
@@ -15,9 +26,21 @@ function applyTheme(theme: UserSettings['theme']): void {
 	}
 }
 
-// Migrate any persisted sound id outside the new five-tone set to the new
-// default for that event. Existing users who had `chime-1..8` end up with the
-// Glühen defaults on next launch; the next setSound() persists the migration.
+function applyAccent(accent: AccentId): void {
+	if (typeof document === 'undefined') return
+	document.documentElement.dataset.accent = accent
+}
+
+function applyDensity(density: DensityId): void {
+	if (typeof document === 'undefined') return
+	document.documentElement.dataset.density = density
+}
+
+function applyRings(showProgressRings: boolean): void {
+	if (typeof document === 'undefined') return
+	document.documentElement.dataset.rings = showProgressRings ? 'on' : 'off'
+}
+
 function migrateSounds(stored: Record<string, unknown>): UserSettings['sounds'] {
 	const fallback = DEFAULTS.sounds
 	const out: Record<string, ToneId> = {}
@@ -68,8 +91,23 @@ function createSettingsStore() {
 		get firstRunSeen() {
 			return value.firstRunSeen
 		},
-		get vibrate() {
-			return value.vibrate
+		get accent() {
+			return value.accent
+		},
+		get density() {
+			return value.density
+		},
+		get showProgressRings() {
+			return value.showProgressRings
+		},
+		get leadPutOnSeconds() {
+			return value.leadPutOnSeconds
+		},
+		get leadFlipSeconds() {
+			return value.leadFlipSeconds
+		},
+		get leadDoneSeconds() {
+			return value.leadDoneSeconds
 		},
 
 		async init() {
@@ -77,17 +115,32 @@ function createSettingsStore() {
 			initialized = true
 			const stored = (await getSettings()) as (UserSettings & { sounds?: Record<string, unknown> }) | null
 			if (stored) {
+				const accent = typeof stored.accent === 'string' && VALID_ACCENTS.has(stored.accent) ? (stored.accent as AccentId) : DEFAULTS.accent
+				const density =
+					typeof stored.density === 'string' && VALID_DENSITIES.has(stored.density) ? (stored.density as DensityId) : DEFAULTS.density
 				const migrated: UserSettings = {
 					theme: stored.theme ?? DEFAULTS.theme,
 					sounds: migrateSounds((stored.sounds ?? {}) as Record<string, unknown>),
 					firstRunSeen: stored.firstRunSeen ?? DEFAULTS.firstRunSeen,
-					vibrate: typeof stored.vibrate === 'boolean' ? stored.vibrate : DEFAULTS.vibrate,
+					accent,
+					density,
+					showProgressRings:
+						typeof stored.showProgressRings === 'boolean' ? stored.showProgressRings : DEFAULTS.showProgressRings,
+					leadPutOnSeconds:
+						typeof stored.leadPutOnSeconds === 'number' ? stored.leadPutOnSeconds : DEFAULTS.leadPutOnSeconds,
+					leadFlipSeconds:
+						typeof stored.leadFlipSeconds === 'number' ? stored.leadFlipSeconds : DEFAULTS.leadFlipSeconds,
+					leadDoneSeconds:
+						typeof stored.leadDoneSeconds === 'number' ? stored.leadDoneSeconds : DEFAULTS.leadDoneSeconds,
 				}
 				value = migrated
 			} else {
 				value = DEFAULTS
 			}
 			applyTheme(value.theme)
+			applyAccent(value.accent)
+			applyDensity(value.density)
+			applyRings(value.showProgressRings)
 			subscribeSystem()
 		},
 
@@ -102,8 +155,29 @@ function createSettingsStore() {
 			await persist()
 		},
 
-		async setVibrate(on: boolean) {
-			value = { ...value, vibrate: on }
+		async setAccent(accent: AccentId) {
+			value = { ...value, accent }
+			applyAccent(accent)
+			await persist()
+		},
+
+		async setDensity(density: DensityId) {
+			value = { ...value, density }
+			applyDensity(density)
+			await persist()
+		},
+
+		async setShowProgressRings(on: boolean) {
+			value = { ...value, showProgressRings: on }
+			applyRings(on)
+			await persist()
+		},
+
+		async setLead(which: 'putOn' | 'flip' | 'done', seconds: number) {
+			const clamped = Math.max(0, Math.min(600, seconds))
+			if (which === 'putOn') value = { ...value, leadPutOnSeconds: clamped }
+			else if (which === 'flip') value = { ...value, leadFlipSeconds: clamped }
+			else value = { ...value, leadDoneSeconds: clamped }
 			await persist()
 		},
 

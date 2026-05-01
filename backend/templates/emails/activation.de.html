@@ -1,0 +1,12 @@
+{% extends "_base.html" %}
+{% block title %}Konto aktivieren{% endblock %}
+{% block intro %}
+	<p style="margin:0 0 12px;">Hallo{% if first_name %} {{ first_name }}{% endif %}</p>
+	<p style="margin:0;">dein Grillmi-Konto ist bereit. Aktiviere es über den Button unten.</p>
+{% endblock %}
+{% block cta %}Konto aktivieren{% endblock %}
+{% block expiry %}Der Link ist {{ expires_hours }} Stunde{% if expires_hours != 1 %}n{% endif %} gültig.{% endblock %}
+{% block outro %}
+	<p style="margin:0 0 8px;">Grillmi ist deine BBQ-Begleiter-App: viele Timer auf einmal, Wende-Erinnerungen, alles offline-fähig.</p>
+	<p style="margin:0;">Solltest du dieses Konto nicht angefragt haben, kannst du diese Mail ignorieren.</p>
+{% endblock %}

@@ -54,8 +54,26 @@
 		if (item.doneness) parts.push(item.doneness)
 		if (parts.length === 0 && item.prepLabel) parts.push(item.prepLabel)
 		if (item.grateTempC) parts.push(`${item.grateTempC} °C`)
-		if (item.heatZone && item.heatZone !== '—' && item.heatZone !== '-') parts.push(item.heatZone)
 		return parts.join(' · ')
+	}
+
+	function displayTitle(): string {
+		const fallback = item.label || item.cutSlug
+		if (!item.label) return fallback
+		let title = item.label.trim()
+		if (item.doneness) title = title.replace(new RegExp(`,?\\s*${escapeRegExp(item.doneness)}$`, 'i'), '').trim()
+		if (item.thicknessCm !== null) {
+			const thickness = `${item.thicknessCm}`.replace('.', '[.,]')
+			title = title.replace(new RegExp(`\\s+${thickness}\\s*cm$`, 'i'), '').trim()
+		}
+		if (item.prepLabel && item.prepLabel !== '—' && item.prepLabel !== '-') {
+			title = title.replace(new RegExp(`,?\\s*${escapeRegExp(item.prepLabel)}$`, 'i'), '').trim()
+		}
+		return title || fallback
+	}
+
+	function escapeRegExp(value: string): string {
+		return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 	}
 
 	async function startRename(e: MouseEvent) {
@@ -97,6 +115,7 @@
 	const atCookMin = $derived(item.cookSeconds <= COOK_MIN)
 	const atCookMax = $derived(item.cookSeconds >= COOK_MAX)
 	const meta = $derived(describe())
+	const title = $derived(displayTitle())
 </script>
 
 <div class="row" role="listitem">
@@ -113,7 +132,7 @@
 					aria-label="Bezeichnung bearbeiten" />
 			{:else}
 				<button class="title" onclick={startRename} aria-label="Bezeichnung umbenennen">
-					{item.label || item.cutSlug}
+					{title}
 				</button>
 			{/if}
 			{#if meta}

@@ -14,9 +14,10 @@
 		initial?: PlannedItem | null
 		onclose: () => void
 		oncommit: (item: Omit<PlannedItem, 'id'>) => void
+		placement?: 'sheet' | 'drawer'
 	}
 
-	let { open, initial = null, onclose, oncommit }: Props = $props()
+	let { open, initial = null, onclose, oncommit, placement = 'sheet' }: Props = $props()
 
 	let step = $state<Step>('category')
 	let tab = $state<Tab>('categories')
@@ -33,6 +34,10 @@
 	const cut = $derived(category && cutSlug ? (category.cuts.find(c => c.slug === cutSlug) ?? null) : null)
 	const matchedRow = $derived(cut ? findRow(cut, thicknessCm, doneness) : undefined)
 	const computedSeconds = $derived(matchedRow ? Math.round((matchedRow.cookSecondsMin + matchedRow.cookSecondsMax) / 2) : 0)
+	const heatZoneTip = $derived.by(() => {
+		if (!matchedRow?.heatZone || isDefaultHeatZone(matchedRow.heatZone)) return null
+		return `Grillmethode: ${matchedRow.heatZone}`
+	})
 
 	const donenessOrder = ['Bleu', 'Rare', 'Medium-rare', 'Medium', 'Medium-well', 'Well-done']
 	const donenessOptions = $derived.by<string[]>(() => {
@@ -68,6 +73,11 @@
 				if (needsPrep) return 'Variante'
 				return 'Anpassen'
 		}
+	}
+
+	function isDefaultHeatZone(value: string): boolean {
+		const normalized = value.trim().toLowerCase()
+		return normalized === 'direkt, deckel zu' || normalized === '—' || normalized === '-'
 	}
 
 	$effect(() => {
@@ -329,8 +339,16 @@
 
 {#if open}
 	<div class="scrim" role="presentation" onclick={onclose}></div>
-	<div class="sheet" role="dialog" aria-modal="true" aria-label="Eintrag hinzufügen">
-		<div class="handle" aria-hidden="true"></div>
+	<div
+		class="sheet"
+		class:drawer={placement === 'drawer'}
+		data-step={step}
+		role="dialog"
+		aria-modal="true"
+		aria-label="Eintrag hinzufügen">
+		{#if placement === 'sheet'}
+			<div class="handle" aria-hidden="true"></div>
+		{/if}
 		<header>
 			<button class="back" onclick={back} aria-label="Zurück">‹</button>
 			<div class="title-stack">
@@ -457,10 +475,13 @@
 						</div>
 					</section>
 				{/if}
-				{#if (cut.notes && cut.notes.length > 0) || matchedRow?.notes}
+				{#if (cut.notes && cut.notes.length > 0) || matchedRow?.notes || heatZoneTip}
 					<section class="section">
 						<h3>Tipps</h3>
 						<ul class="tips">
+							{#if heatZoneTip}
+								<li>{heatZoneTip}</li>
+							{/if}
 							{#if matchedRow?.notes}
 								<li>{matchedRow.notes}</li>
 							{/if}
@@ -485,16 +506,12 @@
 						{/if}
 					</span>
 				</div>
-				{#if matchedRow.grateTempC || (matchedRow.heatZone && matchedRow.heatZone !== '—')}
+				{#if matchedRow.grateTempC}
 					<div class="heat-summary">
 						<span class="cook-eyebrow">Hitze</span>
 						<span class="cook-values">
 							{#if matchedRow.grateTempC}
 								<strong>{matchedRow.grateTempC}&nbsp;°C</strong>
-							{/if}
-							{#if matchedRow.heatZone && matchedRow.heatZone !== '—'}
-								<span class="cook-sep">·</span>
-								<span>{matchedRow.heatZone}</span>
 							{/if}
 						</span>
 					</div>
@@ -554,8 +571,27 @@
 		width: 100%;
 		max-width: 600px;
 		margin: 0 auto;
-		box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.5);
+		box-shadow: var(--shadow-lg);
 		animation: aSheetIn 0.3s cubic-bezier(0.2, 0.7, 0.3, 1);
+	}
+	.sheet.drawer {
+		left: auto;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		max-height: 100dvh;
+		width: 480px;
+		max-width: 90vw;
+		margin: 0;
+		border-top-left-radius: 0;
+		border-top-right-radius: 0;
+		border-left: 1px solid var(--color-border-subtle);
+		animation: aDrawerIn 0.28s cubic-bezier(0.2, 0.7, 0.3, 1);
+	}
+	.sheet.drawer[data-step='specs'] {
+		bottom: auto;
+		height: auto;
+		max-height: 100dvh;
 	}
 	@keyframes aSheetIn {
 		from {
@@ -563,6 +599,14 @@
 		}
 		to {
 			transform: translateY(0);
+		}
+	}
+	@keyframes aDrawerIn {
+		from {
+			transform: translateX(100%);
+		}
+		to {
+			transform: translateX(0);
 		}
 	}
 	.handle {
@@ -648,6 +692,10 @@
 	.body {
 		flex: 1;
 		overflow: auto;
+	}
+	.sheet.drawer[data-step='specs'] .body {
+		flex: 0 1 auto;
+		overflow: visible;
 	}
 	.section {
 		display: flex;
@@ -921,6 +969,10 @@
 		display: flex;
 		flex-direction: column;
 		gap: 12px;
+	}
+	.sheet.drawer[data-step='specs'] footer {
+		border-top: none;
+		padding-top: 0;
 	}
 	.cook-summary,
 	.heat-summary {

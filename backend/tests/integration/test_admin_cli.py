@@ -23,31 +23,37 @@ async def test_admin_init_idempotent_on_existing_email(
     assert all(msg["to"] != "adminit@example.com" for msg in smtp_outbox)
 
 
-async def test_admin_reset_invalidates_all_sessions(db_session, make_user) -> None:
+async def test_admin_reset_emails_link_and_keeps_sessions(
+    db_session, make_user, smtp_outbox
+) -> None:
     user = await make_user(email="reset-cli@example.com")
+    original_hash = user.password_hash
     pre = await create_session(db_session, user_id=user.id, ip="127.0.0.1", user_agent="ua")
     await db_session.commit()
 
-    rc = await admin_reset._run("reset-cli@example.com", "brand-new-passw0rd")
+    rc = await admin_reset._run("reset-cli@example.com")
     assert rc == 0
 
-    # The CLI uses its own session_maker (commits to a fresh connection), so we
-    # confirm via a fresh query: the previous session should be gone.
+    # Existing session must NOT be invalidated by sending a reset link — the
+    # password only changes when /set-password consumes the token.
     rows = (
         await db_session.execute(select(SessionRow).where(SessionRow.user_id == user.id))
     ).scalars().all()
-    assert all(r.token != pre.token for r in rows)
+    assert any(r.token == pre.token for r in rows)
 
-    # The user's password_hash should now be a fresh argon2 hash.
+    # The user's password_hash must be untouched.
     fresh = (await db_session.execute(select(User).where(User.id == user.id))).scalar_one()
     await db_session.refresh(fresh)
-    assert fresh.password_hash.startswith("$argon2")
-    # Reset-token rows from the CLI flow are not created (admin-reset writes
-    # the new hash directly), so the password_reset_tokens table stays empty
-    # for this user.
+    assert fresh.password_hash == original_hash
+
+    # A reset-kind token row was inserted.
     tokens = (
         await db_session.execute(
             select(PasswordResetToken).where(PasswordResetToken.user_id == user.id)
         )
     ).scalars().all()
-    assert tokens == []
+    assert len(tokens) == 1
+    assert tokens[0].kind == "reset"
+
+    # An email was sent to the user.
+    assert any(msg["to"] == "reset-cli@example.com" for msg in smtp_outbox)

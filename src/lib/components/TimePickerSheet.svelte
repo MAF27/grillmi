@@ -131,7 +131,7 @@
 		gap: var(--space-3);
 		max-width: 600px;
 		margin: 0 auto;
-		box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.5);
+		box-shadow: var(--shadow-lg);
 		animation: sheet-in 0.3s cubic-bezier(0.2, 0.7, 0.3, 1);
 	}
 	@keyframes sheet-in {

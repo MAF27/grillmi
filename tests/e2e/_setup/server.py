@@ -69,7 +69,10 @@ def _ensure_pgserver_citext(install_root: Path) -> None:
 def _start_pg() -> tuple["object", Path]:
     import pgserver
 
-    pginstall_root = Path(pgserver.__file__).parent / "pginstall"
+    # pgserver ships as a namespace package on recent uv-resolved venvs, so
+    # __file__ is None; fall back to __path__ which is always populated.
+    pgserver_root = Path(pgserver.__file__).parent if pgserver.__file__ else Path(next(iter(pgserver.__path__)))
+    pginstall_root = pgserver_root / "pginstall"
     _ensure_pgserver_citext(pginstall_root)
 
     pgdata = Path(tempfile.mkdtemp(prefix="grillmi_e2e_pgdata_"))
@@ -99,11 +102,23 @@ def _patch_email_sender() -> list[dict]:
     outbox: list[dict] = []
     from grillmi.email import sender as email_sender_mod
 
-    async def fake_send(to: str, subject: str, body_text: str) -> None:
-        outbox.append({"to": to, "subject": subject, "body": body_text})
+    async def fake_send(to: str, subject: str, body_text: str, body_html: str | None = None) -> None:
+        outbox.append({"to": to, "subject": subject, "body": body_text, "html": body_html})
 
     email_sender_mod.send = fake_send  # type: ignore[assignment]
     return outbox
+
+
+def _patch_external_services() -> None:
+    """Keep e2e auth hermetic: no HIBP/network password reputation calls."""
+    from grillmi.routes import auth as auth_routes
+    from grillmi.security import hibp
+
+    async def safe_password(_: str) -> bool:
+        return False
+
+    hibp.check_password = safe_password  # type: ignore[assignment]
+    auth_routes.check_password = safe_password  # type: ignore[assignment]
 
 
 def _install_test_routes(app, outbox: list[dict]) -> None:
@@ -193,8 +208,8 @@ def _install_test_routes(app, outbox: list[dict]) -> None:
 
         public = get_settings().PUBLIC_BASE_URL.rstrip("/")
         link = f"{public}/set-password?token={raw_token}"
-        subject, body = render_activation(link, 72, email)
-        await email_sender_mod.send(email, subject, body)
+        rendered = render_activation(link, 72, email)
+        await email_sender_mod.send(email, rendered.subject, rendered.text, rendered.html)
         return {"email": email, "token": raw_token, "link": link}
 
     @router.post("/_test/forge_token")
@@ -292,6 +307,8 @@ def main() -> int:
     reset_engine_for_tests()
 
     from grillmi.main import app
+
+    _patch_external_services()
 
     _install_test_routes(app, outbox)
 

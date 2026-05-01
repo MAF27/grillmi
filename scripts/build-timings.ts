@@ -45,13 +45,14 @@ interface UiCategory {
 }
 
 // Slugs include the parenthetical English from the markdown headings.
-const HAMBURGER = 'hamburger-hackfleisch-patties'
-const BBQ_SPECK = 'bbq-speck-speckscheiben-vom-grill'
-const MIXED_GRILL = 'mixed-grill-spiessli-gemischte-spiessli'
-const KANINCHEN = 'kaninchenfilets-kaninchen-filets'
-const PFERDESTEAK = 'pferdesteak-horse-steak'
+const HAMBURGER = 'hamburger'
+const BBQ_SPECK = 'bbq-speck'
+const MIXED_GRILL = 'gemischte-spiessli'
+const KANINCHEN = 'kaninchenfilets'
+const PFERDESTEAK = 'pferdesteak'
 const HALLOUMI = 'halloumi'
 const PANEER = 'paneer'
+const SCHARFER_MAX = 'scharfer-max-grill-cheese'
 
 const UI_CATEGORIES: ReadonlyArray<UiCategory> = [
 	{
@@ -78,7 +79,7 @@ const UI_CATEGORIES: ReadonlyArray<UiCategory> = [
 	{
 		slug: 'cheese',
 		name: 'Käse',
-		pull: [{ from: 'vegetables', cuts: [HALLOUMI, PANEER] }],
+		pull: [{ from: 'vegetables', cuts: [HALLOUMI, PANEER, SCHARFER_MAX] }],
 	},
 	{ slug: 'vegetables', name: 'Gemüse', pull: [{ from: 'vegetables', cuts: 'all' }] },
 	{ slug: 'fruit', name: 'Früchte', pull: [{ from: 'fruit', cuts: 'all' }] },
@@ -308,6 +309,13 @@ function pickColumn(row: RawRow, ...candidates: string[]): string {
 	return ''
 }
 
+function normalizeHeatZone(value: string): string {
+	const trimmed = value.trim()
+	if (!trimmed || trimmed === '—' || trimmed === '-') return '—'
+	if (trimmed.toLowerCase() === 'direkt, deckel zu') return '—'
+	return trimmed
+}
+
 interface ParseStats {
 	categories: number
 	cutsAttempted: number
@@ -359,7 +367,7 @@ function parseCut(name: string, body: string[], stats: ParseStats): Cut | null {
 		const turnsRaw = pickColumn(row, 'Turns', 'Turn')
 		const flip = inferFlip(turnsRaw)
 
-		const heatZone = pickColumn(row, 'Heat zone', 'Method').trim() || '—'
+		const heatZone = normalizeHeatZone(pickColumn(row, 'Heat zone', 'Method'))
 
 		const grateTempRaw = pickColumn(row, 'Grate temp', 'Temperature', 'Temp')
 		const grateTempC = parseGrateTemp(grateTempRaw)
@@ -415,12 +423,12 @@ function parseCut(name: string, body: string[], stats: ParseStats): Cut | null {
 	stats.rowsParsed += rows.length
 	stats.cutsKept += 1
 
-	const slug = slugify(name)
 	const displayName =
 		name
 			.replace(/\s*\([^)]*\)\s*/g, ' ')
 			.replace(/\s*\/.*$/, '')
 			.trim() || name
+	const slug = slugify(displayName)
 
 	return {
 		slug,

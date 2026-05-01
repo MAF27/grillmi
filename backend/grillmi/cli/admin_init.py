@@ -14,10 +14,10 @@ from grillmi.email.templates import render_activation
 from grillmi.logging import configure_logging
 from grillmi.models import PasswordResetToken, User
 
-INVITATION_EXPIRY_HOURS = 72
+INVITATION_EXPIRY_HOURS = 1
 
 
-async def _run(email: str) -> int:
+async def _run(email: str, first_name: str | None = None) -> int:
     settings = get_settings()
     factory = async_session_maker()
 
@@ -33,18 +33,22 @@ async def _run(email: str) -> int:
         token_hash = hashlib.sha256(token.encode("utf-8")).digest()
         expires_at = datetime.now(timezone.utc) + timedelta(hours=INVITATION_EXPIRY_HOURS)
         link = f"{settings.PUBLIC_BASE_URL.rstrip('/')}/set-password?token={token}"
-        subject, body = render_activation(
-            link=link, expires_hours=INVITATION_EXPIRY_HOURS, recipient=email
+        rendered = render_activation(
+            link=link,
+            expires_hours=INVITATION_EXPIRY_HOURS,
+            recipient=email,
+            first_name=first_name,
         )
 
         try:
-            await email_sender.send(email, subject, body)
+            await email_sender.send(email, rendered.subject, rendered.text, rendered.html)
         except Exception as exc:
             print(f"send failed; aborting before any DB writes: {exc}", file=sys.stderr)
             return 2
 
         user = User(
             email=email,
+            first_name=first_name,
             password_hash="!disabled_" + secrets.token_hex(8),
         )
         session.add(user)
@@ -67,8 +71,9 @@ def main() -> None:
     configure_logging(json=False)
     parser = argparse.ArgumentParser(prog="grillmi-admin-init")
     parser.add_argument("--email", required=True)
+    parser.add_argument("--first-name", dest="first_name", default=None)
     args = parser.parse_args()
-    sys.exit(asyncio.run(_run(args.email)))
+    sys.exit(asyncio.run(_run(args.email, args.first_name)))
 
 
 if __name__ == "__main__":

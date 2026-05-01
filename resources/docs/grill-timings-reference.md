@@ -665,7 +665,7 @@ Dünn, scharf, Lamm und Rind. Schnell.
 
 Sources: [Migros-Grilltimer].
 
-### Italian sausage (Salsiccia)
+### Salsiccia
 
 Roh, etwa 25 mm Pelle.
 
@@ -675,7 +675,7 @@ Roh, etwa 25 mm Pelle.
 
 Sources: [Weber-US] Italian sausage 12–15 min. [SE] ähnlich.
 
-### Chorizo (fresh)
+### Chorizo
 
 | Type | Heat zone | Grate temp | Timing | Total | Turns |
 | --- | --- | --- | --- | --- | --- |
@@ -733,7 +733,7 @@ Notes:
 
 - Käse 30 s vor Schluss auflegen, Deckel zu zum Schmelzen.
 
-### Mixed-Grill Spiessli (Gemischte Spiessli)
+### Gemischte Spiessli
 
 Die langsamste Komponente bestimmt die Zeit; alle Stücke gleich dick halten.
 
@@ -937,6 +937,16 @@ Weniger fehlerverzeihend als Halloumi, wird heiss schnell gummig.
 
 Sources: [Migros-Grilltimer].
 
+### Scharfer Max Grill Cheese
+
+Schweizer Grillkäse, schmilzt nicht; ähnlich wie Halloumi, etwas schneller fertig.
+
+| Thickness | Doneness | Heat zone         | Grate temp | Per side | Total | Turns                    | Rest |
+| --------- | -------- | ----------------- | ---------- | -------- | ----- | ------------------------ | ---- |
+| -         | -        | Direkt, Deckel zu | 220 °C     | 3 min    | 6 min | Einmal halbzeitig wenden | -    |
+
+Sources: Verpackung.
+
 ### Knoblauch (Garlic, whole head in foil)
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side    | Total  | Turns               | Rest |
@@ -1042,7 +1052,7 @@ Sources: [Migros-Grilltimer].
 
 Sources: [Migros-Grilltimer].
 
-### Plant-based burger patty (Beyond, Impossible, Cornatur)
+### Pflanzliches Burger-Patty
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side   | Total | Turns                    | Rest |
 | --------- | -------- | ----------------- | ---------- | ---------- | ----- | ------------------------ | ---- |
@@ -1056,7 +1066,7 @@ Notes:
 - Nicht andrücken, sie verlieren Fett und trocknen aus.
 - Keine offizielle Kerntemperaturempfehlung, garen, bis sie durchgewärmt sind (65–70 °C Kern).
 
-### Cornatur-style veggie steak (seitan / wheat-protein)
+### Cornatur-Steak
 
 | Thickness | Doneness | Heat zone         | Grate temp | Per side | Total | Turns                    | Rest |
 | --------- | -------- | ----------------- | ---------- | -------- | ----- | ------------------------ | ---- |

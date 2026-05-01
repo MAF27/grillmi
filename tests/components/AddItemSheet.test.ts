@@ -45,7 +45,7 @@ describe('AddItemSheet', () => {
 
 		// Tap "Rind" → step advances to cut list.
 		await fireEvent.click(getByText('Rind'))
-		expect(container.querySelector('h2')?.textContent).toBe('Stück')
+		expect(container.querySelector('h2')?.textContent).toBe('Grillstück')
 
 		// Tap "Rinds-Entrecôte" → step advances to specs (has thickness + doneness).
 		await fireEvent.click(getByText('Rinds-Entrecôte'))
@@ -58,14 +58,14 @@ describe('AddItemSheet', () => {
 		const { getByText, getByLabelText, container } = open()
 
 		await fireEvent.click(getByText('Rind'))
-		expect(container.querySelector('h2')?.textContent).toBe('Stück')
+		expect(container.querySelector('h2')?.textContent).toBe('Grillstück')
 
 		await fireEvent.click(getByText('Rinds-Entrecôte'))
-		expect(container.querySelector('h2')?.textContent).not.toBe('Stück')
+		expect(container.querySelector('h2')?.textContent).not.toBe('Grillstück')
 
 		// Back from specs returns to cut list.
 		await fireEvent.click(getByLabelText('Zurück'))
-		expect(container.querySelector('h2')?.textContent).toBe('Stück')
+		expect(container.querySelector('h2')?.textContent).toBe('Grillstück')
 
 		// Back from cut returns to categories.
 		await fireEvent.click(getByLabelText('Zurück'))
@@ -142,6 +142,28 @@ describe('AddItemSheet', () => {
 		expect(arg.cookSeconds).toBeGreaterThan(0)
 		expect(arg.restSeconds).toBeGreaterThanOrEqual(0)
 		expect(arg.label).toContain('Rinds-Entrecôte')
+	})
+
+	it('test_default_grill_method_is_not_rendered_as_tip_or_heat_summary', async () => {
+		const { getByText, queryByText } = open()
+
+		await fireEvent.click(getByText('Rind'))
+		await fireEvent.click(getByText('Rinds-Entrecôte'))
+
+		expect(queryByText(/Direkt, Deckel zu/)).toBeNull()
+	})
+
+	it('test_non_default_grill_method_is_rendered_as_tip', async () => {
+		const { getByText, getByLabelText } = open()
+
+		await fireEvent.click(getByText('Rind'))
+		await fireEvent.click(getByText('Rinds-Entrecôte'))
+		const inc = getByLabelText('Dicker') as HTMLButtonElement
+		for (let i = 0; i < 8; i += 1) {
+			await fireEvent.click(inc)
+		}
+
+		expect(getByText('Grillmethode: Reverse-Sear (indirekt zu direkt)')).toBeTruthy()
 	})
 
 	it('test_first_step_renders_categories_and_favorites_tabs', async () => {

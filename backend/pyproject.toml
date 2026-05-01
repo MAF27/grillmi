@@ -53,7 +53,6 @@ addopts = "--strict-markers"
 source = ["grillmi"]
 branch = true
 concurrency = ["thread", "greenlet"]
-omit = ["grillmi/cli/_admin_reset_wrapper.sh"]
 
 [tool.coverage.report]
 fail_under = 80

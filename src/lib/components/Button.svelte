@@ -14,6 +14,7 @@
 		onclick?: (e: MouseEvent) => void
 		children?: Snippet
 		ariaLabel?: string
+		id?: string
 	}
 
 	let {
@@ -26,11 +27,13 @@
 		onclick,
 		children,
 		ariaLabel,
+		id,
 	}: Props = $props()
 </script>
 
 <button
 	{type}
+	{id}
 	class="btn"
 	class:primary={variant === 'primary'}
 	class:secondary={variant === 'secondary'}

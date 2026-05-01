@@ -33,7 +33,6 @@ from grillmi.security.rate_limit import login_account_limiter, login_ip_limiter
 
 router = APIRouter(tags=["auth"])
 
-INVITATION_EXPIRY_HOURS = 72
 RESET_EXPIRY_MINUTES = 30
 GENERIC_LOGIN_ERROR = {"detail": "invalid_credentials", "message": "Invalid email or password"}
 
@@ -172,12 +171,15 @@ async def forgot_password(
         token_hash = _hash_token(token)
         expires_at = datetime.now(timezone.utc) + timedelta(minutes=RESET_EXPIRY_MINUTES)
         link = f"{settings.PUBLIC_BASE_URL.rstrip('/')}/set-password?token={token}"
-        subject, body = render_reset(
-            link=link, expires_minutes=RESET_EXPIRY_MINUTES, recipient=user.email
+        rendered = render_reset(
+            link=link,
+            expires_minutes=RESET_EXPIRY_MINUTES,
+            recipient=user.email,
+            first_name=user.first_name,
         )
 
         try:
-            await email_sender.send(user.email, subject, body)
+            await email_sender.send(user.email, rendered.subject, rendered.text, rendered.html)
         except Exception:
             await audit_log_repo.record(
                 action="forgot_password", user_id=user.id, email=user.email, ip=ip, success=False

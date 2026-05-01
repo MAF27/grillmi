@@ -1,40 +1,9 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { IDBFactory } from 'fake-indexeddb'
-import { alarmSoundFor, fireAlarm, fireHaptic, messageFor } from '$lib/runtime/alarms'
+import { alarmSoundFor, fireAlarm, messageFor } from '$lib/runtime/alarms'
 import { settingsStore } from '$lib/stores/settingsStore.svelte'
 import * as player from '$lib/sounds/player'
 import { __resetForTests } from '$lib/stores/db'
-
-describe('alarms haptic', () => {
-	const original = (navigator as Navigator & { vibrate?: unknown }).vibrate
-	afterEach(() => {
-		Object.defineProperty(navigator, 'vibrate', {
-			value: original,
-			configurable: true,
-			writable: true,
-		})
-	})
-
-	it('test_navigator_vibrate_called_when_available', () => {
-		const spy = vi.fn()
-		Object.defineProperty(navigator, 'vibrate', {
-			value: spy,
-			configurable: true,
-			writable: true,
-		})
-		fireHaptic()
-		expect(spy).toHaveBeenCalledWith([200])
-	})
-
-	it('test_navigator_vibrate_no_op_when_unsupported', () => {
-		Object.defineProperty(navigator, 'vibrate', {
-			value: undefined,
-			configurable: true,
-			writable: true,
-		})
-		expect(() => fireHaptic()).not.toThrow()
-	})
-})
 
 describe('alarms message + sound mapping', () => {
 	beforeEach(() => {
@@ -49,6 +18,12 @@ describe('alarms message + sound mapping', () => {
 		expect(messageFor('done', 'Mais')).toBe('Mais ist fertig')
 	})
 
+	it('test_messageFor_describes_vorlauf_when_lead_seconds_are_present', () => {
+		expect(messageFor('put-on', 'Steak', 60)).toBe('Steak in 01:00 auflegen')
+		expect(messageFor('flip', 'Cervelat', 30)).toBe('Cervelat in 00:30 wenden')
+		expect(messageFor('done', 'Mais', 90)).toBe('Mais in 01:30 fertig')
+	})
+
 	it('test_alarmSoundFor_picks_event_specific_tone_from_settings', async () => {
 		await settingsStore.init()
 		await settingsStore.setSound('putOn', 'kohle')
@@ -59,14 +34,11 @@ describe('alarms message + sound mapping', () => {
 		expect(alarmSoundFor('done')).toBe('glut')
 	})
 
-	it('test_fireAlarm_invokes_player_and_haptic', async () => {
+	it('test_fireAlarm_invokes_player', async () => {
 		await settingsStore.init()
 		const playSpy = vi.spyOn(player, 'play').mockResolvedValue(undefined)
-		const vib = vi.fn()
-		Object.defineProperty(navigator, 'vibrate', { value: vib, configurable: true, writable: true })
 		await fireAlarm('flip')
 		expect(playSpy).toHaveBeenCalledWith(settingsStore.sounds.flip)
-		expect(vib).toHaveBeenCalled()
 		playSpy.mockRestore()
 	})
 

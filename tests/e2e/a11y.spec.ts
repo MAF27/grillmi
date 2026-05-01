@@ -23,7 +23,7 @@ test.describe('a11y axe-core', () => {
 	})
 
 	test('test_axe_core_clean_on_plan', async ({ page }) => {
-		await page.goto('/plan')
+		await page.goto('/grillen')
 		await dismissFirstRun(page)
 		const result = await new AxeBuilder({ page }).analyze()
 		// Only `critical`-level violations fail the build. `serious` (e.g. light-mode contrast
@@ -40,8 +40,8 @@ test.describe('a11y axe-core', () => {
 		expect(result.violations.filter(v => v.impact === 'critical')).toEqual([])
 	})
 
-	test('test_axe_core_clean_on_menus', async ({ page }) => {
-		await page.goto('/menus')
+	test('test_axe_core_clean_on_chronik', async ({ page }) => {
+		await page.goto('/chronik')
 		await dismissFirstRun(page)
 		const result = await new AxeBuilder({ page }).analyze()
 		// Only `critical`-level violations fail the build. `serious` (e.g. light-mode contrast

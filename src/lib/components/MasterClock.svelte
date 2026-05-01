@@ -1,24 +1,17 @@
 <script lang="ts">
-	import { formatDuration } from '$lib/util/format'
-	import { onMount } from 'svelte'
+	import { formatHHMM } from '$lib/util/format'
 
 	interface Props {
 		targetEpoch: number
+		size?: 'mobile' | 'desktop'
 	}
 
-	let { targetEpoch }: Props = $props()
-	let now = $state(Date.now())
-	const remaining = $derived(Math.max(0, Math.round((targetEpoch - now) / 1000)))
-
-	onMount(() => {
-		const id = setInterval(() => (now = Date.now()), 1000)
-		return () => clearInterval(id)
-	})
+	let { targetEpoch, size = 'mobile' }: Props = $props()
 </script>
 
-<div class="clock" aria-live="off">
-	<div class="eyebrow">Bis zum Essen</div>
-	<div class="time" data-testid="master-clock-time" data-live-countdown>{formatDuration(remaining)}</div>
+<div class="clock" class:desktop={size === 'desktop'} aria-live="off">
+	<div class="eyebrow">Fertig um</div>
+	<div class="time" data-testid="master-clock-time" data-mask-time>{formatHHMM(targetEpoch)}</div>
 </div>
 
 <style>
@@ -43,5 +36,15 @@
 		color: var(--color-fg-base);
 		letter-spacing: -0.02em;
 		font-variant-numeric: tabular-nums;
+	}
+	.clock.desktop {
+		padding: 4px 0 28px;
+		text-align: left;
+	}
+	.clock.desktop .eyebrow {
+		font-size: 12px;
+	}
+	.clock.desktop .time {
+		font-size: 88px;
 	}
 </style>

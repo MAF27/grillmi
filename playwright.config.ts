@@ -16,11 +16,10 @@ export default defineConfig({
 	globalSetup: './tests/e2e/_setup/global-setup.ts',
 	globalTeardown: './tests/e2e/_setup/global-teardown.ts',
 	webServer: {
-		command: 'pnpm dev',
-		port: 5173,
-		reuseExistingServer: !process.env.CI,
+		command: 'BACKEND_PORT=8001 pnpm dev',
+		url: 'http://127.0.0.1:5173',
+		reuseExistingServer: process.env.PLAYWRIGHT_REUSE_SERVER === '1',
 		timeout: 60_000,
-		env: { BACKEND_PORT: '8001' },
 	},
 	projects: [
 		{

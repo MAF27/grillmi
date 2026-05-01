@@ -7,15 +7,16 @@
 		count?: number
 		onDismiss: () => void
 		message?: string
+		placement?: 'top' | 'bottom'
 	}
 
-	let { kind, itemName, count = 1, onDismiss, message }: Props = $props()
+	let { kind, itemName, count = 1, onDismiss, message, placement = 'bottom' }: Props = $props()
 
 	const eyebrow = $derived(kind === 'flip' ? 'Wenden' : kind === 'ready' ? 'Fertig' : 'Auflegen')
 	const verb = $derived(kind === 'flip' ? 'wenden' : kind === 'ready' ? 'anrichten' : 'auflegen')
 </script>
 
-<div class="banner" role="alert" data-testid="alarm-banner" data-kind={kind}>
+<div class="banner" class:top={placement === 'top'} role="alert" data-testid="alarm-banner" data-kind={kind}>
 	<svg class="flame" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
 		<path
 			d="M12 2c1 3-1 4-1 7 0 1.5 1 3 2.5 3S16 10.5 16 9c0-2-1-3-1-4 2 1 5 4 5 8 0 4-3.5 7-8 7s-8-3-8-7c0-3 2-5 4-6.5C7.2 5.7 9 4 12 2z" />
@@ -67,6 +68,14 @@
 		box-shadow: var(--shadow-alarm);
 		animation: alarm-pulse 1.2s ease-in-out infinite;
 		z-index: 5;
+	}
+	.banner.top {
+		position: sticky;
+		top: 0;
+		left: auto;
+		right: auto;
+		bottom: auto;
+		margin-bottom: 18px;
 	}
 	@keyframes alarm-pulse {
 		0%,

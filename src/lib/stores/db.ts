@@ -1,22 +1,15 @@
 import { openDB, type IDBPDatabase } from 'idb'
 import type { Plan, Session, Favorite, SavedPlan, UserSettings } from '$lib/models'
 
-export interface PersistedAlarm {
-	id: string
-	itemId: string
-	kind: 'on' | 'flip' | 'ready'
-	itemName: string
-	message: string
-	firedAt: number
-}
-
 export interface PersistedPlanState {
 	plan: Plan
 	planMode: 'auto' | 'manual'
-	manualStarts: Record<string, number>
-	manualPlated: string[]
-	alarms?: PersistedAlarm[]
-	dismissedAlarmKeys?: string[]
+}
+
+export interface TimelineEvent {
+	kind: 'on' | 'flip' | 'resting' | 'ready' | 'plated'
+	itemName: string
+	at: number
 }
 
 export interface GrilladeRow {
@@ -31,6 +24,12 @@ export interface GrilladeRow {
 	deletedEpoch: number | null
 	planState?: PersistedPlanState
 	session?: Session
+	timeline?: TimelineEvent[]
+	// Local-only flag: true once the row has been POSTed to the backend at
+	// least once. Used to choose POST vs PATCH on subsequent metadata pushes.
+	pushedToServer?: boolean
+	// Local-only item ids already enqueued/synced to the backend for this row.
+	syncedItemIds?: string[]
 }
 
 export interface SyncQueueRow {
@@ -217,6 +216,7 @@ export async function putCurrentSession(s: Session): Promise<void> {
 	active.session = JSON.parse(JSON.stringify(s)) as Session
 	active.status = 'running'
 	active.startedEpoch = active.startedEpoch ?? Date.now()
+	active.targetEpoch = s.targetEpoch
 	active.updatedEpoch = Date.now()
 	await putGrillade(active)
 }
@@ -224,11 +224,24 @@ export async function putCurrentSession(s: Session): Promise<void> {
 export async function clearCurrentSession(): Promise<void> {
 	const active = await getActiveGrillade()
 	if (!active) return
-	active.session = undefined
 	active.status = 'finished'
 	active.endedEpoch = Date.now()
 	active.updatedEpoch = Date.now()
 	await putGrillade(active)
+}
+
+export async function getCurrentTimeline(): Promise<TimelineEvent[]> {
+	const active = await getActiveGrillade()
+	return active?.timeline ?? []
+}
+
+export async function appendTimelineEvent(event: TimelineEvent): Promise<TimelineEvent[]> {
+	const active = (await getActiveGrillade()) ?? newDefaultGrillade()
+	const next = [event, ...(active.timeline ?? [])].slice(0, 60)
+	active.timeline = next
+	active.updatedEpoch = Date.now()
+	await putGrillade(active)
+	return next
 }
 
 export async function getCurrentPlanState(): Promise<PersistedPlanState | undefined> {
@@ -239,6 +252,10 @@ export async function getCurrentPlanState(): Promise<PersistedPlanState | undefi
 export async function putCurrentPlanState(state: PersistedPlanState): Promise<void> {
 	const active = (await getActiveGrillade()) ?? newDefaultGrillade()
 	active.planState = JSON.parse(JSON.stringify(state)) as PersistedPlanState
+	if (!active.session && active.status !== 'running') {
+		active.status = 'planned'
+		active.targetEpoch = state.plan.targetEpoch
+	}
 	active.updatedEpoch = Date.now()
 	await putGrillade(active)
 }

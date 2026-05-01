@@ -4,29 +4,43 @@
 	import Button from '$lib/components/Button.svelte'
 	import GlowGrates from '$lib/components/GlowGrates.svelte'
 	import { grilladeStore } from '$lib/stores/grilladeStore.svelte'
+	import { grilladenHistoryStore } from '$lib/stores/grilladenHistoryStore.svelte'
 	import { settingsStore } from '$lib/stores/settingsStore.svelte'
-	import { menusStore } from '$lib/stores/menusStore.svelte'
+	import { viewport } from '$lib/runtime/viewport.svelte'
 
-	const recentMenus = $derived(menusStore.all.slice(0, 6))
+	const recentGrilladen = $derived(grilladenHistoryStore.finished.slice(0, 6))
+	const primaryLive = $derived(Boolean(grilladeStore.session))
 
 	onMount(async () => {
 		await grilladeStore.init()
-		await menusStore.init()
+		await grilladenHistoryStore.init()
 		await settingsStore.init()
-		if (grilladeStore.session) goto('/session')
+		if (grilladeStore.session && grilladeStore.sessionHasStarted) goto('/session')
 	})
 
-	function loadMenu(id: string) {
-		const menu = menusStore.all.find(m => m.id === id)
-		if (!menu) return
-		void menusStore.touch(id)
-		grilladeStore.loadFromMenu(menu.items)
-		goto('/plan')
+	async function loadGrillade(id: string) {
+		const loaded = await grilladenHistoryStore.loadItems(id)
+		if (!loaded.ok) return
+		grilladeStore.loadFromMenu(loaded.items)
+		goto('/grillen')
 	}
 
-	function fmtMenuMeta(menu: { items: Array<{ cookSeconds: number; restSeconds: number }> }) {
-		const totalSec = menu.items.reduce((s, i) => s + i.cookSeconds + (i.restSeconds || 0), 0)
-		return `${menu.items.length} Stück · ${Math.round(totalSec / 60)} min`
+	function fmtRowMeta(row: { startedEpoch: number | null; endedEpoch: number | null; session?: { items: Array<unknown> } | undefined; planState?: { plan: { items: Array<unknown> } } | undefined }) {
+		const itemCount = row.session?.items.length ?? row.planState?.plan.items.length ?? 0
+		const dur = row.startedEpoch && row.endedEpoch ? Math.round((row.endedEpoch - row.startedEpoch) / 1000) : 0
+		return `${itemCount} ${itemCount === 1 ? 'Grillstück' : 'Grillstücke'} · ${Math.round(dur / 60)} min`
+	}
+
+	function rowName(row: { name: string | null; endedEpoch: number | null; updatedEpoch: number }) {
+		return row.name ?? `Grillade vom ${new Date(row.endedEpoch ?? row.updatedEpoch).toLocaleDateString('de-CH')}`
+	}
+
+	function primaryMobileAction() {
+		if (grilladeStore.session) {
+			goto('/session')
+			return
+		}
+		goto('/grillen')
 	}
 </script>
 
@@ -34,6 +48,7 @@
 	<title>Grillmi</title>
 </svelte:head>
 
+{#if !viewport.isDesktop}
 <div class="screen">
 	<GlowGrates />
 	<div class="content">
@@ -53,30 +68,36 @@
 				Bereit zum<br />
 				<span class="hero-accent">Grillen</span>?
 			</h1>
-			<p>Plane deine Session. Grillmi sagt dir, wann was auf den Rost muss.</p>
+			<p>Plane deine Grillade. Grillmi sagt dir, wann was auf den Rost muss.</p>
 		</div>
 
-		{#if recentMenus.length > 0}
+		{#if recentGrilladen.length > 0}
 			<div class="recent">
-				<div class="recent-eyebrow">Zuletzt gespeicherte Menüs</div>
+				<div class="recent-eyebrow">Zuletzt gegrillt</div>
 				<div class="recent-row">
-					{#each recentMenus as menu (menu.id)}
-						<button class="recent-pill" onclick={() => loadMenu(menu.id)}>
-							<span class="recent-name">{menu.name}</span>
-							<span class="recent-meta">{fmtMenuMeta(menu)}</span>
+					{#each recentGrilladen as row (row.id)}
+						<button class="recent-pill" onclick={() => loadGrillade(row.id)}>
+							<span class="recent-name">{rowName(row)}</span>
+							<span class="recent-meta">{fmtRowMeta(row)}</span>
 						</button>
 					{/each}
 				</div>
 			</div>
 		{/if}
 
-		<Button variant="primary" size="lg" fullWidth onclick={() => goto('/plan')}>Neue Session</Button>
+		<Button variant="primary" size="lg" fullWidth onclick={primaryMobileAction}>
+			<span>Grillen</span>
+			{#if primaryLive}
+				<span class="primary-badge">LIVE</span>
+			{/if}
+		</Button>
 		<div class="row-buttons">
-			<Button variant="secondary" fullWidth onclick={() => goto('/menus')}>Menüs</Button>
+			<Button variant="secondary" fullWidth onclick={() => goto('/chronik')}>Chronik</Button>
 			<Button variant="secondary" fullWidth onclick={() => goto('/settings')}>Einstellungen</Button>
 		</div>
 	</div>
 </div>
+{/if}
 
 <style>
 	.screen {
@@ -193,5 +214,14 @@
 	.row-buttons {
 		display: flex;
 		gap: 8px;
+	}
+	.primary-badge {
+		border-radius: 999px;
+		background: color-mix(in srgb, currentColor 16%, transparent);
+		padding: 3px 7px;
+		font-size: 10px;
+		font-weight: 800;
+		letter-spacing: 0.08em;
+		line-height: 1;
 	}
 </style>

@@ -68,6 +68,41 @@ describe('PlanItemRow', () => {
 		expect(onedit).toHaveBeenCalledWith(makeItem().id)
 	})
 
+	it('test_generated_label_does_not_repeat_specs_in_title', () => {
+		const { container, getByText, queryByText } = render(PlanItemRow, {
+			props: {
+				item: makeItem({
+					label: 'Rinds-Entrecôte 3 cm, Medium-rare',
+					thicknessCm: 3,
+					doneness: 'Medium-rare',
+					grateTempC: 230,
+					heatZone: 'Direkt, Deckel zu',
+				}),
+				onedit: () => {},
+				ondelete: () => {},
+				onrename: () => {},
+				onadjustcook: () => {},
+			},
+		})
+		expect(container.querySelector('.title')?.textContent?.trim()).toBe('Rinds-Entrecôte')
+		expect(getByText('3 cm · Medium-rare · 230 °C')).toBeInTheDocument()
+		expect(queryByText('Rinds-Entrecôte 3 cm, Medium-rare')).toBeNull()
+		expect(queryByText(/Direkt/)).toBeNull()
+	})
+
+	it('test_custom_label_keeps_title_when_it_does_not_end_with_specs', () => {
+		const { container } = render(PlanItemRow, {
+			props: {
+				item: makeItem({ label: 'Papa Steak', thicknessCm: 3, doneness: 'Medium-rare' }),
+				onedit: () => {},
+				ondelete: () => {},
+				onrename: () => {},
+				onadjustcook: () => {},
+			},
+		})
+		expect(container.querySelector('.title')?.textContent?.trim()).toBe('Papa Steak')
+	})
+
 	it('test_cook_adjust_emits_delta_and_clamps_to_min', async () => {
 		const onadjustcook = vi.fn()
 		const { getByLabelText } = render(PlanItemRow, {
