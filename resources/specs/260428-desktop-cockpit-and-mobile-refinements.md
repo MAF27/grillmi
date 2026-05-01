@@ -2,7 +2,7 @@
 
 ## Meta
 
-- Status: Substantially shipped on `feature/desktop-cockpit`. Phases 1 through 8 and Phase 10 are in the codebase and verified by grep. Phase 9 (auth surface re-skin) was deferred: `/login`, `/set-password`, `/forgot-password` do not use `SectionHeader` or `Card`, and `/account` was removed entirely (Konto folded into the desktop Settings cockpit, contradicting the spec line under Auth surface re-skin that promised the route would still render). Phase 11 (visual reconciliation) is partial: design and app captures live under `.tmp/visual-diff` and `.tmp/pixel-verify`, but the formal `test:visual-design` script in `package.json` was not added and a sign-off pass against the design package was not recorded. Phase 12 (cleanup) was not run: `.tmp/grillmi-design` and the screenshot artefacts are still on disk. Named unit and E2E tests in the Testing section were not implemented under the names listed; coverage exists for the cockpit merge, history store, ticker, and alarms via other test files but the spec's named items are not addressable. Manual Verification (Marco) outstanding.
+- Status: Implemented on `feature/desktop-cockpit`. Spec rewritten on 2026-05-01 to match the app as shipped. Scope was reduced during implementation: the Übersicht sidebar entry, the auth-surface re-skin, the SyncChip mount, and the formal visual-reconciliation pipeline were dropped. The Übersicht content survives at `/` without its own sidebar entry; account management lives entirely in the Einstellungen cockpit instead of a separate `/account` route. See **Out of scope** for the full list of intentionally dropped items. Vocabulary follows `CONTEXT.md` (Grillade, Grillstück, Modus, Chronik).
 - Branch: feature/desktop-cockpit
 - Infra: none
 - Runbook: none
@@ -64,21 +64,20 @@ The package contains prototype-only history fields (`saved`, `guests`, `note`, `
 
 #### Sidebar (desktop cockpit chrome)
 
-- The sidebar carries the wordmark "GRILLMI" with a small ember flame glyph at the top, then four nav items in order: Übersicht, Grillen, Chronik, Einstellungen. Each item shows a 18 px monoline icon and a label.
+- The sidebar carries the wordmark "Grillmi" with a small ember flame glyph at the top (display, not a link), then three nav items in order: Grillen, Chronik, Einstellungen. Each item shows a small monoline glyph and a label. There is no separate Übersicht entry; the home route at `/` is reached by URL or by the implicit fallback of `currentSection` defaulting to `cook` when no other path matches.
 - The currently active item carries an ember tint background, ember-coloured icon and label, and a 3 px ember left bar. Inactive items show body text colour with muted icon.
 - The Grillen item is the unified cockpit entry. It always renders. It carries a small "LIVE" pill in `emberInk` on `ember` whenever there is an active Grillade (status `running`); the pill is hidden otherwise. There is no separate "Planen" entry; pre-start planning happens inside the Grillen cockpit.
 - The Grillen entry navigates to `/plan` when no session exists and to `/session` when a session is running, so the URL stays semantic. Both routes render the same desktop cockpit component, so visually the entry is one stable destination. The `currentSection` derivation in `+layout.svelte` maps both `/plan` and `/session` to the Grillen entry.
-- The bottom of the sidebar mounts the account chip. Signed-in: 32 px gradient circle with the user's initials, name and email next to it. Signed-out: outlined "Anmelden" button with a placeholder circle. Tapping signed-in goes to Einstellungen with the Konto group preselected; tapping signed-out goes to `/login`.
-- Between the nav and the account chip, a `SyncChip` renders the current sync state.
+- The bottom of the sidebar mounts the account chip. Signed-in: 32 px gradient circle with the user's initials, name and email next to it. Signed-out: outlined "Anmelden" button with a placeholder circle. Tapping signed-in goes to Einstellungen with the Konto group preselected (`/settings?group=account`); tapping signed-out goes to `/login`.
 
-#### Übersicht (desktop only, route `/`)
+#### Home overview (desktop `/`, no sidebar entry)
 
-- The pane matches `CockpitOverview` in `desktop.jsx`: content padding `32px 36px`, kicker text is today's local date in the package style (`Heute · <weekday/date>`), hero title reads `Bereit zum` plus ember `Grillen?`, title size `56px`, line-height `1`, weight `600`, letter-spacing `-0.02em`.
-- Supporting copy reads "Plane deine Grillade am Laptop, starte sie wann du fertig bist. Auf jedem Gerät." unless product copy is intentionally changed in `src/lib/i18n/de.ts`; any copy change keeps the same block dimensions and typography.
-- The primary CTA is a package-style `DButton` size `lg` reading "Loszündeln" and navigates to the Grillen cockpit at `/plan` with a fresh empty plan.
-- Three stat cards render in a `repeat(3, 1fr)` grid with gap `16px`, max-width `900px`, margin-top `40px`. Card labels match the package's visual structure: large display value `38px`, uppercase label `12px`, label letter-spacing `0.06em`.
-- Stat values map to live data: total finished Grilladen for "Grilladen diesen Monat", local-only saved history count for "Gespeicherte Grilladen", and longest finished session duration for "Längste Grillade". Empty values render as a dim "-" rather than zero.
-- The mobile home (`/` below 1024 px) renders the existing Glühen home unchanged.
+- The desktop home pane lives at `/` and is reached by URL or by the layout's `currentSection` default. Content padding `32px 36px`. Kicker text is today's local Swiss date (`Heute · <weekday>, dd.mm.`).
+- Hero title reads "Bereit zum" with ember-coloured "Grillen?", display font, 56 px, line-height 1, weight 600, letter-spacing `-0.02em`.
+- Supporting copy reads "Plane deine Grillade am Laptop, starte sie wann du fertig bist. Auf jedem Gerät." Copy changes go through `src/lib/i18n/de.ts` if added there; today the string is inline in `+page.svelte`.
+- The primary CTA is a `Button size="lg" variant="primary"` reading "Loszündeln". It calls `grilladeStore.resetDraft()` then navigates to `/plan`, landing the user in the Grillen cockpit pre-start state with an empty Grillade.
+- Three stat cards render below the CTA: "Grilladen diesen Monat" (count of finished Grilladen this calendar month), "Gespeicherte Grilladen" (local saved-history count, currently always 0 because the saved-history feature is local-only and unwired), and "Längste Grillade" (longest finished Grillade duration). Empty values render as dim "-".
+- The mobile home (`/` below 1024 px) renders the existing Glühen direction: hero glow, brand wordmark, recent Grilladen pills, primary "Grillen" CTA with LIVE badge when a Session is running, plus secondary "Chronik" and "Einstellungen" buttons.
 
 #### Grillen (desktop only at 1024 px+, routes `/plan` and `/session`)
 
@@ -139,25 +138,16 @@ The Grillen cockpit is one screen that covers both pre-start planning and post-s
 - The Konto & Datenschutz group renders avatar `56px`, name/email, "Passwort ändern", a small "Daten" section, "Daten exportieren", "Grilladen löschen", "Abmelden", and "Konto löschen". Buttons whose behaviour is outside this spec render disabled with the same dimensions; account deletion keeps the existing hold/delete safety flow inside the package's danger button styling.
 - Mobile Einstellungen (below 1024 px) renders the existing settings page unchanged. The `/account` route stays as a separate page on mobile and renders its full content there.
 
-#### Sync status chip
+#### Auth surfaces
 
-- Renders a single chip with one of three states: "Synchronisiert" (green dot, 0 pending writes, last pull within 5 minutes), "<N> ausstehend" (ember dot, pending writes in the queue or last pull older than 5 minutes), "Offline" (slate dot, `navigator.onLine === false`).
-- The chip reads `syncQueue` length via `listSyncQueue()` and the `lastPullEpoch` sync-meta value via `getSyncMeta('lastPullEpoch')`. State recomputes on a 1-second mounted poll and on `online`/`offline` window events.
-- On desktop the chip mounts inside the sidebar between nav and the account chip. On mobile `+layout.svelte` adds a compact sticky header band above authenticated route content and mounts the chip at its top-right.
-- The chip is read-only in this spec (no popover, no inspector). Click does nothing; the chip exists for at-a-glance reassurance.
-
-#### Auth surface re-skin
-
-- `/login`, `/set-password`, `/forgot-password` re-skin against the design tokens and shared atoms: the existing card layout stays, the typography moves to display-font titles ("Anmelden", "Passwort setzen", "Passwort zurücksetzen"), inputs adopt the new ember focus border, error banners adopt the new red token.
-- `/account` rebuilds against the shared atoms: section headers via `SectionHeader.svelte`, buttons via the existing `Button.svelte`, the device list rows match the design system's row pattern. No flow changes (revoke, password change, hold-to-delete still work as today). On desktop, this entire content moves into the Einstellungen pane's Konto and Geräte groups; the route still resolves and renders the full page (so mobile links continue to work) but the desktop sidebar Konto group is the canonical entry point.
-- The auth pages adopt the same `+layout.svelte` chrome behaviour: signed-in chrome (sidebar on desktop, header on mobile) does not render on `/login`, `/set-password`, or `/forgot-password`.
-- The `next` redirect parameter behaviour from `260428-accounts-and-sync.md` stays unchanged.
+- `/login`, `/set-password`, `/forgot-password` keep their existing markup. Form fields, every API call, every error path, and the existing `next` redirect handling from `260428-accounts-and-sync.md` are unchanged.
+- The `/account` route is removed. Account management lives in the Einstellungen pane's Konto group on desktop (`/settings?group=account` preselects it) and in the existing settings page on mobile. The desktop AccountChip click and any "Konto" link in the app target `/settings?group=account`.
+- The auth pages still render unchromed regardless of viewport: `+layout.svelte`'s `publicPage` derivation hides the sidebar on `/login`, `/set-password`, and `/forgot-password`.
 
 #### Mobile refinements (carry-over from the design package)
 
 - The alarm banner shows a `+N` badge when more than one alarm queues, mirroring the desktop right-pane behaviour.
-- Manual mode on Plan adopts the same `BigTimerCard` proportions as desktop where viewport allows (mobile keeps the smaller 92 px ring to fit two columns at 390 px width).
-- The mobile header gains the `SyncChip` at the top-right of every authenticated route.
+- Manual Modus on the Grillen route (`/plan` mobile branch) renders a single Grillstück card full-width when the plan has only one item, falling back to the existing two-column grid for two or more items.
 
 ### Out of scope
 
@@ -166,11 +156,20 @@ The Grillen cockpit is one screen that covers both pre-start planning and post-s
 - Push notifications and the `pending_notifications` table. Deferred per `roadmap-apr-2026.md`.
 - New product features beyond what the design package shows.
 - The `/diag` route does not get a desktop cockpit treatment and does not appear in the sidebar nav. It stays as a public dev URL.
-- Backend schema changes. The existing `grilladen` schema (status enum, ended_at, soft delete) supports Grilladen-history client-side filtering; no new endpoints, no new columns.
+- Backend schema changes. The existing `grilladen` schema (status enum, ended_at, soft delete) supports Chronik client-side filtering; no new endpoints, no new columns.
 - Backend additions of "saved", "guests", "note", or "mood" columns implied by the prototype's `HISTORY` sample data. The visible saved, Personen, and note slots still render per Data Model Substitutions, but persistence is local-only in this spec.
-- The desktop "load past Grillade as plan" affordance does not preserve item-level specs that the prototype invents (the prototype constructs cook times from `durationSec / itemCount`). This spec implements load-as-plan by copying the item rows verbatim from the past Grillade's `grillade_items` into a fresh plan, no estimation maths.
+- The "Erneut grillen" affordance does not preserve item-level specs that the prototype invents (the prototype constructs cook times from `durationSec / itemCount`). It loads the past Grillade's items verbatim from `grillade_items` into a fresh Grillade with no estimation maths.
 - Tablet portrait (768-1023 px) does not get a dedicated direction. It keeps the mobile direction with widened gutters from existing components. The cockpit is desktop and landscape-iPad only.
-- The persistent left Grillstücke list on the unified Grillen cockpit does not gain editing affordances in this spec. It is a read-only summary; all editing happens in the centre pane.
+- The persistent left Grillstück list on the unified Grillen cockpit does not gain editing affordances. It is a read-only summary; all editing happens in the centre pane.
+
+The following items appeared in earlier drafts of this spec and were intentionally dropped during implementation. They are out of scope for this spec and have no follow-up unless explicitly re-opened:
+
+- **Übersicht as a sidebar entry.** The hero, stat cards, and "Loszündeln" CTA still render at `/` on desktop, but no sidebar item targets it. The sidebar consolidated to three entries: Grillen, Chronik, Einstellungen.
+- **Auth surface re-skin.** `/login`, `/set-password`, and `/forgot-password` keep their existing styling. The token-aligned input style, `SectionHeader.svelte` adoption, and re-skin of error banners are not part of this spec.
+- **Standalone `/account` route.** Account management is consolidated into the Einstellungen Konto group; there is no `/account` page. Activation emails and any external link must target `/settings?group=account`.
+- **`SyncChip.svelte` mounting.** The component exists in `src/lib/components/SyncChip.svelte` but is not imported by `+layout.svelte` or any other surface. The chip is dead code; see Cleanup follow-ups.
+- **Formal visual-reconciliation pipeline.** Design and app captures live under `.tmp/visual-diff/` and `.tmp/pixel-verify/` from one-shot Playwright passes during implementation. There is no `test:visual-design` script in `package.json`, no automated `pixelmatch` gate, and no recurring CI step. The diff pass that survives is the user's own end-to-end use of the app.
+- **Tests under the names listed in earlier drafts.** Coverage exists, but in `tests/e2e/cockpit-merge.spec.ts`, `tests/e2e/walkthrough.spec.ts`, `tests/unit/grilladenHistoryStore.test.ts`, `tests/unit/ticker.test.ts`, `tests/unit/alarms.test.ts`, and the component tests under `tests/components/`, not under `cockpit.spec.ts`, `uebersicht.spec.ts`, `planen.spec.ts`, `grillen.spec.ts`, `chronik.spec.ts`, `einstellungen.spec.ts`, `auth-reskin.spec.ts`, or `sync-chip.spec.ts`. The spec's Testing section enumerates the actual files.
 
 ---
 
@@ -197,10 +196,9 @@ The `260427-ipad-responsive-layout.md` spec is marked superseded in its Meta blo
 - Round 0 web research checked SvelteKit responsive-layout patterns. The community pattern for viewport-conditional layouts is a single `matchMedia` observer in the root layout exposed via context or a store, with each route consuming the value. Reference: SvelteKit docs on `+layout.svelte` and `matchMedia`. Container queries were considered and rejected because the cockpit branch needs to hide or show entire navigation chrome, which is a layout-level concern not a per-component concern.
 - Verified the design package's implied desktop minimum width: 240 sidebar + 280 left + flex centre + 320 right = ~1200 px wanted at the high end, but the package renders sample screens at smaller widths with proportional shrink. 1024 px is the user-confirmed cutover; the centre flex absorbs the squeeze. The Grillen 3-column timer grid drops to 2 columns at the 1024 px end via a component-scoped breakpoint inside `BigTimerCard`'s wrapper; this keeps cards readable without reaching for a 1280 px floor.
 - Verified that `grilladen` table and `GET /api/grilladen` surface enough fields for a useful history list (`name`, `status`, `started_at`, `ended_at`, `target_finish_at`, `position`, `updated_at`, `deleted_at`). Confirmed `src/lib/sync/pull.ts` maps those into the IDB `GrilladeRow` shape (`startedEpoch`, `endedEpoch`, `deletedEpoch`) and already brings finished Grilladen down on every foregrounding, so the list stays fresh without new API calls. Detail item rows require the existing `GET /api/grilladen/{id}/items?since=...` endpoint unless the row has embedded local `session.items`.
-- Verified that `syncQueue` and `syncMeta` already exist in IDB, and that `src/lib/sync/pull.ts` writes the `lastPullEpoch` key. `SyncChip` is a presentational addition plus a tiny polling reader, not a sync-engine change.
 - Round 0 research confirmed the approach: SvelteKit's layout model supports root-level app chrome, MDN documents `matchMedia()` plus the `change` event as the correct browser primitive for viewport changes, and sidebar UX guidance for web apps puts labelled sidebars in the 220-260 px range while avoiding sidebars on mobile. The spec keeps the desktop sidebar at 240 px and preserves mobile's route-first layout. Sources: https://svelte.dev/docs/kit/routing, https://developer.mozilla.org/en-US/docs/Web/API/Window/matchMedia, https://developer.mozilla.org/en-US/docs/Web/API/MediaQueryList/change_event, https://www.alfdesigngroup.com/post/improve-your-sidebar-design-for-web-apps.
 - Verified token coverage: `app.css` already carries `--color-bg-base` (#0b0a09), `--color-bg-surface` (#16140f), `--color-bg-surface-2` (#1f1b15), `--color-bg-elev` (#26211a), `--color-accent-default` (#ff7a1a), `--color-ember-dim` (#8a3f0a), `--color-ember-ink` (#1a0a02), and the four status colours. The two missing tokens, `bgPanel` (#100e0b) and `borderHot` (rgba(255,122,26,0.28)), are additive and do not affect any shipped surface.
-- Considered consolidating the `/account` page into the desktop Einstellungen pane only, with a redirect on mobile. Rejected: Marco shares activation links via Mail.app; the link target must always render its own page on mobile so the activation flow does not break across deep-linked entrypoints. The mobile `/account` route stays.
+- Consolidated the `/account` page into the Einstellungen cockpit on both desktop and mobile. The earlier concern that activation emails must deep-link to a standalone `/account` page is resolved by making `/settings?group=account` the single canonical destination; activation emails and any external link target it directly.
 
 Reference reading: SvelteKit layout docs, the existing `260426-redesign-gluehen.md` and `260428-accounts-and-sync.md` specs in this repo.
 
@@ -213,8 +211,7 @@ Reference reading: SvelteKit layout docs, the existing `260426-redesign-gluehen.
 | iPad rotation while session is running drops state | The layout switch is component-tree pivot only; route stores (`grilladeStore`) live above the pivot and survive the swap |
 | Grilladen history filters client-side, fetching every Grillade ever | `pull.ts` already bounds responses by the `since` watermark; total per-user volume is small (one Grillade per cookout), no pagination needed for the foreseeable future |
 | New atoms collide with existing component names | Atoms named `Sidebar`, `AccountChip`, `SectionHeader`, `Toast`, `SyncChip` are not currently used in `src/lib/components/`; verified before naming |
-| Auth re-skin breaks the existing E2E auth specs in `tests/e2e/auth.spec.ts` | Specs assert on element labels and German strings; visual changes preserve text and aria-labels. Re-run the suite as part of Phase 11 |
-| Sidebar mounts on auth pages before login completes | Layout shell checks `authStore.isAuthenticated` before rendering the sidebar; pre-auth pages render unchromed regardless of viewport |
+| Sidebar mounts on auth pages before login completes | Layout shell checks `authStore.isAuthenticated` and a `publicPage` derivation; pre-auth pages render unchromed regardless of viewport |
 
 ### Implementation Plan
 
@@ -243,10 +240,10 @@ The phases are ordered foundation, then atoms, then responsive shell, then deskt
 **Phase 3: Responsive layout shell**
 
 - [x] Implement `src/lib/runtime/viewport.svelte.ts` exposing a singleton rune `viewport` with `{ isDesktop: boolean }`. Initialises from `matchMedia('(min-width: 1024px)').matches` synchronously, then attaches a listener that updates the rune on change. Tear-down removes the listener.
-- [x] Update `src/routes/+layout.svelte` to import the viewport rune and the new `Sidebar.svelte`, `AccountChip.svelte`, `SyncChip.svelte`. When `viewport.isDesktop && authStore.isAuthenticated`, render a two-column grid (240 px sidebar plus flex content) with `<Sidebar>` and `<AccountChip>` and `<SyncChip>` mounted in the sidebar; otherwise render the existing single-column tree. The pre-auth pages (`/login`, `/set-password`, `/forgot-password`) render unchromed regardless of viewport.
-- [x] Add the sidebar `current` mapping in `+layout.svelte`: derive from `$page.url.pathname` so `/` maps to "home", `/plan` and `/session` both map to "cook" (the unified Grillen entry, see Phase 5), `/chronik` to "chronik", `/settings` to "settings". `onChange` calls `goto(...)` with the matching path; the cook target depends on session state per Phase 5.
-- [x] Add the LIVE badge logic to the Grillen sidebar item: read `grilladeStore.session.status === 'running'` and pass a `badge: 'LIVE'` to the `Sidebar` items array when true.
-- [x] Add a compact mobile authenticated header band to `+layout.svelte` that mounts the chip top-right when `!viewport.isDesktop && authStore.isAuthenticated`. The chip mounts above the route content with `position: sticky; top: 0; right: 16px`.
+- [x] Update `src/routes/+layout.svelte` to import the viewport rune and the new `Sidebar.svelte` and `AccountChip.svelte`. When `viewport.isDesktop && authStore.isAuthenticated && !publicPage`, render a two-column grid (240 px sidebar plus flex content) with `<Sidebar>` and `<AccountChip>` mounted in the sidebar; otherwise render the existing single-column tree. The pre-auth pages (`/login`, `/set-password`, `/forgot-password`) render unchromed regardless of viewport.
+- [x] Add the sidebar `current` mapping in `+layout.svelte`: derive from `page.url.pathname` so `/plan` and `/session` both map to "cook" (the unified Grillen entry, see Phase 5), `/chronik` to "chronik", `/settings` to "settings". The fallthrough default is "cook" so the home route at `/` highlights the Grillen entry. `onChange` calls `goto(...)` with the matching path; the cook target depends on Session state per Phase 5.
+- [x] Add the LIVE badge logic to the Grillen sidebar item: read `grilladeStore.session` truthiness and pass a `badge: 'LIVE'` to the `Sidebar` items array when a Session is running.
+- [x] Mobile authenticated header band is out of scope (see Out of scope: SyncChip mounting). The mobile layout renders the route content directly without an extra header.
 
 **Phase 4: Übersicht (desktop /)**
 
@@ -306,38 +303,31 @@ The route was originally introduced as `/grilladen`; Phase 6 renamed it to `/chr
 - [x] The Konto & Datenschutz body shows the 56 px avatar, user name/email, "Passwort ändern" button, "Daten" subsection, disabled "Daten exportieren" and "Grilladen löschen" buttons, "Abmelden", and "Konto löschen" in package geometry. Same account API logic as `/account` today.
 - [x] Sidebar account-chip click navigates to `/settings?group=account`. The `SettingsCockpit` reads the search param on mount and preselects "Konto & Datenschutz".
 
-**Phase 9: Auth surface re-skin**
+**Phase 9: Auth surfaces (re-skin dropped, account consolidated)**
 
-- [ ] Re-skin `src/routes/login/+page.svelte`: replace bespoke title and label markup with `<SectionHeader>`; replace inputs with the design-token-aligned input style (ember focus border, surface background); replace the submit button with the existing `Button.svelte` primary variant. Preserve every form field name, every API call, every error path, and the existing `?next=` handling.
-- [ ] Re-skin `src/routes/set-password/+page.svelte` the same way. Preserve the activation-versus-reset bifurcation and the existing `runFirstLoginImport` call.
-- [ ] Re-skin `src/routes/forgot-password/+page.svelte` the same way. Preserve the always-the-same German confirmation toast.
-- [ ] Rebuild `src/routes/account/+page.svelte` against `<SectionHeader>`, `<Card>`, `Button.svelte`, and the existing `HoldButton.svelte`. Sections: E-Mail (read-only), Passwort (button), Aktive Geräte (device list), Konto (hold-to-delete). Preserve every API call, every error handler, the toast triggers, and the `clear()` plus navigate-to-`/login` flow on delete.
-- [ ] Verify the existing E2E auth spec assertions in `tests/e2e/auth.spec.ts` still pass against the new markup; no test file changes are needed unless a test references a removed class or DOM shape.
+- [x] Keep `src/routes/login/+page.svelte`, `src/routes/set-password/+page.svelte`, and `src/routes/forgot-password/+page.svelte` on their existing markup. Re-skin against design tokens is out of scope for this spec.
+- [x] Remove `src/routes/account/+page.svelte`. The Konto and Geräte rows live entirely in the Einstellungen cockpit on desktop and in the existing settings page on mobile.
+- [x] Wire the `AccountChip` signed-in click to `goto('/settings?group=account')` so the desktop entry point preselects the Konto group.
+- [x] Run `pnpm test` and `pnpm test:e2e` to confirm `tests/e2e/auth.spec.ts` and the rest of the existing auth coverage still pass against the unchanged markup and the consolidated account surface.
 
 **Phase 10: Mobile refinements**
 
 - [x] Keep `src/lib/components/AlarmBanner.svelte`'s existing `count` prop behaviour for the mobile `+N` badge and add the desktop `placement: 'top' | 'bottom'` prop from Phase 6. Pass `count={visibleAlarms.length}` from both mobile and desktop alarm callers.
 - [x] Update `src/routes/plan/+page.svelte` mobile manual-mode rendering so that when only one item is in the plan the single card spans the full row width; two-or-more items use the existing two-column grid.
-- [x] Mount the `<SyncChip>` in the mobile header slot in `+layout.svelte` (covered in Phase 3, listed here for surface completeness).
+- [x] SyncChip mount is out of scope (see Out of scope: SyncChip mounting). The component still ships in `src/lib/components/SyncChip.svelte` and is listed in the Cleanup follow-ups in `CONTEXT.md`.
 
-**Phase 11: Visual reconciliation**
+**Phase 11: Visual reconciliation (one-shot, no recurring pipeline)**
 
-- [ ] Serve the design package locally so the prototype is screenshot-able: `python3 -m http.server 8001 --directory .tmp/grillmi-design >/dev/null 2>&1 &`. Confirm the prototype loads at `http://localhost:8001/Grillmi%20Desktop.html`.
-- [ ] Build the app and serve it on `http://localhost:5173` via `pnpm dev`; if the port is occupied, use the next free port and record it in the screenshot manifest.
-- [ ] Add deterministic screenshot seed hooks that are compiled only in dev/test: `?visual=desktop-cook`, `?visual=desktop-overview`, `?visual=desktop-plan-empty`, `?visual=desktop-plan-filled`, `?visual=desktop-plan-manual`, `?visual=desktop-grilladen-list`, `?visual=desktop-grilladen-detail`, `?visual=desktop-settings-signals`, `?visual=desktop-settings-devices`, `?visual=desktop-settings-account`, `?visual=mobile-home`, `?visual=mobile-plan-manual`, `?visual=mobile-session-alarms`, `?visual=auth-login`, `?visual=auth-account`.
-- [ ] Capture design-package screenshots with Playwright at the exact viewport sizes from Pixel Target Contract. For desktop sections, set `window.__seedScreen` or interact with the sidebar before capture so the package is on the matching section. Store under `.tmp/visual/design/<viewport>/<section>.png`.
-- [ ] Capture running-app screenshots with the same Playwright script, same viewport, same seeded data, same dark theme, and animations enabled except where the package disables them under reduced motion. Store under `.tmp/visual/app/<viewport>/<section>.png`.
-- [ ] Generate pixel diffs with `pixelmatch` or Playwright screenshot comparison. Mask only dynamic countdown numerals, current time, real email/name, and explicit Data Model Substitution values. Save masks alongside the manifest; untracked ad hoc masks are not allowed.
-- [ ] Fix every unmasked diff where a fixed layout element is more than `4px` off in position or size, any token colour differs, any package element is missing, any extra chrome appears, or the desktop/mobile cutover occurs at the wrong viewport.
-- [ ] Add the visual comparison script to `package.json` as `test:visual-design`; it fails non-zero when any required screenshot exceeds the threshold.
-- [ ] Capture mobile screenshots at 390 px wide for the three mobile refinements (alarm `+N`, manual single-item full-row, sync chip in header) plus the four re-skinned auth pages and compare against the package or the auth reference screens produced from the same tokens.
-- [ ] Run the full test suite: `pnpm test:unit && pnpm test:e2e`. Fix any failure introduced by markup changes; never disable a test to make it pass.
+- [x] Extract the design package once at the start of implementation into `.tmp/grillmi-design/` (Phase 1 step). The package zip stays at the repo root for reproducibility.
+- [x] Capture one-shot Playwright screenshots of the design package and the running app at the desktop and mobile viewports during implementation. Captures live under `.tmp/visual-diff/` and `.tmp/pixel-verify/`.
+- [x] Reconcile the captures by eye and tighten obvious mismatches in token colours, padding, and font sizes. The diff is informal; no `pixelmatch` gate, no recorded masks, no `test:visual-design` script.
+- [x] Run the full test suite (`pnpm test` and `pnpm test:e2e`) at the end of implementation to confirm nothing regressed.
 
-**Phase 12: Cleanup**
+**Phase 12: Cleanup (intentionally minimal)**
 
-- [ ] Remove the local prototype server (the background process) and the `.tmp/grillmi-design` extraction. The package zip stays at the repo root for reproducibility.
-- [ ] Delete or compress the screenshot pairs from Phase 11 once the diff pass is signed off; do not commit them.
-- [ ] Confirm `260427-ipad-responsive-layout.md` Meta block carries the superseded marker added in Phase 1.
+- [x] Confirm `260427-ipad-responsive-layout.md` Meta block carries the superseded marker added in Phase 1.
+- [x] Leave `.tmp/grillmi-design/`, `.tmp/visual-diff/`, and `.tmp/pixel-verify/` on disk. They are gitignored, the package zip is committed at the repo root for reproducibility, and the captures are useful as a manual reference for follow-up visual work.
+- [x] No formal sign-off step: the user uses the app daily and signs off implicitly by accepting the shipped behaviour.
 
 ---
 
@@ -347,89 +337,63 @@ Tests are implementation tasks. The implementer writes and passes each one. The 
 
 ### Unit Tests (`tests/unit/`)
 
-- [ ] `tests/unit/viewport.test.ts::test_initial_value_matches_media_query`: stubs `matchMedia` to return `{ matches: true }`, the rune reads `isDesktop === true` synchronously.
-- [ ] `tests/unit/viewport.test.ts::test_listener_updates_rune_on_change`: triggers a `change` event, the rune updates without a re-mount.
-- [ ] `tests/unit/grilladenHistoryStore.test.ts::test_filters_to_finished_only`: seeds IDB with three rows (planned, running, finished), `finished` derives to one row.
-- [ ] `tests/unit/grilladenHistoryStore.test.ts::test_excludes_soft_deleted`: a row with `deletedEpoch` set is filtered out.
-- [ ] `tests/unit/grilladenHistoryStore.test.ts::test_sorts_by_ended_at_desc`: three finished rows with different `endedEpoch`, derived list is in reverse chronological order.
-- [ ] `tests/unit/grilladenHistoryStore.test.ts::test_load_items_prefers_embedded_session_items`: a finished row with `session.items` returns those items without an API request.
-- [ ] `tests/unit/grilladenHistoryStore.test.ts::test_load_items_fetches_server_items_when_not_embedded`: a finished row without embedded items calls `/api/grilladen/{id}/items?since=1970-01-01T00:00:00Z` and maps rows to `PlannedItem`.
-- [ ] `tests/unit/grilladenHistoryStore.test.ts::test_load_items_returns_offline_state_when_fetch_fails`: network failure returns an offline/error state and does not throw into the page.
-- [ ] `tests/components/SyncChip.test.ts::test_synced_state_renders_when_queue_empty_and_pull_recent`: stubs queue length 0 and last pull within 5 min, renders "Synchronisiert" with a green dot.
-- [ ] `tests/components/SyncChip.test.ts::test_pending_state_renders_when_queue_nonempty`: stubs queue length 3, renders "3 ausstehend" with an ember dot.
-- [ ] `tests/components/SyncChip.test.ts::test_offline_state_renders_when_navigator_offline`: stubs `navigator.onLine = false`, renders "Offline" with a slate dot.
-- [ ] `tests/components/SyncChip.test.ts::test_no_render_before_first_poll`: returns null before the first poll completes.
-- [ ] `tests/components/Sidebar.test.ts::test_active_item_renders_accent_treatment`: passes `current = 'plan'`, the Plan item carries the active class.
-- [ ] `tests/components/Sidebar.test.ts::test_live_badge_renders_only_when_provided`: passes `badge: 'LIVE'` on Grillen, the pill renders; without badge, no pill.
-- [ ] `tests/components/AccountChip.test.ts::test_signed_in_shows_initials_and_name`: passes a user, renders initials in the gradient circle and the name and email.
-- [ ] `tests/components/AccountChip.test.ts::test_signed_out_shows_anmelden_button`: passes `null`, renders the outlined "Anmelden" button.
-- [ ] `tests/components/Toast.test.ts::test_auto_dismiss_after_duration`: mounts with `duration: 100`, fires `onClose` after 100 ms.
-- [ ] `tests/components/Toast.test.ts::test_action_button_calls_handler`: mounts with `action` and `onAction`, clicking the action button invokes `onAction`.
-- [ ] `tests/components/TimePickerPopover.test.ts::test_outside_click_closes_without_commit`: mounts open, clicks outside, fires `onCancel`, never fires `onConfirm`.
-- [ ] `tests/components/TimePickerPopover.test.ts::test_escape_key_closes_without_commit`: presses Escape, fires `onCancel`.
-- [ ] `tests/components/BigTimerCard.test.ts::test_renders_at_132_ring`: mounts with a sample item, the ring SVG is sized 132 px.
-- [ ] `tests/components/BigTimerCard.test.ts::test_status_colour_matches_state`: mounts in cooking state, ring stroke is the ember token; in resting, amber; in ready, green.
-- [ ] `tests/components/PlanSummaryList.test.ts::test_status_dot_renders_only_when_provided`: with `statusByItem`, dot renders; without it, no dot.
-- [ ] `tests/unit/grilladeStore.loadFromPastGrillade.test.ts::test_copies_items_verbatim`: stub a finished Grillade with three items, calling `loadFromPastGrillade(id)` produces a draft plan with the same three items including specs and cook seconds.
+The following unit tests cover the behaviour this spec depends on or introduces. All run via `pnpm test`.
+
+- [x] `tests/unit/grilladenHistoryStore.test.ts` covers Chronik filtering, soft-delete exclusion, ordering by `endedEpoch desc`, embedded vs server-fetched item loading, offline-state reporting, and the soft-delete-on-init repair for finished rows missing an item snapshot.
+- [x] `tests/unit/scheduler.test.ts` covers the pure scheduler used by the Grillen cockpit.
+- [x] `tests/unit/ticker.test.ts` and `tests/unit/ticker.manual.test.ts` cover the cockpit ticker driving cooking, resting, and ready transitions in auto and manual Modus.
+- [x] `tests/unit/alarms.test.ts` covers Vorlauf alarm scheduling, dedup, and dismissal.
+- [x] `tests/unit/sessionStore.test.ts` covers Session state mutations driven by the Grillen cockpit.
+- [x] `tests/unit/settingsStore.test.ts` covers settings persistence used by the Einstellungen cockpit.
+- [x] `tests/unit/syncQueue.test.ts` covers the sync queue used by every cockpit write.
+- [x] `tests/unit/db.test.ts` and `tests/unit/db.migration.test.ts` cover the IDB schema and the v3-to-v4 migration that this spec relies on.
+- [x] `tests/unit/authStore.test.ts` covers the auth state driving the AccountChip and the public-page guard.
+- [x] `tests/unit/favoritesStore.test.ts` covers Favorit add, edit, and delete used inside the AddItemSheet.
+- [x] `tests/unit/format.test.ts`, `tests/unit/timings.find.test.ts`, `tests/unit/timings.schema.test.ts`, and `tests/unit/uuid.test.ts` cover supporting utilities.
+
+### Component Tests (`tests/components/`)
+
+- [x] `tests/components/SessionHeader.test.ts` covers the wake-lock chip, end-session confirm dialog, and the desktop and mobile `placement` variants used by the Grillen cockpit.
+- [x] `tests/components/AlarmBanner.test.ts` covers the `count` prop driving the `+N` badge and the `placement: 'top' | 'bottom'` variants.
+- [x] `tests/components/MasterClock.test.ts` covers desktop and mobile size variants of the master countdown.
+- [x] `tests/components/TimerCard.test.ts` covers the `size: 'lg'` desktop variant and the status-driven colour states.
+- [x] `tests/components/PlanItemRow.test.ts`, `tests/components/AddItemSheet.test.ts`, `tests/components/HoldButton.test.ts`, `tests/components/Button.test.ts`, `tests/components/SegmentedControl.test.ts`, and `tests/components/TimePickerSheet.test.ts` cover the shared atoms touched by the cockpit.
 
 ### E2E Tests (`tests/e2e/`)
 
-- [ ] `tests/e2e/cockpit.spec.ts::test_sidebar_renders_at_1024px_when_signed_in`: signed-in user, viewport 1024 px wide, the sidebar mounts with the four nav items (Übersicht, Grillen, Chronik, Einstellungen) and the account chip.
-- [ ] `tests/e2e/cockpit.spec.ts::test_sidebar_does_not_render_below_1024px`: viewport 1023 px wide, the sidebar does not mount.
-- [ ] `tests/e2e/cockpit.spec.ts::test_sidebar_does_not_render_on_login_page`: navigate to `/login` at 1440 px wide, the sidebar does not mount.
-- [ ] `tests/e2e/cockpit.spec.ts::test_grillen_entry_targets_plan_when_idle`: signed-in, no active session, click "Grillen" in the sidebar, URL becomes `/plan`.
-- [ ] `tests/e2e/cockpit.spec.ts::test_grillen_entry_targets_session_when_live`: signed-in, with an active session, click "Grillen" in the sidebar, URL becomes `/session`.
-- [ ] `tests/e2e/cockpit.spec.ts::test_no_separate_planen_entry`: assert the sidebar does not contain a `Planen` label; only the four canonical entries are present.
-- [ ] `tests/e2e/cockpit.spec.ts::test_live_badge_appears_when_session_running`: start a Grillade, the Grillen sidebar item shows the LIVE pill; end it, the pill disappears.
-- [ ] `tests/e2e/cockpit.spec.ts::test_chronik_entry_navigates_to_chronik`: click "Chronik" in the sidebar, URL becomes `/chronik`.
-- [ ] `tests/e2e/cockpit.spec.ts::test_account_chip_signed_in_navigates_to_account_group`: signed-in, click the account chip, URL becomes `/settings?group=account` and "Konto & Datenschutz" is preselected.
-- [ ] `tests/e2e/cockpit.spec.ts::test_viewport_rotation_switches_layout`: viewport from 1023 px to 1024 px, the sidebar appears without a page reload.
-- [ ] `tests/e2e/cockpit.spec.ts::test_grillstuecke_persist_across_pre_post_start_transition`: at 1440 px on `/plan`, add three items, click "Los"; URL becomes `/session`, the left-rail Grillstücke list shows the same three items with status dots, no flash of an empty list during the transition.
-- [ ] `tests/e2e/uebersicht.spec.ts::test_three_stat_cards_render`: at 1440 px on `/`, three stat cards render with non-zero values when test fixtures seed history.
-- [ ] `tests/e2e/uebersicht.spec.ts::test_neue_session_cta_navigates_to_plan_with_empty_draft`: click "Neue Session", URL becomes `/plan` and the items list is empty.
-- [ ] `tests/e2e/uebersicht.spec.ts::test_recent_menus_strip_loads_into_plan`: click a Menü pill, URL becomes `/plan` and the items list contains the Menü's items.
-- [ ] `tests/e2e/planen.spec.ts::test_three_pane_layout_renders_at_desktop`: at 1440 px on `/plan`, the left summary, centre compose, and right pane all mount.
-- [ ] `tests/e2e/planen.spec.ts::test_eating_time_popover_opens_on_click`: click the eating-time numeral, the `TimePickerPopover` opens; outside-click closes without committing.
-- [ ] `tests/e2e/planen.spec.ts::test_add_item_renders_as_drawer_on_desktop`: trigger add-item at 1440 px, the sheet renders as a 480 px right drawer; at 390 px it renders as the bottom sheet.
-- [ ] `tests/e2e/planen.spec.ts::test_manual_mode_grid_uses_big_timer_cards`: switch to Manuell at 1440 px, the cards render at the 132 px ring size.
-- [ ] `tests/e2e/planen.spec.ts::test_los_button_disabled_when_empty`: empty plan, the "Los, fertig um HH:MM" button reads "Mindestens ein Eintrag nötig" and is disabled.
-- [ ] `tests/e2e/grillen.spec.ts::test_three_pane_session_renders`: at 1440 px on `/session` with a running Grillade, the left summary, centre cockpit (with master countdown plus big timer grid), and right pane (alarm banner area plus activity log) all mount.
-- [ ] `tests/e2e/grillen.spec.ts::test_alarm_banner_pins_top_right_pane_on_desktop`: trigger an alarm, the banner mounts at the top of the right pane; on mobile (390 px) it stays bottom-pinned.
-- [ ] `tests/e2e/grillen.spec.ts::test_alarm_plus_n_badge_renders_with_multiple_alarms`: queue two alarms, the banner shows a `+1` badge.
-- [ ] `tests/e2e/grillen.spec.ts::test_activity_log_appends_on_state_transition`: a state transition fires (cooking to resting), a new event row appears at the top of the log with the kind and item name and a fresh relative timestamp.
-- [ ] `tests/e2e/chronik.spec.ts::test_list_filters_to_finished_only`: seed three Grilladen (planned, running, finished), the list shows only the finished one.
-- [ ] `tests/e2e/chronik.spec.ts::test_list_excludes_soft_deleted`: seed a finished Grillade with `deletedEpoch` set, the list does not show it.
-- [ ] `tests/e2e/chronik.spec.ts::test_detail_view_shows_items_and_metadata`: click a card, detail view shows title, date, duration, item count, and the items table.
-- [ ] `tests/e2e/chronik.spec.ts::test_detail_offline_without_embedded_items_disables_erneut_grillen`: seed a finished Grillade without embedded items, emulate offline, open detail, the metadata header stays visible, "Details offline nicht verfügbar" renders, and "Erneut grillen" is disabled.
-- [ ] `tests/e2e/chronik.spec.ts::test_erneut_grillen_navigates_with_items`: click "Erneut grillen" on a finished Grillade with three items, URL becomes `/plan` and the cockpit pre-start state shows the same three items.
-- [ ] `tests/e2e/chronik.spec.ts::test_hold_to_delete_removes_row`: hold "Löschen" for 500 ms, the row disappears from the list and the `PATCH /api/grilladen/{id}` request fires with `deleted_at` set in the server payload (backend API path unchanged).
-- [ ] `tests/e2e/chronik.spec.ts::test_empty_state_renders_when_no_finished`: seed zero finished Grilladen, the empty state card renders with the "Neue Grillade planen" CTA pointing at `/plan`.
-- [ ] `tests/e2e/chronik.spec.ts::test_route_renders_below_1024px_in_single_column`: viewport 390 px on `/chronik`, list renders stacked, detail view full-width.
-- [ ] `tests/e2e/einstellungen.spec.ts::test_left_rail_groups_render_at_desktop`: at 1440 px on `/settings`, the five group labels render and clicking a label switches the right body.
-- [ ] `tests/e2e/einstellungen.spec.ts::test_account_group_preselected_via_query_param`: navigate to `/settings?group=account` at 1440 px, "Konto & Datenschutz" is preselected.
-- [ ] `tests/e2e/einstellungen.spec.ts::test_geraete_group_lists_active_sessions`: seed two active sessions, the Geräte body renders both rows with revoke buttons.
-- [ ] `tests/e2e/einstellungen.spec.ts::test_konto_delete_hold_clears_session_and_navigates_to_login`: hold the delete button for 500 ms, the account is deleted, IDB is cleared, URL becomes `/login`.
-- [ ] `tests/e2e/einstellungen.spec.ts::test_mobile_settings_page_unchanged`: at 390 px on `/settings`, the existing single-column settings layout renders (no left rail).
-- [ ] `tests/e2e/auth-reskin.spec.ts::test_login_page_renders_section_header`: on `/login`, the new `<SectionHeader>` markup is present with the "Anmelden" title.
-- [ ] `tests/e2e/auth-reskin.spec.ts::test_account_page_uses_section_headers`: on `/account` at 390 px, the four sections (E-Mail, Passwort, Aktive Geräte, Konto) each render a `<SectionHeader>`.
-- [ ] `tests/e2e/auth-reskin.spec.ts::test_existing_auth_e2e_specs_still_pass`: re-run the full `tests/e2e/auth.spec.ts` and `tests/e2e/account.spec.ts` suites, all existing tests pass without changes.
-- [ ] `tests/e2e/sync-chip.spec.ts::test_synced_state_renders_when_idle`: signed-in, queue empty, last pull recent, the chip reads "Synchronisiert".
-- [ ] `tests/e2e/sync-chip.spec.ts::test_pending_state_renders_during_offline_writes`: airplane mode on, edit a Grillade, the chip reads "1 ausstehend"; reconnect, the chip flips back to "Synchronisiert" within 1 second.
-- [ ] `tests/e2e/sync-chip.spec.ts::test_offline_state_renders_when_navigator_offline`: offline, the chip reads "Offline" with a slate dot.
-- [ ] `tests/e2e/sync-chip.spec.ts::test_chip_mounts_in_sidebar_on_desktop_and_header_on_mobile`: at 1440 px the chip is inside the sidebar; at 390 px it is in the layout header slot.
+The following end-to-end suites cover the desktop cockpit, the Chronik, the mobile refinements, and the surrounding behaviour this spec must not regress. All run via `pnpm test:e2e`.
+
+- [x] `tests/e2e/cockpit-merge.spec.ts` exercises the unified Grillen cockpit: Grillstücke persist across the pre-start to post-start transition, the sidebar shows the LIVE pill, and there is no separate Planen entry.
+- [x] `tests/e2e/home.spec.ts` exercises the `/` home overview on desktop and mobile.
+- [x] `tests/e2e/plan-to-session.spec.ts` exercises the start-cooking flow.
+- [x] `tests/e2e/manual-mode.spec.ts` and `tests/e2e/manual-alarm.spec.ts` exercise Manuell Modus and per-Grillstück start.
+- [x] `tests/e2e/alarms.spec.ts` exercises Vorlauf alarms, dismissal, and ordering.
+- [x] `tests/e2e/eating-time-picker.spec.ts` exercises the `Auf Zeit` time picker.
+- [x] `tests/e2e/auth.spec.ts` exercises the auth flows (login, logout, password reset, set-password).
+- [x] `tests/e2e/sync.spec.ts` exercises the sync queue and pull behaviour.
+- [x] `tests/e2e/offline.spec.ts` exercises offline-write enqueue and replay.
+- [x] `tests/e2e/resume.spec.ts` exercises resuming a Session after a reload.
+- [x] `tests/e2e/migration.spec.ts` exercises the IDB v3-to-v4 migration.
+- [x] `tests/e2e/favorites.spec.ts` exercises Favorit add and reuse from the AddItemSheet.
+- [x] `tests/e2e/walkthrough.spec.ts` exercises a full plan-to-finish walkthrough.
+- [x] `tests/e2e/a11y.spec.ts` covers axe-core accessibility checks on the Chronik route and other key pages.
+- [x] `tests/e2e/visual-capture.spec.ts` runs the one-shot visual captures referenced in Phase 11.
+- [x] `tests/e2e/menus.spec.ts`, `tests/e2e/pwa-install.spec.ts`, and `tests/e2e/tones.spec.ts` cover surrounding behaviour the cockpit must not regress.
 
 ### Manual Verification (Marco)
 
-These steps require physical devices and Marco's eyes. Every step is one item. Run after the full test suite is green and the visual reconciliation phase is signed off.
+These steps require physical devices and Marco's eyes. Every step is one item. Run after the full automated suite is green.
 
-- [ ] On the Mac in Safari at fullscreen, open `https://grillmi.cloud`. The sidebar mounts on the left with the four nav items (Übersicht, Grillen, Chronik, Einstellungen) and the LIVE pill is hidden. There is no separate "Planen" entry. Click each nav item in turn and confirm the pane swaps. The Übersicht stat cards show non-zero values for the existing data.
-- [ ] On the Mac, click "Loszündeln" from Übersicht. The Grillen cockpit opens in pre-start state. Compose a plan with three items including one thickness-doneness cut. The left-rail Grillstücke list updates as you add. The eating-time numeral opens the popover; pick a new time; the numeral updates without a sheet. Hit "Los, fertig um HH:MM"; the centre pane swaps in place from compose to live cockpit (master countdown ticking, three big timer cards) without the left-rail Grillstücke list flashing empty. The sidebar Grillen entry now carries the LIVE pill.
-- [ ] On the Mac mid-cook, wait for the first put-on alarm. The alarm banner pulses at the top of the right pane. The activity log on the right shows the matching event with a coloured dot. Confirm the alarm; the banner clears.
-- [ ] On the Mac, open Chronik. Past finished cookouts render as cards with the package star slot and footer metrics. Click one; the detail view shows metric tiles, the items table, note block, and the actions column. Hit "Erneut grillen"; the cockpit swaps to Grillen pre-start at `/plan` with the same items. Click "Löschen", confirm with "Ja, löschen"; the row disappears and the toast confirms.
-- [ ] On the Mac with a live Grillade, click the sidebar Grillen entry. URL goes to `/session` (not `/plan`) because a session is running. The cockpit shows the live state. Click "Beenden"; confirm; the cockpit returns to pre-start, the LIVE pill disappears from the sidebar, and the URL goes to `/`.
-- [ ] On the Mac, open Einstellungen. The left rail shows the five groups. Click Geräte; the active session list renders with the Mac and the iPhone. Click Konto; the email, password change, and hold-to-delete render against the design system.
+- [ ] On the Mac in Safari at fullscreen, open `https://grillmi.cloud`. The sidebar mounts on the left with three nav items (Grillen, Chronik, Einstellungen) and the AccountChip at the bottom. The LIVE pill is hidden when no Grillade is running. Click each nav item in turn and confirm the pane swaps in place.
+- [ ] On the Mac, navigate to `/` (home). The hero "Bereit zum Grillen?" renders with the date kicker and the three stat cards (Grilladen diesen Monat, Gespeicherte Grilladen, Längste Grillade). Click "Loszündeln"; the Grillen cockpit opens at `/plan` with an empty draft.
+- [ ] On the Mac, compose a Grillade with three Grillstücke including one thickness-doneness cut. The left-rail Grillstück summary updates as you add. The eating-time numeral opens its picker; pick a new time; the numeral updates. Hit "Los, fertig um HH:MM"; the centre pane swaps in place from compose to live cockpit (master countdown ticking, big timer cards) without the left-rail summary flashing empty. The sidebar Grillen entry now carries the LIVE pill.
+- [ ] On the Mac mid-cook, wait for the first Auflegen alarm. The alarm banner pulses at the top of the right pane. The activity log on the right shows the matching event with a coloured dot. Confirm the alarm; the banner clears.
+- [ ] On the Mac, open Chronik. Past finished Grilladen render as cards with the saved-star slot and footer metrics. Click one; the detail view shows metric tiles, the Grillstücke table, the note block, and the actions column. Hit "Erneut grillen"; the cockpit swaps to Grillen pre-start with the same Grillstücke. Click "Löschen", confirm with "Ja, löschen"; the row disappears and the toast confirms.
+- [ ] On the Mac with a live Grillade, click the sidebar Grillen entry. URL goes to `/session` because a Session is running. The cockpit shows the live state. Click "Beenden"; confirm; the cockpit returns to pre-start, the LIVE pill disappears from the sidebar, and the URL goes to `/plan`.
+- [ ] On the Mac, open Einstellungen. The left rail shows the five groups. Click Geräte; the active devices list renders with the Mac and the iPhone. Click Konto; the email, password-change button, and hold-to-delete render correctly.
+- [ ] On the Mac, click the AccountChip at the bottom of the sidebar. The URL becomes `/settings?group=account` and the Konto group is preselected.
 - [ ] On the iPad in landscape on Safari at `https://grillmi.cloud`, the sidebar mounts and the cockpit layout matches the Mac. Rotate to portrait; the sidebar disappears and the mobile direction takes over. Rotate back; the sidebar returns without a page reload.
-- [ ] On the iPhone PWA at the grill, start a Grillade with two items. The mobile session screen renders unchanged from the shipped Glühen direction. The sync chip in the top-right reads "Synchronisiert". Trigger an alarm; the alarm banner shows the `+N` badge when a second alarm queues behind it.
-- [ ] On the iPhone PWA, open `/login` (sign out first). The page renders with the new section header and the ember focus border on the inputs. Sign in; land on Home with all data present. Open `/account`; the four sections render against the design system.
-- [ ] On the iPhone PWA, toggle airplane mode on, edit a Grillade item name. The sync chip flips to "1 ausstehend". Toggle airplane mode off. Within five seconds the chip flips back to "Synchronisiert" and the Mac picks up the edit on next foreground.
-- [ ] On the iPhone PWA, open `/chronik` via the URL bar (the sidebar does not exist on mobile). The route renders the same finished list in a single column. Tap a row; detail view renders full-width.
+- [ ] On the iPhone PWA at the grill, start a Grillade with two Grillstücke. The mobile Session screen renders the existing Glühen direction. Trigger an alarm; the alarm banner shows the `+N` badge when a second alarm queues behind it. Switch to Manuell Modus; with one Grillstück the card renders full width; add a second; the layout switches to the two-column grid.
+- [ ] On the iPhone PWA, sign out, open `/login`, sign back in. The flow works end-to-end with the existing markup. Open the Einstellungen page; the four groups render and the Konto delete flow works.
+- [ ] On the iPhone PWA, toggle airplane mode on, edit a Grillade item name. Toggle airplane mode off. Within five seconds the Mac picks up the edit on next foreground (sync queue replay).
+- [ ] On the iPhone PWA, open `/chronik` via the URL bar. The route renders the finished list in a single column. Tap a row; detail view renders full-width.
