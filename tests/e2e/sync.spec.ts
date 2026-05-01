@@ -152,13 +152,13 @@ test.describe('sync', () => {
 		await page.evaluate(async grillade => {
 			const { putGrillade } = await (import('/src/lib/stores/db.ts' as string) as Promise<typeof import('$lib/stores/db')>)
 			await putGrillade(grillade as unknown as import('$lib/stores/db').GrilladeRow)
-			const { enqueueSync } = await (import('/src/lib/sync/queue.ts' as string) as Promise<typeof import('$lib/sync/queue')>)
-			await enqueueSync({
+			const { enqueueWrite } = await (import('/src/lib/sync/coordinator.ts' as string) as Promise<typeof import('$lib/sync/coordinator')>)
+			await enqueueWrite({
 				method: 'POST',
 				path: '/api/grilladen',
 				body: JSON.stringify(grillade),
 			})
-			const { flush } = await (import('/src/lib/sync/queue.ts' as string) as Promise<typeof import('$lib/sync/queue')>)
+			const { flush } = await (import('/src/lib/sync/coordinator.ts' as string) as Promise<typeof import('$lib/sync/coordinator')>)
 			try {
 				await flush()
 			} catch {
@@ -168,7 +168,7 @@ test.describe('sync', () => {
 
 		await ctx.setOffline(false)
 		await page.evaluate(async () => {
-			const { flush } = await (import('/src/lib/sync/queue.ts' as string) as Promise<typeof import('$lib/sync/queue')>)
+			const { flush } = await (import('/src/lib/sync/coordinator.ts' as string) as Promise<typeof import('$lib/sync/coordinator')>)
 			await flush()
 		})
 
@@ -404,16 +404,16 @@ test.describe('sync', () => {
 
 		await page.evaluate(async () => {
 			await (import('/src/lib/stores/db.ts' as string) as Promise<typeof import('$lib/stores/db')>)
-			await (import('/src/lib/sync/queue.ts' as string) as Promise<typeof import('$lib/sync/queue')>)
+			await (import('/src/lib/sync/coordinator.ts' as string) as Promise<typeof import('$lib/sync/coordinator')>)
 		})
 
 		await ctx.setOffline(true)
 		const idbCount = await page.evaluate(async items => {
 			const { putFavorite, listFavorites } = await (import('/src/lib/stores/db.ts' as string) as Promise<typeof import('$lib/stores/db')>)
-			const { enqueueSync } = await (import('/src/lib/sync/queue.ts' as string) as Promise<typeof import('$lib/sync/queue')>)
+			const { enqueueWrite } = await (import('/src/lib/sync/coordinator.ts' as string) as Promise<typeof import('$lib/sync/coordinator')>)
 			for (const item of items) {
 				await putFavorite(item.idb)
-				await enqueueSync({
+				await enqueueWrite({
 					method: 'POST',
 					path: '/api/favorites',
 					body: JSON.stringify(item.wire),
@@ -425,7 +425,7 @@ test.describe('sync', () => {
 
 		await ctx.setOffline(false)
 		await page.evaluate(async () => {
-			const { flush } = await (import('/src/lib/sync/queue.ts' as string) as Promise<typeof import('$lib/sync/queue')>)
+			const { flush } = await (import('/src/lib/sync/coordinator.ts' as string) as Promise<typeof import('$lib/sync/coordinator')>)
 			await flush()
 		})
 

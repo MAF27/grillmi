@@ -33,7 +33,7 @@ async def test_invitation_token_set_password_auto_logs_in(app_client, db_session
 
     with patch("grillmi.security.hibp.check_password", return_value=False):
         with patch(
-            "grillmi.routes.auth.check_password", return_value=False
+            "grillmi.services.account_access.check_password", return_value=False
         ):
             resp = await app_client.post(
                 "/api/auth/set-password",
@@ -51,7 +51,7 @@ async def test_reset_token_set_password_does_not_auto_log_in(app_client, db_sess
     user = await make_user(email="reset@example.com")
     raw = await _seed_token(db_session, user.id, "reset")
 
-    with patch("grillmi.routes.auth.check_password", return_value=False):
+    with patch("grillmi.services.account_access.check_password", return_value=False):
         resp = await app_client.post(
             "/api/auth/set-password",
             json={"token": raw, "password": "fresh-new-passw0rd"},
@@ -73,7 +73,7 @@ async def test_set_password_invalidates_all_existing_sessions(
     await db_session.commit()
 
     raw = await _seed_token(db_session, user.id, "reset")
-    with patch("grillmi.routes.auth.check_password", return_value=False):
+    with patch("grillmi.services.account_access.check_password", return_value=False):
         await app_client.post(
             "/api/auth/set-password",
             json={"token": raw, "password": "another-passw0rd"},
@@ -95,7 +95,7 @@ async def test_set_password_rejects_hibp_match(app_client, db_session, make_user
     user = await make_user(email="hibp@example.com")
     raw = await _seed_token(db_session, user.id, "reset")
 
-    with patch("grillmi.routes.auth.check_password", return_value=True):
+    with patch("grillmi.services.account_access.check_password", return_value=True):
         resp = await app_client.post(
             "/api/auth/set-password",
             json={"token": raw, "password": "leaked-passw0rd"},

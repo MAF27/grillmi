@@ -1,0 +1,204 @@
+{
+  "grillade": {
+    "input": {
+      "id": "11111111-1111-1111-1111-111111111111",
+      "user_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      "name": "Saturday Cookout",
+      "status": "planned",
+      "target_finish_at": "2024-05-01T16:00:00+00:00",
+      "started_at": null,
+      "ended_at": null,
+      "position": 1,
+      "created_at": "2024-05-01T15:00:00+00:00",
+      "updated_at": "2024-05-01T15:58:20+00:00",
+      "deleted_at": null
+    },
+    "expected": {
+      "id": "11111111-1111-1111-1111-111111111111",
+      "name": "Saturday Cookout",
+      "status": "planned",
+      "targetEpoch": 1714579200000,
+      "startedEpoch": null,
+      "endedEpoch": null,
+      "position": 1,
+      "updatedEpoch": 1714579100000,
+      "deletedEpoch": null,
+      "pushedToServer": true
+    }
+  },
+  "grilladeAllNull": {
+    "input": {
+      "id": "22222222-2222-2222-2222-222222222222",
+      "user_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      "name": null,
+      "status": "finished",
+      "target_finish_at": null,
+      "started_at": null,
+      "ended_at": null,
+      "position": 0,
+      "created_at": "2024-05-01T15:00:00+00:00",
+      "updated_at": "2024-05-01T15:58:20+00:00",
+      "deleted_at": "2024-05-02T00:00:00+00:00"
+    },
+    "expected": {
+      "id": "22222222-2222-2222-2222-222222222222",
+      "name": null,
+      "status": "finished",
+      "targetEpoch": null,
+      "startedEpoch": null,
+      "endedEpoch": null,
+      "position": 0,
+      "updatedEpoch": 1714579100000,
+      "deletedEpoch": 1714608000000,
+      "pushedToServer": true
+    }
+  },
+  "plannedItem": {
+    "input": {
+      "id": "33333333-3333-3333-3333-333333333333",
+      "grillade_id": "11111111-1111-1111-1111-111111111111",
+      "label": "Entrecôte",
+      "cut_id": "rinds-entrecote",
+      "thickness_cm": 3,
+      "doneness": "medium-rare",
+      "prep_label": null,
+      "cook_seconds_min": 600,
+      "cook_seconds_max": 600,
+      "flip_fraction": 0.5,
+      "rest_seconds": 300,
+      "status": "pending",
+      "started_at": null,
+      "plated_at": null,
+      "position": 0,
+      "created_at": "2024-05-01T15:00:00+00:00",
+      "updated_at": "2024-05-01T15:00:00+00:00",
+      "deleted_at": null
+    },
+    "expected": {
+      "id": "33333333-3333-3333-3333-333333333333",
+      "categorySlug": "beef",
+      "cutSlug": "rinds-entrecote",
+      "thicknessCm": 3,
+      "prepLabel": null,
+      "doneness": "medium-rare",
+      "label": "Entrecôte",
+      "cookSeconds": 600,
+      "restSeconds": 300,
+      "flipFraction": 0.5,
+      "idealFlipPattern": "once",
+      "heatZone": "—",
+      "grateTempC": 230
+    }
+  },
+  "plannedItemFallback": {
+    "input": {
+      "id": "44444444-4444-4444-4444-444444444444",
+      "grillade_id": "11111111-1111-1111-1111-111111111111",
+      "label": "Entrecôte",
+      "cut_id": "rinds-entrecote",
+      "thickness_cm": 3,
+      "doneness": "medium-rare",
+      "prep_label": null,
+      "cook_seconds_min": null,
+      "cook_seconds_max": null,
+      "flip_fraction": null,
+      "rest_seconds": null,
+      "status": "pending",
+      "started_at": null,
+      "plated_at": null,
+      "position": 0,
+      "created_at": "2024-05-01T15:00:00+00:00",
+      "updated_at": "2024-05-01T15:00:00+00:00",
+      "deleted_at": null
+    },
+    "expected": {
+      "id": "44444444-4444-4444-4444-444444444444",
+      "categorySlug": "beef",
+      "cutSlug": "rinds-entrecote",
+      "thicknessCm": 3,
+      "prepLabel": null,
+      "doneness": "medium-rare",
+      "label": "Entrecôte",
+      "cookSeconds": 600,
+      "restSeconds": 300,
+      "flipFraction": 0.5,
+      "idealFlipPattern": "once",
+      "heatZone": "—",
+      "grateTempC": 230
+    }
+  },
+  "plannedItemUnknownCut": {
+    "input": {
+      "id": "55555555-5555-5555-5555-555555555555",
+      "grillade_id": "11111111-1111-1111-1111-111111111111",
+      "label": "Mystery Meat",
+      "cut_id": "unknown-cut-slug",
+      "thickness_cm": 2,
+      "doneness": "medium",
+      "prep_label": null,
+      "cook_seconds_min": 300,
+      "cook_seconds_max": 300,
+      "flip_fraction": 0.5,
+      "rest_seconds": 60,
+      "status": "pending",
+      "started_at": null,
+      "plated_at": null,
+      "position": 0,
+      "created_at": "2024-05-01T15:00:00+00:00",
+      "updated_at": "2024-05-01T15:00:00+00:00",
+      "deleted_at": null
+    },
+    "expected": null
+  },
+  "favorite": {
+    "input": {
+      "id": "66666666-6666-6666-6666-666666666666",
+      "user_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      "label": "Sunday Steak",
+      "cut_id": "rinds-entrecote",
+      "thickness_cm": 3,
+      "doneness": "medium-rare",
+      "prep_label": null,
+      "position": 0,
+      "last_used_at": "2024-05-01T15:00:00+00:00",
+      "created_at": "2024-05-01T15:00:00+00:00",
+      "updated_at": "2024-05-01T15:00:00+00:00",
+      "deleted_at": null
+    },
+    "expected": {
+      "id": "66666666-6666-6666-6666-666666666666",
+      "name": "Sunday Steak",
+      "categorySlug": "beef",
+      "cutSlug": "rinds-entrecote",
+      "thicknessCm": 3,
+      "prepLabel": null,
+      "doneness": "medium-rare",
+      "label": "Sunday Steak",
+      "cookSeconds": 600,
+      "restSeconds": 300,
+      "flipFraction": 0.5,
+      "idealFlipPattern": "once",
+      "heatZone": "—",
+      "grateTempC": 230,
+      "createdAtEpoch": 1714575600000,
+      "lastUsedEpoch": 1714575600000
+    }
+  },
+  "favoriteUnknownCut": {
+    "input": {
+      "id": "77777777-7777-7777-7777-777777777777",
+      "user_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      "label": "Mystery",
+      "cut_id": "unknown-cut-slug",
+      "thickness_cm": 2,
+      "doneness": "medium",
+      "prep_label": null,
+      "position": 0,
+      "last_used_at": "2024-05-01T15:00:00+00:00",
+      "created_at": "2024-05-01T15:00:00+00:00",
+      "updated_at": "2024-05-01T15:00:00+00:00",
+      "deleted_at": null
+    },
+    "expected": null
+  }
+}

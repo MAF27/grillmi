@@ -10,7 +10,7 @@
 	import { authStore } from '$lib/stores/authStore.svelte'
 	import { grilladenHistoryStore } from '$lib/stores/grilladenHistoryStore.svelte'
 	import { grilladeStore } from '$lib/stores/grilladeStore.svelte'
-	import { attachSync, flush, onSyncApplied, pull } from '$lib/sync'
+	import { attachSync, onSyncApplied, syncNow } from '$lib/sync'
 	import { debugSync } from '$lib/sync/debug'
 	import { unlockAudio } from '$lib/sounds/player'
 
@@ -73,10 +73,8 @@
 			const pushLocal = desktopAtStartup ? grilladeInit.then(() => grilladeStore.syncActive()) : grilladeInit
 			void pushLocal
 				.then(() => debugSync('layout', 'startup push/init done', { desktopAtStartup }))
-				.then(() => flush())
-				.then(() => debugSync('layout', 'startup flush done'))
-				.then(() => pull())
-				.then(() => debugSync('layout', 'startup pull done'))
+				.then(() => syncNow('layout'))
+				.then(() => debugSync('layout', 'startup sync done'))
 				.then(() => grilladeStore.reloadFromStorage())
 				.then(() => debugSync('layout', 'startup reload done'))
 				.catch(error => debugSync('layout', 'startup sync error', { error: String(error) }))

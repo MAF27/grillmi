@@ -1,6 +1,6 @@
 import { goto } from '$app/navigation'
 import { authStore } from '$lib/stores/authStore.svelte'
-import { enqueueSync } from '$lib/sync/queue'
+import { enqueueWrite } from '$lib/sync/coordinator'
 
 interface ApiFetchOptions extends RequestInit {
 	skipAuthRedirect?: boolean
@@ -35,7 +35,7 @@ export async function apiFetch<T = unknown>(path: string, init: ApiFetchOptions 
 		})
 	} catch (err) {
 		if (init.enqueueOn5xx !== false && WRITE_METHODS.has(method)) {
-			await enqueueSync({
+			await enqueueWrite({
 				method,
 				path,
 				body: typeof init.body === 'string' ? init.body : undefined,
@@ -58,7 +58,7 @@ export async function apiFetch<T = unknown>(path: string, init: ApiFetchOptions 
 
 	if (response.status >= 500 && WRITE_METHODS.has(method)) {
 		if (init.enqueueOn5xx !== false) {
-			await enqueueSync({
+			await enqueueWrite({
 				method,
 				path,
 				body: typeof init.body === 'string' ? init.body : undefined,

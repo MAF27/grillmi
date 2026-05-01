@@ -1,6 +1,12 @@
 import type { Plan, Session } from '$lib/models'
 import { debugSync } from '$lib/sync/debug'
-import { pushGrilladeCreate, pushGrilladeUpdate, pushPlannedItems, pushSessionItems } from '$lib/sync/pushGrillade'
+import { repairMissingServerRow } from '$lib/sync/coordinator'
+import {
+	pushGrilladeCreate,
+	pushGrilladeUpdate,
+	pushPlannedItems,
+	pushSessionItems,
+} from '$lib/sync/_adapters/pushGrillade'
 import { getActiveGrillade, listGrilladen, putGrillade, type GrilladeRow } from './db'
 
 export async function pushPlannedDraft(plan: Plan): Promise<void> {
@@ -60,19 +66,4 @@ async function queueGrillade(row: GrilladeRow): Promise<boolean> {
 		return queued
 	}
 	return pushGrilladeUpdate(row)
-}
-
-async function repairMissingServerRow(row: GrilladeRow): Promise<void> {
-	if (!row.pushedToServer || typeof fetch === 'undefined') return
-	try {
-		const response = await fetch(`/api/grilladen/${row.id}`, { credentials: 'include', headers: { Accept: 'application/json' } })
-		debugSync('grilladeStore', 'server row check', { id: row.id, status: response.status })
-		if (response.status !== 404) return
-		row.pushedToServer = false
-		row.syncedItemIds = []
-		await putGrillade(row)
-		debugSync('grilladeStore', 'server row missing: reset push flags', { id: row.id })
-	} catch (error) {
-		debugSync('grilladeStore', 'server row check error', { id: row.id, error: String(error) })
-	}
 }

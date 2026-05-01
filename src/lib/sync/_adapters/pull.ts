@@ -2,51 +2,57 @@ import { authStore } from '$lib/stores/authStore.svelte'
 import {
 	getActiveGrillade,
 	getGrillade,
-	getSyncMeta,
 	listGrilladen,
 	putFavorite,
 	putGrillade,
 	putSettings,
-	setSyncMeta,
 	type GrilladeRow,
 } from '$lib/stores/db'
-import { findCutBySlug, findRow } from '$lib/data/timings'
-import { buildSessionItem, schedule } from '$lib/scheduler/schedule'
-import type { Favorite, PlannedItem, Session, SessionItem } from '$lib/schemas'
-import { debugSync } from './debug'
+import type { PlannedItem } from '$lib/schemas'
+import { debugSync } from '../debug'
+import {
+	favoriteFromServer,
+	grilladeFromServer,
+	plannedItemFromServer,
+	sessionFromServer,
+	settingsValueFromServer,
+	type ServerSettings,
+} from '../mappers'
 
-const LAST_PULL_KEY = 'lastPullEpoch'
+export interface PullResult {
+	serverTime: string | null
+	changed: boolean
+	/** IDs of grilladen in the delta whose status is planned/running. The
+	 * coordinator uses these to retire other-active rows after pull completes. */
+	activeIds: string[]
+}
 
 interface DeltaResponse<T> {
 	rows: T[]
 	server_time: string
 }
 
-interface ServerSettings {
-	value: Record<string, unknown>
-	updated_at: string | null
-}
-
-export async function pull(): Promise<boolean> {
+/** Fetches deltas since `since`, writes rows to IDB, and returns metadata.
+ * Watermark plumbing and single-active enforcement live in the coordinator. */
+export async function pullDeltas(since: string): Promise<PullResult> {
 	if (!authStore.isAuthenticated) {
 		debugSync('pull', 'skipped: unauthenticated')
-		return false
+		return { serverTime: null, changed: false, activeIds: [] }
 	}
-	const since = ((await getSyncMeta(LAST_PULL_KEY)) as string | undefined) ?? '1970-01-01T00:00:00Z'
 	const params = `?since=${encodeURIComponent(since)}`
 	debugSync('pull', 'start', { since })
 
 	let serverTime: string | null = null
 	let changed = false
+	const activeIds: string[] = []
+
 	try {
 		const grilladen = await fetchJson<DeltaResponse<Record<string, unknown>>>(`/api/grilladen${params}`)
 		if (grilladen) {
 			serverTime = grilladen.server_time
 			debugSync('pull', 'grilladen received', { count: grilladen.rows.length, serverTime })
 			for (const r of grilladen.rows) {
-				const incoming = toGrilladeRow(r)
-				// Preserve local-only fields (active session, timeline,
-				// planState) so a pull mid-cook doesn't wipe in-flight state.
+				const incoming = grilladeFromServer(r)
 				const existing = await getGrillade(incoming.id)
 				const beforeSignature = grilladeSignature(existing)
 				if (existing) {
@@ -74,10 +80,10 @@ export async function pull(): Promise<boolean> {
 									mode: incoming.targetEpoch ? 'time' : 'now',
 								},
 								planMode: 'auto',
-						}
+							}
 						incoming.syncedItemIds = items.map(item => item.id)
 					}
-					await retireOtherActiveGrilladen(incoming.id)
+					activeIds.push(incoming.id)
 				}
 				await putGrillade(incoming)
 				changed = grilladeSignature(incoming) !== beforeSignature || changed
@@ -93,7 +99,6 @@ export async function pull(): Promise<boolean> {
 		changed = (await refreshLocalActiveItems()) || changed
 	} catch (error) {
 		debugSync('pull', 'grilladen error', { error: String(error) })
-		// Network errors leave watermark untouched; next pull retries.
 	}
 
 	try {
@@ -103,9 +108,7 @@ export async function pull(): Promise<boolean> {
 			for (const r of favorites.rows) {
 				if (r.deleted_at) continue
 				const fav = favoriteFromServer(r)
-				if (fav) {
-					await putFavorite(fav)
-				}
+				if (fav) await putFavorite(fav)
 			}
 		}
 	} catch (error) {
@@ -114,20 +117,18 @@ export async function pull(): Promise<boolean> {
 
 	try {
 		const settings = await fetchJson<ServerSettings>(`/api/settings`)
-		if (settings && settings.value) {
-			await putSettings(settings.value as never)
-		}
+		const value = settingsValueFromServer(settings)
+		if (value) await putSettings(value as never)
 	} catch (error) {
 		debugSync('pull', 'settings error', { error: String(error) })
 	}
 
-	if (serverTime) {
-		await setSyncMeta(LAST_PULL_KEY, serverTime)
-		debugSync('pull', 'watermark updated', { serverTime })
-	}
-	return changed
+	return { serverTime, changed, activeIds }
 }
 
+/** Refreshes the locally-stored active grillade against the server's items, in
+ * case the delta watermark missed item-level edits. Returns true if anything
+ * changed. */
 async function refreshLocalActiveItems(): Promise<boolean> {
 	const active = await getActiveGrillade()
 	if (!active || (active.status !== 'planned' && active.status !== 'running')) return false
@@ -191,7 +192,9 @@ function grilladeSignature(row: GrilladeRow | undefined): string {
 	})
 }
 
-async function retireOtherActiveGrilladen(activeId: string): Promise<void> {
+/** Marks every other planned/running grillade as finished+deleted. The
+ * coordinator runs this after a delta pull surfaces a fresh active row. */
+export async function retireOtherActiveGrilladen(activeId: string): Promise<void> {
 	const now = Date.now()
 	const localRows = await listGrilladen()
 	await Promise.all(
@@ -210,7 +213,9 @@ async function retireOtherActiveGrilladen(activeId: string): Promise<void> {
 }
 
 async function fetchGrilladeItemRows(grilladeId: string): Promise<Array<Record<string, unknown>>> {
-	const response = await fetchJson<DeltaResponse<Record<string, unknown>>>(`/api/grilladen/${grilladeId}/items?since=1970-01-01T00%3A00%3A00Z`)
+	const response = await fetchJson<DeltaResponse<Record<string, unknown>>>(
+		`/api/grilladen/${grilladeId}/items?since=1970-01-01T00%3A00%3A00Z`,
+	)
 	if (!response) return []
 	return response.rows
 		.filter(r => !r.deleted_at)
@@ -230,110 +235,4 @@ async function fetchJson<T>(path: string): Promise<T | null> {
 	}
 	if (!response.ok) return null
 	return (await response.json()) as T
-}
-
-function favoriteFromServer(r: Record<string, unknown>): Favorite | null {
-	const cutSlug = String(r.cut_id ?? '')
-	const found = findCutBySlug(cutSlug)
-	// Server cut_id must resolve to a known cut in the bundled timings data;
-	// otherwise we can't reconstruct the rich Favorite shape the client uses.
-	if (!found) return null
-	const thicknessCm = r.thickness_cm == null ? null : Number(r.thickness_cm)
-	const doneness = (r.doneness as string | null) ?? null
-	const row = findRow(found.cut, thicknessCm, doneness)
-	if (!row) return null
-	const cookSeconds = Math.round((row.cookSecondsMin + row.cookSecondsMax) / 2)
-	return {
-		id: String(r.id),
-		name: String(r.label ?? ''),
-		categorySlug: found.category.slug,
-		cutSlug: found.cut.slug,
-		thicknessCm,
-		prepLabel: (r.prep_label as string | null) ?? null,
-		doneness,
-		label: (r.label as string | null) ?? null,
-		cookSeconds,
-		restSeconds: row.restSeconds,
-		flipFraction: row.flipFraction,
-		idealFlipPattern: row.idealFlipPattern,
-		heatZone: row.heatZone,
-		grateTempC: row.grateTempC,
-		createdAtEpoch: Date.parse(String(r.created_at ?? '')) || Date.now(),
-		lastUsedEpoch: Date.parse(String(r.last_used_at ?? '')) || Date.now(),
-	}
-}
-
-function plannedItemFromServer(r: Record<string, unknown>): PlannedItem | null {
-	const cutSlug = String(r.cut_id ?? '')
-	const found = findCutBySlug(cutSlug)
-	if (!found) return null
-	const thicknessCm = r.thickness_cm == null ? null : Number(r.thickness_cm)
-	const doneness = (r.doneness as string | null) ?? null
-	const prepLabel = (r.prep_label as string | null) ?? null
-	const row = findRow(found.cut, thicknessCm, doneness)
-	return {
-		id: String(r.id),
-		categorySlug: found.category.slug,
-		cutSlug: found.cut.slug,
-		thicknessCm,
-		prepLabel,
-		doneness,
-		label: (r.label as string | null) ?? null,
-		cookSeconds: Number(r.cook_seconds_max ?? r.cook_seconds_min ?? row?.cookSecondsMax ?? 60),
-		restSeconds: Number(r.rest_seconds ?? row?.restSeconds ?? 0),
-		flipFraction: Number(r.flip_fraction ?? row?.flipFraction ?? 0.5),
-		idealFlipPattern: row?.idealFlipPattern ?? 'once',
-		heatZone: row?.heatZone ?? '—',
-		grateTempC: row?.grateTempC ?? null,
-	}
-}
-
-function sessionFromServer(row: GrilladeRow, rawItems: Array<Record<string, unknown>>, plannedItems: PlannedItem[]): Session {
-	const now = Date.now()
-	const targetEpoch = row.targetEpoch ?? now
-	const scheduled = schedule({ targetEpoch, items: plannedItems, now }).items
-	const items: SessionItem[] = plannedItems.map((planned, index) => {
-		const raw = rawItems[index]
-		const status = String(raw.status ?? 'pending') as SessionItem['status']
-		if (status === 'pending') return buildSessionItem(planned, scheduled[index], now)
-		const putOnEpoch = Date.parse(String(raw.started_at ?? '')) || now
-		const doneEpoch = putOnEpoch + planned.cookSeconds * 1000
-		const restingUntilEpoch = doneEpoch + planned.restSeconds * 1000
-		return {
-			...planned,
-			putOnEpoch,
-			flipEpoch: planned.flipFraction > 0 ? Math.round(putOnEpoch + planned.cookSeconds * 1000 * planned.flipFraction) : null,
-			doneEpoch,
-			restingUntilEpoch,
-			status,
-			overdue: false,
-			flipFired: status !== 'cooking',
-			platedEpoch: raw.plated_at ? Date.parse(String(raw.plated_at)) : null,
-		}
-	})
-	return {
-		id: row.id,
-		createdAtEpoch: row.startedEpoch ?? row.updatedEpoch,
-		targetEpoch,
-		endedAtEpoch: null,
-		mode: 'auto',
-		items,
-	}
-}
-
-function toGrilladeRow(r: Record<string, unknown>): GrilladeRow {
-	return {
-		id: String(r.id),
-		name: (r.name as string | null) ?? null,
-		status: (r.status as 'planned' | 'running' | 'finished') ?? 'planned',
-		targetEpoch: r.target_finish_at ? Date.parse(String(r.target_finish_at)) : null,
-		startedEpoch: r.started_at ? Date.parse(String(r.started_at)) : null,
-		endedEpoch: r.ended_at ? Date.parse(String(r.ended_at)) : null,
-		position: Number(r.position ?? 0),
-		updatedEpoch: Date.parse(String(r.updated_at ?? '')) || Date.now(),
-		deletedEpoch: r.deleted_at ? Date.parse(String(r.deleted_at)) : null,
-		// Server already knows this row, so future local edits should PATCH
-		// rather than POST a duplicate.
-		pushedToServer: true,
-	}
 }

@@ -78,49 +78,49 @@ The wire format stays frozen on purpose. A contract test in Phase 1 records the 
 
 **Phase 1: Per-noun field mappers**
 
-- [ ] Create `src/lib/sync/mappers/grillade.ts` with `grilladeToServer(row: GrilladeRow)` and `grilladeFromServer(json: Record<string, unknown>): GrilladeRow` that match the current shapes in `pushGrillade.ts:5-16` and `pull.ts:324-339`
-- [ ] Create `src/lib/sync/mappers/grilladeItem.ts` with `plannedItemToServer(item, index)`, `sessionItemToServer(item, index)`, `plannedItemFromServer(json)`, and `sessionFromServer(row, rawItems, plannedItems)` matching `pushGrillade.ts:86-112` and `pull.ts:266-322`
-- [ ] Create `src/lib/sync/mappers/favorite.ts` with `favoriteFromServer` matching `pull.ts:235-264`
-- [ ] Create `src/lib/sync/mappers/settings.ts` for the settings value envelope, matching the inline read at `pull.ts:115-122`
-- [ ] Create `src/lib/sync/mappers/index.ts` re-exporting all mappers
-- [ ] Capture the legacy outputs into `tests/unit/sync/__fixtures__/server-response.json` and `tests/unit/sync/__fixtures__/local-rows.json` BEFORE deleting any legacy serializer; write each fixture by running today's `pushGrillade.ts` serializers and a real backend response through the existing `pull.ts` parsers, then snapshot the JSON
-- [ ] Switch `src/lib/sync/pushGrillade.ts` to import from `mappers/`; delete the inline `serialize`, `serializePlannedItem`, `serializeSessionItem`
-- [ ] Switch `src/lib/sync/pull.ts` to import from `mappers/`; delete the inline `toGrilladeRow`, `plannedItemFromServer`, `sessionFromServer`, `favoriteFromServer`
-- [ ] Add `backend/grillmi/routes/_models.py` with Pydantic v2 response models `GrilladeOut`, `GrilladeItemOut`, `MenuOut`, `MenuItemOut`, `FavoriteOut`, `SettingsOut`, and a generic `DeltaResponse[T]`, all using `model_config = ConfigDict(from_attributes=True)`
-- [ ] Move `parse_since` and `server_time_iso` from `_serialize.py` to `_models.py`
-- [ ] Switch `backend/grillmi/routes/grilladen.py` (which owns both Grillade and item routes; there is no separate `grillade_items.py`), `menus.py`, `favorites.py`, `settings.py` to declare `response_model=` with the new types and return ORM rows directly. `sync.py` is out of scope — its `bulk_import` returns counts, not ORM rows, and does not import `_serialize.py`
-- [ ] Delete `backend/grillmi/routes/_serialize.py` once no module imports it
-- [ ] Run `pnpm typecheck`, `pnpm lint`, `pnpm test` and `cd backend && uv run pytest` and resolve every failure inside the changed files
+- [x] Create `src/lib/sync/mappers/grillade.ts` with `grilladeToServer(row: GrilladeRow)` and `grilladeFromServer(json: Record<string, unknown>): GrilladeRow` that match the current shapes in `pushGrillade.ts:5-16` and `pull.ts:324-339`
+- [x] Create `src/lib/sync/mappers/grilladeItem.ts` with `plannedItemToServer(item, index)`, `sessionItemToServer(item, index)`, `plannedItemFromServer(json)`, and `sessionFromServer(row, rawItems, plannedItems)` matching `pushGrillade.ts:86-112` and `pull.ts:266-322`
+- [x] Create `src/lib/sync/mappers/favorite.ts` with `favoriteFromServer` matching `pull.ts:235-264`
+- [x] Create `src/lib/sync/mappers/settings.ts` for the settings value envelope, matching the inline read at `pull.ts:115-122`
+- [x] Create `src/lib/sync/mappers/index.ts` re-exporting all mappers
+- [x] Capture the legacy outputs into `tests/unit/sync/__fixtures__/server-response.json` and `tests/unit/sync/__fixtures__/local-rows.json` BEFORE deleting any legacy serializer; write each fixture by running today's `pushGrillade.ts` serializers and a real backend response through the existing `pull.ts` parsers, then snapshot the JSON
+- [x] Switch `src/lib/sync/pushGrillade.ts` to import from `mappers/`; delete the inline `serialize`, `serializePlannedItem`, `serializeSessionItem`
+- [x] Switch `src/lib/sync/pull.ts` to import from `mappers/`; delete the inline `toGrilladeRow`, `plannedItemFromServer`, `sessionFromServer`, `favoriteFromServer`
+- [x] Add `backend/grillmi/routes/_models.py` with Pydantic v2 response models `GrilladeOut`, `GrilladeItemOut`, `MenuOut`, `MenuItemOut`, `FavoriteOut`, `SettingsOut`, and a generic `DeltaResponse[T]`, all using `model_config = ConfigDict(from_attributes=True)`
+- [x] Move `parse_since` and `server_time_iso` from `_serialize.py` to `_models.py`
+- [x] Switch `backend/grillmi/routes/grilladen.py` (which owns both Grillade and item routes; there is no separate `grillade_items.py`), `menus.py`, `favorites.py`, `settings.py` to declare `response_model=` with the new types and return ORM rows directly. `sync.py` is out of scope — its `bulk_import` returns counts, not ORM rows, and does not import `_serialize.py`
+- [x] Delete `backend/grillmi/routes/_serialize.py` once no module imports it
+- [x] Run `pnpm typecheck`, `pnpm lint`, `pnpm test` and `cd backend && uv run pytest` and resolve every failure inside the changed files
 
 **Phase 2: AccountAccess service**
 
-- [ ] Create `backend/grillmi/services/__init__.py` and `backend/grillmi/services/account_access.py` with the `AccountAccess` class and result dataclasses (`AuthSuccess`, `AuthFailure`, `PasswordSetResult`)
-- [ ] Relocate the private helper `_hash_token` from `auth.py` into `account_access.py` since it operates on token bytes, not HTTP; keep `_client_ip`, `_set_session_cookie`, `_clear_session_cookie` in `auth.py` as HTTP-boundary helpers
-- [ ] Move the body of `auth.py:login` (lines 84-132) into `AccountAccess.authenticate`, including rate limit checks, `_DUMMY_HASH` timing-safe verify, disabled-hash check, rehash branch, session create, `last_login_at` update, audit log on success and failure
-- [ ] Move the body of `auth.py:logout` (lines 135-148) into `AccountAccess.logout`
-- [ ] Move the body of `auth.py:forgot_password` (lines 159-203) into `AccountAccess.request_password_reset`, including HIBP-free generation, email render and send, reset-token row insert, audit log on every branch; the method signature accepts `ip: str | None` and skips per-IP rate limiting when `ip is None`
-- [ ] Move the body of `auth.py:set_password` (lines 206-278) into `AccountAccess.set_password`, including atomic token consume, HIBP check, password rehash, session wipe, optional auto-session for invitation kind, audit log
-- [ ] Move the body of `auth.py:get_sessions`, `revoke_session`, `delete_account` (lines 281-333) into `AccountAccess.list_sessions`, `AccountAccess.revoke_session`, `AccountAccess.delete_account`
-- [ ] Add `AccountAccess.create_user_with_invitation(db, email, first_name)` covering today's `admin_init.py` flow: existence check, disabled-hash placeholder, invitation-kind reset-token row, activation email render and send, atomic commit; reuse the email-render and token primitives from `request_password_reset`
-- [ ] Shrink `auth.py` route handlers to thin shells: parse request, call the service, set or clear cookie based on the service result, return the response model
-- [ ] Rewrite `backend/grillmi/cli/admin_init.py` to call `AccountAccess.create_user_with_invitation` and remove the inline `PasswordResetToken(...)` / email-send block; preserve the CLI's exit codes and stderr messages
-- [ ] Rewrite `backend/grillmi/cli/admin_reset.py` to call `AccountAccess.request_password_reset(ip=None)` and remove the inline `PasswordResetToken(...)` / email-send block; preserve the CLI's exit codes and stderr messages
-- [ ] Run `cd backend && uv run pytest` and resolve every failure inside the changed files
+- [x] Create `backend/grillmi/services/__init__.py` and `backend/grillmi/services/account_access.py` with the `AccountAccess` class and result dataclasses (`AuthSuccess`, `AuthFailure`, `PasswordSetResult`)
+- [x] Relocate the private helper `_hash_token` from `auth.py` into `account_access.py` since it operates on token bytes, not HTTP; keep `_client_ip`, `_set_session_cookie`, `_clear_session_cookie` in `auth.py` as HTTP-boundary helpers
+- [x] Move the body of `auth.py:login` (lines 84-132) into `AccountAccess.authenticate`, including rate limit checks, `_DUMMY_HASH` timing-safe verify, disabled-hash check, rehash branch, session create, `last_login_at` update, audit log on success and failure
+- [x] Move the body of `auth.py:logout` (lines 135-148) into `AccountAccess.logout`
+- [x] Move the body of `auth.py:forgot_password` (lines 159-203) into `AccountAccess.request_password_reset`, including HIBP-free generation, email render and send, reset-token row insert, audit log on every branch; the method signature accepts `ip: str | None` and skips per-IP rate limiting when `ip is None`
+- [x] Move the body of `auth.py:set_password` (lines 206-278) into `AccountAccess.set_password`, including atomic token consume, HIBP check, password rehash, session wipe, optional auto-session for invitation kind, audit log
+- [x] Move the body of `auth.py:get_sessions`, `revoke_session`, `delete_account` (lines 281-333) into `AccountAccess.list_sessions`, `AccountAccess.revoke_session`, `AccountAccess.delete_account`
+- [x] Add `AccountAccess.create_user_with_invitation(db, email, first_name)` covering today's `admin_init.py` flow: existence check, disabled-hash placeholder, invitation-kind reset-token row, activation email render and send, atomic commit; reuse the email-render and token primitives from `request_password_reset`
+- [x] Shrink `auth.py` route handlers to thin shells: parse request, call the service, set or clear cookie based on the service result, return the response model
+- [x] Rewrite `backend/grillmi/cli/admin_init.py` to call `AccountAccess.create_user_with_invitation` and remove the inline `PasswordResetToken(...)` / email-send block; preserve the CLI's exit codes and stderr messages
+- [x] Rewrite `backend/grillmi/cli/admin_reset.py` to call `AccountAccess.request_password_reset(ip=None)` and remove the inline `PasswordResetToken(...)` / email-send block; preserve the CLI's exit codes and stderr messages
+- [x] Run `cd backend && uv run pytest` and resolve every failure inside the changed files
 
 **Phase 3: SyncCoordinator**
 
-- [ ] Create `src/lib/sync/coordinator.ts` exporting `syncNow(reason: string): Promise<void>`, `enqueueWrite(args: EnqueueArgs): Promise<boolean>`, `subscribe(listener: () => void | Promise<void>): () => void`, `onSyncApplied(listener: () => void | Promise<void>): () => void` (retained alias of `subscribe` to keep current call sites stable), `attachSync(): void`, `detachSyncForTests(): void`
-- [ ] Move the single-active enforcement (`retireOtherActiveGrilladen` in `pull.ts:194-210`) into the coordinator as a private step run after delta pull
-- [ ] Move the missing-server-row repair (`grilladeSync.ts:65-78`) into the coordinator as a private step run before any `enqueueWrite` for an existing Grillade row
-- [ ] Move watermark plumbing (`getSyncMeta`, `setSyncMeta` calls in `pull.ts`) into the coordinator's private state
-- [ ] Move 401 handling, 409 refetch-then-IDB-write, 5xx retry-keep, 4xx-other drop, and debounced flush from `queue.ts:75-114` into the coordinator
-- [ ] Relocate `pull.ts`, `queue.ts`, `pushGrillade.ts` to `src/lib/sync/_adapters/`; export them only via `coordinator.ts`. `debug.ts` and `firstLogin.ts` stay where they are (debug is a low-level event recorder used by stores, runtime, and the diag page; firstLogin is a one-shot bootstrap that bypasses the queue)
-- [ ] Rewrite `src/lib/sync/index.ts` to re-export only the coordinator's public surface (`syncNow`, `enqueueWrite`, `subscribe`, `onSyncApplied`, `attachSync`, `detachSyncForTests`) plus `runFirstLoginImport` from `firstLogin.ts`; drop `flush`, `pull`, `scheduleFlush`, `enqueueSync` from the public re-exports
-- [ ] Update the layout boot sequence in `src/routes/+layout.svelte` (today imports `attachSync, flush, onSyncApplied, pull` and calls `flush()` then `pull()`): replace the flush+pull pair with a single `syncNow('layout')` call and update the import to `attachSync, onSyncApplied, syncNow`
-- [ ] Update `src/routes/diag/+page.svelte` (today imports `flush, pull` for diagnostic actions): collapse the two buttons' shared cycle into `syncNow('diag')`, or keep both buttons by exposing `__diagFlush` and `__diagPull` from the coordinator scoped to the diag page only
-- [ ] Switch `src/lib/api/client.ts`, `src/lib/stores/favoritesStore.svelte.ts`, `src/lib/stores/settingsStore.svelte.ts` from `enqueueSync` to `enqueueWrite`
-- [ ] Replace every direct import of `pull`, `queue`, `pushGrillade`, or `grilladeSync` outside `_adapters/` with imports from `coordinator.ts`. Grep targets: `from '$lib/sync/pull'`, `from '$lib/sync/queue'`, `from '$lib/sync/pushGrillade'`, `from '$lib/stores/grilladeSync'`
-- [ ] Run `pnpm typecheck`, `pnpm lint`, `pnpm test`, and `pnpm test:e2e` and resolve every failure
+- [x] Create `src/lib/sync/coordinator.ts` exporting `syncNow(reason: string): Promise<void>`, `enqueueWrite(args: EnqueueArgs): Promise<boolean>`, `subscribe(listener: () => void | Promise<void>): () => void`, `onSyncApplied(listener: () => void | Promise<void>): () => void` (retained alias of `subscribe` to keep current call sites stable), `attachSync(): void`, `detachSyncForTests(): void`
+- [x] Move the single-active enforcement (`retireOtherActiveGrilladen` in `pull.ts:194-210`) into the coordinator as a private step run after delta pull
+- [x] Move the missing-server-row repair (`grilladeSync.ts:65-78`) into the coordinator as a private step run before any `enqueueWrite` for an existing Grillade row
+- [x] Move watermark plumbing (`getSyncMeta`, `setSyncMeta` calls in `pull.ts`) into the coordinator's private state
+- [x] Move 401 handling, 409 refetch-then-IDB-write, 5xx retry-keep, 4xx-other drop, and debounced flush from `queue.ts:75-114` into the coordinator
+- [x] Relocate `pull.ts`, `queue.ts`, `pushGrillade.ts` to `src/lib/sync/_adapters/`; export them only via `coordinator.ts`. `debug.ts` and `firstLogin.ts` stay where they are (debug is a low-level event recorder used by stores, runtime, and the diag page; firstLogin is a one-shot bootstrap that bypasses the queue)
+- [x] Rewrite `src/lib/sync/index.ts` to re-export only the coordinator's public surface (`syncNow`, `enqueueWrite`, `subscribe`, `onSyncApplied`, `attachSync`, `detachSyncForTests`) plus `runFirstLoginImport` from `firstLogin.ts`; drop `flush`, `pull`, `scheduleFlush`, `enqueueSync` from the public re-exports
+- [x] Update the layout boot sequence in `src/routes/+layout.svelte` (today imports `attachSync, flush, onSyncApplied, pull` and calls `flush()` then `pull()`): replace the flush+pull pair with a single `syncNow('layout')` call and update the import to `attachSync, onSyncApplied, syncNow`
+- [x] Update `src/routes/diag/+page.svelte` (today imports `flush, pull` for diagnostic actions): collapse the two buttons' shared cycle into `syncNow('diag')`, or keep both buttons by exposing `__diagFlush` and `__diagPull` from the coordinator scoped to the diag page only
+- [x] Switch `src/lib/api/client.ts`, `src/lib/stores/favoritesStore.svelte.ts`, `src/lib/stores/settingsStore.svelte.ts` from `enqueueSync` to `enqueueWrite`
+- [x] Replace every direct import of `pull`, `queue`, `pushGrillade`, or `grilladeSync` outside `_adapters/` with imports from `coordinator.ts`. Grep targets: `from '$lib/sync/pull'`, `from '$lib/sync/queue'`, `from '$lib/sync/pushGrillade'`, `from '$lib/stores/grilladeSync'`
+- [x] Run `pnpm typecheck`, `pnpm lint`, `pnpm test`, and `pnpm test:e2e` and resolve every failure
 
 **Phase 4: GrilladeLifecycle**
 
@@ -131,7 +131,7 @@ The wire format stays frozen on purpose. A contract test in Phase 1 records the 
 - [ ] Rewrite `src/lib/stores/grilladeStore.svelte.ts` as a thin Svelte 5 runes view: instantiate `createGrilladeLifecycle({...})` with adapters wired to `db.ts` and the SyncCoordinator, expose lifecycle state through `$state`-backed wrappers and `$derived` computeds, forward all method calls
 - [ ] Delete `src/lib/stores/grilladeSync.ts` once the lifecycle's `PushPort` adapter replaces it
 - [ ] Replace `pull.ts`'s `refreshLocalActiveItems` direct row writes with a coordinator pull-hook that calls a new `lifecycle.applyRemoteRow(row, items)` method on the store; the lifecycle is the only writer for Grillade row state
-- [ ] Run `pnpm typecheck`, `pnpm lint`, `pnpm test`, and `pnpm test:e2e` and resolve every failure
+- [x] Run `pnpm typecheck`, `pnpm lint`, `pnpm test`, and `pnpm test:e2e` and resolve every failure
 
 ---
 
@@ -141,57 +141,57 @@ Tests are implementation tasks. The implementer writes and passes each one befor
 
 ### Unit Tests, Phase 1 (`tests/unit/sync/`)
 
-- [ ] `tests/unit/sync/grilladeMapper.test.ts` `grilladeToServer roundtrips a planned row` writes the same shape today's `pushGrillade.ts:5-16` does for a representative `GrilladeRow` fixture
-- [ ] `tests/unit/sync/grilladeMapper.test.ts` `grilladeFromServer roundtrips a server row` reconstructs the same `GrilladeRow` today's `pull.ts:324-339` does
-- [ ] `tests/unit/sync/grilladeMapper.test.ts` `grilladeFromServer handles null timestamps and deleted_at` covers `target_finish_at`, `started_at`, `ended_at`, `deleted_at` all null and all set
-- [ ] `tests/unit/sync/grilladeItemMapper.test.ts` `plannedItemToServer matches legacy serialization` against a captured fixture
-- [ ] `tests/unit/sync/grilladeItemMapper.test.ts` `sessionItemToServer preserves status and started_at semantics` for `pending`, `cooking`, `resting`, `ready`, `plated`
-- [ ] `tests/unit/sync/grilladeItemMapper.test.ts` `plannedItemFromServer recovers cookSeconds when server omits it` falls back to `findRow().cookSecondsMax`
-- [ ] `tests/unit/sync/grilladeItemMapper.test.ts` `sessionFromServer reconstructs SessionItem timing for an in-flight running grillade` with mixed item statuses
-- [ ] `tests/unit/sync/favoriteMapper.test.ts` `favoriteFromServer reconstructs cookSeconds from cut and thickness and doneness`
-- [ ] `tests/unit/sync/favoriteMapper.test.ts` `favoriteFromServer returns null when cut_id does not resolve in the bundled timings`
-- [ ] `tests/unit/sync/contractFixture.test.ts` `each mapper produces byte-identical output to the recorded legacy fixtures` loads `tests/unit/sync/__fixtures__/server-response.json` and `tests/unit/sync/__fixtures__/local-rows.json` (captured from the legacy serializers BEFORE deletion in the fixture-capture task above) and asserts each new mapper's output deep-equals the captured fixture
+- [x] `tests/unit/sync/grilladeMapper.test.ts` `grilladeToServer roundtrips a planned row` writes the same shape today's `pushGrillade.ts:5-16` does for a representative `GrilladeRow` fixture
+- [x] `tests/unit/sync/grilladeMapper.test.ts` `grilladeFromServer roundtrips a server row` reconstructs the same `GrilladeRow` today's `pull.ts:324-339` does
+- [x] `tests/unit/sync/grilladeMapper.test.ts` `grilladeFromServer handles null timestamps and deleted_at` covers `target_finish_at`, `started_at`, `ended_at`, `deleted_at` all null and all set
+- [x] `tests/unit/sync/grilladeItemMapper.test.ts` `plannedItemToServer matches legacy serialization` against a captured fixture
+- [x] `tests/unit/sync/grilladeItemMapper.test.ts` `sessionItemToServer preserves status and started_at semantics` for `pending`, `cooking`, `resting`, `ready`, `plated`
+- [x] `tests/unit/sync/grilladeItemMapper.test.ts` `plannedItemFromServer recovers cookSeconds when server omits it` falls back to `findRow().cookSecondsMax`
+- [x] `tests/unit/sync/grilladeItemMapper.test.ts` `sessionFromServer reconstructs SessionItem timing for an in-flight running grillade` with mixed item statuses
+- [x] `tests/unit/sync/favoriteMapper.test.ts` `favoriteFromServer reconstructs cookSeconds from cut and thickness and doneness`
+- [x] `tests/unit/sync/favoriteMapper.test.ts` `favoriteFromServer returns null when cut_id does not resolve in the bundled timings`
+- [x] `tests/unit/sync/contractFixture.test.ts` `each mapper produces byte-identical output to the recorded legacy fixtures` loads `tests/unit/sync/__fixtures__/server-response.json` and `tests/unit/sync/__fixtures__/local-rows.json` (captured from the legacy serializers BEFORE deletion in the fixture-capture task above) and asserts each new mapper's output deep-equals the captured fixture
 
 ### Unit Tests, Phase 1 backend (`backend/tests/unit/`)
 
-- [ ] `backend/tests/unit/test_response_models.py` `GrilladeOut serializes datetimes as ISO 8601 with timezone`
-- [ ] `backend/tests/unit/test_response_models.py` `GrilladeOut serializes UUID id and Decimal position`
-- [ ] `backend/tests/unit/test_response_models.py` `DeltaResponse wraps rows and server_time correctly`
-- [ ] `backend/tests/unit/test_response_models.py` `parse_since and server_time_iso behave as before` covers null, empty string, ISO 8601 with Z and with +00:00
+- [x] `backend/tests/unit/test_response_models.py` `GrilladeOut serializes datetimes as ISO 8601 with timezone`
+- [x] `backend/tests/unit/test_response_models.py` `GrilladeOut serializes UUID id and Decimal position`
+- [x] `backend/tests/unit/test_response_models.py` `DeltaResponse wraps rows and server_time correctly`
+- [x] `backend/tests/unit/test_response_models.py` `parse_since and server_time_iso behave as before` covers null, empty string, ISO 8601 with Z and with +00:00
 
 ### Unit Tests, Phase 2 (`backend/tests/unit/`)
 
-- [ ] `backend/tests/unit/test_account_access.py` `authenticate returns AuthFailure on unknown email and still spends Argon2 time`
-- [ ] `backend/tests/unit/test_account_access.py` `authenticate returns AuthFailure on disabled hash prefix`
-- [ ] `backend/tests/unit/test_account_access.py` `authenticate returns AuthSuccess and creates a session row on valid credentials`
-- [ ] `backend/tests/unit/test_account_access.py` `authenticate rehashes when Argon2 parameters bumped`
-- [ ] `backend/tests/unit/test_account_access.py` `authenticate writes audit_log on success and on failure`
-- [ ] `backend/tests/unit/test_account_access.py` `authenticate raises rate-limit when per-IP window exceeded`
-- [ ] `backend/tests/unit/test_account_access.py` `authenticate raises rate-limit when per-account window exceeded`
-- [ ] `backend/tests/unit/test_account_access.py` `request_password_reset writes a reset-token row and sends an email when user exists`
-- [ ] `backend/tests/unit/test_account_access.py` `request_password_reset writes audit_log only on the unknown-email branch when user does not exist`
-- [ ] `backend/tests/unit/test_account_access.py` `set_password rejects an HIBP-positive password with 422`
-- [ ] `backend/tests/unit/test_account_access.py` `set_password consumes the reset token atomically and rejects a second use`
-- [ ] `backend/tests/unit/test_account_access.py` `set_password wipes all sessions for the user`
-- [ ] `backend/tests/unit/test_account_access.py` `set_password auto-creates a session for invitation tokens but not for reset tokens`
-- [ ] `backend/tests/unit/test_account_access.py` `delete_account cascades to grilladen, items, menus, favorites, settings, sessions, reset_tokens` (verifies via repo queries returning empty)
-- [ ] `backend/tests/unit/test_account_access.py` `create_user_with_invitation creates User + invitation reset-token row + sends activation email and is idempotent on duplicate email`
-- [ ] `backend/tests/unit/test_account_access.py` `request_password_reset(ip=None) skips per-IP rate limiting but still applies per-account window` (matches admin_reset CLI semantics)
-- [ ] All Phase 2 unit tests reuse the existing backend test harness (`pgserver` fixture, aiosmtplib monkeypatch, admin CLI helpers) rather than reinventing them
+- [x] `backend/tests/unit/test_account_access.py` `authenticate returns AuthFailure on unknown email and still spends Argon2 time`
+- [x] `backend/tests/unit/test_account_access.py` `authenticate returns AuthFailure on disabled hash prefix`
+- [x] `backend/tests/unit/test_account_access.py` `authenticate returns AuthSuccess and creates a session row on valid credentials`
+- [x] `backend/tests/unit/test_account_access.py` `authenticate rehashes when Argon2 parameters bumped`
+- [x] `backend/tests/unit/test_account_access.py` `authenticate writes audit_log on success and on failure`
+- [x] `backend/tests/unit/test_account_access.py` `authenticate raises rate-limit when per-IP window exceeded`
+- [x] `backend/tests/unit/test_account_access.py` `authenticate raises rate-limit when per-account window exceeded`
+- [x] `backend/tests/unit/test_account_access.py` `request_password_reset writes a reset-token row and sends an email when user exists`
+- [x] `backend/tests/unit/test_account_access.py` `request_password_reset writes audit_log only on the unknown-email branch when user does not exist`
+- [x] `backend/tests/unit/test_account_access.py` `set_password rejects an HIBP-positive password with 422`
+- [x] `backend/tests/unit/test_account_access.py` `set_password consumes the reset token atomically and rejects a second use`
+- [x] `backend/tests/unit/test_account_access.py` `set_password wipes all sessions for the user`
+- [x] `backend/tests/unit/test_account_access.py` `set_password auto-creates a session for invitation tokens but not for reset tokens`
+- [x] `backend/tests/unit/test_account_access.py` `delete_account cascades to grilladen, items, menus, favorites, settings, sessions, reset_tokens` (verifies via repo queries returning empty)
+- [x] `backend/tests/unit/test_account_access.py` `create_user_with_invitation creates User + invitation reset-token row + sends activation email and is idempotent on duplicate email`
+- [x] `backend/tests/unit/test_account_access.py` `request_password_reset(ip=None) skips per-IP rate limiting but still applies per-account window` (matches admin_reset CLI semantics)
+- [x] All Phase 2 unit tests reuse the existing backend test harness (`pgserver` fixture, aiosmtplib monkeypatch, admin CLI helpers) rather than reinventing them
 
 ### Unit Tests, Phase 3 (`tests/unit/sync/`)
 
-- [ ] `tests/unit/sync/coordinator.test.ts` `syncNow flushes queued writes then pulls and notifies subscribers when changes apply`
-- [ ] `tests/unit/sync/coordinator.test.ts` `enqueueWrite drops non-write methods`
-- [ ] `tests/unit/sync/coordinator.test.ts` `enqueueWrite drops when unauthenticated`
-- [ ] `tests/unit/sync/coordinator.test.ts` `flush handles 401 by clearing auth and redirecting to login with next param`
-- [ ] `tests/unit/sync/coordinator.test.ts` `flush drops a queued write on 409 and the next pull restores the row from the server`
-- [ ] `tests/unit/sync/coordinator.test.ts` `flush keeps a queued write on 5xx and retries on the next sync cycle`
-- [ ] `tests/unit/sync/coordinator.test.ts` `flush drops a queued write on non-401 4xx without blocking subsequent rows`
-- [ ] `tests/unit/sync/coordinator.test.ts` `pull retires every other active grillade after a delta brings in a new active row`
-- [ ] `tests/unit/sync/coordinator.test.ts` `pull repairs the local pushedToServer flag when the server returns 404 for a row marked pushed`
-- [ ] `tests/unit/sync/coordinator.test.ts` `pull updates the watermark from server_time and the next pull uses it as since`
-- [ ] `tests/unit/sync/coordinator.test.ts` `attachSync wires visibilitychange, online, and the live interval, detachSyncForTests cleans them up`
+- [x] `tests/unit/sync/coordinator.test.ts` `syncNow flushes queued writes then pulls and notifies subscribers when changes apply`
+- [x] `tests/unit/sync/coordinator.test.ts` `enqueueWrite drops non-write methods`
+- [x] `tests/unit/sync/coordinator.test.ts` `enqueueWrite drops when unauthenticated`
+- [x] `tests/unit/sync/coordinator.test.ts` `flush handles 401 by clearing auth and redirecting to login with next param`
+- [x] `tests/unit/sync/coordinator.test.ts` `flush drops a queued write on 409 and the next pull restores the row from the server`
+- [x] `tests/unit/sync/coordinator.test.ts` `flush keeps a queued write on 5xx and retries on the next sync cycle`
+- [x] `tests/unit/sync/coordinator.test.ts` `flush drops a queued write on non-401 4xx without blocking subsequent rows`
+- [x] `tests/unit/sync/coordinator.test.ts` `pull retires every other active grillade after a delta brings in a new active row`
+- [x] `tests/unit/sync/coordinator.test.ts` `pull repairs the local pushedToServer flag when the server returns 404 for a row marked pushed`
+- [x] `tests/unit/sync/coordinator.test.ts` `pull updates the watermark from server_time and the next pull uses it as since`
+- [x] `tests/unit/sync/coordinator.test.ts` `attachSync wires visibilitychange, online, and the live interval, detachSyncForTests cleans them up`
 
 ### Unit Tests, Phase 4 (`tests/unit/grillade/`)
 
@@ -213,10 +213,10 @@ Tests are implementation tasks. The implementer writes and passes each one befor
 
 ### Integration Tests (`backend/tests/integration/`)
 
-- [ ] `backend/tests/integration/test_auth_routes.py` keeps every existing test passing without modification (the routes' HTTP contract is unchanged)
-- [ ] `backend/tests/integration/test_grilladen_isolation.py`, `test_menus_isolation.py`, `test_favorites_isolation.py`, `test_settings_isolation.py` keep every existing test passing without modification (the response shape is unchanged)
-- [ ] `backend/tests/integration/test_account_access_routes.py` `revoke_session via HTTP clears the cookie when the revoked session is the caller's own`
-- [ ] `backend/tests/integration/test_account_access_routes.py` `delete_account via HTTP cascades to all owned rows`
+- [x] `backend/tests/integration/test_auth_routes.py` keeps every existing test passing without modification (the routes' HTTP contract is unchanged)
+- [x] `backend/tests/integration/test_grilladen_isolation.py`, `test_menus_isolation.py`, `test_favorites_isolation.py`, `test_settings_isolation.py` keep every existing test passing without modification (the response shape is unchanged)
+- [x] `backend/tests/integration/test_account_access_routes.py` `revoke_session via HTTP clears the cookie when the revoked session is the caller's own`
+- [x] `backend/tests/integration/test_account_access_routes.py` `delete_account via HTTP cascades to all owned rows`
 
 ### E2E Tests (`tests/e2e/`)
 

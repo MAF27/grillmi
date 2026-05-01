@@ -3,7 +3,7 @@
 	import { TIMINGS } from '$lib/data/timings'
 	import { authStore } from '$lib/stores/authStore.svelte'
 	import { getActiveGrillade, getSyncMeta, listGrilladen, listSyncQueue, type GrilladeRow, type SyncQueueRow } from '$lib/stores/db'
-	import { flush, pull } from '$lib/sync'
+	import { syncNow } from '$lib/sync'
 	import { clearSyncDebugEvents, debugSync, getSyncDebugEvents, type SyncDebugEvent } from '$lib/sync/debug'
 	import { getAudioDebugState, play, unlockAudio } from '$lib/sounds/player'
 
@@ -77,8 +77,7 @@
 		busy = true
 		debugSync('diag', 'manual sync start')
 		try {
-			await flush()
-			await pull()
+			await syncNow('diag')
 			debugSync('diag', 'manual sync done')
 		} catch (error) {
 			debugSync('diag', 'manual sync error', { error: String(error) })
