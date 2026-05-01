@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { findCategory, findCut, findRow, TIMINGS } from '$lib/data/timings'
 
-const RIND_FILET = 'rinds-filet-beef-tenderloin-filet-mignon'
-const ENTRECOTE = 'rinds-entrecote-ribeye-steak-boneless'
+const RIND_FILET = 'rinds-filet'
+const ENTRECOTE = 'rinds-entrecote'
 
 describe('findRow', () => {
 	it('test_findCategory_returns_undefined_for_unknown_slug', () => {

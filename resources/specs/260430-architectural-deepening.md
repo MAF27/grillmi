@@ -2,7 +2,7 @@
 
 ## Meta
 
-- Status: Reviewed
+- Status: Implemented
 - Branch: cleanup/architectural-deepening
 - Infra: none
 - Runbook: none
@@ -124,13 +124,13 @@ The wire format stays frozen on purpose. A contract test in Phase 1 records the 
 
 **Phase 4: GrilladeLifecycle**
 
-- [ ] Create `src/lib/grillade/lifecycle.ts` with `createGrilladeLifecycle({ persistence, push, scheduler, clock })` factory
-- [ ] Define the `PersistencePort` (currentSession, currentPlanState, timeline, active grillade row helpers) and the `PushPort` (subset of SyncCoordinator's `enqueueWrite` plus the active-grillade query)
-- [ ] Move the body of `grilladeStore.svelte.ts:58-446` into the factory: plan mutators, session start variants, session item mutators, timeline append, endSession, init, reloadFromStorage, syncActive
-- [ ] Wire `defaultPlan`, `effectiveTargetEpoch`, `normalizeSession`, `isStaleSession`, `STALE_AFTER_MS`, `MANUAL_UNSTARTED_HORIZON_MS` into the lifecycle module so they live next to the state machine
-- [ ] Rewrite `src/lib/stores/grilladeStore.svelte.ts` as a thin Svelte 5 runes view: instantiate `createGrilladeLifecycle({...})` with adapters wired to `db.ts` and the SyncCoordinator, expose lifecycle state through `$state`-backed wrappers and `$derived` computeds, forward all method calls
-- [ ] Delete `src/lib/stores/grilladeSync.ts` once the lifecycle's `PushPort` adapter replaces it
-- [ ] Replace `pull.ts`'s `refreshLocalActiveItems` direct row writes with a coordinator pull-hook that calls a new `lifecycle.applyRemoteRow(row, items)` method on the store; the lifecycle is the only writer for Grillade row state
+- [x] Create `src/lib/grillade/lifecycle.ts` with `createGrilladeLifecycle({ persistence, push, scheduler, clock })` factory
+- [x] Define the `PersistencePort` (currentSession, currentPlanState, timeline, active grillade row helpers) and the `PushPort` (subset of SyncCoordinator's `enqueueWrite` plus the active-grillade query)
+- [x] Move the body of `grilladeStore.svelte.ts:58-446` into the factory: plan mutators, session start variants, session item mutators, timeline append, endSession, init, reloadFromStorage, syncActive
+- [x] Wire `defaultPlan`, `effectiveTargetEpoch`, `normalizeSession`, `isStaleSession`, `STALE_AFTER_MS`, `MANUAL_UNSTARTED_HORIZON_MS` into the lifecycle module so they live next to the state machine
+- [x] Rewrite `src/lib/stores/grilladeStore.svelte.ts` as a thin Svelte 5 runes view: instantiate `createGrilladeLifecycle({...})` with adapters wired to `db.ts` and the SyncCoordinator, expose lifecycle state through `$state`-backed wrappers and `$derived` computeds, forward all method calls
+- [x] Delete `src/lib/stores/grilladeSync.ts` once the lifecycle's `PushPort` adapter replaces it
+- [x] Replace `pull.ts`'s `refreshLocalActiveItems` direct row writes with a coordinator pull-hook that calls a new `lifecycle.applyRemoteRow(row, items)` method on the store; the lifecycle is the only writer for Grillade row state
 - [x] Run `pnpm typecheck`, `pnpm lint`, `pnpm test`, and `pnpm test:e2e` and resolve every failure
 
 ---
@@ -195,21 +195,21 @@ Tests are implementation tasks. The implementer writes and passes each one befor
 
 ### Unit Tests, Phase 4 (`tests/unit/grillade/`)
 
-- [ ] `tests/unit/grillade/lifecycle.test.ts` `init reads stored session and clears it when stale beyond STALE_AFTER_MS`
-- [ ] `tests/unit/grillade/lifecycle.test.ts` `init reads planState and falls back to defaultPlan when parse fails`
-- [ ] `tests/unit/grillade/lifecycle.test.ts` `addItem assigns a uuid and persists, updateItem patches in place, removeItem removes, reorderItems preserves only known ids`
-- [ ] `tests/unit/grillade/lifecycle.test.ts` `setTargetTime switches mode to time and clears auto sub-mode`
-- [ ] `tests/unit/grillade/lifecycle.test.ts` `effectiveTargetEpoch in now mode returns now plus longest cook plus rest plus lead seconds`
-- [ ] `tests/unit/grillade/lifecycle.test.ts` `effectiveTargetEpoch in time mode returns the pinned epoch unchanged`
-- [ ] `tests/unit/grillade/lifecycle.test.ts` `startSession schedules every item to finish by targetEpoch and sets earliest put-on first`
-- [ ] `tests/unit/grillade/lifecycle.test.ts` `startSession with overdue items flips status to cooking and shifts later items forward`
-- [ ] `tests/unit/grillade/lifecycle.test.ts` `startManualSession parks every item at the far-future sentinel and sessionHasStarted stays false`
-- [ ] `tests/unit/grillade/lifecycle.test.ts` `startSessionItem on a manual session item recomputes flip, done, and resting epochs from now`
-- [ ] `tests/unit/grillade/lifecycle.test.ts` `plateItem and unplateItem move the item between ready and plated and call push`
-- [ ] `tests/unit/grillade/lifecycle.test.ts` `endSession clears the session, copies items back into a fresh plan, and pushes finished metadata`
-- [ ] `tests/unit/grillade/lifecycle.test.ts` `appendTimelineEvent dedupes by kind, itemName, and at`
-- [ ] `tests/unit/grillade/lifecycle.test.ts` `syncActive pushes running session when one exists, otherwise pushes the planned draft`
-- [ ] `tests/unit/grillade/lifecycle.test.ts` `the in-memory PersistencePort and the real db.ts adapter produce equivalent state after the same sequence of operations` (two-adapter parity test, runs the db.ts adapter against the existing `fake-indexeddb/auto` setup in `tests/setup.ts`)
+- [x] `tests/unit/grillade/lifecycle.test.ts` `init reads stored session and clears it when stale beyond STALE_AFTER_MS`
+- [x] `tests/unit/grillade/lifecycle.test.ts` `init reads planState and falls back to defaultPlan when parse fails`
+- [x] `tests/unit/grillade/lifecycle.test.ts` `addItem assigns a uuid and persists, updateItem patches in place, removeItem removes, reorderItems preserves only known ids`
+- [x] `tests/unit/grillade/lifecycle.test.ts` `setTargetTime switches mode to time and clears auto sub-mode`
+- [x] `tests/unit/grillade/lifecycle.test.ts` `effectiveTargetEpoch in now mode returns now plus longest cook plus rest plus lead seconds`
+- [x] `tests/unit/grillade/lifecycle.test.ts` `effectiveTargetEpoch in time mode returns the pinned epoch unchanged`
+- [x] `tests/unit/grillade/lifecycle.test.ts` `startSession schedules every item to finish by targetEpoch and sets earliest put-on first`
+- [x] `tests/unit/grillade/lifecycle.test.ts` `startSession with overdue items flips status to cooking and shifts later items forward`
+- [x] `tests/unit/grillade/lifecycle.test.ts` `startManualSession parks every item at the far-future sentinel and sessionHasStarted stays false`
+- [x] `tests/unit/grillade/lifecycle.test.ts` `startSessionItem on a manual session item recomputes flip, done, and resting epochs from now`
+- [x] `tests/unit/grillade/lifecycle.test.ts` `plateItem and unplateItem move the item between ready and plated and call push`
+- [x] `tests/unit/grillade/lifecycle.test.ts` `endSession clears the session, copies items back into a fresh plan, and pushes finished metadata`
+- [x] `tests/unit/grillade/lifecycle.test.ts` `appendTimelineEvent dedupes by kind, itemName, and at`
+- [x] `tests/unit/grillade/lifecycle.test.ts` `syncActive pushes running session when one exists, otherwise pushes the planned draft`
+- [x] `tests/unit/grillade/lifecycle.test.ts` `the in-memory PersistencePort and the real db.ts adapter produce equivalent state after the same sequence of operations` (two-adapter parity test, runs the db.ts adapter against the existing `fake-indexeddb/auto` setup in `tests/setup.ts`)
 
 ### Integration Tests (`backend/tests/integration/`)
 
@@ -220,7 +220,7 @@ Tests are implementation tasks. The implementer writes and passes each one befor
 
 ### E2E Tests (`tests/e2e/`)
 
-- [ ] `tests/e2e/auth.spec.ts` keeps every existing test passing without modification
-- [ ] `tests/e2e/sync.spec.ts` keeps every existing test passing without modification
-- [ ] `tests/e2e/account.spec.ts` keeps every existing test passing without modification
-- [ ] Every pre-existing E2E spec activated through `tests/e2e/_setup/` keeps passing without modification
+- [x] `tests/e2e/auth.spec.ts` keeps every existing test passing without modification
+- [x] `tests/e2e/sync.spec.ts` keeps every existing test passing without modification
+- [x] `tests/e2e/account.spec.ts` keeps every existing test passing without modification
+- [x] Every pre-existing E2E spec activated through `tests/e2e/_setup/` keeps passing without modification

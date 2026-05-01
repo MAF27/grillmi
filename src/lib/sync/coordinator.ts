@@ -81,8 +81,8 @@ export async function flush(): Promise<void> {
 
 /** Check whether a previously-pushed grillade row still exists on the server.
  * If the server returned 404, reset the local push flags so the next push
- * re-creates the row. The lifecycle (Phase 4) and grilladeSync (current) call
- * this before enqueueing updates to an existing row. */
+ * re-creates the row. The lifecycle calls this before enqueueing updates to
+ * an existing row. */
 export async function repairMissingServerRow(row: GrilladeRow): Promise<void> {
 	if (!row.pushedToServer || typeof fetch === 'undefined') return
 	try {
