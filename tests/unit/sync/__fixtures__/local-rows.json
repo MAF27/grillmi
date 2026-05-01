@@ -1,0 +1,172 @@
+{
+  "grillade": {
+    "input": {
+      "id": "11111111-1111-1111-1111-111111111111",
+      "name": "Saturday Cookout",
+      "status": "planned",
+      "targetEpoch": 1714579200000,
+      "startedEpoch": null,
+      "endedEpoch": null,
+      "position": 1,
+      "updatedEpoch": 1714579100000,
+      "deletedEpoch": null
+    },
+    "expected": {
+      "id": "11111111-1111-1111-1111-111111111111",
+      "name": "Saturday Cookout",
+      "status": "planned",
+      "target_finish_at": "2024-05-01T16:00:00.000Z",
+      "started_at": null,
+      "ended_at": null,
+      "position": 1,
+      "updated_at": "2024-05-01T15:58:20.000Z"
+    }
+  },
+  "grilladeAllNull": {
+    "input": {
+      "id": "22222222-2222-2222-2222-222222222222",
+      "name": null,
+      "status": "finished",
+      "targetEpoch": null,
+      "startedEpoch": null,
+      "endedEpoch": null,
+      "position": 0,
+      "updatedEpoch": 1714579100000,
+      "deletedEpoch": null
+    },
+    "expected": {
+      "id": "22222222-2222-2222-2222-222222222222",
+      "name": null,
+      "status": "finished",
+      "target_finish_at": null,
+      "started_at": null,
+      "ended_at": null,
+      "position": 0,
+      "updated_at": "2024-05-01T15:58:20.000Z"
+    }
+  },
+  "plannedItem": {
+    "input": {
+      "item": {
+        "id": "33333333-3333-3333-3333-333333333333",
+        "categorySlug": "rind",
+        "cutSlug": "ribeye",
+        "thicknessCm": 2.5,
+        "prepLabel": null,
+        "doneness": "medium",
+        "label": "Ribeye",
+        "cookSeconds": 600,
+        "restSeconds": 120,
+        "flipFraction": 0.5,
+        "idealFlipPattern": "once",
+        "heatZone": "direct-high",
+        "grateTempC": 230
+      },
+      "index": 0
+    },
+    "expected": {
+      "id": "33333333-3333-3333-3333-333333333333",
+      "label": "Ribeye",
+      "cut_id": "ribeye",
+      "thickness_cm": 2.5,
+      "doneness": "medium",
+      "prep_label": null,
+      "cook_seconds_min": 600,
+      "cook_seconds_max": 600,
+      "flip_fraction": 0.5,
+      "rest_seconds": 120,
+      "status": "pending",
+      "started_at": null,
+      "plated_at": null,
+      "position": 0
+    }
+  },
+  "sessionItem": {
+    "input": {
+      "item": {
+        "id": "44444444-4444-4444-4444-444444444444",
+        "categorySlug": "rind",
+        "cutSlug": "ribeye",
+        "thicknessCm": 2.5,
+        "prepLabel": null,
+        "doneness": "medium",
+        "label": "Ribeye",
+        "cookSeconds": 600,
+        "restSeconds": 120,
+        "flipFraction": 0.5,
+        "idealFlipPattern": "once",
+        "heatZone": "direct-high",
+        "grateTempC": 230,
+        "putOnEpoch": 1714579200000,
+        "flipEpoch": 1714579500000,
+        "doneEpoch": 1714579800000,
+        "restingUntilEpoch": 1714579920000,
+        "status": "cooking",
+        "overdue": false,
+        "flipFired": false,
+        "platedEpoch": null
+      },
+      "index": 2
+    },
+    "expected": {
+      "id": "44444444-4444-4444-4444-444444444444",
+      "label": "Ribeye",
+      "cut_id": "ribeye",
+      "thickness_cm": 2.5,
+      "doneness": "medium",
+      "prep_label": null,
+      "cook_seconds_min": 600,
+      "cook_seconds_max": 600,
+      "flip_fraction": 0.5,
+      "rest_seconds": 120,
+      "status": "cooking",
+      "started_at": "2024-05-01T16:00:00.000Z",
+      "plated_at": null,
+      "position": 2
+    }
+  },
+  "sessionItemPlated": {
+    "input": {
+      "item": {
+        "id": "55555555-5555-5555-5555-555555555555",
+        "categorySlug": "rind",
+        "cutSlug": "ribeye",
+        "thicknessCm": 2.5,
+        "prepLabel": null,
+        "doneness": "medium",
+        "label": "Ribeye",
+        "cookSeconds": 600,
+        "restSeconds": 120,
+        "flipFraction": 0.5,
+        "idealFlipPattern": "once",
+        "heatZone": "direct-high",
+        "grateTempC": 230,
+        "putOnEpoch": 1714579200000,
+        "flipEpoch": 1714579500000,
+        "doneEpoch": 1714579800000,
+        "restingUntilEpoch": 1714579920000,
+        "status": "plated",
+        "overdue": false,
+        "flipFired": true,
+        "platedEpoch": 1714580000000
+      },
+      "index": 1
+    },
+    "expected": {
+      "id": "55555555-5555-5555-5555-555555555555",
+      "label": "Ribeye",
+      "cut_id": "ribeye",
+      "thickness_cm": 2.5,
+      "doneness": "medium",
+      "prep_label": null,
+      "cook_seconds_min": 600,
+      "cook_seconds_max": 600,
+      "flip_fraction": 0.5,
+      "rest_seconds": 120,
+      "status": "plated",
+      "started_at": "2024-05-01T16:00:00.000Z",
+      "plated_at": "2024-05-01T16:13:20.000Z",
+      "position": 1
+    }
+  }
+}

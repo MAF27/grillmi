@@ -6,7 +6,7 @@ import {
 	listSyncQueue,
 } from '$lib/stores/db'
 import { authStore } from '$lib/stores/authStore.svelte'
-import { enqueueSync, flush } from '$lib/sync/queue'
+import { enqueueWrite, flush } from '$lib/sync/coordinator'
 
 beforeEach(async () => {
 	__resetForTests()
@@ -21,7 +21,7 @@ afterEach(() => {
 
 describe('syncQueue', () => {
 	it('test_enqueue_persists_to_idb', async () => {
-		await enqueueSync({ method: 'POST', path: '/api/grilladen', body: '{"name":"x"}' })
+		await enqueueWrite({ method: 'POST', path: '/api/grilladen', body: '{"name":"x"}' })
 		const rows = await listSyncQueue()
 		expect(rows).toHaveLength(1)
 		expect(rows[0].method).toBe('POST')
@@ -29,18 +29,18 @@ describe('syncQueue', () => {
 	})
 
 	it('test_enqueue_does_not_require_first_login_flag', async () => {
-		await enqueueSync({ method: 'POST', path: '/api/grilladen', body: '{}' })
+		await enqueueWrite({ method: 'POST', path: '/api/grilladen', body: '{}' })
 		expect(await listSyncQueue()).toHaveLength(1)
 	})
 
 	it('test_enqueue_skips_when_unauthenticated', async () => {
 		authStore.clear()
-		await enqueueSync({ method: 'POST', path: '/api/grilladen', body: '{}' })
+		await enqueueWrite({ method: 'POST', path: '/api/grilladen', body: '{}' })
 		expect(await listSyncQueue()).toEqual([])
 	})
 
 	it('test_enqueue_ignores_get', async () => {
-		await enqueueSync({ method: 'GET', path: '/api/grilladen' })
+		await enqueueWrite({ method: 'GET', path: '/api/grilladen' })
 		expect(await listSyncQueue()).toEqual([])
 	})
 
@@ -63,7 +63,6 @@ describe('syncQueue', () => {
 	})
 
 	it('test_401_during_flush_persists_queue_and_clears_auth', async () => {
-		// Stub window.location to a benign one so the redirect call doesn't blow up.
 		const orig = (globalThis as { window?: unknown }).window
 		;(globalThis as unknown as { window: unknown }).window = {
 			location: {
@@ -80,7 +79,7 @@ describe('syncQueue', () => {
 		await flush()
 
 		const rows = await listSyncQueue()
-		expect(rows).toHaveLength(1) // queue is preserved
+		expect(rows).toHaveLength(1)
 		expect(authStore.user).toBe(null)
 
 		;(globalThis as unknown as { window: unknown }).window = orig
@@ -102,7 +101,6 @@ describe('syncQueue', () => {
 
 		await flush()
 
-		// Both writes attempted, both rows removed (409 drops the row, 204 drops it).
 		expect(seen).toEqual([1, 2])
 		expect(await listSyncQueue()).toEqual([])
 	})

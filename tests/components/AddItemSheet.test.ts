@@ -136,7 +136,7 @@ describe('AddItemSheet', () => {
 		expect(oncommit).toHaveBeenCalledTimes(1)
 		const arg = oncommit.mock.calls[0][0] as Omit<PlannedItem, 'id'>
 		expect(arg.categorySlug).toBe('beef')
-		expect(arg.cutSlug).toBe('rinds-entrecote-ribeye-steak-boneless')
+		expect(arg.cutSlug).toBe('rinds-entrecote')
 		expect(arg.thicknessCm).toBeGreaterThan(0)
 		expect(arg.doneness).toBeTruthy()
 		expect(arg.cookSeconds).toBeGreaterThan(0)

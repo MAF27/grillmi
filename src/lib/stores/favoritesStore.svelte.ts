@@ -1,7 +1,7 @@
 import { favoriteSchema, type Favorite } from '$lib/schemas'
 import { listFavorites, putFavorite, deleteFavorite } from './db'
 import { uuid } from '$lib/util/uuid'
-import { enqueueSync } from '$lib/sync/queue'
+import { enqueueWrite } from '$lib/sync/coordinator'
 
 export type FavoriteConfig = Omit<Favorite, 'id' | 'createdAtEpoch' | 'lastUsedEpoch'>
 
@@ -43,7 +43,7 @@ function createFavoritesStore() {
 			})
 			await putFavorite(fav)
 			items = [fav, ...items]
-			void enqueueSync({
+			void enqueueWrite({
 				method: 'POST',
 				path: '/api/favorites',
 				body: JSON.stringify(favToServer(fav)),
@@ -57,7 +57,7 @@ function createFavoritesStore() {
 			const updated = { ...items[idx], name }
 			await putFavorite(updated)
 			items = items.map(f => (f.id === id ? updated : f))
-			void enqueueSync({
+			void enqueueWrite({
 				method: 'PATCH',
 				path: `/api/favorites/${id}`,
 				body: JSON.stringify({ label: name }),
@@ -67,7 +67,7 @@ function createFavoritesStore() {
 		async remove(id: string): Promise<void> {
 			await deleteFavorite(id)
 			items = items.filter(f => f.id !== id)
-			void enqueueSync({ method: 'DELETE', path: `/api/favorites/${id}` })
+			void enqueueWrite({ method: 'DELETE', path: `/api/favorites/${id}` })
 		},
 
 		async touch(id: string): Promise<void> {
@@ -76,7 +76,7 @@ function createFavoritesStore() {
 			const updated = { ...items[idx], lastUsedEpoch: Date.now() }
 			await putFavorite(updated)
 			items = [updated, ...items.filter(f => f.id !== id)]
-			void enqueueSync({
+			void enqueueWrite({
 				method: 'PATCH',
 				path: `/api/favorites/${id}`,
 				body: JSON.stringify({ last_used_at: new Date(updated.lastUsedEpoch).toISOString() }),

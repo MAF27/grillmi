@@ -12,7 +12,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from grillmi.db import get_session
 from grillmi.deps import CurrentUser, current_user, require_csrf
 from grillmi.repos import grillade_items_repo, grilladen_repo
-from grillmi.routes._serialize import parse_since, serialize, server_time_iso
+from grillmi.routes._models import (
+    DeltaResponse,
+    GrilladeItemOut,
+    GrilladeOut,
+    parse_since,
+    server_time_iso,
+)
 
 router = APIRouter(tags=["grilladen"])
 
@@ -21,25 +27,22 @@ class _Body(BaseModel):
     model_config = {"extra": "allow"}
 
 
-@router.get("")
+@router.get("", response_model=DeltaResponse[GrilladeOut])
 async def list_grilladen(
     current: Annotated[CurrentUser, Depends(current_user)],
     db: AsyncSession = Depends(get_session),
     since: str | None = Query(default=None),
 ) -> dict:
     rows = await grilladen_repo.list_for_user(db, current.user.id, parse_since(since))
-    return {
-        "rows": [serialize(r, grilladen_repo.FIELDS) for r in rows],
-        "server_time": server_time_iso(),
-    }
+    return {"rows": rows, "server_time": server_time_iso()}
 
 
-@router.post("", status_code=201)
+@router.post("", status_code=201, response_model=GrilladeOut)
 async def create_grillade(
     payload: _Body,
     current: Annotated[CurrentUser, Depends(require_csrf)],
     db: AsyncSession = Depends(get_session),
-) -> dict:
+):
     body = payload.model_dump()
     try:
         row = await grilladen_repo.create(db, current.user.id, body)
@@ -47,28 +50,28 @@ async def create_grillade(
     except IntegrityError:
         await db.rollback()
         raise HTTPException(status_code=409, detail="active_grillade_exists")
-    return serialize(row, grilladen_repo.FIELDS)
+    return row
 
 
-@router.get("/{grillade_id}")
+@router.get("/{grillade_id}", response_model=GrilladeOut)
 async def get_grillade(
     grillade_id: uuid.UUID,
     current: Annotated[CurrentUser, Depends(current_user)],
     db: AsyncSession = Depends(get_session),
-) -> dict:
+):
     row = await grilladen_repo.get_for_user(db, current.user.id, grillade_id)
     if row is None:
         raise HTTPException(status_code=404, detail="not_found")
-    return serialize(row, grilladen_repo.FIELDS)
+    return row
 
 
-@router.patch("/{grillade_id}")
+@router.patch("/{grillade_id}", response_model=GrilladeOut)
 async def patch_grillade(
     grillade_id: uuid.UUID,
     payload: _Body,
     current: Annotated[CurrentUser, Depends(require_csrf)],
     db: AsyncSession = Depends(get_session),
-) -> dict:
+):
     body = payload.model_dump()
     persisted = await grilladen_repo.get_for_user(db, current.user.id, grillade_id)
     if persisted is None:
@@ -81,7 +84,7 @@ async def patch_grillade(
     except IntegrityError:
         await db.rollback()
         raise HTTPException(status_code=409, detail="active_grillade_exists")
-    return serialize(row, grilladen_repo.FIELDS)
+    return row
 
 
 @router.delete("/{grillade_id}", status_code=204)
@@ -96,7 +99,7 @@ async def delete_grillade(
     await db.commit()
 
 
-@router.get("/{grillade_id}/items")
+@router.get("/{grillade_id}/items", response_model=DeltaResponse[GrilladeItemOut])
 async def list_items(
     grillade_id: uuid.UUID,
     current: Annotated[CurrentUser, Depends(current_user)],
@@ -108,36 +111,33 @@ async def list_items(
     )
     if rows is None:
         raise HTTPException(status_code=404, detail="parent_not_found")
-    return {
-        "rows": [serialize(r, grillade_items_repo.FIELDS) for r in rows],
-        "server_time": server_time_iso(),
-    }
+    return {"rows": rows, "server_time": server_time_iso()}
 
 
-@router.post("/{grillade_id}/items", status_code=201)
+@router.post("/{grillade_id}/items", status_code=201, response_model=GrilladeItemOut)
 async def create_item(
     grillade_id: uuid.UUID,
     payload: _Body,
     current: Annotated[CurrentUser, Depends(require_csrf)],
     db: AsyncSession = Depends(get_session),
-) -> dict:
+):
     row = await grillade_items_repo.create(
         db, current.user.id, grillade_id, payload.model_dump()
     )
     if row is None:
         raise HTTPException(status_code=409, detail="parent_missing")
     await db.commit()
-    return serialize(row, grillade_items_repo.FIELDS)
+    return row
 
 
-@router.patch("/{grillade_id}/items/{item_id}")
+@router.patch("/{grillade_id}/items/{item_id}", response_model=GrilladeItemOut)
 async def patch_item(
     grillade_id: uuid.UUID,
     item_id: uuid.UUID,
     payload: _Body,
     current: Annotated[CurrentUser, Depends(require_csrf)],
     db: AsyncSession = Depends(get_session),
-) -> dict:
+):
     body = payload.model_dump()
     persisted = await grillade_items_repo.get(db, current.user.id, grillade_id, item_id)
     if persisted is None:
@@ -146,7 +146,7 @@ async def patch_item(
         raise HTTPException(status_code=409, detail="stale_update")
     row = await grillade_items_repo.update(db, current.user.id, grillade_id, item_id, body)
     await db.commit()
-    return serialize(row, grillade_items_repo.FIELDS)
+    return row
 
 
 @router.delete("/{grillade_id}/items/{item_id}", status_code=204)

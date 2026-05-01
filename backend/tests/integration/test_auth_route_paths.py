@@ -21,7 +21,7 @@ async def test_login_triggers_rehash_when_params_outdated(
     user = await make_user(email="rehash@example.com", password="hunter2hunter2")
 
     # Force check_needs_rehash to return True so the route re-hashes the password.
-    monkeypatch.setattr("grillmi.routes.auth.check_needs_rehash", lambda h: True)
+    monkeypatch.setattr("grillmi.services.account_access.check_needs_rehash", lambda h: True)
 
     pre_hash = user.password_hash
     resp = await app_client.post(
@@ -97,7 +97,7 @@ async def test_invitation_set_password_with_existing_session_works(
     logout_resp = await app_client.post("/api/auth/logout")
     assert logout_resp.status_code == 204
 
-    with patch("grillmi.routes.auth.check_password", return_value=False):
+    with patch("grillmi.services.account_access.check_password", return_value=False):
         resp = await app_client.post(
             "/api/auth/set-password",
             json={"token": raw, "password": "fine-passw0rd-99"},

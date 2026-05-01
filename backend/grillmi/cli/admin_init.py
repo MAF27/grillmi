@@ -1,69 +1,27 @@
 import argparse
 import asyncio
-import hashlib
-import secrets
 import sys
-from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import select
-
-from grillmi.config import get_settings
 from grillmi.db import async_session_maker
-from grillmi.email import sender as email_sender
-from grillmi.email.templates import render_activation
 from grillmi.logging import configure_logging
-from grillmi.models import PasswordResetToken, User
-
-INVITATION_EXPIRY_HOURS = 1
+from grillmi.services.account_access import AccountAccess
 
 
 async def _run(email: str, first_name: str | None = None) -> int:
-    settings = get_settings()
     factory = async_session_maker()
 
     async with factory() as session:
-        existing = (
-            await session.execute(select(User).where(User.email == email))
-        ).scalar_one_or_none()
-        if existing is not None:
-            print(f"user with email {email!r} already exists; nothing to do", file=sys.stderr)
-            return 0
-
-        token = secrets.token_urlsafe(32)
-        token_hash = hashlib.sha256(token.encode("utf-8")).digest()
-        expires_at = datetime.now(timezone.utc) + timedelta(hours=INVITATION_EXPIRY_HOURS)
-        link = f"{settings.PUBLIC_BASE_URL.rstrip('/')}/set-password?token={token}"
-        rendered = render_activation(
-            link=link,
-            expires_hours=INVITATION_EXPIRY_HOURS,
-            recipient=email,
-            first_name=first_name,
-        )
-
         try:
-            await email_sender.send(email, rendered.subject, rendered.text, rendered.html)
+            result = await AccountAccess.create_user_with_invitation(session, email, first_name)
         except Exception as exc:
             print(f"send failed; aborting before any DB writes: {exc}", file=sys.stderr)
             return 2
 
-        user = User(
-            email=email,
-            first_name=first_name,
-            password_hash="!disabled_" + secrets.token_hex(8),
-        )
-        session.add(user)
-        await session.flush()
-        session.add(
-            PasswordResetToken(
-                user_id=user.id,
-                token_hash=token_hash,
-                kind="invitation",
-                expires_at=expires_at,
-            )
-        )
-        await session.commit()
+    if result is None:
+        print(f"user with email {email!r} already exists; nothing to do", file=sys.stderr)
+        return 0
 
-    print(f"invitation sent to {email}; expires in {INVITATION_EXPIRY_HOURS}h")
+    print(f"invitation sent to {email}; expires in {result.expires_hours}h")
     return 0
 
 

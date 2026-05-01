@@ -9,7 +9,7 @@ import {
 	type DensityId,
 } from '$lib/schemas'
 import { getSettings, putSettings } from './db'
-import { enqueueSync } from '$lib/sync/queue'
+import { enqueueWrite } from '$lib/sync/coordinator'
 
 const DEFAULTS: UserSettings = userSettingsSchema.parse({})
 const VALID_TONES = new Set<string>(TONE_IDS)
@@ -59,7 +59,7 @@ function createSettingsStore() {
 
 	async function persist() {
 		await putSettings(value)
-		void enqueueSync({
+		void enqueueWrite({
 			method: 'PUT',
 			path: '/api/settings',
 			body: JSON.stringify({ value }),
