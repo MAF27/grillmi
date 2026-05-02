@@ -16,10 +16,11 @@
 
 	let wakeLockState = $state<'idle' | 'held' | 'denied' | 'unsupported'>(getWakeLockState())
 	type StickyAlarm = { id: string; itemId: string; kind: AlarmKind; itemName: string; message: string; firedAt: number }
-	let stickyAlarms = $state<StickyAlarm[]>([])
 	let pendingDismiss = $state<Set<string>>(new Set())
+	const chimedAlarms = new Set<string>()
 	let endingForAllPlated = false
 	let mounted = $state(false)
+	let now = $state(Date.now())
 
 	const session = $derived(grilladeStore.session)
 	const sessionMode = $derived(session?.mode ?? grilladeStore.planMode)
@@ -33,17 +34,55 @@
 		}
 		return set
 	})
-	const visibleAlarms = $derived(
-		stickyAlarms
-			.filter(a => !dismissedKeys.has(a.id))
-			.slice()
-			.reverse(),
-	)
+	const visibleAlarms = $derived.by<StickyAlarm[]>(() => {
+		if (!session) return []
+		const out: StickyAlarm[] = []
+		const isManual = session.mode === 'manual'
+		for (const item of session.items) {
+			const name = item.label || item.cutSlug
+			if (item.alarmFired.putOn != null && !dismissedKeys.has(`${item.id}-on`) && !isManual) {
+				const lead = Math.max(0, Math.round((item.putOnEpoch - now) / 1000))
+				out.push({
+					id: `${item.id}-on`,
+					itemId: item.id,
+					kind: 'on',
+					itemName: name,
+					message: messageFor('put-on', name, lead),
+					firedAt: item.alarmFired.putOn,
+				})
+			}
+			if (item.alarmFired.flip != null && !dismissedKeys.has(`${item.id}-flip`)) {
+				const flipLead = item.flipEpoch != null ? Math.max(0, Math.round((item.flipEpoch - now) / 1000)) : 0
+				out.push({
+					id: `${item.id}-flip`,
+					itemId: item.id,
+					kind: 'flip',
+					itemName: name,
+					message: messageFor('flip', name, flipLead),
+					firedAt: item.alarmFired.flip,
+				})
+			}
+			if (item.alarmFired.ready != null && !dismissedKeys.has(`${item.id}-ready`)) {
+				const doneLead = Math.max(0, Math.round((item.doneEpoch - now) / 1000))
+				out.push({
+					id: `${item.id}-ready`,
+					itemId: item.id,
+					kind: 'ready',
+					itemName: name,
+					message: messageFor('done', name, doneLead),
+					firedAt: item.alarmFired.ready,
+				})
+			}
+		}
+		out.sort((a, b) => b.firedAt - a.firedAt)
+		return out
+	})
 	const alarming = $derived(visibleAlarms[0] ?? null)
 	const firingItemId = $derived(alarming?.itemId ?? null)
 
 	let ticker: ReturnType<typeof createTicker> | null = null
 	let unsubWakeLock: (() => void) | null = null
+	let tickId: ReturnType<typeof setInterval> | null = null
 
 	onMount(async () => {
 		await grilladeStore.init()
@@ -53,6 +92,8 @@
 			return
 		}
 		mounted = true
+		now = Date.now()
+		tickId = setInterval(() => (now = Date.now()), 1000)
 		// On desktop, /session and /grillen render the same DesktopCockpit, which
 		// owns the ticker and wakeLock lifecycle once a session exists.
 		if (viewport.isDesktop) return
@@ -74,33 +115,35 @@
 				const item = grilladeStore.session?.items.find(i => i.id === e.itemId)
 				if (!item) return
 				const event = e.type as AlarmEvent
-				const kind: AlarmKind = event === 'flip' ? 'flip' : event === 'done' ? 'ready' : 'on'
 				// Manual mode: tapping Los is the cook telling the app the item is on the
 				// grill; the ring starting to run is the only confirmation. No chime, no toast.
 				if (event === 'put-on' && grilladeStore.session?.mode === 'manual') return
-				const msg = messageFor(event, item.label || item.cutSlug, e.leadSeconds)
-				const key = `${item.id}-${kind}`
-				if (stickyAlarms.some(a => a.id === key) || dismissedKeys.has(key)) return
-				void grilladeStore.appendTimelineEvent({ kind, itemName: item.label || item.cutSlug, at: Date.now() })
-				stickyAlarms = [
-					...stickyAlarms,
-					{
-						id: key,
-						itemId: item.id,
-						kind,
-						itemName: item.label || item.cutSlug,
-						message: msg,
-						firedAt: Date.now(),
-					},
-				]
-				void fireAlarm(event)
+				const alarmKey: 'putOn' | 'flip' | 'ready' = event === 'flip' ? 'flip' : event === 'done' ? 'ready' : 'putOn'
+				const bannerKind: AlarmKind = alarmKey === 'putOn' ? 'on' : alarmKey
+				if (item.alarmFired[alarmKey] != null || item.alarmDismissed[alarmKey] != null) return
+				void grilladeStore.appendTimelineEvent({ kind: bannerKind, itemName: item.label || item.cutSlug, at: Date.now() })
+				void grilladeStore.patchItem(item.id, {
+					alarmFired: { ...item.alarmFired, [alarmKey]: Date.now() },
+				})
 			},
 		})
 		ticker.start()
 	})
 
+	$effect(() => {
+		const t = Date.now()
+		for (const a of visibleAlarms) {
+			if (chimedAlarms.has(a.id)) continue
+			chimedAlarms.add(a.id)
+			if (t - a.firedAt > 30_000) continue
+			const event: AlarmEvent = a.kind === 'on' ? 'put-on' : a.kind === 'flip' ? 'flip' : 'done'
+			void fireAlarm(event)
+		}
+	})
+
 	onDestroy(() => {
 		if (ticker) ticker.stop()
+		if (tickId) clearInterval(tickId)
 		void releaseWakeLock()
 		if (unsubWakeLock) unsubWakeLock()
 	})

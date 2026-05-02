@@ -28,15 +28,23 @@ export function sessionItemToServer(item: SessionItem, index: number): Record<st
 		status: item.status,
 		started_at: item.status === 'pending' ? null : new Date(item.putOnEpoch).toISOString(),
 		plated_at: item.platedEpoch ? new Date(item.platedEpoch).toISOString() : null,
-		alarm_state: alarmDismissedToServer(item.alarmDismissed),
+		alarm_state: alarmStateToServer(item.alarmDismissed, item.alarmFired),
 	}
 }
 
-function alarmDismissedToServer(d: SessionItem['alarmDismissed']): Record<string, string | null> {
+function alarmStateToServer(
+	dismissed: SessionItem['alarmDismissed'],
+	fired: SessionItem['alarmFired'],
+): Record<string, unknown> {
 	return {
-		putOn: d.putOn ? new Date(d.putOn).toISOString() : null,
-		flip: d.flip ? new Date(d.flip).toISOString() : null,
-		ready: d.ready ? new Date(d.ready).toISOString() : null,
+		putOn: dismissed.putOn ? new Date(dismissed.putOn).toISOString() : null,
+		flip: dismissed.flip ? new Date(dismissed.flip).toISOString() : null,
+		ready: dismissed.ready ? new Date(dismissed.ready).toISOString() : null,
+		firedAt: {
+			putOn: fired.putOn ? new Date(fired.putOn).toISOString() : null,
+			flip: fired.flip ? new Date(fired.flip).toISOString() : null,
+			ready: fired.ready ? new Date(fired.ready).toISOString() : null,
+		},
 	}
 }
 
@@ -44,6 +52,21 @@ function alarmDismissedFromServer(value: unknown): SessionItem['alarmDismissed']
 	const empty = { putOn: null, flip: null, ready: null }
 	if (!value || typeof value !== 'object') return empty
 	const v = value as Record<string, unknown>
+	const parse = (key: 'putOn' | 'flip' | 'ready'): number | null => {
+		const raw = v[key]
+		if (!raw) return null
+		const epoch = Date.parse(String(raw))
+		return Number.isFinite(epoch) ? epoch : null
+	}
+	return { putOn: parse('putOn'), flip: parse('flip'), ready: parse('ready') }
+}
+
+function alarmFiredFromServer(value: unknown): SessionItem['alarmFired'] {
+	const empty = { putOn: null, flip: null, ready: null }
+	if (!value || typeof value !== 'object') return empty
+	const inner = (value as Record<string, unknown>).firedAt
+	if (!inner || typeof inner !== 'object') return empty
+	const v = inner as Record<string, unknown>
 	const parse = (key: 'putOn' | 'flip' | 'ready'): number | null => {
 		const raw = v[key]
 		if (!raw) return null
@@ -90,8 +113,9 @@ export function sessionFromServer(
 		const raw = rawItems[index]
 		const status = String(raw.status ?? 'pending') as SessionItem['status']
 		const alarmDismissed = alarmDismissedFromServer(raw.alarm_state)
+		const alarmFired = alarmFiredFromServer(raw.alarm_state)
 		if (status === 'pending') {
-			return { ...buildSessionItem(planned, scheduled[index], now), alarmDismissed }
+			return { ...buildSessionItem(planned, scheduled[index], now), alarmDismissed, alarmFired }
 		}
 		const putOnEpoch = Date.parse(String(raw.started_at ?? '')) || now
 		const doneEpoch = putOnEpoch + planned.cookSeconds * 1000
@@ -110,6 +134,7 @@ export function sessionFromServer(
 			flipFired: status !== 'cooking',
 			platedEpoch: raw.plated_at ? Date.parse(String(raw.plated_at)) : null,
 			alarmDismissed,
+			alarmFired,
 		}
 	})
 	return {

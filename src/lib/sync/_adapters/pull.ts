@@ -210,6 +210,7 @@ function grilladeSignature(row: GrilladeRow | undefined): string {
 			flipFired: item.flipFired,
 			platedEpoch: item.platedEpoch,
 			alarmDismissed: item.alarmDismissed,
+			alarmFired: item.alarmFired,
 		})),
 	})
 }

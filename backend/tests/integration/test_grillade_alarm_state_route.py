@@ -61,3 +61,52 @@ async def test_alarm_state_rejects_unknown_kinds(auth_client) -> None:
     )
     assert item_resp.status_code == 201, item_resp.text
     assert item_resp.json()["alarm_state"] == {"flip": "2026-05-02T19:00:00+00:00"}
+
+
+async def test_alarm_state_round_trips_fired_at(auth_client) -> None:
+    client, _, _ = await auth_client()
+
+    create_resp = await client.post("/api/grilladen", json={"name": "G", "status": "running"})
+    grillade_id = create_resp.json()["id"]
+
+    item_resp = await client.post(
+        f"/api/grilladen/{grillade_id}/items",
+        json={
+            "label": "Ribeye",
+            "cut_id": "ribeye",
+            "cook_seconds_min": 240,
+            "cook_seconds_max": 360,
+            "flip_fraction": "0.5",
+            "rest_seconds": 120,
+        },
+    )
+    assert item_resp.status_code == 201, item_resp.text
+    item_id = item_resp.json()["id"]
+
+    patch_resp = await client.patch(
+        f"/api/grilladen/{grillade_id}/items/{item_id}",
+        json={
+            "alarm_state": {
+                "putOn": None,
+                "flip": None,
+                "ready": None,
+                "firedAt": {
+                    "putOn": "2026-05-02T19:00:00+00:00",
+                    "flip": None,
+                    "ready": None,
+                    "bogus": "2026-01-01T00:00:00+00:00",
+                },
+            }
+        },
+    )
+    assert patch_resp.status_code == 200, patch_resp.text
+    assert patch_resp.json()["alarm_state"] == {
+        "putOn": None,
+        "flip": None,
+        "ready": None,
+        "firedAt": {
+            "putOn": "2026-05-02T19:00:00+00:00",
+            "flip": None,
+            "ready": None,
+        },
+    }

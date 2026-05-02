@@ -8,7 +8,7 @@ Grillmi is a multi-timer BBQ companion PWA. The core domain is one user planning
 
 | Term | Definition | Translations | Aliases to avoid | Appears in |
 | ---- | ---------- | ------------ | ---------------- | ---------- |
-| **Grillade** | A single cookout event, owned by one user, progressing through `planned`, `running`, and `finished` phases. The canonical noun for the whole event. | Grillade ⇔ cookout | Session, Plan, Programm | `backend/grillmi/models/grillade.py`, `src/lib/stores/db.ts:15`, `src/routes/plan/+page.svelte:135` |
+| **Grillade** | A single cookout event, owned by one user, progressing through `planned`, `running`, and `finished` phases. The canonical noun for the whole event. | Grillade ⇔ cookout | Session, Plan, Programm | `backend/grillmi/models/grillade.py`, `src/lib/stores/db.ts:15`, `src/lib/components/desktop/DesktopCockpit.svelte` (the Grillen cockpit owns the live Grillade) |
 | **Grillstück** | A single item being grilled inside a Grillade (e.g. a steak, a Cervelat). One domain concept, three code shapes: `PlannedItem` (pre-start), `SessionItem` (in-flight), `GrilladeItem` (backend row). | Grillstück / Grillstücke (de) ⇔ grill item (en) | "item" alone | `src/lib/schemas/index.ts:5,36`, `backend/grillmi/models/grillade_item.py` |
 | **Favorit** | A single-item shortcut for a frequently cooked Grillstück; adds directly into a Grillade without opening the cut picker. | Favorit / Favoriten (de) ⇔ favorite (en) | | `src/lib/schemas/index.ts:64`, `backend/grillmi/models/favorite.py`, `src/lib/components/AddItemSheet.svelte` |
 | **TimelineEvent** | A cooking milestone recorded during a running Grillade with `kind`, `itemName`, and epoch. The five kinds are `on` (Auflegen), `flip` (Wenden), `resting` (Ruhen), `ready` (Fertig), `plated` (Anrichten). Distinct from the backend `audit_log`, which tracks auth events. | Kochereignis (de, informal) | ActivityLog (UI component name), AuditLog (different concern) | `src/lib/stores/db.ts:9`, `src/lib/grillade/lifecycle.ts` (`appendTimelineEvent`) |
@@ -19,7 +19,7 @@ Grillmi is a multi-timer BBQ companion PWA. The core domain is one user planning
 | ---- | ---------- | ------------ | ---------------- | ---------- |
 | **GrilladeStatus** | Lifecycle phase of a Grillade: `planned` (draft, no Session yet), `running` (Session is live), `finished` (Session ended; row appears in Chronik). | Grilladen-Status (de) | | `backend/grillmi/models/grillade.py`, `src/lib/stores/db.ts:18` |
 | **ItemStatus** | Lifecycle phase of a Grillstück inside a running Session: `pending`, `cooking`, `resting`, `ready`, `plated`. | Grillstück-Status (de) | | `src/lib/schemas/index.ts:3` |
-| **Modus** | The user-facing scheduling mode chosen on the segmented control with options `Jetzt`, `Auf Zeit`, and `Manuell`. `Jetzt` and `Auf Zeit` let the scheduler stagger items; `Manuell` requires the user to start each Grillstück by hand. | Modus (de) ⇔ mode (en) | scheduling mode (too generic) | `src/routes/plan/+page.svelte:22-24`, `src/lib/components/desktop/DesktopCockpit.svelte:26-28` |
+| **Modus** | The user-facing scheduling mode chosen on the segmented control with options `Jetzt`, `Auf Zeit`, and `Manuell`. `Jetzt` and `Auf Zeit` let the scheduler stagger items; `Manuell` requires the user to start each Grillstück by hand. | Modus (de) ⇔ mode (en) | scheduling mode (too generic) | `src/lib/components/desktop/DesktopCockpit.svelte:25-29` (the segmented control lives in the Grillen cockpit) |
 
 ### Timing and scheduling
 
@@ -33,13 +33,22 @@ Grillmi is a multi-timer BBQ companion PWA. The core domain is one user planning
 
 ### Cooking actions
 
-These five German verbs name the `TimelineEvent.kind` values and double as alarm labels.
+These five German verbs name the `TimelineEvent.kind` values. Three of them also fire alarms (Auflegen, Wenden, Fertig); Ruhen and Anrichten are silent state transitions.
 
-- **Auflegen** ⇔ put on (the grill); `kind = 'on'`.
-- **Wenden** ⇔ flip; `kind = 'flip'`.
-- **Ruhen** ⇔ rest; `kind = 'resting'`.
-- **Fertig** ⇔ done / ready; `kind = 'ready'`.
-- **Anrichten** ⇔ plate / serve; `kind = 'plated'`.
+- **Auflegen** ⇔ put on (the grill); `kind = 'on'`. Alarm key: `putOn`.
+- **Wenden** ⇔ flip; `kind = 'flip'`. Alarm key: `flip`.
+- **Ruhen** ⇔ rest; `kind = 'resting'`. No alarm.
+- **Fertig** ⇔ done / ready; `kind = 'ready'`. Alarm key: `ready`.
+- **Anrichten** ⇔ plate / serve; `kind = 'plated'`. No alarm.
+
+### Alarm state
+
+| Term | Definition | Translations | Aliases to avoid | Appears in |
+| ---- | ---------- | ------------ | ---------------- | ---------- |
+| **alarmFired** | Per-Grillstück record `{putOn, flip, ready}` of the millisecond epoch when each alarm first fired. Persisted server-side so the alarm card appears on every signed-in device and survives a refresh, without the chime replaying on stale entries. The card visibility is purely derived from this and `alarmDismissed`; there is no separate in-memory sticky-card state. | Wecker-Auslösung (de, informal) | sticky alarm, fired flag | `src/lib/schemas/index.ts` (`alarmFiredSchema`), `src/lib/sync/mappers/grilladeItem.ts` (`alarm_state.firedAt`), `backend/grillmi/repos/grillade_items_repo.py` (`_alarm_state`) |
+| **alarmDismissed** | Per-Grillstück record `{putOn, flip, ready}` of the millisecond epoch when the user dismissed each alarm. Persisted server-side so dismissals propagate cross-device. A dismissed alarm hides its card on every device. | Wecker-Quittierung (de, informal) | acknowledged alarm | `src/lib/schemas/index.ts` (`alarmDismissedSchema`), `src/lib/sync/mappers/grilladeItem.ts` (`alarm_state` top-level keys), `backend/grillmi/repos/grillade_items_repo.py` (`_alarm_state`) |
+
+The wire shape on the backend is one JSONB column (`grillade_items.alarm_state`) carrying both: dismissal timestamps as ISO strings at the top level (`putOn`, `flip`, `ready`) and fire timestamps under a nested `firedAt` sub-dict with the same keys.
 
 ### Item specification
 
@@ -65,7 +74,7 @@ These TypeScript or Python type names show up in code but are not user-facing co
 | ---- | ---------- | ---------------- | ---------- |
 | **Plan** *(implementation)* | The frontend type representing a Grillade in its `planned` state: target eating epoch, item list, and a `mode` discriminator (`now` or `time`). Persisted as `PersistedPlanState` in IDB. | Do not use "Plan" as a user-facing noun for the cookout (the noun is Grillade). | `src/lib/schemas/index.ts:21`, `src/lib/stores/db.ts:4` |
 | **PlannedItem** *(implementation)* | Frontend representation of a Grillstück inside a Plan: cut spec plus cook, rest, and flip parameters. No timing epochs. | | `src/lib/schemas/index.ts:5` |
-| **SessionItem** *(implementation)* | A PlannedItem enriched with live timing epochs (`putOnEpoch`, `flipEpoch`, `doneEpoch`, `restingUntilEpoch`, `platedEpoch`), `ItemStatus`, and the `overdue` flag. | | `src/lib/schemas/index.ts:36` |
+| **SessionItem** *(implementation)* | A PlannedItem enriched with live timing epochs (`putOnEpoch`, `flipEpoch`, `doneEpoch`, `restingUntilEpoch`, `platedEpoch`), `ItemStatus`, the `overdue` flag, and the per-alarm `alarmFired` / `alarmDismissed` records that drive cross-device alarm visibility. | | `src/lib/schemas/index.ts:36` |
 | **Session** *(implementation)* | The in-memory runtime state of a running Grillade: a list of `SessionItem`, the `targetEpoch`, the cook `mode` (`auto` or `manual`), and a `createdAtEpoch`. Stored as a field on `GrilladeRow`, not a top-level entity. The Python `sessions` table tracks auth sessions and is unrelated. | "Session" for the whole cookout (the noun is Grillade). | `src/lib/schemas/index.ts:47`, `src/lib/grillade/lifecycle.ts` |
 | **PlanMode** *(implementation)* | Frontend rune controlling whether the Session is driven by the scheduler (`auto`) or by manual per-item starts (`manual`). The user-facing surface is the Modus segmented control. | | `src/lib/grillade/lifecycle.ts` |
 | **AutoMode** *(implementation)* | Within `auto` PlanMode, controls the staggering strategy: `now` (start immediately, stagger by cook time) or `time` (work backward from `targetEpoch`). Stored as `Plan.mode`. | | `src/lib/schemas/index.ts:27` |
@@ -103,7 +112,7 @@ Four modules concentrate previously-scattered logic. Touch one file when changin
 
 ### Cleanup follow-ups
 
-The following code paths reference a deprecated "Menü" / "Plan-Vorlage" feature that no UI exposes. They have no canonical glossary entry on purpose. A follow-up cleanup spec should rip them out. The user-facing persistent collections are exactly **Favoriten** and **Chronik** — nothing else. The sidebar has exactly three entries: **Grillen**, **Chronik**, **Einstellungen**. There is no Übersicht.
+The following code paths reference a deprecated "Menü" / "Plan-Vorlage" feature that no UI exposes. They have no canonical glossary entry on purpose. A follow-up cleanup spec should rip them out. The user-facing persistent collections are exactly **Favoriten** and **Chronik**, nothing else. The sidebar has exactly three entries: **Grillen**, **Chronik**, **Einstellungen**. There is no Übersicht.
 
 - `src/lib/models/index.ts` exports a `Menu = SavedPlan` alias.
 - `src/lib/stores/db.ts` keeps a `SavedPlan` type and a `listSavedPlans()` helper.

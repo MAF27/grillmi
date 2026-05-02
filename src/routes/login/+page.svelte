@@ -77,7 +77,7 @@
 			{#if error}
 				<p class="error" role="alert">{error}</p>
 			{/if}
-			<Button variant="primary" size="lg" fullWidth type="submit" loading={submitting} disabled={submitting}>
+			<Button id="login-submit" variant="primary" size="lg" fullWidth type="submit" loading={submitting} disabled={submitting}>
 				{de.auth.signIn}
 			</Button>
 			<a href="/forgot-password" class="muted-link">{de.auth.passwordReset}</a>

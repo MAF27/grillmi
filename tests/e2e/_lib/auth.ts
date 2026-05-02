@@ -27,7 +27,7 @@ export async function provisionUser(page: Page, email: string, password = PASSWO
 	await page.context().clearCookies()
 }
 
-export const FRONTEND_URL = 'http://127.0.0.1:5173'
+export const FRONTEND_URL = process.env.E2E_FRONTEND_URL ?? 'http://127.0.0.1:5173'
 
 export async function loginViaApi(context: BrowserContext, email: string, password = PASSWORD): Promise<{ csrfToken: string }> {
 	const r = await context.request.post(`${FRONTEND_URL}/api/auth/login`, {

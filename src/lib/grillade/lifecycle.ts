@@ -333,6 +333,7 @@ export function createGrilladeLifecycle(config: LifecycleConfig): GrilladeLifecy
 				flipFired: false,
 				platedEpoch: null,
 				alarmDismissed: { putOn: null, flip: null, ready: null },
+				alarmFired: { putOn: null, flip: null, ready: null },
 			}))
 			const newSession = sessionSchema.parse({
 				id: uuid(),

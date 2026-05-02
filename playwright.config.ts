@@ -2,6 +2,8 @@ import { defineConfig, devices } from '@playwright/test'
 
 const STORAGE_STATE = 'tests/e2e/_setup/.default-user-storage.json'
 const ACCOUNTS_SPECS = ['**/auth.spec.ts', '**/sync.spec.ts', '**/account.spec.ts']
+const FRONTEND_URL = process.env.E2E_FRONTEND_URL ?? 'http://127.0.0.1:5173'
+const FRONTEND_PORT = new URL(FRONTEND_URL).port || '5173'
 
 export default defineConfig({
 	testDir: 'tests/e2e',
@@ -10,14 +12,14 @@ export default defineConfig({
 	workers: 1,
 	timeout: 30_000,
 	use: {
-		baseURL: 'http://127.0.0.1:5173',
+		baseURL: FRONTEND_URL,
 		trace: 'on-first-retry',
 	},
 	globalSetup: './tests/e2e/_setup/global-setup.ts',
 	globalTeardown: './tests/e2e/_setup/global-teardown.ts',
 	webServer: {
-		command: 'BACKEND_PORT=8001 pnpm dev',
-		url: 'http://127.0.0.1:5173',
+		command: `BACKEND_PORT=8001 pnpm dev --host 127.0.0.1 --port ${FRONTEND_PORT} --strictPort`,
+		url: FRONTEND_URL,
 		reuseExistingServer: process.env.PLAYWRIGHT_REUSE_SERVER === '1',
 		timeout: 60_000,
 	},

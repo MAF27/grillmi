@@ -105,7 +105,8 @@
         "overdue": false,
         "flipFired": false,
         "platedEpoch": null,
-        "alarmDismissed": { "putOn": null, "flip": null, "ready": null }
+        "alarmDismissed": { "putOn": null, "flip": null, "ready": null },
+        "alarmFired": { "putOn": null, "flip": null, "ready": null }
       },
       "index": 2
     },
@@ -123,7 +124,12 @@
       "status": "cooking",
       "started_at": "2024-05-01T16:00:00.000Z",
       "plated_at": null,
-      "alarm_state": { "putOn": null, "flip": null, "ready": null },
+      "alarm_state": {
+        "putOn": null,
+        "flip": null,
+        "ready": null,
+        "firedAt": { "putOn": null, "flip": null, "ready": null }
+      },
       "position": 2
     }
   },
@@ -151,7 +157,8 @@
         "overdue": false,
         "flipFired": true,
         "platedEpoch": 1714580000000,
-        "alarmDismissed": { "putOn": 1714579210000, "flip": 1714579510000, "ready": 1714579810000 }
+        "alarmDismissed": { "putOn": 1714579210000, "flip": 1714579510000, "ready": 1714579810000 },
+        "alarmFired": { "putOn": 1714579200000, "flip": 1714579500000, "ready": 1714579800000 }
       },
       "index": 1
     },
@@ -172,7 +179,12 @@
       "alarm_state": {
         "putOn": "2024-05-01T16:00:10.000Z",
         "flip": "2024-05-01T16:05:10.000Z",
-        "ready": "2024-05-01T16:10:10.000Z"
+        "ready": "2024-05-01T16:10:10.000Z",
+        "firedAt": {
+          "putOn": "2024-05-01T16:00:00.000Z",
+          "flip": "2024-05-01T16:05:00.000Z",
+          "ready": "2024-05-01T16:10:00.000Z"
+        }
       },
       "position": 1
     }

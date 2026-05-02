@@ -29,6 +29,7 @@ function manualPendingItem(over: Partial<SessionItem> = {}): SessionItem {
 		flipFired: false,
 		platedEpoch: null,
 		alarmDismissed: { putOn: null, flip: null, ready: null },
+		alarmFired: { putOn: null, flip: null, ready: null },
 		...over,
 	}
 }

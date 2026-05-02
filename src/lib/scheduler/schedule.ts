@@ -70,5 +70,6 @@ export function buildSessionItem(planned: PlannedItem, sched: ScheduledItem, now
 		flipFired: false,
 		platedEpoch: null,
 		alarmDismissed: { putOn: null, flip: null, ready: null },
+		alarmFired: { putOn: null, flip: null, ready: null },
 	}
 }

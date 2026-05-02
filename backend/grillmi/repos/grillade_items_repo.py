@@ -227,18 +227,26 @@ def _dec(value: Any) -> Decimal | None:
 _ALARM_KINDS = ("putOn", "flip", "ready")
 
 
-def _alarm_state(value: Any) -> dict[str, str | None]:
+def _coerce_alarm_ts(v: Any) -> str | None:
+    if v is None:
+        return None
+    if isinstance(v, datetime):
+        return (v if v.tzinfo else v.replace(tzinfo=timezone.utc)).isoformat()
+    return str(v)
+
+
+def _alarm_state(value: Any) -> dict[str, Any]:
     if not isinstance(value, dict):
         return {}
-    out: dict[str, str | None] = {}
+    out: dict[str, Any] = {}
     for kind in _ALARM_KINDS:
-        if kind not in value:
-            continue
-        v = value[kind]
-        if v is None:
-            out[kind] = None
-        elif isinstance(v, datetime):
-            out[kind] = (v if v.tzinfo else v.replace(tzinfo=timezone.utc)).isoformat()
-        else:
-            out[kind] = str(v)
+        if kind in value:
+            out[kind] = _coerce_alarm_ts(value[kind])
+    fired = value.get("firedAt")
+    if isinstance(fired, dict):
+        fired_out: dict[str, str | None] = {}
+        for kind in _ALARM_KINDS:
+            if kind in fired:
+                fired_out[kind] = _coerce_alarm_ts(fired[kind])
+        out["firedAt"] = fired_out
     return out

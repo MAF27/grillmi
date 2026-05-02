@@ -57,7 +57,7 @@ class GrilladeItemOut(_Base):
     status: str
     started_at: DateTimeIso = None
     plated_at: DateTimeIso = None
-    alarm_state: dict[str, str | None] = {}
+    alarm_state: dict[str, str | None | dict[str, str | None]] = {}
     position: float
     created_at: DateTimeIso = None
     updated_at: DateTimeIso = None
