@@ -104,23 +104,77 @@ Notes:
 - Mit neutralem Öl bestreichen, salzen, frisch gemahlenen schwarzen Pfeffer. Optional in den letzten 60 s mit Butter arrosieren.
 - Locker zelten lassen, niemals früh anschneiden, der ganze Saft steht unter leichtem Druck.
 
-### Hohrücken (Rib steak, bone-in) / Rinds-Ribeye bone-in
+### Hohrücken (Rib steak, bone-in)
 
-Dicker als entbeintes Entrecôte; der Knochen isoliert eine Seite.
+Dicker als entbeintes Entrecôte; der Knochen isoliert eine Seite. Bei 1–3 cm liegen die Zeiten rund 20 % über dem boneless Entrecôte; ab 4 cm gleichen sich beide an, weil indirekt gegart wird und die Knochen-Isolierung von der längeren Garzone überlagert wird.
 
-| Thickness | Doneness  | Heat zone          | Grate temp | Per side   | Total  | Turns                    | Rest    |
-| --------- | --------- | ------------------ | ---------- | ---------- | ------ | ------------------------ | ------- |
-| 2 cm      | medium    | Direkt, Deckel zu  | 230 °C     | 4 min 30 s | 9 min  | Einmal halbzeitig wenden | 3 min   |
-| 4 cm      | medium    | Direkt zu indirekt | 230 °C     | 9 min      | 18 min | Einmal halbzeitig wenden | 5–8 min |
-| 2 cm      | well-done | Direkt, Deckel zu  | 230 °C     | 8 min      | 16 min | Einmal halbzeitig wenden | 5 min   |
-| 4 cm      | well-done | Direkt zu indirekt | 230 °C     | 9 min      | 18 min | Einmal halbzeitig wenden | 5–8 min |
+| Thickness | Doneness    | Heat zone                         | Grate temp | Per side   | Total      | Turns                    | Rest     |
+| --------- | ----------- | --------------------------------- | ---------- | ---------- | ---------- | ------------------------ | -------- |
+| 1 cm      | rare        | Direkt, Deckel zu                 | 230 °C     | 1 min 15 s | 2 min 30 s | Einmal halbzeitig wenden | 3 min    |
+| 2 cm      | rare        | Direkt, Deckel zu                 | 230 °C     | 2 min 45 s | 5 min 30 s | Einmal halbzeitig wenden | 3 min    |
+| 3 cm      | rare        | Direkt, Deckel zu                 | 230 °C     | 4 min 15 s | 8 min 30 s | Einmal halbzeitig wenden | 5 min    |
+| 4 cm      | rare        | Direkt zu indirekt                | 230 °C     | 6 min 30 s | 13 min     | Einmal halbzeitig wenden | 5–8 min  |
+| 5 cm      | rare        | Reverse-Sear (indirekt zu direkt) | 230 °C     | 7 min 30 s | 15 min     | Einmal halbzeitig wenden | 8–10 min |
+| 1 cm      | medium-rare | Direkt, Deckel zu                 | 230 °C     | 1 min 30 s | 3 min      | Einmal halbzeitig wenden | 3 min    |
+| 2 cm      | medium-rare | Direkt, Deckel zu                 | 230 °C     | 3 min 15 s | 6 min 30 s | Einmal halbzeitig wenden | 3 min    |
+| 3 cm      | medium-rare | Direkt, Deckel zu                 | 230 °C     | 6 min      | 12 min     | Einmal halbzeitig wenden | 5 min    |
+| 4 cm      | medium-rare | Direkt zu indirekt                | 230 °C     | 7 min 30 s | 15 min     | Einmal halbzeitig wenden | 5–8 min  |
+| 5 cm      | medium-rare | Reverse-Sear (indirekt zu direkt) | 230 °C     | 9 min      | 18 min     | Einmal halbzeitig wenden | 8–10 min |
+| 1 cm      | medium      | Direkt, Deckel zu                 | 230 °C     | 2 min 20 s | 4 min 40 s | Einmal halbzeitig wenden | 3 min    |
+| 2 cm      | medium      | Direkt, Deckel zu                 | 230 °C     | 4 min 30 s | 9 min      | Einmal halbzeitig wenden | 3 min    |
+| 3 cm      | medium      | Direkt, Deckel zu                 | 230 °C     | 7 min      | 14 min     | Einmal halbzeitig wenden | 5 min    |
+| 4 cm      | medium      | Direkt zu indirekt                | 230 °C     | 9 min      | 18 min     | Einmal halbzeitig wenden | 5–8 min  |
+| 5 cm      | medium      | Reverse-Sear (indirekt zu direkt) | 230 °C     | 10 min     | 20 min     | Einmal halbzeitig wenden | 8–10 min |
+| 1 cm      | well-done   | Direkt, Deckel zu                 | 230 °C     | 4 min      | 8 min      | Einmal halbzeitig wenden | 3 min    |
+| 2 cm      | well-done   | Direkt, Deckel zu                 | 230 °C     | 8 min      | 16 min     | Einmal halbzeitig wenden | 5 min    |
+| 3 cm      | well-done   | Direkt, Deckel zu                 | 230 °C     | 10 min     | 20 min     | Einmal halbzeitig wenden | 5 min    |
+| 4 cm      | well-done   | Direkt zu indirekt                | 230 °C     | 14 min     | 28 min     | alle 2–3 min drehen      | 5–8 min  |
+| 5 cm      | well-done   | Reverse-Sear (indirekt zu direkt) | 230 °C     | 15 min     | 30 min     | alle 2–3 min drehen      | 8–10 min |
 
-Sources: [Migros-Grilltimer].
+Sources: [Migros-Grilltimer] für 2 cm medium, 2 cm well-done und 4 cm medium. [Weber-DE] und [Meathead] für die übrigen Reihen, abgeleitet aus boneless Entrecôte mit +20 % Aufschlag bei 1–3 cm. Die Migros-Angabe für 4 cm well-done (9 min pro Seite, 18 min gesamt) wurde korrigiert auf 14 min pro Seite und 28 min gesamt, weil 4 cm well-done sonst kürzer als 3 cm well-done und 4 cm medium wäre.
 
 Notes:
 
 - Fettkappe zuerst auslassen: 60 s mit der Fettseite nach unten anbraten, bevor der Hauptsear startet.
 - 2 °C früher ziehen, wenn der Knochen dick ist; er gart während der Ruhezeit aggressiv weiter.
+
+### Hohrücken Trockengereift (Dry-aged rib steak, bone-in)
+
+Trockengereifter Hohrücken vom Metzger: weniger Wasser, dichtere Faser, sofort bräunende Oberfläche. Rund 25 % schneller fertig als der frische Hohrücken bei gleicher Pull-Temperatur. Knochen isoliert eine Seite wie beim Standard-Cut.
+
+| Thickness | Doneness    | Heat zone                         | Grate temp | Per side    | Total       | Turns               | Rest     |
+| --------- | ----------- | --------------------------------- | ---------- | ----------- | ----------- | ------------------- | -------- |
+| 1 cm      | rare        | Direkt, Deckel zu                 | 230 °C     | 1 min       | 2 min       | alle 45 s wenden    | 3 min    |
+| 2 cm      | rare        | Direkt, Deckel zu                 | 230 °C     | 2 min       | 4 min       | alle 45 s wenden    | 3 min    |
+| 3 cm      | rare        | Direkt, Deckel zu                 | 230 °C     | 3 min 15 s  | 6 min 30 s  | alle 45 s wenden    | 5 min    |
+| 4 cm      | rare        | Direkt zu indirekt                | 230 °C     | 5 min       | 10 min      | alle 45 s wenden    | 5–8 min  |
+| 5 cm      | rare        | Reverse-Sear (indirekt zu direkt) | 230 °C     | 5 min 30 s  | 11 min      | alle 45 s wenden    | 8–10 min |
+| 1 cm      | medium-rare | Direkt, Deckel zu                 | 230 °C     | 1 min 15 s  | 2 min 30 s  | alle 45 s wenden    | 3 min    |
+| 2 cm      | medium-rare | Direkt, Deckel zu                 | 230 °C     | 2 min 30 s  | 5 min       | alle 45 s wenden    | 3 min    |
+| 3 cm      | medium-rare | Direkt, Deckel zu                 | 230 °C     | 4 min 30 s  | 9 min       | alle 45 s wenden    | 5 min    |
+| 4 cm      | medium-rare | Direkt zu indirekt                | 230 °C     | 5 min 30 s  | 11 min      | alle 45 s wenden    | 5–8 min  |
+| 5 cm      | medium-rare | Reverse-Sear (indirekt zu direkt) | 230 °C     | 6 min 45 s  | 13 min 30 s | alle 45 s wenden    | 8–10 min |
+| 1 cm      | medium      | Direkt, Deckel zu                 | 230 °C     | 1 min 45 s  | 3 min 30 s  | alle 45 s wenden    | 3 min    |
+| 2 cm      | medium      | Direkt, Deckel zu                 | 230 °C     | 3 min 30 s  | 7 min       | alle 45 s wenden    | 3 min    |
+| 3 cm      | medium      | Direkt, Deckel zu                 | 230 °C     | 5 min 15 s  | 10 min 30 s | alle 45 s wenden    | 5 min    |
+| 4 cm      | medium      | Direkt zu indirekt                | 230 °C     | 6 min 45 s  | 13 min 30 s | alle 45 s wenden    | 5–8 min  |
+| 5 cm      | medium      | Reverse-Sear (indirekt zu direkt) | 230 °C     | 7 min 30 s  | 15 min      | alle 45 s wenden    | 8–10 min |
+| 1 cm      | well-done   | Direkt, Deckel zu                 | 230 °C     | 3 min       | 6 min       | alle 45 s wenden    | 3 min    |
+| 2 cm      | well-done   | Direkt, Deckel zu                 | 230 °C     | 6 min       | 12 min      | alle 45 s wenden    | 5 min    |
+| 3 cm      | well-done   | Direkt, Deckel zu                 | 230 °C     | 7 min 30 s  | 15 min      | alle 45 s wenden    | 5 min    |
+| 4 cm      | well-done   | Direkt zu indirekt                | 230 °C     | 10 min 30 s | 21 min      | alle 2 min drehen   | 5–8 min  |
+| 5 cm      | well-done   | Reverse-Sear (indirekt zu direkt) | 230 °C     | 11 min 15 s | 22 min 30 s | alle 2 min drehen   | 8–10 min |
+
+Sources: Abgeleitet vom Standard-Hohrücken mit ca. 25 % Reduktion gemäss [Meathead], [SE] (Kenji), [Weber-DE]. Pull-Temperatur bleibt unverändert, Doneness ist ein Protein-Zustand, kein Reife-Zustand.
+
+Notes:
+
+- Pull-Temperatur ist die Wahrheit: 50–52 °C medium-rare, 54–56 °C medium, 60 °C medium-well. Probe ist Pflicht, nicht die Uhr.
+- Nicht 8–24 h vorab dry-brinen. Die Oberfläche ist bereits dehydriert; weiteres Salz im Voraus übergart die Mantelschicht. Salzen direkt vor dem Sear oder erst nach dem Sear.
+- Kein Öl auf das Fleisch. Die trockene Oberfläche ist der ganze Punkt der Reifung und bräunt von selbst.
+- Sear bräunt fast sofort. Quarter-Turn-Flips alle 30–45 s, sonst verkohlt die Kruste vor der Mitte.
+- Fettkappe wie beim Standard-Cut zuerst 60 s mit der Fettseite nach unten anbraten.
+- Temperieren 30–60 min vorher; ruhen 5–10 min locker gezeltet nach dem Sear.
 
 ### T-Bone / Porterhouse
 
