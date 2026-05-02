@@ -59,5 +59,9 @@ tests/e2e/_setup/.default-user-storage.json
 # Local scratch (extracted bundles, prototype servers, etc.)
 .tmp/
 
+# Verification screenshots dropped at the repo root by browser automation
+screenshot_*.png
+screenshot_*.jpg
+
 # Private dev-only docs (raw extractions, scratch). Tracked locally only.
 resources/docs/_private/
