@@ -28,7 +28,8 @@
 		{ id: 'manual', label: 'Manuell' },
 	]
 
-	let now = $state(Date.now())
+	let now = $state(0)
+	let mounted = $state(false)
 	let sheetOpen = $state(false)
 	let editing = $state<PlannedItem | null>(null)
 	let timePickerOpen = $state(false)
@@ -93,6 +94,8 @@
 		await grilladeStore.init()
 		await settingsStore.init()
 		await favoritesStore.init()
+		now = Date.now()
+		mounted = true
 		tickId = setInterval(() => (now = Date.now()), 1000)
 	})
 
@@ -276,7 +279,7 @@
 
 <div class="cockpit">
 	<aside class="control-pane">
-		{#if !session}
+		{#if !session && mounted}
 			<SegmentedControl {segments} value={segmentValue} ariaLabel="Planungsmodus" onchange={pickSegment} />
 
 			{#if !isManual}
@@ -315,7 +318,7 @@
 					Zeit ist knapp. Folgende Einträge müssen sofort starten: {overdueItems.map(i => i.label).join(', ')}.
 				</div>
 			{/if}
-		{:else}
+		{:else if session}
 			<div class="live-controls">
 				<div>
 					<div class="eat-eyebrow">Modus</div>
@@ -369,33 +372,35 @@
 						onremove={removeSessionItem} />
 				{/each}
 			</div>
-		{:else}
-			<div class="section-header">
-				<h2>
-					Grillstücke{#if plan.items.length > 0}<span class="count">{plan.items.length} STÜCK</span>{/if}
-				</h2>
-			</div>
-
-			{#if plan.items.length === 0}
-				<button class="empty-add" type="button" onclick={openAddSheet}>
-					<div class="plus-icon">+</div>
-					<div class="empty-title">Grillstück hinzufügen</div>
-					<div class="empty-hint">Steak, Würstchen, Maiskolben, alles was auf den Rost kommt.</div>
-				</button>
-			{:else}
-				<div class="list" role="list">
-					{#each plan.items as item (item.id)}
-						<PlanItemRow {item} onedit={editItem} ondelete={deleteItem} onrename={renameItem} onadjustcook={adjustCook} />
-					{/each}
-					<button class="more-add" type="button" onclick={openAddSheet}>
-						<span class="plus-glyph">+</span>
-						<span>Weiteres Grillstück</span>
-					</button>
-					<div class="start-row">
-						<Button variant="primary" size="lg" fullWidth disabled={plan.items.length === 0} onclick={start}>{goLabel}</Button>
-					</div>
+		{:else if mounted}
+			<div class="plan-pane">
+				<div class="section-header">
+					<h2>
+						Grillstücke{#if plan.items.length > 0}<span class="count">{plan.items.length} STÜCK</span>{/if}
+					</h2>
 				</div>
-			{/if}
+
+				{#if plan.items.length === 0}
+					<button class="empty-add" type="button" onclick={openAddSheet}>
+						<div class="plus-icon">+</div>
+						<div class="empty-title">Grillstück hinzufügen</div>
+						<div class="empty-hint">Steak, Würstchen, Maiskolben, alles was auf den Rost kommt.</div>
+					</button>
+				{:else}
+					<div class="list" role="list">
+						{#each plan.items as item (item.id)}
+							<PlanItemRow {item} onedit={editItem} ondelete={deleteItem} onrename={renameItem} onadjustcook={adjustCook} />
+						{/each}
+						<button class="more-add" type="button" onclick={openAddSheet}>
+							<span class="plus-glyph">+</span>
+							<span>Weiteres Grillstück</span>
+						</button>
+						<div class="start-row">
+							<Button variant="primary" size="lg" fullWidth disabled={plan.items.length === 0} onclick={start}>{goLabel}</Button>
+						</div>
+					</div>
+				{/if}
+			</div>
 		{/if}
 	</section>
 </div>
@@ -426,7 +431,7 @@
 
 <style>
 	.cockpit {
-		--timer-card-width: calc((100dvw - 900px - 56px - 16px) / 3);
+		--timer-card-width: calc((100dvw - 900px - 56px - 16px) / 2);
 		--timer-column-width: calc(var(--timer-card-width) * 3 + 32px + 56px);
 		display: grid;
 		grid-template-columns: 340px minmax(0, var(--timer-column-width));
@@ -473,6 +478,12 @@
 		gap: 16px;
 		align-items: start;
 		justify-content: start;
+	}
+	.plan-pane {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		max-width: 720px;
 	}
 	.awaiting {
 		color: var(--color-fg-muted);
@@ -723,7 +734,7 @@
 	}
 	@media (max-width: 1279px) {
 		.cockpit {
-			--timer-card-width: calc((100dvw - 820px - 56px - 16px) / 3);
+			--timer-card-width: calc((100dvw - 820px - 56px - 16px) / 2);
 			--timer-column-width: calc(var(--timer-card-width) * 3 + 32px + 56px);
 			grid-template-columns: 300px minmax(0, var(--timer-column-width));
 		}

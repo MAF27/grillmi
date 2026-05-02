@@ -135,6 +135,7 @@ export function createGrilladeLifecycle(config: LifecycleConfig): GrilladeLifecy
 	let planMode: PlanMode = 'auto'
 	let sessionTimeline: TimelineEvent[] = []
 	let initialized = false
+	let initInFlight: Promise<void> | null = null
 	let pendingPersist: Promise<void> = Promise.resolve()
 
 	const listeners = new Set<() => void>()
@@ -189,33 +190,42 @@ export function createGrilladeLifecycle(config: LifecycleConfig): GrilladeLifecy
 		},
 		async init() {
 			if (initialized) return
-			initialized = true
-			session = null
-			sessionTimeline = []
-			plan = defaultPlan(clock.now())
-			planMode = 'auto'
-			const stored = await persistence.getCurrentSession()
-			if (stored) {
-				const normalized = normalizeSession(stored)
-				if (isStaleSession(normalized, clock.now())) {
-					await persistence.clearCurrentSession()
-				} else {
-					session = normalized
-					sessionTimeline = await persistence.getCurrentTimeline()
+			if (initInFlight) return initInFlight
+			initInFlight = (async () => {
+				try {
+					session = null
+					sessionTimeline = []
+					plan = defaultPlan(clock.now())
+					planMode = 'auto'
+					const stored = await persistence.getCurrentSession()
+					if (stored) {
+						const normalized = normalizeSession(stored)
+						if (isStaleSession(normalized, clock.now())) {
+							await persistence.clearCurrentSession()
+						} else {
+							session = normalized
+							sessionTimeline = await persistence.getCurrentTimeline()
+						}
+					}
+					const storedPlan = await persistence.getCurrentPlanState()
+					if (storedPlan) {
+						const parsed = planSchema.safeParse(storedPlan.plan)
+						if (parsed.success) {
+							plan = parsed.data
+							planMode = storedPlan.planMode === 'manual' ? 'manual' : 'auto'
+						}
+					}
+					initialized = true
+					notify()
+				} finally {
+					initInFlight = null
 				}
-			}
-			const storedPlan = await persistence.getCurrentPlanState()
-			if (storedPlan) {
-				const parsed = planSchema.safeParse(storedPlan.plan)
-				if (parsed.success) {
-					plan = parsed.data
-					planMode = storedPlan.planMode === 'manual' ? 'manual' : 'auto'
-				}
-			}
-			notify()
+			})()
+			return initInFlight
 		},
 		async reloadFromStorage() {
 			initialized = false
+			initInFlight = null
 			await this.init()
 		},
 		async syncActive() {
