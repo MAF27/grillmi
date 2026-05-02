@@ -2,6 +2,7 @@
 	import { tick } from 'svelte'
 	import type { PlannedItem } from '$lib/models'
 	import { formatDuration } from '$lib/util/format'
+	import { tipsForItem } from '$lib/util/tips'
 
 	interface Props {
 		item: PlannedItem
@@ -23,6 +24,7 @@
 	let renaming = $state(false)
 	let renameValue = $state('')
 	let renameInput = $state<HTMLInputElement | null>(null)
+	let tipsOpen = $state(false)
 
 	function ontouchstart(e: TouchEvent) {
 		touchStartX = e.touches[0].clientX
@@ -116,47 +118,81 @@
 	const atCookMax = $derived(item.cookSeconds >= COOK_MAX)
 	const meta = $derived(describe())
 	const title = $derived(displayTitle())
+	const tips = $derived(tipsForItem(item))
+	const tipsId = $derived(`tips-${item.id}`)
+
+	function toggleTips(e: MouseEvent) {
+		e.stopPropagation()
+		tipsOpen = !tipsOpen
+	}
 </script>
 
 <div class="row" role="listitem">
 	<div class="content" role="group" style="transform: translateX({dragX}px)" {ontouchstart} {ontouchmove} {ontouchend}>
-		<div class="body">
-			{#if renaming}
-				<input
-					bind:this={renameInput}
-					bind:value={renameValue}
-					class="rename-input"
-					maxlength="40"
-					onkeydown={onRenameKey}
-					onblur={commitRename}
-					aria-label="Bezeichnung bearbeiten" />
-			{:else}
-				<button class="title" onclick={startRename} aria-label="Bezeichnung umbenennen">
-					{title}
+		<div class="main">
+			<div class="body">
+				{#if renaming}
+					<input
+						bind:this={renameInput}
+						bind:value={renameValue}
+						class="rename-input"
+						maxlength="40"
+						onkeydown={onRenameKey}
+						onblur={commitRename}
+						aria-label="Bezeichnung bearbeiten" />
+				{:else}
+					<button class="title" onclick={startRename} aria-label="Bezeichnung umbenennen">
+						{title}
+					</button>
+				{/if}
+				{#if meta}
+					<button
+						class="meta"
+						onclick={() => onedit(item.id)}
+						aria-label={`Spezifikation bearbeiten: ${item.label || item.cutSlug}`}>{meta}</button>
+				{/if}
+			</div>
+
+			{#if tips.length > 0}
+				<button
+					type="button"
+					class="tips-btn"
+					class:active={tipsOpen}
+					onclick={toggleTips}
+					aria-expanded={tipsOpen}
+					aria-controls={tipsId}
+					aria-label={tipsOpen ? 'Tipps ausblenden' : 'Tipps anzeigen'}>
+					<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+						<circle cx="7" cy="7" r="6.25" fill="none" stroke="currentColor" stroke-width="1.4" />
+						<rect x="6.3" y="5.7" width="1.4" height="4.2" rx="0.7" fill="currentColor" />
+						<circle cx="7" cy="3.9" r="0.85" fill="currentColor" />
+					</svg>
 				</button>
 			{/if}
-			{#if meta}
-				<button
-					class="meta"
-					onclick={() => onedit(item.id)}
-					aria-label={`Spezifikation bearbeiten: ${item.label || item.cutSlug}`}>{meta}</button>
-			{/if}
+
+			<div class="stepper" role="group" aria-label="Garzeit anpassen">
+				<button type="button" class="step-btn" disabled={atCookMin} onclick={e => adjustCook(-COOK_STEP, e)} aria-label="Weniger"
+					>−</button>
+				<span class="step-value">{formatDuration(item.cookSeconds)}</span>
+				<button type="button" class="step-btn" disabled={atCookMax} onclick={e => adjustCook(COOK_STEP, e)} aria-label="Mehr"
+					>+</button>
+			</div>
+
+			<button class="remove" onclick={() => ondelete(item.id)} aria-label="Entfernen">
+				<svg width="24" height="24" viewBox="0 0 22 22" aria-hidden="true">
+					<circle cx="11" cy="11" r="11" fill="var(--color-bg-surface-2)" stroke="var(--color-border-strong)" />
+					<rect x="5.5" y="10" width="11" height="2" rx="1" fill="var(--color-fg-muted)" />
+				</svg>
+			</button>
 		</div>
 
-		<div class="stepper" role="group" aria-label="Garzeit anpassen">
-			<button type="button" class="step-btn" disabled={atCookMin} onclick={e => adjustCook(-COOK_STEP, e)} aria-label="Weniger"
-				>−</button>
-			<span class="step-value">{formatDuration(item.cookSeconds)}</span>
-			<button type="button" class="step-btn" disabled={atCookMax} onclick={e => adjustCook(COOK_STEP, e)} aria-label="Mehr"
-				>+</button>
-		</div>
-
-		<button class="remove" onclick={() => ondelete(item.id)} aria-label="Entfernen">
-			<svg width="24" height="24" viewBox="0 0 22 22" aria-hidden="true">
-				<circle cx="11" cy="11" r="11" fill="var(--color-bg-surface-2)" stroke="var(--color-border-strong)" />
-				<rect x="5.5" y="10" width="11" height="2" rx="1" fill="var(--color-fg-muted)" />
-			</svg>
-		</button>
+		{#if tipsOpen && tips.length > 0}
+			<ul class="tips-tray" id={tipsId}>
+				{#each tips as tip (tip)}
+					<li>{tip}</li>
+				{/each}
+			</ul>
+		{/if}
 	</div>
 	{#if confirming}
 		<div class="confirm">
@@ -176,13 +212,17 @@
 	}
 	.content {
 		display: flex;
-		align-items: stretch;
-		gap: 0;
+		flex-direction: column;
 		background: var(--color-bg-surface);
 		border: 1px solid var(--color-border-subtle);
 		border-radius: 14px;
 		overflow: hidden;
 		transition: transform var(--duration-fast) var(--ease-default);
+	}
+	.main {
+		display: flex;
+		align-items: stretch;
+		gap: 0;
 	}
 	.body {
 		flex: 1;
@@ -287,6 +327,58 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+	}
+	.tips-btn {
+		flex-shrink: 0;
+		align-self: center;
+		width: 28px;
+		height: 28px;
+		border-radius: 50%;
+		background: transparent;
+		border: 1px solid var(--color-border-subtle);
+		color: var(--color-fg-muted);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		transition: all var(--duration-fast) var(--ease-default);
+	}
+	.tips-btn:hover {
+		color: var(--color-ember);
+		border-color: var(--color-ember);
+	}
+	.tips-btn.active {
+		background: rgba(255, 122, 26, 0.13);
+		border-color: var(--color-ember);
+		color: var(--color-ember);
+	}
+	.tips-tray {
+		list-style: none;
+		margin: 0;
+		padding: 12px 16px 14px 32px;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		background: var(--color-bg-surface-2);
+		border-top: 1px solid var(--color-border-subtle);
+	}
+	.tips-tray li {
+		position: relative;
+		padding-left: 14px;
+		font-family: var(--font-body);
+		font-size: 12.5px;
+		line-height: 1.45;
+		color: var(--color-fg-base);
+	}
+	.tips-tray li::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 7px;
+		width: 5px;
+		height: 5px;
+		border-radius: 50%;
+		background: var(--color-ember);
 	}
 	.confirm {
 		position: absolute;

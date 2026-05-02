@@ -2,6 +2,7 @@
 	import { TIMINGS, findRow } from '$lib/data/timings'
 	import type { PlannedItem, Favorite } from '$lib/models'
 	import { formatDuration } from '$lib/util/format'
+	import { isDefaultHeatZone } from '$lib/util/tips'
 	import { favoritesStore } from '$lib/stores/favoritesStore.svelte'
 	import Button from './Button.svelte'
 	import CategoryIcon from './CategoryIcon.svelte'
@@ -73,11 +74,6 @@
 				if (needsPrep) return 'Variante'
 				return 'Anpassen'
 		}
-	}
-
-	function isDefaultHeatZone(value: string): boolean {
-		const normalized = value.trim().toLowerCase()
-		return normalized === 'direkt, deckel zu' || normalized === '—' || normalized === '-'
 	}
 
 	$effect(() => {

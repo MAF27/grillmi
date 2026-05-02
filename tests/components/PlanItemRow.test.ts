@@ -170,6 +170,38 @@ describe('PlanItemRow', () => {
 		expect(ondelete).toHaveBeenCalledWith(makeItem().id)
 	})
 
+	it('test_tips_toggle_reveals_and_hides_tray', async () => {
+		const { getByLabelText, container, queryByLabelText } = render(PlanItemRow, {
+			props: { item: makeItem(), onedit: () => {}, ondelete: () => {}, onrename: () => {}, onadjustcook: () => {} },
+		})
+
+		expect(container.querySelector('.tips-tray')).toBeNull()
+		const toggle = getByLabelText('Tipps anzeigen')
+		await fireEvent.click(toggle)
+		expect(container.querySelector('.tips-tray')).not.toBeNull()
+		expect(queryByLabelText('Tipps ausblenden')).not.toBeNull()
+
+		await fireEvent.click(getByLabelText('Tipps ausblenden'))
+		expect(container.querySelector('.tips-tray')).toBeNull()
+	})
+
+	it('test_tips_button_hidden_when_no_tips', () => {
+		const { queryByLabelText } = render(PlanItemRow, {
+			props: {
+				item: makeItem({
+					categorySlug: 'unknown-category',
+					cutSlug: 'unknown-cut',
+					heatZone: 'Direkt, Deckel zu',
+				}),
+				onedit: () => {},
+				ondelete: () => {},
+				onrename: () => {},
+				onadjustcook: () => {},
+			},
+		})
+		expect(queryByLabelText('Tipps anzeigen')).toBeNull()
+	})
+
 	it('test_swipe_then_cancel_closes_confirm_overlay', async () => {
 		const { container } = render(PlanItemRow, {
 			props: { item: makeItem(), onedit: () => {}, ondelete: () => {}, onrename: () => {}, onadjustcook: () => {} },
