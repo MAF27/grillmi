@@ -72,7 +72,19 @@ export async function pullDeltas(since: string): Promise<PullResult> {
 					})
 					if (items.length > 0) {
 						if (incoming.status === 'running') incoming.session = sessionFromServer(incoming, rows, items)
-						else
+						else if (existing?.planState) {
+							// Server doesn't track plan.mode or planMode — preserve the
+							// local choice (Jetzt / Auf Zeit / Manuell) instead of
+							// resetting it on every pull.
+							incoming.planState = {
+								plan: {
+									...existing.planState.plan,
+									targetEpoch: incoming.targetEpoch ?? existing.planState.plan.targetEpoch,
+									items,
+								},
+								planMode: existing.planState.planMode,
+							}
+						} else
 							incoming.planState = {
 								plan: {
 									targetEpoch: incoming.targetEpoch ?? Date.now(),
@@ -143,6 +155,15 @@ async function refreshLocalActiveItems(): Promise<boolean> {
 	})
 	if (items.length === 0) return false
 	if (active.status === 'running') active.session = sessionFromServer(active, rows, items)
+	else if (active.planState)
+		active.planState = {
+			plan: {
+				...active.planState.plan,
+				targetEpoch: active.targetEpoch ?? active.planState.plan.targetEpoch,
+				items,
+			},
+			planMode: active.planState.planMode,
+		}
 	else
 		active.planState = {
 			plan: {

@@ -426,7 +426,7 @@
 
 <style>
 	.cockpit {
-		--timer-card-width: calc((100dvw - 900px - 56px - 16px) / 2);
+		--timer-card-width: calc((100dvw - 900px - 56px - 16px) / 3);
 		--timer-column-width: calc(var(--timer-card-width) * 3 + 32px + 56px);
 		display: grid;
 		grid-template-columns: 340px minmax(0, var(--timer-column-width));
@@ -723,7 +723,7 @@
 	}
 	@media (max-width: 1279px) {
 		.cockpit {
-			--timer-card-width: calc((100dvw - 820px - 56px - 16px) / 2);
+			--timer-card-width: calc((100dvw - 820px - 56px - 16px) / 3);
 			--timer-column-width: calc(var(--timer-card-width) * 3 + 32px + 56px);
 			grid-template-columns: 300px minmax(0, var(--timer-column-width));
 		}
