@@ -28,7 +28,29 @@ export function sessionItemToServer(item: SessionItem, index: number): Record<st
 		status: item.status,
 		started_at: item.status === 'pending' ? null : new Date(item.putOnEpoch).toISOString(),
 		plated_at: item.platedEpoch ? new Date(item.platedEpoch).toISOString() : null,
+		alarm_state: alarmDismissedToServer(item.alarmDismissed),
 	}
+}
+
+function alarmDismissedToServer(d: SessionItem['alarmDismissed']): Record<string, string | null> {
+	return {
+		putOn: d.putOn ? new Date(d.putOn).toISOString() : null,
+		flip: d.flip ? new Date(d.flip).toISOString() : null,
+		ready: d.ready ? new Date(d.ready).toISOString() : null,
+	}
+}
+
+function alarmDismissedFromServer(value: unknown): SessionItem['alarmDismissed'] {
+	const empty = { putOn: null, flip: null, ready: null }
+	if (!value || typeof value !== 'object') return empty
+	const v = value as Record<string, unknown>
+	const parse = (key: 'putOn' | 'flip' | 'ready'): number | null => {
+		const raw = v[key]
+		if (!raw) return null
+		const epoch = Date.parse(String(raw))
+		return Number.isFinite(epoch) ? epoch : null
+	}
+	return { putOn: parse('putOn'), flip: parse('flip'), ready: parse('ready') }
 }
 
 export function plannedItemFromServer(r: Record<string, unknown>): PlannedItem | null {
@@ -67,7 +89,10 @@ export function sessionFromServer(
 	const items: SessionItem[] = plannedItems.map((planned, index) => {
 		const raw = rawItems[index]
 		const status = String(raw.status ?? 'pending') as SessionItem['status']
-		if (status === 'pending') return buildSessionItem(planned, scheduled[index], now)
+		const alarmDismissed = alarmDismissedFromServer(raw.alarm_state)
+		if (status === 'pending') {
+			return { ...buildSessionItem(planned, scheduled[index], now), alarmDismissed }
+		}
 		const putOnEpoch = Date.parse(String(raw.started_at ?? '')) || now
 		const doneEpoch = putOnEpoch + planned.cookSeconds * 1000
 		const restingUntilEpoch = doneEpoch + planned.restSeconds * 1000
@@ -84,6 +109,7 @@ export function sessionFromServer(
 			overdue: false,
 			flipFired: status !== 'cooking',
 			platedEpoch: raw.plated_at ? Date.parse(String(raw.plated_at)) : null,
+			alarmDismissed,
 		}
 	})
 	return {

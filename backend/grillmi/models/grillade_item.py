@@ -3,7 +3,7 @@ from datetime import datetime
 from decimal import Decimal
 
 from sqlalchemy import DateTime, Float, ForeignKey, Integer, Numeric, Text, func
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
 from grillmi.db import Base
@@ -28,6 +28,7 @@ class GrilladeItem(Base):
     status: Mapped[str] = mapped_column(Text, nullable=False)
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     plated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    alarm_state: Mapped[dict] = mapped_column(JSONB, nullable=False, server_default="{}", default=dict)
     position: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False

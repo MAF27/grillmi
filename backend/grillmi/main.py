@@ -13,14 +13,16 @@ from grillmi.middleware import register_middleware
 async def lifespan(app: FastAPI):
     configure_logging(json=True)
     cleanup_task = asyncio.create_task(_hourly_session_cleanup())
+    auto_end_task = asyncio.create_task(_grillade_auto_end_sweep())
     try:
         yield
     finally:
-        cleanup_task.cancel()
-        try:
-            await cleanup_task
-        except (asyncio.CancelledError, Exception):
-            pass
+        for task in (cleanup_task, auto_end_task):
+            task.cancel()
+            try:
+                await task
+            except (asyncio.CancelledError, Exception):
+                pass
 
 
 async def _hourly_session_cleanup() -> None:
@@ -37,6 +39,35 @@ async def _hourly_session_cleanup() -> None:
 
             structlog.get_logger().exception("session_cleanup_failed")
         await asyncio.sleep(3600)
+
+
+async def _grillade_auto_end_sweep() -> None:
+    from datetime import datetime, timedelta, timezone
+
+    import structlog
+
+    from grillmi.config import get_settings
+    from grillmi.db import async_session_maker
+    from grillmi.repos.grilladen_repo import sweep_stale_running
+
+    settings = get_settings()
+    while True:
+        try:
+            async with async_session_maker()() as session:
+                cutoff = datetime.now(timezone.utc) - timedelta(
+                    hours=settings.GRILLADE_STALE_AFTER_HOURS
+                )
+                ended = await sweep_stale_running(session, cutoff)
+                await session.commit()
+                if ended:
+                    structlog.get_logger().info(
+                        "grillade_auto_end_sweep",
+                        count=len(ended),
+                        ids=[str(row.id) for row in ended],
+                    )
+        except Exception:  # pragma: no cover - background task survives errors
+            structlog.get_logger().exception("grillade_auto_end_failed")
+        await asyncio.sleep(settings.GRILLADE_AUTO_END_INTERVAL_SECONDS)
 
 
 def create_app() -> FastAPI:

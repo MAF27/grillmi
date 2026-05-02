@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any
 
-from sqlalchemy import or_, select
+from sqlalchemy import and_, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from grillmi.models import Grillade
@@ -77,6 +77,24 @@ async def update(
     await session.flush()
     await session.refresh(row, ["updated_at"])
     return row
+
+
+async def sweep_stale_running(session: AsyncSession, cutoff: datetime) -> list[Grillade]:
+    q = select(Grillade).where(
+        and_(
+            Grillade.status == "running",
+            Grillade.deleted_at.is_(None),
+            Grillade.updated_at < cutoff,
+        )
+    )
+    rows = list((await session.execute(q)).scalars().all())
+    now = datetime.now(timezone.utc)
+    for row in rows:
+        row.status = "finished"
+        row.ended_at = now
+    if rows:
+        await session.flush()
+    return rows
 
 
 async def soft_delete(

@@ -188,6 +188,7 @@ function grilladeSignature(row: GrilladeRow | undefined): string {
 			restingUntilEpoch: item.restingUntilEpoch,
 			flipFired: item.flipFired,
 			platedEpoch: item.platedEpoch,
+			alarmDismissed: item.alarmDismissed,
 		})),
 	})
 }

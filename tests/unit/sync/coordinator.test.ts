@@ -36,15 +36,6 @@ function buildEmptySettings(): Response {
 	})
 }
 
-function pullRouter(): (path: string, init?: RequestInit) => Promise<Response> {
-	return async (path: string) => {
-		if (path.startsWith('/api/grilladen')) return buildEmptyDelta()
-		if (path.startsWith('/api/favorites')) return buildEmptyDelta()
-		if (path.startsWith('/api/settings')) return buildEmptySettings()
-		return new Response(null, { status: 204 })
-	}
-}
-
 beforeEach(async () => {
 	__resetForTests()
 	;(globalThis as unknown as { indexedDB: unknown }).indexedDB = new IDBFactory()

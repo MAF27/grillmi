@@ -33,6 +33,9 @@ class Settings(BaseSettings):
     AUDIT_RETENTION_DAYS: int = 365
     TOMBSTONE_RETENTION_DAYS: int = 30
 
+    GRILLADE_STALE_AFTER_HOURS: int = 8
+    GRILLADE_AUTO_END_INTERVAL_SECONDS: int = 600
+
     OPENAPI_ENABLED: bool = False
 
     DATABASE_URL_OVERRIDE: str | None = None

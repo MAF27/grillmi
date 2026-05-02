@@ -59,6 +59,7 @@ describe('grilladenHistoryStore', () => {
 							overdue: false,
 							flipFired: false,
 							platedEpoch: null,
+							alarmDismissed: { putOn: null, flip: null, ready: null },
 						},
 					],
 				},

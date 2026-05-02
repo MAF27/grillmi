@@ -33,6 +33,14 @@ export const scheduleEventSchema = z.object({
 	itemId: z.string().uuid(),
 })
 
+export const alarmDismissedSchema = z
+	.object({
+		putOn: z.number().int().nullable().default(null),
+		flip: z.number().int().nullable().default(null),
+		ready: z.number().int().nullable().default(null),
+	})
+	.default({ putOn: null, flip: null, ready: null })
+
 export const sessionItemSchema = plannedItemSchema.extend({
 	putOnEpoch: z.number().int(),
 	flipEpoch: z.number().int().nullable(),
@@ -42,6 +50,7 @@ export const sessionItemSchema = plannedItemSchema.extend({
 	overdue: z.boolean(),
 	flipFired: z.boolean().default(false),
 	platedEpoch: z.number().int().nullable().default(null),
+	alarmDismissed: alarmDismissedSchema,
 })
 
 export const sessionSchema = z.object({
@@ -113,6 +122,7 @@ export type ItemStatus = z.infer<typeof itemStatusSchema>
 export type PlannedItem = z.infer<typeof plannedItemSchema>
 export type Plan = z.infer<typeof planSchema>
 export type ScheduleEvent = z.infer<typeof scheduleEventSchema>
+export type AlarmDismissed = z.infer<typeof alarmDismissedSchema>
 export type SessionItem = z.infer<typeof sessionItemSchema>
 export type Session = z.infer<typeof sessionSchema>
 export type Favorite = z.infer<typeof favoriteSchema>

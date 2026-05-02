@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte'
 	import { goto } from '$app/navigation'
 	import { page } from '$app/state'
-	import Button from '$lib/components/Button.svelte'
 	import SegmentedControl from '$lib/components/SegmentedControl.svelte'
 	import RowGroup from '$lib/components/settings/RowGroup.svelte'
 	import SettingRow from '$lib/components/settings/SettingRow.svelte'

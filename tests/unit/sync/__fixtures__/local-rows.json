@@ -104,7 +104,8 @@
         "status": "cooking",
         "overdue": false,
         "flipFired": false,
-        "platedEpoch": null
+        "platedEpoch": null,
+        "alarmDismissed": { "putOn": null, "flip": null, "ready": null }
       },
       "index": 2
     },
@@ -122,6 +123,7 @@
       "status": "cooking",
       "started_at": "2024-05-01T16:00:00.000Z",
       "plated_at": null,
+      "alarm_state": { "putOn": null, "flip": null, "ready": null },
       "position": 2
     }
   },
@@ -148,7 +150,8 @@
         "status": "plated",
         "overdue": false,
         "flipFired": true,
-        "platedEpoch": 1714580000000
+        "platedEpoch": 1714580000000,
+        "alarmDismissed": { "putOn": 1714579210000, "flip": 1714579510000, "ready": 1714579810000 }
       },
       "index": 1
     },
@@ -166,6 +169,11 @@
       "status": "plated",
       "started_at": "2024-05-01T16:00:00.000Z",
       "plated_at": "2024-05-01T16:13:20.000Z",
+      "alarm_state": {
+        "putOn": "2024-05-01T16:00:10.000Z",
+        "flip": "2024-05-01T16:05:10.000Z",
+        "ready": "2024-05-01T16:10:10.000Z"
+      },
       "position": 1
     }
   }

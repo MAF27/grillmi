@@ -69,5 +69,6 @@ export function buildSessionItem(planned: PlannedItem, sched: ScheduledItem, now
 		overdue: sched.overdue,
 		flipFired: false,
 		platedEpoch: null,
+		alarmDismissed: { putOn: null, flip: null, ready: null },
 	}
 }

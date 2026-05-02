@@ -17,13 +17,22 @@
 	let wakeLockState = $state<'idle' | 'held' | 'denied' | 'unsupported'>(getWakeLockState())
 	type StickyAlarm = { id: string; itemId: string; kind: AlarmKind; itemName: string; message: string; firedAt: number }
 	let stickyAlarms = $state<StickyAlarm[]>([])
-	let dismissedKeys = $state<Set<string>>(new Set())
-	let firingItemId = $state<string | null>(null)
+	let pendingDismiss = $state<Set<string>>(new Set())
 	let endingForAllPlated = false
 	let mounted = $state(false)
 
 	const session = $derived(grilladeStore.session)
 	const sessionMode = $derived(session?.mode ?? grilladeStore.planMode)
+	const dismissedKeys = $derived.by(() => {
+		const set = new Set<string>(pendingDismiss)
+		if (!session) return set
+		for (const item of session.items) {
+			if (item.alarmDismissed.putOn != null) set.add(`${item.id}-on`)
+			if (item.alarmDismissed.flip != null) set.add(`${item.id}-flip`)
+			if (item.alarmDismissed.ready != null) set.add(`${item.id}-ready`)
+		}
+		return set
+	})
 	const visibleAlarms = $derived(
 		stickyAlarms
 			.filter(a => !dismissedKeys.has(a.id))
@@ -31,6 +40,7 @@
 			.reverse(),
 	)
 	const alarming = $derived(visibleAlarms[0] ?? null)
+	const firingItemId = $derived(alarming?.itemId ?? null)
 
 	let ticker: ReturnType<typeof createTicker> | null = null
 	let unsubWakeLock: (() => void) | null = null
@@ -71,7 +81,6 @@
 				const msg = messageFor(event, item.label || item.cutSlug, e.leadSeconds)
 				const key = `${item.id}-${kind}`
 				if (stickyAlarms.some(a => a.id === key) || dismissedKeys.has(key)) return
-				firingItemId = item.id
 				void grilladeStore.appendTimelineEvent({ kind, itemName: item.label || item.cutSlug, at: Date.now() })
 				stickyAlarms = [
 					...stickyAlarms,
@@ -98,11 +107,13 @@
 
 	function dismissAlarm() {
 		if (!alarming) return
-		const next = new Set(dismissedKeys)
-		next.add(alarming.id)
-		dismissedKeys = next
-		const remaining = stickyAlarms.filter(a => !next.has(a.id))
-		firingItemId = remaining[0]?.itemId ?? null
+		const item = session?.items.find(i => i.id === alarming.itemId)
+		if (!item) return
+		const dismissedKey = alarming.kind === 'on' ? 'putOn' : alarming.kind
+		pendingDismiss = new Set(pendingDismiss).add(alarming.id)
+		void grilladeStore.patchItem(alarming.itemId, {
+			alarmDismissed: { ...item.alarmDismissed, [dismissedKey]: Date.now() },
+		})
 	}
 
 	async function endSession() {

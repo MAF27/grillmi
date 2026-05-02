@@ -25,6 +25,7 @@ FIELDS = [
     "status",
     "started_at",
     "plated_at",
+    "alarm_state",
     "position",
     "created_at",
     "updated_at",
@@ -94,6 +95,7 @@ async def create(
         existing.status = payload.get("status") or "pending"
         existing.started_at = _dt(payload.get("started_at"))
         existing.plated_at = _dt(payload.get("plated_at"))
+        existing.alarm_state = _alarm_state(payload.get("alarm_state"))
         existing.position = float(payload.get("position", 0.0))
         await session.flush()
         await _touch_parent(session, user_id, grillade_id)
@@ -113,6 +115,7 @@ async def create(
         status=payload.get("status") or "pending",
         started_at=_dt(payload.get("started_at")),
         plated_at=_dt(payload.get("plated_at")),
+        alarm_state=_alarm_state(payload.get("alarm_state")),
         position=float(payload.get("position", 0.0)),
     )
     session.add(row)
@@ -161,6 +164,8 @@ async def update(
         row.rest_seconds = int(payload["rest_seconds"])
     if "thickness_cm" in payload:
         row.thickness_cm = _dec(payload["thickness_cm"])
+    if "alarm_state" in payload:
+        row.alarm_state = _alarm_state(payload["alarm_state"])
     for k in ("started_at", "plated_at"):
         if k in payload:
             setattr(row, k, _dt(payload[k]))
@@ -217,3 +222,23 @@ def _dec(value: Any) -> Decimal | None:
     if value is None:
         return None
     return Decimal(str(value))
+
+
+_ALARM_KINDS = ("putOn", "flip", "ready")
+
+
+def _alarm_state(value: Any) -> dict[str, str | None]:
+    if not isinstance(value, dict):
+        return {}
+    out: dict[str, str | None] = {}
+    for kind in _ALARM_KINDS:
+        if kind not in value:
+            continue
+        v = value[kind]
+        if v is None:
+            out[kind] = None
+        elif isinstance(v, datetime):
+            out[kind] = (v if v.tzinfo else v.replace(tzinfo=timezone.utc)).isoformat()
+        else:
+            out[kind] = str(v)
+    return out

@@ -28,6 +28,7 @@ function makeItem(over: Partial<SessionItem> = {}): SessionItem {
 		overdue: false,
 		flipFired: false,
 		platedEpoch: null,
+		alarmDismissed: { putOn: null, flip: null, ready: null },
 		...over,
 	}
 }
