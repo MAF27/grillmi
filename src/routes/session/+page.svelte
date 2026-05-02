@@ -150,11 +150,15 @@
 
 	function dismissAlarm() {
 		if (!alarming) return
-		const item = session?.items.find(i => i.id === alarming.itemId)
+		// Capture the reactive alarming snapshot before pendingDismiss is assigned:
+		// the assignment flushes derived state synchronously, which would null `alarming`
+		// mid-function and crash the subsequent patchItem call.
+		const { id: alarmId, itemId, kind } = alarming
+		const item = session?.items.find(i => i.id === itemId)
 		if (!item) return
-		const dismissedKey = alarming.kind === 'on' ? 'putOn' : alarming.kind
-		pendingDismiss = new Set(pendingDismiss).add(alarming.id)
-		void grilladeStore.patchItem(alarming.itemId, {
+		const dismissedKey = kind === 'on' ? 'putOn' : kind
+		pendingDismiss = new Set(pendingDismiss).add(alarmId)
+		void grilladeStore.patchItem(itemId, {
 			alarmDismissed: { ...item.alarmDismissed, [dismissedKey]: Date.now() },
 		})
 	}

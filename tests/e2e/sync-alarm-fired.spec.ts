@@ -9,7 +9,11 @@ test.beforeEach(async () => {
 })
 
 test.describe('sync alarm fire', () => {
-	test('test_alarm_fire_propagates_across_devices_and_survives_refresh', async ({ browser }) => {
+	test.describe.configure({ timeout: 90_000 })
+
+	test('test_alarm_fire_propagates_across_devices_renders_banner_survives_refresh_and_dismiss_round_trips', async ({
+		browser,
+	}) => {
 		const email = uniqueEmail('alarm-fire-sync')
 		const setupCtx = await browser.newContext({ baseURL: FRONTEND_URL })
 		const setupPage = await setupCtx.newPage()
@@ -55,6 +59,8 @@ test.describe('sync alarm fire', () => {
 		)
 		expect(itemResp.ok()).toBeTruthy()
 
+		// Device B opens the cockpit and waits for the pulled grillade to land in IDB.
+		await pageB.goto('/grillen')
 		await pageB.waitForFunction(
 			async expectedId => {
 				const { listGrilladen } = await (import('/src/lib/stores/db.ts' as string) as Promise<typeof import('$lib/stores/db')>)
@@ -66,6 +72,8 @@ test.describe('sync alarm fire', () => {
 			{ timeout: 10_000 },
 		)
 
+		// Device A patches the alarm fire timestamp via the API (the same call the
+		// frontend would make when its ticker fires the flip alarm naturally).
 		const firedAtIso = new Date().toISOString()
 		const patch = await a.context.request.patch(
 			`${FRONTEND_URL}/api/grilladen/${grilladeId}/items/${itemId}`,
@@ -76,33 +84,62 @@ test.describe('sync alarm fire', () => {
 		)
 		expect(patch.ok()).toBeTruthy()
 
+		// Trigger Device B's pull via visibility change.
 		await pageB.evaluate(() => {
 			Object.defineProperty(document, 'visibilityState', { value: 'visible', configurable: true })
 			document.dispatchEvent(new Event('visibilitychange'))
 		})
 
+		// Device B's UI shows the flip alarm card.
+		const banner = pageB.locator('[data-testid="alarm-banner"]')
+		await expect(banner).toBeVisible({ timeout: 10_000 })
+		await expect(banner).toHaveAttribute('data-kind', 'flip')
+
+		// A hard refresh on Device B keeps the card visible.
+		await pageB.reload()
+		await expect(pageB.locator('[data-testid="alarm-banner"]')).toBeVisible({ timeout: 10_000 })
+
+		// Device B dismisses the alarm. Use direct DOM click because the banner's
+		// per-second message rerender keeps the button visually unstable.
+		await pageB.evaluate(() => {
+			const btn = document.querySelector('[data-testid="alarm-banner"] .dismiss') as HTMLButtonElement | null
+			btn?.click()
+		})
+
+		// Card disappears on Device B and the dismiss is in IDB.
+		await expect(pageB.locator('[data-testid="alarm-banner"]')).toHaveCount(0, { timeout: 5_000 })
 		await pageB.waitForFunction(
 			async args => {
 				const { getGrillade } = await (import('/src/lib/stores/db.ts' as string) as Promise<typeof import('$lib/stores/db')>)
 				const row = await getGrillade(args.grilladeId)
 				const item = row?.session?.items.find(i => i.id === args.itemId)
-				return Boolean(item?.alarmFired?.flip)
+				return Boolean(item?.alarmDismissed?.flip)
 			},
 			{ grilladeId, itemId },
 			{ timeout: 10_000 },
 		)
 
-		await pageB.reload()
-		await pageB.waitForFunction(
-			async args => {
-				const { getGrillade } = await (import('/src/lib/stores/db.ts' as string) as Promise<typeof import('$lib/stores/db')>)
-				const row = await getGrillade(args.grilladeId)
-				const item = row?.session?.items.find(i => i.id === args.itemId)
-				return Boolean(item?.alarmFired?.flip)
+		// Force the sync queue to flush so the dismiss reaches the backend.
+		await pageB.evaluate(async () => {
+			Object.defineProperty(document, 'visibilityState', { value: 'visible', configurable: true })
+			document.dispatchEvent(new Event('visibilitychange'))
+			const sync = await (import('/src/lib/sync/coordinator.ts' as string) as Promise<typeof import('$lib/sync/coordinator')>)
+			await sync.flush()
+		})
+
+		// Backend reflects the dismiss.
+		await expect.poll(
+			async () => {
+				const r = await a.context.request.get(`${FRONTEND_URL}/api/grilladen/${grilladeId}/items`, {
+					headers: { 'X-CSRFToken': a.csrfToken },
+				})
+				if (!r.ok()) return null
+				const body = (await r.json()) as { rows: Array<{ id: string; alarm_state: Record<string, unknown> }> }
+				const row = body.rows.find(r => r.id === itemId)
+				return row?.alarm_state?.flip ?? null
 			},
-			{ grilladeId, itemId },
-			{ timeout: 10_000 },
-		)
+			{ timeout: 15_000, intervals: [500, 1_000, 2_000] },
+		).toBeTruthy()
 
 		await a.context.close()
 		await ctxB.close()
